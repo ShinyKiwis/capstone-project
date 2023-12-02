@@ -1,0 +1,4 @@
+**/node_modules
+
+# To fix error on Nguyen's computer, don't worry about this
+**/^/dev

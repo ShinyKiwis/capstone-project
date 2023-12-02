@@ -1,0 +1,54 @@
+{
+  "users": [
+    {
+      "username": "daonam",
+      "password": "J2dqSFa3",
+      "email": "daonam@hcmut.edu.vn"
+    },
+    {
+      "username": "danvi",
+      "password": "pWRGCmt5",
+      "email": "danvi@hcmut.edu.vn"
+    },
+    {
+      "username": "giabao",
+      "password": "QJe7fKw2",
+      "email": "giabao@hcmut.edu.vn"
+    },
+    {
+      "username": "hoangduong",
+      "password": "t6PnVCwz",
+      "email": "hoangduong@hcmut.edu.vn"
+    },
+    {
+      "username": "hoanggia",
+      "password": "ChMXfqp5",
+      "email": "hoanggia@hcmut.edu.vn"
+    },
+    {
+      "username": "hoanghoa",
+      "password": "VQtJPm42",
+      "email": "hoanghoa@hcmut.edu.vn"
+    },
+    {
+      "username": "hongnhi",
+      "password": "PaBFzKf3",
+      "email": "hongnhi@hcmut.edu.vn"
+    },
+    {
+      "username": "hongvy",
+      "password": "nCMQJtR6",
+      "email": "hongvy@hcmut.edu.vn"
+    },
+    {
+      "username": "lanphuong",
+      "password": "zhWMVpq8",
+      "email": "lanphuong@hcmut.edu.vn"
+    },
+    {
+      "username": "lienmai",
+      "password": "CJaKE7t9",
+      "email": "lienmai@hcmut.edu.vn"
+    }
+  ]
+}
