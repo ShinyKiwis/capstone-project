@@ -1,16 +1,16 @@
 export default function Login() {
   return (
-    <main className="h-screen w-8/12 mx-auto py-16">
-      <div className="flex h-full shadow-lg rounded-3xl shadow-zinc-300 bg-white">
-        <div className="w-3/5 relative">
+    <main className="mx-auto h-screen w-8/12 py-16">
+      <div className="flex h-full rounded-3xl bg-white shadow-lg shadow-zinc-300">
+        <div className="relative w-3/5">
           <img
             src="https://hcmut.edu.vn/img/carouselItem/59840602.jpg?t=59840602"
             alt="university illustration"
-            className="h-full object-cover object-center rounded-tl-xl rounded-bl-xl"
+            className="h-full rounded-bl-xl rounded-tl-xl object-cover object-center"
           />
         </div>
-        <div className="w-2/5 flex flex-col items-center">
-          <img src="logo.svg" alt="software logo" className="w-40"/>
+        <div className="flex w-2/5 flex-col items-center">
+          <img src="logo.svg" alt="software logo" className="w-40" />
         </div>
       </div>
     </main>
