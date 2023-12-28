@@ -6,7 +6,7 @@ interface ButtonProps {
   variant: string;
   children: React.ReactNode;
   bgColor?: string;
-  className: string;
+  className?: string;
   color?: string;
 }
 
@@ -15,7 +15,7 @@ interface VariantMappings {
 }
 
 const variantPrimaryMappings: VariantMappings = {
-  normal: "text-white bg-blue hover:bg-lightblue hover:scale-105 duration-300",
+  normal: "text-white bg-blue border-2 border-blue hover:bg-lightblue hover:scale-105 duration-300",
   danger: "red",
 };
 
@@ -36,7 +36,7 @@ const Button = ({
   return (
     <button
       onClick={onClick}
-      className={`w-full rounded-md py-2 text-center  ${className} ${variantStyle}`}
+      className={`w-full rounded-md text-center  ${className} ${variantStyle}`}
     >
       {children}
     </button>
