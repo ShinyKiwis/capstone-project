@@ -3,7 +3,7 @@ import { Sintony, Poppins } from "next/font/google";
 import "./globals.css";
 
 const sintony = Sintony({ weight: "400", subsets: ["latin"] });
-const poppins = Poppins({ weight: "400", subsets: ["latin"] });
+const poppins = Poppins({ weight: ["400", "500", "600"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
