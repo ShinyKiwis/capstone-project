@@ -23,8 +23,8 @@ const variantMappings: VariantMappings = {
 };
 
 const variantClassesMappings: VariantClassesMappings = {
-  h1: "text-2xl",
-  h2: "text-xl",
+  h1: "font-bold text-2xl",
+  h2: "font-bold text-xl",
 };
 
 const Typography = ({
@@ -33,12 +33,12 @@ const Typography = ({
   color='',
   className = "",
 }: TypographyProps) => {
-  const Component: React.ElementType = variantMappings[variant] || "p";
+  const Component: React.ElementType = variantMappings[variant] || variant;
   const variantClass = variantClassesMappings[variant] || "";
   const variantColor = color;
   return (
     <Component
-      className={`font-bold tracking-wide ${variantClass} ${className} ${variantColor}`}
+      className={`tracking-wide ${variantClass} ${className} ${variantColor}`}
     >
       {text}
     </Component>

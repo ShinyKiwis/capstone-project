@@ -1,6 +1,7 @@
 "use client";
 import { useReducer } from "react";
-import { Typography, InputBox, Button } from "../components";
+import { Typography, InputBox, Button } from "../../_components";
+import Link from "next/link";
 
 enum UserActionType {
   CHANGE_USERNAME = "CHANGE_USERNAME",
@@ -45,12 +46,11 @@ export default function Login() {
     <main className="mx-auto h-screen w-8/12 py-16">
       <div className="flex h-full rounded-3xl bg-white shadow-lg shadow-zinc-300">
         <div className="relative w-3/5">
-          {/* HCMUT domain dead => this is dead also */}
-          {/* <img
+          <img
             src="https://hcmut.edu.vn/img/carouselItem/59840602.jpg?t=59840602"
             alt="university illustration"
             className="h-full rounded-bl-xl rounded-tl-xl object-cover object-center"
-          /> */}
+          />
         </div>
         <div className="flex w-2/5 flex-col items-center px-16 py-24">
           <img src="logo.svg" alt="software logo" className="w-64" />
@@ -61,6 +61,7 @@ export default function Login() {
             >
               <Typography variant="h2" text="Username" color="text-blue" />
               <InputBox
+                autoFocus={true}
                 inputName="username"
                 type="text"
                 placeholderText="Username"
@@ -71,7 +72,7 @@ export default function Login() {
                   })
                 }
               />
-              <Typography variant="h2" text="Password" color="text-blue" />
+              <Typography variant="h2" text="Password" color="text-blue" className="mt-2"/>
               <InputBox
                 inputName="password"
                 type="password"
@@ -83,9 +84,10 @@ export default function Login() {
                   })
                 }
               />
-              <Button isPrimary variant="normal" className="mt-4">
+              <Button isPrimary variant="normal" className="mt-8">
                 <Typography variant="p" text="Login" color="text-white" />
               </Button>
+              <Link href={"#"} className="underline mx-auto text-gray hover:text-black duration-200">Forgot password?</Link>
             </form>
           </div>
         </div>

@@ -14,10 +14,16 @@ interface VariantMappings {
   [key: string]: string;
 }
 
-const variantMappings: VariantMappings = {
-  normal: "blue",
+const variantPrimaryMappings: VariantMappings = {
+  normal: "text-white bg-blue hover:bg-lightblue hover:scale-105 duration-300",
   danger: "red",
 };
+
+const variantSecondaryMappings: VariantMappings = {
+  normal: "text-blue bg-white border-2 border-blue hover:bg-lightblue hover:text-white hover:scale-105 duration-300",
+  danger: "red",
+};
+
 
 const Button = ({
   onClick,
@@ -26,14 +32,11 @@ const Button = ({
   className,
   children,
 }: ButtonProps) => {
-  const variantColor = variantMappings[variant];
-  const buttonClassName = isPrimary
-    ? `bg-${variantColor} text-white`
-    : `text-${variantColor} bg-white border-2 border-${variantColor}`;
+  const variantStyle = isPrimary ? variantPrimaryMappings[variant] : variantSecondaryMappings[variant]
   return (
     <button
       onClick={onClick}
-      className={`w-full rounded-lg py-2 ${buttonClassName} ${className}`}
+      className={`w-full rounded-md py-2 text-center  ${className} ${variantStyle}`}
     >
       {children}
     </button>
