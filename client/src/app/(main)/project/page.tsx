@@ -1,11 +1,12 @@
 import { ProjectCard } from '@/app/_components'
 import React from 'react'
 
-const Projects = () => {
+const Project = () => {
   return (
     <div>
+      Projects page
     </div>
   )
 }
 
-export default Projects
+export default Project

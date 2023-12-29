@@ -3,7 +3,6 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Typography from "./Typography";
 import { usePathname } from "next/navigation";
 
 import { MdManageAccounts } from "react-icons/md";
@@ -12,30 +11,61 @@ import {
   FaChalkboardTeacher,
   FaProjectDiagram,
   FaUserGraduate,
+  FaPlus,
 } from "react-icons/fa";
 
 interface SideBarItemProps {
   Icon?: any;
   title: string;
-  href: string;
+  pages: any;
 }
 
-const SideBarItem = ({ Icon, title, href }: SideBarItemProps) => {
+const toggleAccordion = (accordBtn: any) => {
+  let accordionContent = accordBtn.parentNode.childNodes[1];
+  accordionContent.classList.toggle('hidden');
+}
+
+const SideBarItem = ({ Icon, title, pages }: SideBarItemProps) => {
   const pathname = usePathname();
+  console.log("Current path:",pathname)
   return (
-    <Link href={href} className="mb-2 w-4/5 font-medium">
-      {href == pathname ? (
-        <div className="flex items-center gap-2 rounded-md bg-blue p-2 text-white ">
-          {Icon && <Icon size={25} />}
-          <span>{title}</span>
-        </div>
-      ) : (
+    // <Link href={href} className="mb-2 w-4/5 font-medium">
+    //   {href == pathname ? (
+    //     <div className="flex items-center gap-2 rounded-md bg-blue p-2 text-white ">
+    //       {Icon && <Icon size={25} />}
+    //       <span>{title}</span>
+    //     </div>
+    //   ) : (
+    //     <div className="flex items-center gap-2 px-2 py-1 text-gray hover:text-blue duration-300">
+    //       {Icon && <Icon size={25} />}
+    //       <span>{title}</span>
+    //     </div>
+    //   )}
+    // </Link>
+    <div className="mb-2 w-4/5">
+      <button className="font-medium w-full" onClick={(e)=>toggleAccordion(e.currentTarget)}>
         <div className="flex items-center gap-2 px-2 py-1 text-gray hover:text-blue duration-300">
           {Icon && <Icon size={25} />}
           <span>{title}</span>
+          <span className="float-right">
+            <FaPlus size={15} />
+          </span>
         </div>
-      )}
-    </Link>
+      </button>
+
+      <div className="hidden">
+        {pages.map(function(accordLink: any){
+          return(
+            <div>
+              <Link href={accordLink.href} className="block ml-4">
+                <span className="text-gray hover:text-blue">{accordLink.title}</span>
+              </Link>
+            </div>
+          )
+        })
+        }
+      </div>
+    </div>
   );
 };
 
@@ -44,37 +74,73 @@ const SideBar = () => {
     {
       Icon: MdManageAccounts,
       title: "Administration",
-      href: "/administrate",
+      pages: [
+        {
+          title: "Manage users",
+          href: "/administrate?manage=userManage",
+        },
+        {
+          title: "Set project registration deadline",
+          href: "/administrate?manage=registrationDeadline",
+        },
+      ],
     },
     {
       Icon: FaChalkboardTeacher,
       title: "Program",
-      href: "/program",
+      pages: [
+        {
+          title: "Manage programs",
+          href: "/program?action=manageProgram",
+        },
+        {
+          title: "Manage SOs, PIs",
+          href: "/program?action=manageOBE",
+        },
+      ],
     },
     {
       Icon: FaProjectDiagram,
       title: "Projects",
-      href: "/projects",
       pages: [
         {
           title: "Specialized Projects",
-          href: "/projects?project=specialized",
+          href: "/project?project=specialized",
         },
         {
           title: "Capstone Projects",
-          href: "/projects?project=capstone",
+          href: "/project?project=capstone",
         },
       ],
     },
     {
       Icon: FaUserGraduate,
       title: "Assessment",
-      href: "/assessment",
+      pages: [
+        {
+          title: "Assessment schemes",
+          href: "/assessment?manage=schemes",
+        },
+        {
+          title: "Assessment records",
+          href: "/assessment?manage=records",
+        },
+      ],
     },
     {
       Icon: VscGraph,
       title: "Evaluation",
       href: "/evaluation",
+      pages: [
+        {
+          title: "Input assessments",
+          href: "/evaluation?action=inputAssesment",
+        },
+        {
+          title: "View reports",
+          href: "/evaluation?action=report",
+        },
+      ],
     },
   ];
 
