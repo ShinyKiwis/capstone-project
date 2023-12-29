@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${sintony.className} ${poppins.className} flex`}>
         <div className="w-64 h-screen"><SideBar /></div>
-        <div className="flex-1 h-screen px-4 py-8">{children}</div>
+        <div className="flex-1 h-screen px-8 pb-8 overflow-auto">{children}</div>
       </body>
     </html>
   );

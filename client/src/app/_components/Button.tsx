@@ -20,7 +20,7 @@ const variantPrimaryMappings: VariantMappings = {
 };
 
 const variantSecondaryMappings: VariantMappings = {
-  normal: "text-blue bg-white border-2 border-blue hover:bg-lightblue hover:text-white hover:scale-105 duration-300",
+  normal: "text-blue bg-white border-2 border-blue hover:bg-lightblue hover:bg-lightblue hover:text-white hover:scale-105 duration-300",
   danger: "red",
 };
 

@@ -80,7 +80,7 @@ const ProjectCardActions = () => {
 
 const ProjectCard = () => {
   return (
-    <div className="flex w-3/6 flex-col rounded-md border border-black px-4 py-4">
+    <div className="flex w-3/6 flex-col rounded-md border border-black px-4 py-4 cursor-pointer">
       <div className="flex">
         <ProjectCardMetadata />
         <ProjectCardContent />

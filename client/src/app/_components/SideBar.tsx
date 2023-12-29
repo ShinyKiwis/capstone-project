@@ -30,7 +30,7 @@ const SideBarItem = ({ Icon, title, href }: SideBarItemProps) => {
           <span>{title}</span>
         </div>
       ) : (
-        <div className="flex items-center gap-2 px-2 py-1 text-gray hover:text-blue duration-300">
+        <div className="flex items-center gap-2 px-2 py-1 text-gray duration-300 hover:text-blue">
           {Icon && <Icon size={25} />}
           <span>{title}</span>
         </div>
@@ -53,16 +53,16 @@ const SideBar = () => {
     },
     {
       Icon: FaProjectDiagram,
-      title: "Projects",
-      href: "/projects",
+      title: "Project",
+      href: "/project",
       pages: [
         {
           title: "Specialized Projects",
-          href: "/projects?project=specialized",
+          href: "/project?project=specialized",
         },
         {
           title: "Capstone Projects",
-          href: "/projects?project=capstone",
+          href: "/project?project=capstone",
         },
       ],
     },
