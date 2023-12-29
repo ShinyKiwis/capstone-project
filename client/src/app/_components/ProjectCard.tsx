@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Typography } from ".";
+import { Button, Profile, Typography } from ".";
 import { BsFillPeopleFill } from "react-icons/bs";
 
 interface ProjectProps {
@@ -54,9 +54,12 @@ const ProjectCardContent = () => {
 const ProjectCardList = () => {
   return (
     <div className="flex w-1/4 flex-col">
-      <div className="flex items-center gap-2 -ms-4">
+      <div className="ms-auto flex items-center gap-2">
         <BsFillPeopleFill size={20} />
-        <span>0/4</span>
+        <span>1/4</span>
+      </div>
+      <div className="flex flex-col gap-2">
+        <Profile type="horizontal" username="Nguyen Van B" />
       </div>
     </div>
   );
@@ -64,7 +67,7 @@ const ProjectCardList = () => {
 
 const ProjectCardActions = () => {
   return (
-    <div className="ms-auto w-1/4 mt-4">
+    <div className="ms-auto mt-4 w-1/4">
       <Button isPrimary={false} variant="normal" className="py-2">
         View
       </Button>
