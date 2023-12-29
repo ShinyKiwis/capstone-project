@@ -1,91 +1,96 @@
-'use client'
+"use client";
 
-import React, { useEffect } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
+import React, { useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import Typography from "./Typography";
-import { usePathname } from 'next/navigation'
+import { usePathname } from "next/navigation";
 
-import { MdManageAccounts, MdOutlineAnalytics } from "react-icons/md";
-import { FaChalkboardTeacher, FaProjectDiagram, FaUserGraduate } from "react-icons/fa";
-import { LiaProjectDiagramSolid } from "react-icons/lia";
-
+import { MdManageAccounts } from "react-icons/md";
+import { VscGraph } from "react-icons/vsc";
+import {
+  FaChalkboardTeacher,
+  FaProjectDiagram,
+  FaUserGraduate,
+} from "react-icons/fa";
 
 interface SideBarItemProps {
-  icon?: any;
+  Icon?: any;
   title: string;
   href: string;
 }
 
-const SideBarItem = ({icon, title, href} : SideBarItemProps) => {
-    const pathname = usePathname()
-    return (
-      <Link href={href} className="w-4/5 mb-2">
-        <div className="inline-flex items-start text-gray px-2 py-1 bg-white rounded-[6px]">
-            <span>{icon}</span>
-            <span className="">
-              {title}{href === pathname ? "s": "n"}
-            </span>
+const SideBarItem = ({ Icon, title, href }: SideBarItemProps) => {
+  const pathname = usePathname();
+  return (
+    <Link href={href} className="mb-2 w-4/5 font-medium">
+      {href == pathname ? (
+        <div className="flex items-center gap-2 rounded-md bg-blue p-2 text-white ">
+          {Icon && <Icon size={25} />}
+          <span>{title}</span>
         </div>
-      </Link>
-    )
-}
+      ) : (
+        <div className="flex items-center gap-2 px-2 py-1 text-gray hover:text-blue duration-300">
+          {Icon && <Icon size={25} />}
+          <span>{title}</span>
+        </div>
+      )}
+    </Link>
+  );
+};
 
 const SideBar = () => {
-
   const sidebarItems = [
     {
-      icon: <MdManageAccounts />,
+      Icon: MdManageAccounts,
       title: "Administration",
-      href: "/administrate"
+      href: "/administrate",
     },
     {
-      icon: <FaChalkboardTeacher />,
+      Icon: FaChalkboardTeacher,
       title: "Program",
-      href: "/program"
+      href: "/program",
     },
     {
-      icon: <LiaProjectDiagramSolid />,
-      title: "Specialized Projects",
-      href: "/projects"
+      Icon: FaProjectDiagram,
+      title: "Projects",
+      href: "/projects",
+      pages: [
+        {
+          title: "Specialized Projects",
+          href: "/projects?project=specialized",
+        },
+        {
+          title: "Capstone Projects",
+          href: "/projects?project=capstone",
+        },
+      ],
     },
     {
-      icon: <FaProjectDiagram />,
-      title: "Capstone Projects",
-      href: "/projects"
-    },
-    {
-      icon: <FaUserGraduate />,
+      Icon: FaUserGraduate,
       title: "Assessment",
-      href: "/assessment"
+      href: "/assessment",
     },
     {
-      icon: <MdOutlineAnalytics />,
+      Icon: VscGraph,
       title: "Evaluation",
-      href: "/evaluation"
-    }
-  ]
+      href: "/evaluation",
+    },
+  ];
 
   return (
-    <div className='border-r border-gray h-full'>
-      <div className='flex justify-center items-center py-10'>
-        <Image
-          src="/logo.svg"
-          width={160}
-          height={160}
-          alt="brand logo"
-        />
+    <div className="h-full border-r border-gray">
+      <div className="flex items-center justify-center py-10">
+        <Image src="/logo.svg" width={160} height={160} alt="brand logo" />
       </div>
 
-      <div className='flex flex-col items-center'>
-        {sidebarItems.map(function(element){
-            return SideBarItem(element)
-          })
-        }
+      <div className="flex flex-col items-center">
+        {sidebarItems.map(function (element) {
+          return SideBarItem(element);
+        })}
       </div>
-          
     </div>
-  )
-}
+  );
+};
 
-export default SideBar
+export default SideBar;
