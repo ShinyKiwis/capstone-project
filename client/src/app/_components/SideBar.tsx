@@ -20,11 +20,6 @@ interface SideBarItemProps {
   pages: any;
 }
 
-const toggleAccordion = (accordBtn: any) => {
-  let accordionContent = accordBtn.parentNode.childNodes[1];
-  accordionContent.classList.toggle('hidden');
-}
-
 const parseUrlString = (pathString: string) => {
   const pathName = pathString.split('?')[0];
   const param = pathString.split('?')[1];
@@ -36,6 +31,19 @@ const parseUrlString = (pathString: string) => {
 
 const SideBarItem = ({ Icon, title, path, pages }: SideBarItemProps) => {
   const pathname = usePathname();
+
+  const toggleAccordion = (accordBtn: any) => {
+    let currTarget = accordBtn.parentNode.childNodes[1];
+    
+    if (currTarget.style.maxHeight == '0px'){
+      currTarget.style.maxHeight = '5em';
+    } else {
+      currTarget.style.maxHeight = "0px";
+    }
+
+  }
+
+  var selectedOption = null;
   // console.log("Current path:",pathname);
   return (
     <div className="mb-2 w-4/5">
@@ -53,7 +61,10 @@ const SideBarItem = ({ Icon, title, path, pages }: SideBarItemProps) => {
         )}
       </button>
 
-      <div className={path == pathname ? "" : "hidden"}>
+      <div 
+        className= "ease-in-out duration-300 delay-150"
+        style={{maxHeight: path == pathname ? '5em' : '0px', overflow:'hidden'}}
+      >
         {pages.map(function(accordLink: any){     // Process each subpage
           const searchParam = useSearchParams();
           let urlContent = parseUrlString(accordLink.href);
