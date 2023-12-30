@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { SideBar } from "../_components";
+import { SideBar, Typography } from "../_components";
 import { Sintony, Poppins } from "next/font/google";
+import { FaBell } from "react-icons/fa";
 import "../globals.css";
 
 const sintony = Sintony({ weight: ["400"], subsets: ["latin"] });
@@ -19,8 +20,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${sintony.className} ${poppins.className} flex`}>
-        <div className="w-64 h-screen"><SideBar /></div>
-        <div className="flex-1 h-screen px-8 pb-8 overflow-auto">{children}</div>
+        <div className="w-80 h-screen"><SideBar /></div>
+        <div className="flex-1 h-screen overflow-hidden">
+          <div className="flex items-center flex-auto h-20 pl-8 pr-14 pt-5 gap-4">
+            <div className="flex-auto w-full">
+              <Typography
+                variant="h1"
+                text={`Project Enrollment`}
+                color="text-darkblue"
+              />
+            </div>
+            <button className="w-fit-content flex-auto"><FaBell size={25}/></button>
+            <div className='w-14 h-14 bg-blue flex-auto'></div>
+          </div>
+
+          <div className="grow max-h-screen px-8 pb-20 overflow-auto">{children}</div>
+        </div>
       </body>
     </html>
   );

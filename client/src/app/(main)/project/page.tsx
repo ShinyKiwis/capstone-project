@@ -24,12 +24,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
     setProjectsPerPage(numericValue);
   };
   return (
-    <div className="sticky top-0 w-full bg-white pt-12">
-      <Typography
-        variant="h1"
-        text={`${type} Project Enrollment`}
-        color="text-darkblue"
-      />
+    <div className="sticky top-0 w-full bg-white pt-0">
       <div className="w-3/6">
         <div className="mt-4 flex gap-4">
           <div className="w-10/12">
