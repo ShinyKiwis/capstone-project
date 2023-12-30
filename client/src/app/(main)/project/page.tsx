@@ -1,5 +1,11 @@
 "use client";
-import { Button, ProjectCard, SearchBox, Typography } from "@/app/_components";
+import {
+  Button,
+  ProjectCard,
+  SearchBox,
+  Typography,
+  ProjectCardDetail,
+} from "@/app/_components";
 import { IoOptions } from "react-icons/io5";
 import React, { useState } from "react";
 
@@ -18,7 +24,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
     setProjectsPerPage(numericValue);
   };
   return (
-    <div className="w-full bg-white sticky top-0 pt-12">
+    <div className="sticky top-0 w-full bg-white pt-12">
       <Typography
         variant="h1"
         text={`${type} Project Enrollment`}
@@ -45,7 +51,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
             placeholder="10"
             value={projectsPerPage}
             onChange={handleProjectsPerPageChange}
-            className="mx-2 w-12 h-12 rounded-md border-2 border-gray text-center text-gray outline-none focus:border-blue focus:text-blue"
+            className="mx-2 h-12 w-12 rounded-md border-2 border-gray text-center text-gray outline-none focus:border-blue focus:text-blue"
           />
           <span>projects per page</span>
         </div>
@@ -58,8 +64,19 @@ const Project = () => {
   return (
     <div className="w-full">
       <ProjectHeader type="Specialzed" />
-      <div className="mt-4 flex flex-col gap-4">
-        <ProjectCard />
+      <div className="mt-4 flex gap-4">
+        <div className="flex w-1/2 flex-col gap-4">
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+        </div>
+        <div className="w-1/2">
+          <ProjectCardDetail />
+        </div>
       </div>
     </div>
   );

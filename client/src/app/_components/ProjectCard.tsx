@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Profile, Typography } from ".";
+import { Button, Profile, ProjectInformationTable, Typography } from ".";
 import { BsFillPeopleFill } from "react-icons/bs";
 
 interface ProjectProps {
@@ -15,25 +15,7 @@ const ProjectCardMetadata = () => {
   return (
     <div className="flex w-2/6 flex-col items-center">
       <Typography variant="h2" text="CS220" />
-      <table className="text-sm">
-        <tbody>
-          <tr>
-            <th className="text-left">Program</th>
-            <th className="pe-4">:</th>
-            <td>High Quality</td>
-          </tr>
-          <tr>
-            <th className="text-left">Major</th>
-            <th className="pe-4">:</th>
-            <td>Computer Science</td>
-          </tr>
-          <tr>
-            <th className="text-left">Instructor</th>
-            <th className="pe-4">:</th>
-            <td>Nguyen Van A</td>
-          </tr>
-        </tbody>
-      </table>
+      <ProjectInformationTable fontSize="text-sm"/>
     </div>
   );
 };
@@ -51,9 +33,9 @@ const ProjectCardContent = () => {
   );
 };
 
-const ProjectCardList = () => {
+export const ProjectCardList = ({className}: {className: string}) => {
   return (
-    <div className="flex w-1/4 flex-col">
+    <div className={`flex flex-col ${className}`}>
       <div className="ms-auto flex items-center gap-2">
         <BsFillPeopleFill size={20} />
         <span>1/4</span>
@@ -68,10 +50,10 @@ const ProjectCardList = () => {
 const ProjectCardActions = () => {
   return (
     <div className="ms-auto mt-4 w-1/4">
-      <Button isPrimary={false} variant="normal" className="py-2">
+      <Button isPrimary={false} variant="normal" className="py-2 w-full">
         View
       </Button>
-      <Button isPrimary variant="normal" className="mt-2 py-2">
+      <Button isPrimary variant="normal" className="mt-2 py-2 w-full">
         Enroll
       </Button>
     </div>
@@ -80,11 +62,11 @@ const ProjectCardActions = () => {
 
 const ProjectCard = () => {
   return (
-    <div className="flex w-3/6 flex-col rounded-md border border-black px-4 py-4 cursor-pointer">
+    <div className="flex w-full flex-col rounded-md border border-black px-4 py-4 cursor-pointer">
       <div className="flex">
         <ProjectCardMetadata />
         <ProjectCardContent />
-        <ProjectCardList />
+        <ProjectCardList className="w-1/4"/>
       </div>
       <ProjectCardActions />
     </div>

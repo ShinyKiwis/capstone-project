@@ -84,7 +84,7 @@ export default function Login() {
                   })
                 }
               />
-              <Button isPrimary variant="normal" className="mt-8 py-2">
+              <Button isPrimary variant="normal" className="mt-8 py-2 w-full">
                 <Typography variant="p" text="Login" color="text-white" />
               </Button>
               <Link href={"#"} className="underline mx-auto text-gray hover:text-black duration-200">Forgot password?</Link>
