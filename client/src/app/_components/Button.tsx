@@ -15,15 +15,16 @@ interface VariantMappings {
 }
 
 const variantPrimaryMappings: VariantMappings = {
-  normal: "text-white bg-blue border-2 border-blue hover:bg-lightblue hover:scale-105 duration-300",
+  normal:
+    "text-white bg-blue border-2 border-blue hover:bg-lightblue hover:border-lightblue hover:scale-105 duration-300",
   danger: "red",
 };
 
 const variantSecondaryMappings: VariantMappings = {
-  normal: "text-blue bg-white border-2 border-blue hover:bg-lightblue hover:text-white hover:scale-105 duration-300",
+  normal:
+    "text-blue bg-white border-2 border-blue hover:bg-lightblue hover:border-lightblue hover:text-white hover:scale-105 duration-300",
   danger: "red",
 };
-
 
 const Button = ({
   onClick,
@@ -32,11 +33,13 @@ const Button = ({
   className,
   children,
 }: ButtonProps) => {
-  const variantStyle = isPrimary ? variantPrimaryMappings[variant] : variantSecondaryMappings[variant]
+  const variantStyle = isPrimary
+    ? variantPrimaryMappings[variant]
+    : variantSecondaryMappings[variant];
   return (
     <button
       onClick={onClick}
-      className={`w-full rounded-md text-center  ${className} ${variantStyle}`}
+      className={`rounded-md text-center  ${className} ${variantStyle}`}
     >
       {children}
     </button>

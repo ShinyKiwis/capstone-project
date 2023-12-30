@@ -23,7 +23,7 @@ const variantMappings: VariantMappings = {
 };
 
 const variantClassesMappings: VariantClassesMappings = {
-  h1: "font-bold text-2xl",
+  h1: "font-bold text-3xl",
   h2: "font-bold text-xl",
 };
 
