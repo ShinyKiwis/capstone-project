@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { MdManageAccounts } from "react-icons/md";
 import { VscGraph } from "react-icons/vsc";
@@ -11,12 +11,12 @@ import {
   FaChalkboardTeacher,
   FaProjectDiagram,
   FaUserGraduate,
-  FaPlus,
 } from "react-icons/fa";
 
 interface SideBarItemProps {
   Icon?: any;
   title: string;
+  path: string;
   pages: any;
 }
 
@@ -25,40 +25,51 @@ const toggleAccordion = (accordBtn: any) => {
   accordionContent.classList.toggle('hidden');
 }
 
-const SideBarItem = ({ Icon, title, pages }: SideBarItemProps) => {
+const parseUrlString = (pathString: string) => {
+  const pathName = pathString.split('?')[0];
+  const param = pathString.split('?')[1];
+  const paramName = param.split('=')[0];
+  const paramVal = param.split('=')[1];
+
+  return({path: pathName, paramName: paramName, paramVal: paramVal})
+}
+
+const SideBarItem = ({ Icon, title, path, pages }: SideBarItemProps) => {
   const pathname = usePathname();
-  console.log("Current path:",pathname)
+  // console.log("Current path:",pathname);
   return (
-    // <Link href={href} className="mb-2 w-4/5 font-medium">
-    //   {href == pathname ? (
-    //     <div className="flex items-center gap-2 rounded-md bg-blue p-2 text-white ">
-    //       {Icon && <Icon size={25} />}
-    //       <span>{title}</span>
-    //     </div>
-    //   ) : (
-    //     <div className="flex items-center gap-2 px-2 py-1 text-gray hover:text-blue duration-300">
-    //       {Icon && <Icon size={25} />}
-    //       <span>{title}</span>
-    //     </div>
-    //   )}
-    // </Link>
     <div className="mb-2 w-4/5">
       <button className="font-medium w-full" onClick={(e)=>toggleAccordion(e.currentTarget)}>
-        <div className="flex items-center gap-2 px-2 py-1 text-gray hover:text-blue duration-300">
-          {Icon && <Icon size={25} />}
-          <span>{title}</span>
-          <span className="float-right">
-            <FaPlus size={15} />
-          </span>
-        </div>
+        {path == pathname ? (
+          <div className="flex items-center gap-2 rounded-md bg-blue p-2 text-white ">
+            {Icon && <Icon size={25} />}
+            <span>{title}</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 px-2 py-1 text-gray hover:text-blue duration-300">
+            {Icon && <Icon size={25} />}
+            <span>{title}</span>
+          </div>
+        )}
       </button>
 
-      <div className="hidden">
-        {pages.map(function(accordLink: any){
+      <div className={path == pathname ? "" : "hidden"}>
+        {pages.map(function(accordLink: any){     // Process each subpage
+          const searchParam = useSearchParams();
+          let urlContent = parseUrlString(accordLink.href);
+          let selected = false
+          if (searchParam.has(urlContent.paramName) && searchParam.get(urlContent.paramName) == urlContent.paramVal)  
+            selected = true
+
           return(
             <div>
               <Link href={accordLink.href} className="block ml-4">
-                <span className="text-gray hover:text-blue">{accordLink.title}</span>
+                {selected ? 
+                  <span className="text-blue font-medium hover:text-blue">{accordLink.title}</span>
+                :
+                  <span className="text-gray hover:text-blue">{accordLink.title}</span>
+                }
+                
               </Link>
             </div>
           )
@@ -74,6 +85,7 @@ const SideBar = () => {
     {
       Icon: MdManageAccounts,
       title: "Administration",
+      path: "/administrate",
       pages: [
         {
           title: "Manage users",
@@ -88,6 +100,7 @@ const SideBar = () => {
     {
       Icon: FaChalkboardTeacher,
       title: "Program",
+      path: "/program",
       pages: [
         {
           title: "Manage programs",
@@ -102,6 +115,7 @@ const SideBar = () => {
     {
       Icon: FaProjectDiagram,
       title: "Projects",
+      path: '/project',
       pages: [
         {
           title: "Specialized Projects",
@@ -116,6 +130,7 @@ const SideBar = () => {
     {
       Icon: FaUserGraduate,
       title: "Assessment",
+      path: '/assessment',
       pages: [
         {
           title: "Assessment schemes",
@@ -131,6 +146,7 @@ const SideBar = () => {
       Icon: VscGraph,
       title: "Evaluation",
       href: "/evaluation",
+      path: '/evaluation',
       pages: [
         {
           title: "Input assessments",
