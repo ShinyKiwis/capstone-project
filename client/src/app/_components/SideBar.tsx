@@ -172,7 +172,7 @@ const SideBar = () => {
   ];
 
   return (
-    <div className="h-full border-r border-gray">
+    <div className="h-screen w-64 border-r border-gray">
       <div className="flex items-center justify-center py-10">
         <Image src="/logo.svg" width={160} height={160} alt="brand logo" />
       </div>
