@@ -27,8 +27,9 @@ interface TitleRoleMappings {
 }
 
 const titleRoleMappings: TitleRoleMappings = {
+  // Map user's role with the correct title
   administrate_roles: {
-    other: "Administrative pages"
+    dean: "Administrative pages"
   },
   program_roles: {
     other: "Program pages"
@@ -42,29 +43,31 @@ const titleRoleMappings: TitleRoleMappings = {
     other: "Capstone project management",
   },
   assessment_roles: {
-    other: "assessment pages"
+    other: "Assessment pages"
   },
   evaluation_roles: {
-    other: "evaluation pages"
+    other: "Evaluation pages"
   }
 }
 
 const titlePathMappings: TitlePathMappings = {
+  // Determine role-title sets with path and param
   '/administrate': {
-    any: titleRoleMappings['administrate_roles']
+    'any': titleRoleMappings['administrate_roles']
   },
   '/program': {
-    any: titleRoleMappings['program_roles']
+    'any': titleRoleMappings['program_roles']
   },
   '/project': {
     'specialized': titleRoleMappings['specializedProject_roles'],
-    'capstone': titleRoleMappings['capstoneProject_roles']
+    'capstone': titleRoleMappings['capstoneProject_roles'],
+    'any': titleRoleMappings['incorrect_param']
   },
   '/assessment': {
-    any: titleRoleMappings['assessment_roles']
+    'any': titleRoleMappings['assessment_roles']
   },
   '/evaluation': {
-    any: titleRoleMappings['evaluation_roles']
+    'any': titleRoleMappings['evaluation_roles']
   }
 };
 
@@ -76,15 +79,47 @@ function getTitle(){
     currParam = value;
   });
 
+  // Get title sets based on current path
   let pathRoles = titlePathMappings[currentPath];
-  // if (currParam && pathRoles[userRole])
-  return currentPath;
+
+  // Get title sets based on path's params
+  let paramRoles: any;
+  if (currParam){
+    console.log("Current param:", currParam);
+    if (currParam in pathRoles){
+      paramRoles = pathRoles[currParam];
+    }
+    else if ('any' in pathRoles)
+      paramRoles = pathRoles['any'];
+    else return "Invalid parameter, to 404"
+  }
+  else{
+    return "No param provided, to 404?"
+  }
+  console.log(paramRoles)
+
+  // Determine title based on user's role
+  if (userRole){
+    var finalTitle = null;
+    if (userRole in paramRoles){
+      finalTitle = paramRoles[userRole];
+    }
+    else{
+      if ('other' in paramRoles)
+        finalTitle = paramRoles['other'];
+    } 
+
+    if (finalTitle) return finalTitle
+    else return "No defined title for current role, redirect 404 ?"
+  }
+  else
+    return "No role found, not logged in ?"
 }
 
 ///////////// Test session data
 let userFullName = "User Name";
 let usermail = "username@hcmut.edu.vn";
-let userRole = 'supervisor';
+let userRole = 'student';
 let profileImgSrc = '/logoHCMUT.png'
 
 export default function RootLayout({
@@ -136,6 +171,7 @@ export default function RootLayout({
                 <Image
                   src={profileImgSrc}
                   fill={true}
+                  sizes="2.75rem"
                   alt="User's profile picture"
                 />
               </div>
@@ -154,6 +190,7 @@ export default function RootLayout({
                 <Image
                   src={profileImgSrc}
                   fill={true}
+                  sizes="2.75rem"
                   alt="User's profile picture"
                 />
               </div>
