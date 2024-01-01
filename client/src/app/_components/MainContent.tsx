@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext } from "react";
 import { ModalContext } from "../providers/ModalProvider";
-import { FilterModal } from ".";
+import { DynamicModal } from ".";
 
 const MainContent = ({ children }: { children: React.ReactNode }) => {
   const modalContextValue = useContext(ModalContext);
@@ -17,7 +17,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
       >
         {children}
       </div>
-      {showModal && <FilterModal />}
+      {showModal && <DynamicModal />}
     </>
   );
 };

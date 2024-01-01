@@ -21,7 +21,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
     return null;
   }
   const [projectsPerPage, setProjectsPerPage] = useState("");
-  const { toggleModal } = modalContextValue;
+  const { toggleModal, setModalType } = modalContextValue;
 
   const handleProjectsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -34,6 +34,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
   const handleToggleModal = (event: React.SyntheticEvent) => {
     event.stopPropagation()
     toggleModal(true)
+    setModalType("filter")
   }
   return (
     <div className="sticky top-0 w-full bg-white pt-12">
@@ -77,7 +78,7 @@ const NoData = () => {
   return (
     <div className="mx-auto flex flex-col gap-8 items-center mt-44">
       <Image src="/cat.png" width="150" height="150" alt="empty prompt"/>
-      <Typography variant="p" text="There isn't any project at the moment. Please comeback later" className="text-gray text-xl"/>
+      <Typography variant="p" text="There is no project at the moment. Please come back later" className="text-gray text-xl"/>
     </div>
   )
 }
