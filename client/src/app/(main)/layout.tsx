@@ -8,6 +8,7 @@ import Image from 'next/image'
 import { FaBell } from "react-icons/fa";
 import { MdArrowDropDown } from "react-icons/md";
 import "../globals.css";
+// import { ModalProvider } from "../providers/ModalProvider";
 import { usePathname, useSearchParams } from "next/navigation";
 
 const sintony = Sintony({ weight: ["400"], subsets: ["latin"] });
@@ -130,6 +131,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${sintony.className} ${poppins.className} flex`}>
+<!--         <ModalProvider>
+          <SideBar />
+          <MainContent children={children} />
+        </ModalProvider> -->
         <div className="w-80 h-screen"><SideBar /></div>
         <div className="flex-1 h-screen overflow-hidden">
           <div className="flex items-center flex-auto h-20 pl-8 pr-14 pt-5 gap-4">
