@@ -162,7 +162,7 @@ const ProfileModal = ({profileImg, fullName, email} : {profileImg:string, fullNa
 		<div 
 			className="flex-col absolute w-80 rounded-xl shadow-xl bg-white z-20 py-5 items-center gap-2 overflow-hidden transition-opacity ease-in-out duration-200 delay-100" 
 			id="topBar-profileModal"
-			style={{left:'auto', right:'3.5rem', top:'5em', maxHeight:'25em', opacity:'0', display:'flex'}}
+			style={{left:'auto', right:'3.5rem', top:'5em', maxHeight:'25em', opacity:'0', display:'none'}}
 		>
 			<div className='relative w-20 h-20 px-1 py-1 rounded-full overflow-hidden'>
 				<Image
