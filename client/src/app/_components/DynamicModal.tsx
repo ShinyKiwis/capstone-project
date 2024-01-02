@@ -10,18 +10,27 @@ const DynamicModal = () => {
   if (!modalContextValue) {
     return null;
   }
-  const { toggleModal, modalType } = modalContextValue;
+  const { toggleModal, modalType, modalProps } = modalContextValue;
 
-  const renderModal = (modalType: string) => {
+  const renderModal = (modalType: string, modalProps?: object) => {
     switch (modalType) {
       case "filter":
         return <FilterModal />;
       case "status":
-        return <StatusModal />;
+        if (modalProps)
+          if (
+            // Modal props may be flexible for each type of modal so we check when initiating a modal 
+            // rather than set the specific types and keys in modalProps
+            'subtype' in modalProps && modalProps.subtype && typeof(modalProps.subtype) == 'string' &&
+            'modalContent' in modalProps && modalProps.modalContent
+          ){
+            return <StatusModal subType={modalProps.subtype} modalContent={modalProps.modalContent}/>;
+          }
+        return "Missing props for status modal";
       case "upload":
         return <UploadFileModal />;
       default:
-        return;
+        return "Invalid modal type";
     }
   };
   return (
@@ -38,7 +47,7 @@ const DynamicModal = () => {
           />
         </div>
       </div>
-      <div className="mt-8">{renderModal(modalType)}</div>
+      <div className="mt-8">{renderModal(modalType, modalProps)}</div>
     </div>
   );
 };
