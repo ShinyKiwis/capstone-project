@@ -82,13 +82,20 @@ const Project = () => {
   return (
     <div className="w-full">
       <ProjectHeader type="Specialzed" />
-      <div className="mt-4 flex gap-4">
-        <NoData />
-        {/* <div className="flex w-1/2 flex-col gap-4">
+      <div className="mt-4 flex gap-4 flex-auto">
+        {/* <NoData /> */}
+        <div className="flex w-1/2 flex-col gap-4">
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
         </div>
         <div className="w-1/2">
           <ProjectCardDetail />
-        </div> */}
+        </div>
       </div>
     </div>
   );

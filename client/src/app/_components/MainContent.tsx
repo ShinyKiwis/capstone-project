@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext } from "react";
 import { ModalContext } from "../providers/ModalProvider";
-import { DynamicModal } from ".";
+import { DynamicModal, PageHeader } from ".";
 
 const MainContent = ({ children }: { children: React.ReactNode }) => {
   const modalContextValue = useContext(ModalContext);
@@ -10,7 +10,8 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
   }
   const { showModal, toggleModal } = modalContextValue;
   return (
-    <>
+    <div className="flex flex-col flex-1 h-screen">
+      <PageHeader />
       <div
         className="h-screen flex-1 overflow-auto px-8 pb-8"
         onClick={() => toggleModal(false)}
@@ -18,7 +19,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
         {children}
       </div>
       {showModal && <DynamicModal />}
-    </>
+    </div>
   );
 };
 
