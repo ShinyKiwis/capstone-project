@@ -7,14 +7,21 @@ import {
   ProjectCardDetail,
 } from "@/app/_components";
 import { IoOptions } from "react-icons/io5";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { ModalContext } from "@/app/providers/ModalProvider";
+import Image from "next/image";
 
 interface ProjectHeaderProps {
   type: string;
 }
 
 const ProjectHeader = ({ type }: ProjectHeaderProps) => {
+  const modalContextValue = useContext(ModalContext);
+  if (!modalContextValue) {
+    return null;
+  }
   const [projectsPerPage, setProjectsPerPage] = useState("");
+  const { toggleModal, setModalType } = modalContextValue;
 
   const handleProjectsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -23,6 +30,12 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
     console.log(numericValue);
     setProjectsPerPage(numericValue);
   };
+
+  const handleToggleModal = (event: React.SyntheticEvent) => {
+    event.stopPropagation()
+    toggleModal(true)
+    setModalType("filter")
+  }
   return (
     <div className="sticky top-0 w-full bg-white pt-0">
       <div className="w-3/6">
@@ -34,6 +47,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
             variant="normal"
             isPrimary={false}
             className="flex w-2/12 items-center justify-center gap-2 text-xl"
+            onClick={handleToggleModal}
           >
             <IoOptions size={25} />
             <span>Filter</span>
@@ -55,23 +69,26 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
   );
 };
 
+const NoData = () => {
+  return (
+    <div className="mx-auto flex flex-col gap-8 items-center mt-44">
+      <Image src="/cat.png" width="150" height="150" alt="empty prompt"/>
+      <Typography variant="p" text="There is no project at the moment. Please come back later" className="text-gray text-xl"/>
+    </div>
+  )
+}
+
 const Project = () => {
   return (
     <div className="w-full">
       <ProjectHeader type="Specialzed" />
       <div className="mt-4 flex gap-4">
-        <div className="flex w-1/2 flex-col gap-4">
-          <ProjectCard />
-          <ProjectCard />
-          <ProjectCard />
-          <ProjectCard />
-          <ProjectCard />
-          <ProjectCard />
-          <ProjectCard />
+        <NoData />
+        {/* <div className="flex w-1/2 flex-col gap-4">
         </div>
         <div className="w-1/2">
           <ProjectCardDetail />
-        </div>
+        </div> */}
       </div>
     </div>
   );

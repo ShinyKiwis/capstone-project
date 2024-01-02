@@ -18,11 +18,11 @@ const ProjectCardDetail = () => {
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor
         sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-        ut labore et dolore magna aliqua.
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor
-        sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-        ut labore et dolore magna aliqua.
+        ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet,
+        consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+        et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur
+        adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        magna aliqua.
       </p>
       <Typography variant="h2" text="Tasks" />
       <p className="text-md">
@@ -37,8 +37,8 @@ const ProjectCardDetail = () => {
         tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor
         sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
       </p>
-      <div className="flex mt-4">
-        <Button isPrimary variant="normal" className="px-8 py-2 ms-auto">
+      <div className="mt-4 flex">
+        <Button isPrimary variant="normal" className="ms-auto px-8 py-2">
           Enroll
         </Button>
       </div>
