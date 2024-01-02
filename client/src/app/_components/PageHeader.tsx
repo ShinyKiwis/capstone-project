@@ -83,7 +83,7 @@ function getTitle(){
 	// Get title sets based on path's params
 	let paramRoles: any;
 	if (currParam){
-		console.log("Current param:", currParam);
+		// console.log("Current param:", currParam);
 		if (currParam in pathRoles){
 			paramRoles = pathRoles[currParam];
 		}
@@ -94,7 +94,7 @@ function getTitle(){
 	else{
 		return "No param provided, to 404?"
 	}
-	console.log(paramRoles)
+	// console.log(paramRoles)
 
 	// Determine title based on user's role
 	if (userRole){

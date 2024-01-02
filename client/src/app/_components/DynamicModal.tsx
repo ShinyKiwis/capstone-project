@@ -17,16 +17,28 @@ const DynamicModal = () => {
       case "filter":
         return <FilterModal />;
       case "status":
-        if (modalProps)
+        if (modalProps){
           if (
             // Modal props may be flexible for each type of modal so we check when initiating a modal 
             // rather than set the specific types and keys in modalProps
-            'subtype' in modalProps && modalProps.subtype && typeof(modalProps.subtype) == 'string' &&
-            'modalContent' in modalProps && modalProps.modalContent
+            'subType' in modalProps && modalProps.subType && typeof(modalProps.subType) == 'string'
           ){
-            return <StatusModal subType={modalProps.subtype} modalContent={modalProps.modalContent}/>;
+            if ('modalContent' in modalProps && modalProps.modalContent)
+              return <StatusModal subType={modalProps.subType} modalContent={modalProps.modalContent}/>;
+            else
+              return <StatusModal subType={modalProps.subType} />;
+            console.log('Here')
           }
-        return "Missing props for status modal";
+          else{
+            return "Invalid props: " + JSON.stringify(modalProps);
+          }
+        }
+        else{
+          console.log('Current props:', modalProps)
+          return "Missing props for status modal";
+        }
+          
+        
       case "upload":
         return <UploadFileModal />;
       default:

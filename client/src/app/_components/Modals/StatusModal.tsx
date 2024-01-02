@@ -1,4 +1,6 @@
 import React from 'react'
+import { IoMdCheckmarkCircle } from "react-icons/io";
+import { IoWarningSharp } from "react-icons/io5";
 
 interface StatusModalProps{
   subType: string,
@@ -10,21 +12,46 @@ interface ModalDetails{
 }
 
 const WarningModal = ({content}: ModalDetails) => {
-  return(<div>
-    Warning
-  </div>)
+  if (!content) return "No content passed for warning modal";
+  if (!('title' in content) || typeof(content.title)!='string')
+    return "No title provided for warning modal";
+  if (!('messages' in content) || !Array.isArray(content.messages))
+    return "No title provided for warning modal";
+
+  return(
+  <div>
+    <IoWarningSharp />
+    <div>{content.title}</div>
+    {content.messages.map(function(msg){
+      return (<div>{msg}</div>)
+    })}
+  </div>
+  )
 }
 
 const SuccessModal = ({content}: ModalDetails) => {
   return(<div>
-    Success
+    <IoMdCheckmarkCircle />
+    Enrolled successfully !
   </div>)
 }
 
 const CancelModal = ({content}: ModalDetails) => {
-  return(<div>
-    Cancel project ?
-  </div>)
+  if (!content) return "No content passed for cancel modal";
+  if (!('title' in content) || typeof(content.title)!='string')
+    return "No title provided for cancel modal";
+  if (!('messages' in content) || !Array.isArray(content.messages))
+    return "No title provided for cancel modal";
+
+  return(
+  <div>
+    <IoWarningSharp />
+    <div>{content.title}</div>
+    {content.messages.map(function(msg){
+      return (<div>{msg}</div>)
+    })}
+  </div>
+  )
 }
 
 const StatusModal = ({subType, modalContent}: StatusModalProps) => {
