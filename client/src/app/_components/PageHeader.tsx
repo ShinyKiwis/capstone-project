@@ -9,10 +9,10 @@ import Image from 'next/image'
 import { FaBell } from "react-icons/fa";
 import { MdArrowDropDown } from "react-icons/md";
 
-///////////// Test session data
+///////////// Test session data													/////////////////// Test data
 let userFullName = "User Name";
 let usermail = "username@hcmut.edu.vn";
-let userRole = 'student';
+let userRole = 'supervisor';
 let profileImgSrc = '/logoHCMUT.png'
 
 
@@ -45,6 +45,12 @@ const titleRoleMappings: TitleRoleMappings = {
 	},
 	evaluation_roles: {
 		other: "Evaluation pages"
+	},
+	specializedProjectCreation_roles: {
+		supervisor: "Submit a new specialized project"
+	},
+	capstoneProjectCreation_roles: {
+		supervisor: "Submit a new capstone project"
 	}
 }
 
@@ -66,6 +72,10 @@ const titlePathMappings: TitlePathMappings = {
 	},
 	'/evaluation': {
 		'any': titleRoleMappings['evaluation_roles']
+	},
+	'/project/create': {
+		'specialized': titleRoleMappings['specializedProjectCreation_roles'],
+		'capstone': titleRoleMappings['capstoneProjectCreation_roles'],
 	}
 };
 
@@ -73,6 +83,9 @@ function getTitle(){
 	let currentPath = usePathname();
 	let searchParam = useSearchParams();
 	let currParam = null;
+	console.log("Current path:", currentPath);
+
+	// Currently mapping title with last param on the url
 	searchParam.forEach((value, key) => {
 		currParam = value;
 	});
