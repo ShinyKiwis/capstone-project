@@ -59,7 +59,7 @@ const ProjectCardActions = () => {
   const handleEnroll = (event: React.SyntheticEvent) => {
     event.stopPropagation();
     // Validate student's requirements:
-    let satisfied = true;    //test
+    let satisfied = true;                 ////  ////                                                        //test
     if (satisfied){
       openStatusModal('success')
     }
@@ -83,7 +83,7 @@ const ProjectCardActions = () => {
       setModalProps({
         subType: subType
       })
-    console.log("Set modal props:", modalProps)
+    // console.log("Set modal props:", modalProps)
     toggleModal(true)
   }
 

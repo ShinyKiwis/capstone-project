@@ -2,7 +2,7 @@ import React from 'react'
 
 const FilterModal = () => {
   return (
-    <div>FilterModal</div>
+    <div className='h-80 w-96'>FilterModal - This modal expands to fit content</div>
   )
 }
 

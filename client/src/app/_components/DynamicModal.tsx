@@ -47,7 +47,7 @@ const DynamicModal = () => {
   };
   return (
     <div
-      className="fixed inset-x-44 inset-y-20 rounded-md border-2 border-lightgray bg-white px-8 py-4"
+      className="fixed inset-x-0 inset-y-1/2 w-fit h-fit min-w-64 min-h-40 m-auto rounded-md border-2 border-lightgray bg-white px-10 py-6"
       style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }}
     >
       <div className="relative">

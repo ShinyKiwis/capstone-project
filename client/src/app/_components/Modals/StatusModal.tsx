@@ -1,6 +1,10 @@
-import React from 'react'
-import { IoMdCheckmarkCircle } from "react-icons/io";
-import { IoWarningSharp } from "react-icons/io5";
+'use client'
+
+import React, { useContext } from 'react'
+import { FaCheckCircle } from "react-icons/fa";
+import { IoIosWarning } from "react-icons/io";
+import { Typography, Button } from '..';
+import { ModalContext } from '@/app/providers/ModalProvider';
 
 interface StatusModalProps{
   subType: string,
@@ -11,6 +15,7 @@ interface ModalDetails{
   content?: object
 }
 
+
 const WarningModal = ({content}: ModalDetails) => {
   if (!content) return "No content passed for warning modal";
   if (!('title' in content) || typeof(content.title)!='string')
@@ -18,38 +23,113 @@ const WarningModal = ({content}: ModalDetails) => {
   if (!('messages' in content) || !Array.isArray(content.messages))
     return "No title provided for warning modal";
 
+  const modalContextValue = useContext(ModalContext);
+  if (!modalContextValue) {
+    return null;
+  }
+  const { toggleModal } = modalContextValue;
+
   return(
-  <div>
-    <IoWarningSharp />
-    <div>{content.title}</div>
-    {content.messages.map(function(msg){
-      return (<div>{msg}</div>)
-    })}
+  <div className='flex flex-col items-center'>
+    <div className='flex gap-4 items-center'>
+      <IoIosWarning size={96} className='text-yellow'/>
+      <div>
+        <Typography variant='h1' text={content.title} color='text-yellow' className='mb-2 text-2xl'/>
+        {content.messages.map(function(msg){
+          return (
+            <div className='mb-2 text-gray font-normal'>
+              {msg}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+    <Button 
+      isPrimary={true} 
+      variant="green_confirm" 
+      className='mt-6 w-44'
+      onClick={()=>toggleModal(false)}
+    >
+      Close
+    </Button>
   </div>
   )
 }
 
 const SuccessModal = ({content}: ModalDetails) => {
-  return(<div>
-    <IoMdCheckmarkCircle />
-    Enrolled successfully !
+  const modalContextValue = useContext(ModalContext);
+  if (!modalContextValue) {
+    return null;
+  }
+  const { toggleModal } = modalContextValue;
+
+  return(
+  <div className='flex flex-col items-center'>
+    <div className='flex gap-4 items-center'>
+      <FaCheckCircle size={96} className='text-lightgreen' />
+      <Typography variant='h1' text='Enrolled Successfully !' color='text-lightgreen' />
+    </div>
+    <Button 
+      isPrimary={true} 
+      variant="green_confirm" 
+      className='mt-8 w-44'
+      onClick={()=>toggleModal(false)}
+    >
+      Close
+    </Button>
   </div>)
 }
 
 const CancelModal = ({content}: ModalDetails) => {
-  if (!content) return "No content passed for cancel modal";
+  let actionBtn = 'Cancel';
+
+  if (!content) return "No content passed for warning modal";
   if (!('title' in content) || typeof(content.title)!='string')
-    return "No title provided for cancel modal";
+    return "No title provided for warning modal";
   if (!('messages' in content) || !Array.isArray(content.messages))
-    return "No title provided for cancel modal";
+    return "No title provided for warning modal";
+  if ('action' in content && typeof(content.action)=='string')
+    actionBtn = content.action;
+
+  const modalContextValue = useContext(ModalContext);
+  if (!modalContextValue) {
+    return null;
+  }
+  const { toggleModal } = modalContextValue;
 
   return(
-  <div>
-    <IoWarningSharp />
-    <div>{content.title}</div>
-    {content.messages.map(function(msg){
-      return (<div>{msg}</div>)
-    })}
+  <div className='flex flex-col items-center'>
+    <div className='flex gap-4 items-center'>
+      <IoIosWarning size={96} className='text-red'/>
+      <div>
+        <Typography variant='h1' text={content.title} color='text-yellow' className='mb-2 text-2xl'/>
+        {content.messages.map(function(msg){
+          return (
+            <div className='mb-2 text-gray font-normal'>
+              {msg}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+    <div className='flex gap-4'>
+      <Button
+        isPrimary={true}
+        variant="red_cancel"
+        className='mt-6 w-44'
+        onClick={()=>toggleModal(false)}
+      >
+        {actionBtn}
+      </Button>
+      <Button
+        isPrimary={true}
+        variant="green_confirm"
+        className='mt-6 w-44'
+        onClick={()=>toggleModal(false)}
+      >
+        Close
+      </Button>
+    </div>
   </div>
   )
 }
@@ -60,7 +140,7 @@ const StatusModal = ({subType, modalContent}: StatusModalProps) => {
       return <WarningModal content={modalContent} />;
     case "success":
       return <SuccessModal content={modalContent} />;
-    case "cancel":
+    case "unenroll":
       return <CancelModal content={modalContent} />;
     default:
       return <div>Invalid status modal subType</div>;
