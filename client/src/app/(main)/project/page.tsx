@@ -37,7 +37,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
     setModalType("filter")
   }
   return (
-    <div className="sticky top-0 w-full bg-white pt-0">
+    <div className="sticky top-0 w-full bg-white pt-2">
       <div className="w-3/6">
         <div className="mt-4 flex gap-4">
           <div className="w-10/12">
