@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { Button, Profile, ProjectInformationTable, Typography } from ".";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { ModalContext } from "../providers/ModalProvider";
+import { subscribe } from "diagnostics_channel";
 
 interface ProjectProps {
   id: string;
@@ -58,8 +59,8 @@ const ProjectCardActions = () => {
 
   const handleEnroll = (event: React.SyntheticEvent) => {
     event.stopPropagation();
-    // Validate student's requirements:
-    let satisfied = true;                 ////  ////                                                        //test
+    // Validate student's requirements, open status modals:
+    let satisfied = false;                 ////  ////                                                        //test
     if (satisfied){
       openStatusModal('success')
     }
@@ -70,6 +71,14 @@ const ProjectCardActions = () => {
       }
       openStatusModal('warning', statusModalContent)
     }
+
+    // // Test action modals
+    // let actionModal_actionWords = ['Deny', 'Cancel'];
+    // let actionModal_content = {
+    //   title: "Deny project ?",
+    //   messages: ['Input reason for denial to send to the project\'s supervisor']
+    // }
+    // openActionModal("rejection", actionModal_actionWords, actionModal_content);
   }
 
   const openStatusModal = (subType: string, content?: object) => {
@@ -82,6 +91,23 @@ const ProjectCardActions = () => {
     else
       setModalProps({
         subType: subType
+      })
+    // console.log("Set modal props:", modalProps)
+    toggleModal(true)
+  }
+
+  const openActionModal = (subType: string, actions: string[], content?: object) => {
+    setModalType("action")
+    if (content)
+      setModalProps({
+        subType: subType,
+        actionWords: actions,
+        modalContent: content
+      })
+    else
+      setModalProps({
+        subType: subType,
+        actionWords: actions
       })
     // console.log("Set modal props:", modalProps)
     toggleModal(true)

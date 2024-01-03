@@ -4,6 +4,8 @@ import { ModalContext } from "../providers/ModalProvider";
 import FilterModal from "./Modals/FilterModal";
 import StatusModal from "./Modals/StatusModal";
 import UploadFileModal from "./Modals/UploadFileModal";
+import ActionModal from "./Modals/ActionModal";
+
 
 const DynamicModal = () => {
   const modalContextValue = useContext(ModalContext);
@@ -21,23 +23,47 @@ const DynamicModal = () => {
           if (
             // Modal props may be flexible for each type of modal so we check when initiating a modal 
             // rather than set the specific types and keys in modalProps
-            'subType' in modalProps && modalProps.subType && typeof(modalProps.subType) == 'string'
+            'subType' in modalProps && typeof(modalProps.subType) == 'string'
           ){
             if ('modalContent' in modalProps && modalProps.modalContent)
               return <StatusModal subType={modalProps.subType} modalContent={modalProps.modalContent}/>;
             else
               return <StatusModal subType={modalProps.subType} />;
-            console.log('Here')
           }
           else{
-            return "Invalid props: " + JSON.stringify(modalProps);
+            return "Invalid subtype props: " + JSON.stringify(modalProps);
           }
         }
         else{
-          console.log('Current props:', modalProps)
+          console.log('Current props:', JSON.stringify(modalProps));
           return "Missing props for status modal";
         }
-          
+      case "action":
+        if (modalProps){
+          if (
+            'subType' in modalProps && typeof(modalProps.subType) == 'string'
+          ){
+            if (
+              !('actionWords' in modalProps) || 
+              !modalProps.actionWords ||
+              !Array.isArray(modalProps.actionWords)
+            )
+              return "Invalid status modal action words prop: " + JSON.stringify(modalProps);
+
+            if ('modalContent' in modalProps && modalProps.modalContent)
+              return <ActionModal actionWords={modalProps.actionWords} subType={modalProps.subType} modalContent={modalProps.modalContent}/>;
+            else
+              return <ActionModal actionWords={modalProps.actionWords} subType={modalProps.subType} />;
+
+          }
+          else{
+            return "Invalid subtype prop: " + JSON.stringify(modalProps);
+          }
+        }
+        else{
+          console.log('Current props:', JSON.stringify(modalProps));
+          return "Missing props for action modal";
+        }
         
       case "upload":
         return <UploadFileModal />;
