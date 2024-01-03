@@ -44,7 +44,7 @@ const RemovalModal = ({actions, content}: ModalDetails) => {
         })}
       </div>
     </div>
-    <div className='flex gap-4'>
+    <div className='flex gap-8'>
       <Button
         isPrimary={true}
         variant="red_cancel"
@@ -104,7 +104,7 @@ const RejectionModal = ({actions, content}: ModalDetails) => {
       >
       </textarea>
     </div>
-    <div className='flex gap-4'>
+    <div className='flex gap-8'>
       <Button
         isPrimary={true}
         variant="red_cancel"

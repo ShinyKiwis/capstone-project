@@ -59,26 +59,26 @@ const ProjectCardActions = () => {
 
   const handleEnroll = (event: React.SyntheticEvent) => {
     event.stopPropagation();
-    // Validate student's requirements, open status modals:
-    let satisfied = false;                 ////  ////                                                        //test
-    if (satisfied){
-      openStatusModal('success')
-    }
-    else{
-      let statusModalContent = {
-        title: "Unable to enroll in this project",
-        messages: ["Your English level is not satisfied !", "Your GPA is lower than required (8.0)"]
-      }
-      openStatusModal('warning', statusModalContent)
-    }
-
-    // // Test action modals
-    // let actionModal_actionWords = ['Deny', 'Cancel'];
-    // let actionModal_content = {
-    //   title: "Deny project ?",
-    //   messages: ['Input reason for denial to send to the project\'s supervisor']
+    // // Validate student's requirements, open status modals:
+    // let satisfied = false;                 ////  ////                                                        //test
+    // if (satisfied){
+    //   openStatusModal('success')
     // }
-    // openActionModal("rejection", actionModal_actionWords, actionModal_content);
+    // else{
+    //   let statusModalContent = {
+    //     title: "Unable to enroll in this project",
+    //     messages: ["Your English level is not satisfied !", "Your GPA is lower than required (8.0)"]
+    //   }
+    //   openStatusModal('warning', statusModalContent)
+    // }
+
+    // Test action modals
+    let actionModal_actionWords = ['Deny', 'Cancel'];
+    let actionModal_content = {
+      title: "Deny project ?",
+      messages: ['Input reason for denial to send to the project\'s supervisor']
+    }
+    openActionModal("rejection", actionModal_actionWords, actionModal_content);
   }
 
   const openStatusModal = (subType: string, content?: object) => {
