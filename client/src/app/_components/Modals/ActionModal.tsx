@@ -115,7 +115,7 @@ const RejectionModal = ({actions, content}: ModalDetails) => {
       </Button>
       <Button
         isPrimary={true}
-        variant="green_confirm"
+        variant="green_confirm-lg"
         className='mt-6 w-44'
         onClick={()=>toggleModal(false)}
       >

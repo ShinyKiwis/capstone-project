@@ -6,4 +6,5 @@
 .quill .ql-editor {
     min-height: 10em;
     max-height: 18em;
+    line-break: anywhere;
 }

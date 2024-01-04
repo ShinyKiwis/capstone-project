@@ -1,9 +1,13 @@
-import dynamic from "next/dynamic";
+'use client'
+
 import "react-quill/dist/quill.snow.css";
 import "../globals.css"
-const QuillNoSSRWrapper = dynamic(() => import("react-quill"), { ssr: false });
+import ReactQuill from "react-quill";
 
-interface RichTextEditorProps {}
+interface RichTextEditorProps {
+  onChange: any,
+  initialContent?:string
+}
 
 const modules = {
   toolbar: [
@@ -33,10 +37,12 @@ const formats = [
   "link"
 ];
 
-const RichTextEditor = ({}: RichTextEditorProps) => {
+const RichTextEditor = ({onChange, initialContent}: RichTextEditorProps) => {
+  // Pass a useState setter to onChange from parent element to get the inputted value
+  // InitialContent is html code for rendering pre-made contents
   return (
     <div className="h-fit">
-      <QuillNoSSRWrapper modules={modules} formats={formats} theme="snow" />
+      <ReactQuill  modules={modules} formats={formats} onChange={onChange} defaultValue={initialContent} theme="snow"/>
     </div>
   );
 };
