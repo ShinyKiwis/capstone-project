@@ -19,43 +19,55 @@ const CreateProject = () => {
         rows={1}
         style={{resize: 'none'}}
         required
-      >Pre-made title</textarea>
+      ></textarea>
 
       <div className="flex mt-8">
         <div className="w-1/3">
           <p className="text-2xl font-bold mb-4">Project's information</p>
-          
           <div>
-            <table>
+            <table id="projCreatenInputs">
               <tr>
-                <td>Project ID:</td>
-                <td>Draft ID</td>
+                <td className="projCreate_inputLabel">Project ID:</td>
+                <td className="projCreate_inputField bg-lightgray rounded-md px-2 py-2">Draft ID</td>
               </tr>
               <tr>
-                <td>Branch:</td>
-                <td><select name="projectBranch">
-                  <option value="highQuality">High quality</option>
-                  <option value="standard">Standard program</option>
-                  <option value="VJ">Vie-JP</option>
-                  <option value="VF">Vie-Fr</option>  
-                </select></td>
+                <td className="projCreate_inputLabel">Branch:</td>
+                <td className="projCreate_inputField">
+                  <select name="projectBranch" className="w-full bg-lightgray rounded-md px-2 py-2">
+                    <option value="highQuality">High quality</option>
+                    <option value="standard">Standard program</option>
+                    <option value="VJ">Vie-JP</option>
+                    <option value="VF">Vie-Fr</option>  
+                  </select> 
+                </td>
               </tr>
               <tr>
-                <td>Program:</td>
-                <td><select name="projectProgram">
-                  <option value="CS">Computer Science</option>
-                  <option value="CE">Computer Engineering</option>  
-                </select></td>
+                <td className="projCreate_inputLabel">Program:</td>
+                <td className="projCreate_inputField">
+                  <select name="projectProgram" className="w-full bg-lightgray rounded-md px-2 py-2">
+                    <option value="CS">Computer Science</option>
+                    <option value="CE">Computer Engineering</option>  
+                  </select>
+                </td>
               </tr>
               <tr>
-                <td>Members limit:</td>
-                <td><input type="number" name="membersLimit" min={1} max={20}></input></td>
+                <td className="projCreate_inputLabel">Members limit:</td>
+                <td className="projCreate_inputField">
+                <input 
+                  type="number" 
+                  name="membersLimit" 
+                  min={1} 
+                  max={20} 
+                  defaultValue={1}
+                  className="w-full bg-lightgray rounded-md px-2 py-2"
+                >
+                </input></td>
               </tr>
             </table>
           </div>
           
           <div>
-            instructors
+            <p className="text-2xl font-bold mb-4">Project's information</p>
           </div>
           
           <div>

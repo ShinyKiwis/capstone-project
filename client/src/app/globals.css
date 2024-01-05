@@ -8,3 +8,24 @@
     max-height: 18em;
     line-break: anywhere;
 }
+
+table#projCreatenInputs{
+    border-collapse: separate;
+    border-spacing: 0.8rem;
+}
+
+table#projCreatenInputs tr{
+    padding-left: 0.8rem;
+}
+
+table#projCreatenInputs  td.projCreate_inputLabel{
+    width: 9rem;
+}
+table#projCreatenInputs  td.projCreate_inputField{
+    width: 14rem;
+}
+
+td.projCreate_inputLabel{
+    font-size: 1.1rem;
+    font-weight: bold;
+}
