@@ -1,4 +1,6 @@
 const fs = require("fs")
+const jwt = require("jsonwebtoken")
+require('dotenv').config()
 
 let userData
 try {
@@ -18,6 +20,14 @@ function authenticate(user) {
   return usersByUsername[username]["password"] === password
 }
 
+function jwt_generation(user) {
+  const payload = {
+    username: user.username
+  }
+  return jwt.sign(payload, process.env.secretKey, {expiresIn: 60*30})
+}
+
 module.exports = {
+  jwt_generation,
   authenticate
 }
