@@ -1,9 +1,9 @@
 "use client";
 import React, { useContext } from "react";
-import { ModalContext } from "../providers/ModalProvider";
-import { DynamicModal, PageHeader } from ".";
+import { ModalContext } from "../../providers/ModalProvider";
+import { DynamicModal, PageHeader } from "..";
 
-const MainContent = ({ children }: { children: React.ReactNode }) => {
+const PageContent = ({ children }: { children: React.ReactNode }) => {
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     return null;
@@ -23,4 +23,4 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default MainContent;
+export default PageContent;
