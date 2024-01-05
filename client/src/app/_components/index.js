@@ -8,11 +8,7 @@ export {default as ProjectInformationTable} from "./Project/ProjectInformationTa
 export {default as Profile} from "./Profile"
 export {default as SearchBox} from "./UserAction/SearchBox"
 export {default as DynamicModal} from "./DynamicModal"
-<<<<<<< HEAD
-export {default as MainContent} from "./MainContent"
-export {default as PageHeader} from "./PageHeader"
 export {default as RichTextEditor} from "./RichTextEditor"
-=======
 export {default as PageContent} from "./PageContent/PageContent"
 export {default as PageHeader} from "./PageContent/PageHeader"
->>>>>>> master
+export {default as DropdownMenu} from "./UserAction/DropdownMenu"

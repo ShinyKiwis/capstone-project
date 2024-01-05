@@ -1,18 +1,63 @@
 'use client'
 
-import { Button, InputBox, RichTextEditor } from "@/app/_components";
+import { Button, RichTextEditor, DropdownMenu } from "@/app/_components";
 import { useState } from "react";
 
 const CreateProject = () => {
-  const [Desc, setDesc] = useState("");
-  const [Tasks, setTasks] = useState("");
-  const [Refs, setRefs] = useState("");
+  const [desc, setDesc] = useState("");
+  const [tasks, setTasks] = useState("");
+  const [refs, setRefs] = useState("");
 
   //Test rendering pre-made content in richtext input
   const [TestContent, setTestContent] = useState("");
 
+  const branchOptions = [   // retrieve from DB ?
+    {
+      title:'High Quality',
+      value:'CC'
+    },
+    {
+      title:'Standard Program',
+      value:'SD'
+    },
+    {
+      title:'Vie - JP',
+      value:'VJ'
+    },
+    {
+      title:'Vie - Fr',
+      value:'VF'
+    }
+  ]
+
+  const programOptions = [   // retrieve from DB ?
+    {
+      title:'Computer Science',
+      value:'CS'
+    },
+    {
+      title:'Computer Engineering',
+      value:'CE'
+    },
+    {
+      title:'Very Long Computer Engineering Program Long Name',
+      value:'long'
+    }
+  ]
+
+  const TableLabel = ({content, className}: {content: string, className: string}) => {
+    return (
+
+    )
+  }
+
+  const TableInput = () => {
+
+  }
+
   return (
     <div className="flex-1 w-full bg-white">
+      {/* Project title section: */}
       <textarea 
         className="border-b-2 border-gray w-full text-center text-3xl max-h-[5em] font-semibold pt-8 pb-4 py-2 focus:outline-none"
         placeholder="Project Title"
@@ -21,59 +66,56 @@ const CreateProject = () => {
         required
       ></textarea>
 
+      {/* Project metadata section: */}
       <div className="flex mt-8">
-        <div className="w-1/3">
-          <p className="text-2xl font-bold mb-4">Project's information</p>
+        <div className="w-1/3 pr-4">
+          <p className="text-2xl font-bold mb-2">Project's information</p>
           <div>
-            <table id="projCreatenInputs">
-              <tr>
-                <td className="projCreate_inputLabel">Project ID:</td>
-                <td className="projCreate_inputField bg-lightgray rounded-md px-2 py-2">Draft ID</td>
-              </tr>
-              <tr>
-                <td className="projCreate_inputLabel">Branch:</td>
-                <td className="projCreate_inputField">
-                  <select name="projectBranch" className="w-full bg-lightgray rounded-md px-2 py-2">
-                    <option value="highQuality">High quality</option>
-                    <option value="standard">Standard program</option>
-                    <option value="VJ">Vie-JP</option>
-                    <option value="VF">Vie-Fr</option>  
-                  </select> 
-                </td>
-              </tr>
-              <tr>
-                <td className="projCreate_inputLabel">Program:</td>
-                <td className="projCreate_inputField">
-                  <select name="projectProgram" className="w-full bg-lightgray rounded-md px-2 py-2">
-                    <option value="CS">Computer Science</option>
-                    <option value="CE">Computer Engineering</option>  
-                  </select>
-                </td>
-              </tr>
-              <tr>
-                <td className="projCreate_inputLabel">Members limit:</td>
-                <td className="projCreate_inputField">
-                <input 
-                  type="number" 
-                  name="membersLimit" 
-                  min={1} 
-                  max={20} 
-                  defaultValue={1}
-                  className="w-full bg-lightgray rounded-md px-2 py-2"
-                >
-                </input></td>
-              </tr>
+            <table id="projCreateInputs">
+              <tbody>
+                <tr>
+                  <td className="projCreate_inputLabel">Project ID:</td>
+                  <td className="projCreate_inputField bg-lightgray rounded-md px-2 py-2">Draft ID</td>
+                </tr>
+                <tr>
+                  <td className="projCreate_inputLabel">Branch:</td>
+                  <td className="projCreate_inputField">
+                    <DropdownMenu name="projectBranch" options={branchOptions} />
+                  </td>
+                </tr>
+                <tr>
+                  <td className="projCreate_inputLabel">Program:</td>
+                  <td className="projCreate_inputField">
+                    <DropdownMenu name="projectProgram" options={programOptions} />
+                  </td>
+                </tr>
+                <tr>
+                  <td className="projCreate_inputLabel">Members limit:</td>
+                  <td className="projCreate_inputField">
+                  <input
+                    type="number"
+                    name="membersLimit"
+                    min={1}
+                    max={20}
+                    defaultValue={1}
+                    className="w-full bg-lightgray rounded-md px-2 py-2"
+                  >
+                  </input></td>
+                </tr>
+              </tbody>
             </table>
           </div>
           
           <div>
-            <p className="text-2xl font-bold mb-4">Project's information</p>
+            <p className="text-2xl font-bold mb-4">Supervisors list</p>
           </div>
           
           <div>
-            members
+            <p className="text-2xl font-bold mb-4">Members list</p>
           </div>
         </div>
+
+        {/* Project details section: */}
         <div className="w-2/3">
           <div>
             <p className="text-2xl font-bold mb-4">Description</p>
@@ -97,7 +139,7 @@ const CreateProject = () => {
               isPrimary={true} 
               variant="green_confirm" 
               children={"Submit for approval"}
-              onClick={()=>alert(`Project description:\n ${Desc} \n Project tasks:\n ${Tasks} \n Project refs:\n ${Refs}`)}
+              onClick={()=>alert(`Project description:\n ${desc} \n Project tasks:\n ${tasks} \n Project refs:\n ${refs}`)}
             ></Button>
             <Button 
               isPrimary={true} 

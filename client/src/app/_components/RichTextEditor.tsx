@@ -42,7 +42,7 @@ const RichTextEditor = ({onChange, initialContent}: RichTextEditorProps) => {
   // InitialContent is html code for rendering pre-made contents
   return (
     <div className="h-fit">
-      <ReactQuill  modules={modules} formats={formats} onChange={onChange} defaultValue={initialContent} theme="snow"/>
+      <ReactQuill  modules={modules} formats={formats} onChange={onChange} defaultValue={initialContent} style={{maxHeight:'18em'}} theme="snow"/>
     </div>
   );
 };

@@ -5,24 +5,20 @@
 /* Styling for quill richtext editor */
 .quill .ql-editor {
     min-height: 10em;
-    max-height: 18em;
+    /* max-height: 18em; */
     line-break: anywhere;
 }
 
-table#projCreatenInputs{
+table#projCreateInputs{
     border-collapse: separate;
     border-spacing: 0.8rem;
 }
 
-table#projCreatenInputs tr{
-    padding-left: 0.8rem;
+table#projCreateInputs  td.projCreate_inputLabel{
+    width: 17rem;
 }
-
-table#projCreatenInputs  td.projCreate_inputLabel{
-    width: 9rem;
-}
-table#projCreatenInputs  td.projCreate_inputField{
-    width: 14rem;
+table#projCreateInputs  td.projCreate_inputField{
+    width: 100%;
 }
 
 td.projCreate_inputLabel{
