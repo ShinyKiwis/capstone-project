@@ -2,10 +2,19 @@ import React, { useContext } from "react";
 import { CgClose } from "react-icons/cg";
 import { ModalContext } from "../providers/ModalProvider";
 import FilterModal from "./Modals/FilterModal";
-import StatusModal from "./Modals/StatusModal";
+import {
+  StatusModalProps,
+  SuccessModal,
+  WarningModal,
+} from "./Modals/StatusModals";
+import {
+  ActionModalProps,
+  RemovalModal,
+  ProjDenyModal,
+} from "./Modals/ActionModals";
 import UploadFileModal from "./Modals/UploadFileModal";
-import ActionModal from "./Modals/ActionModal";
 
+type definedModalProps = StatusModalProps | ActionModalProps;
 
 const DynamicModal = () => {
   const modalContextValue = useContext(ModalContext);
@@ -14,57 +23,34 @@ const DynamicModal = () => {
   }
   const { toggleModal, modalType, modalProps } = modalContextValue;
 
-  const renderModal = (modalType: string, modalProps?: object) => {
+  const renderModal = (modalType: string, modalProps: definedModalProps) => {
     switch (modalType) {
       case "filter":
         return <FilterModal />;
-      case "status":
-        if (modalProps){
-          if (
-            // Modal props may be flexible for each type of modal so we check when initiating a modal 
-            // rather than set the specific types and keys in modalProps
-            'subType' in modalProps && typeof(modalProps.subType) == 'string'
-          ){
-            if ('modalContent' in modalProps && modalProps.modalContent)
-              return <StatusModal subType={modalProps.subType} modalContent={modalProps.modalContent}/>;
-            else
-              return <StatusModal subType={modalProps.subType} />;
-          }
-          else{
-            return "Invalid subtype props: " + JSON.stringify(modalProps);
-          }
-        }
-        else{
-          console.log('Current props:', JSON.stringify(modalProps));
-          return "Missing props for status modal";
-        }
-      case "action":
-        if (modalProps){
-          if (
-            'subType' in modalProps && typeof(modalProps.subType) == 'string'
-          ){
-            if (
-              !('actionWords' in modalProps) || 
-              !modalProps.actionWords ||
-              !Array.isArray(modalProps.actionWords)
-            )
-              return "Invalid status modal action words prop: " + JSON.stringify(modalProps);
-
-            if ('modalContent' in modalProps && modalProps.modalContent)
-              return <ActionModal actionWords={modalProps.actionWords} subType={modalProps.subType} modalContent={modalProps.modalContent}/>;
-            else
-              return <ActionModal actionWords={modalProps.actionWords} subType={modalProps.subType} />;
-
-          }
-          else{
-            return "Invalid subtype prop: " + JSON.stringify(modalProps);
-          }
-        }
-        else{
-          console.log('Current props:', JSON.stringify(modalProps));
-          return "Missing props for action modal";
-        }
-        
+      case "status_success":
+        return <SuccessModal title="Project enrolled successfully !" />;
+      case "status_warning":
+        return <WarningModal title={modalProps?.title} messages={modalProps?.messages} />;
+      case "project_unerollment":
+        return(
+          <RemovalModal 
+            title="Unenroll from this project ?" 
+            messages={["This action will remove your from the members list of this project."]} 
+            buttonLabels={["Unenroll", "Cancel"]} 
+          />
+        )
+      case "project_deletion":
+        return(
+          <RemovalModal 
+            title="Delete this project ?" 
+            messages={["This action cannot be undone !"]} 
+            buttonLabels={["Delete", "Cancel"]} 
+          />
+        )
+      case "project_denial":
+        return(
+          <ProjDenyModal />
+        )
       case "upload":
         return <UploadFileModal />;
       default:
@@ -73,7 +59,7 @@ const DynamicModal = () => {
   };
   return (
     <div
-      className="fixed inset-x-0 inset-y-1/2 w-fit h-fit min-w-64 min-h-40 m-auto rounded-md border-2 border-lightgray bg-white px-10 py-6"
+      className="min-w-64 min-h-40 fixed inset-x-0 inset-y-1/2 m-auto h-fit w-fit rounded-md border-2 border-lightgray bg-white px-10 py-6"
       style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }}
     >
       <div className="relative">

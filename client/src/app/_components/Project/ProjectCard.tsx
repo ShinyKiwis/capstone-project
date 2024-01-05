@@ -17,7 +17,7 @@ const ProjectCardMetadata = () => {
   return (
     <div className="flex w-2/6 flex-col items-center">
       <Typography variant="h2" text="CS220" />
-      <ProjectInformationTable fontSize="text-sm"/>
+      <ProjectInformationTable fontSize="text-sm" />
     </div>
   );
 };
@@ -35,7 +35,7 @@ const ProjectCardContent = () => {
   );
 };
 
-export const ProjectCardList = ({className}: {className: string}) => {
+export const ProjectCardList = ({ className }: { className: string }) => {
   return (
     <div className={`flex flex-col ${className}`}>
       <div className="ms-auto flex items-center gap-2">
@@ -49,98 +49,90 @@ export const ProjectCardList = ({className}: {className: string}) => {
   );
 };
 
-
 const ProjectCardActions = () => {
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
-    return <div className="text-red ms-auto mt-4 w-1/4">Cannot render action buttons - model context not initiated !</div>;
+    console.error("Action buttons will not work - model context not initiated !");
+    return;
   }
   const { toggleModal, setModalType, setModalProps, modalProps } = modalContextValue;
 
-  // const handleEnroll = (event: React.SyntheticEvent) => {
-  //   event.stopPropagation();
-  //   // // Validate student's requirements, open status modals:
-  //   // let satisfied = false;                 ////  ////                                                        //test
-  //   // if (satisfied){
-  //   //   openStatusModal('success')
-  //   // }
-  //   // else{
-  //   //   let statusModalContent = {
-  //   //     title: "Unable to enroll in this project",
-  //   //     messages: ["Your English level is not satisfied !", "Your GPA is lower than required (8.0)"]
-  //   //   }
-  //   //   openStatusModal('warning', statusModalContent)
-  //   // }
+  const handleAction = (event: React.SyntheticEvent) => {
+    event.stopPropagation();
+    const action = event.currentTarget.textContent!.toLowerCase();
+    // console.log("Clicked action button:", action);
 
-  //   // Test action modals
-  //   let actionModal_actionWords = ['Deny', 'Cancel'];
-  //   let actionModal_content = {
-  //     title: "Deny project ?",
-  //     messages: ['Input reason for denial to send to the project\'s supervisor']
-  //   }
-  //   openActionModal("rejection", actionModal_actionWords, actionModal_content);
-  // }
-
-  // const openStatusModal = (subType: string, content?: object) => {
-  //   setModalType("status")
-  //   if (content)
-  //     setModalProps({
-  //       subType: subType,
-  //       modalContent: content
-  //     })
-  //   else
-  //     setModalProps({
-  //       subType: subType
-  //     })
-  //   // console.log("Set modal props:", modalProps)
-  //   toggleModal(true)
-  // }
-
-  // const openActionModal = (subType: string, actions: string[], content?: object) => {
-  //   setModalType("action")
-  //   if (content)
-  //     setModalProps({
-  //       subType: subType,
-  //       actionWords: actions,
-  //       modalContent: content
-  //     })
-  //   else
-  //     setModalProps({
-  //       subType: subType,
-  //       actionWords: actions
-  //     })
-  //   // console.log("Set modal props:", modalProps)
-  //   toggleModal(true)
-  // }
-  const handleAction = (e: React.SyntheticEvent) => {
-    const action = e.currentTarget.textContent!.toLowerCase()
-    if(action == "view") {
-      // Toggle project card details
-    }else {
-      toggleModal(true)
-      setModalType(action)
-    }
-  }
+    switch (action) {
+      case "view":
+        // Toggle project card details
+        return;
+      case "enroll":
+        // Logic for validating student's requirement ?
+        let satisfied = false;                                                                                  // test
+        if (satisfied) {
+          setModalType("status_success");
+          break;
+        } else {
+          let failReasons = ["Not enough credits accumulated ! (<90)", "Your GPA is too low ! (<8.0)"]          // test
+          setModalProps({title: "Project requirements not met !", messages: failReasons})
+          setModalType("status_warning");
+          break;
+        }
+      case "unenroll":
+        setModalType("project_unerollment");
+        break;
+      case "delete":
+        setModalType("project_deletion");
+        break;
+      case "deny":
+        setModalType("project_denial");
+        break;
+      default:
+        console.error("Invalid action button:", action);
+        return;
+      }
+    toggleModal(true);
+  };
 
   return (
     <div className="ms-auto mt-4 w-1/4">
-      <Button isPrimary={false} variant="normal" className="py-2 w-full" onClick={handleAction}>
+      <Button
+        isPrimary={false}
+        variant="normal"
+        className="w-full py-2"
+        onClick={handleAction}
+      >
         View
       </Button>
-      <Button isPrimary variant="normal" className="mt-2 py-2 w-full" onClick={handleAction}>
+      <Button
+        isPrimary
+        variant="normal"
+        className="mt-2 w-full py-2"
+        onClick={handleAction}
+      >
         Enroll
       </Button>
+
+      {/* Buttons for testing other modals */}
+      <div>
+        <p>Test modals</p>
+        <button className="border-2" onClick={handleAction}>Unenroll</button>
+        <button className="border-2" onClick={handleAction}>Delete</button>
+        <button className="border-2" onClick={handleAction}>Deny</button>
+        <button className="border-2" onClick={handleAction}>Invalid</button>(Check console log for err msg)
+      </div>
+
     </div>
   );
 };
 
 const ProjectCard = () => {
   return (
-    <div className="flex w-full flex-col rounded-md border border-black px-4 py-4 cursor-pointer">
+    <div className="flex w-full cursor-pointer flex-col rounded-md border border-black px-4 py-4">
       <div className="flex">
         <ProjectCardMetadata />
         <ProjectCardContent />
-        <ProjectCardList className="w-1/4"/>
+        <ProjectCardList className="w-1/4" />
       </div>
       <ProjectCardActions />
     </div>
