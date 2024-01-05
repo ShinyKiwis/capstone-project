@@ -13,14 +13,55 @@ const CreateProject = () => {
 
   return (
     <div className="flex-1 w-full bg-white">
-      <InputBox 
-        inputName="projectTitle" 
-        placeholderText="Project Title" 
-        type="text" 
-        onChange={()=>{}}
-      />
+      <textarea 
+        className="border-b-2 border-gray w-full text-center text-3xl max-h-[5em] font-semibold pt-8 pb-4 py-2 focus:outline-none"
+        placeholder="Project Title"
+        rows={1}
+        style={{resize: 'none'}}
+        required
+      >Pre-made title</textarea>
+
       <div className="flex mt-8">
-        <div className="w-1/3">Meta data section</div>
+        <div className="w-1/3">
+          <p className="text-2xl font-bold mb-4">Project's information</p>
+          
+          <div>
+            <table>
+              <tr>
+                <td>Project ID:</td>
+                <td>Draft ID</td>
+              </tr>
+              <tr>
+                <td>Branch:</td>
+                <td><select name="projectBranch">
+                  <option value="highQuality">High quality</option>
+                  <option value="standard">Standard program</option>
+                  <option value="VJ">Vie-JP</option>
+                  <option value="VF">Vie-Fr</option>  
+                </select></td>
+              </tr>
+              <tr>
+                <td>Program:</td>
+                <td><select name="projectProgram">
+                  <option value="CS">Computer Science</option>
+                  <option value="CE">Computer Engineering</option>  
+                </select></td>
+              </tr>
+              <tr>
+                <td>Members limit:</td>
+                <td><input type="number" name="membersLimit" min={1} max={20}></input></td>
+              </tr>
+            </table>
+          </div>
+          
+          <div>
+            instructors
+          </div>
+          
+          <div>
+            members
+          </div>
+        </div>
         <div className="w-2/3">
           <div>
             <p className="text-2xl font-bold mb-4">Description</p>

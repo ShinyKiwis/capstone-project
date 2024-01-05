@@ -47,10 +47,10 @@ const titleRoleMappings: TitleRoleMappings = {
 		other: "Evaluation pages"
 	},
 	specializedProjectCreation_roles: {
-		supervisor: "Submit a new specialized project"
+		supervisor: "Create a new specialized project"
 	},
 	capstoneProjectCreation_roles: {
-		supervisor: "Submit a new capstone project"
+		supervisor: "Create a new capstone project"
 	}
 }
 
