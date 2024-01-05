@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, ProjectInformationTable, Typography } from ".";
+import { Button, ProjectInformationTable, Typography } from "..";
 import { ProjectCardList } from "./ProjectCard";
 
 const ProjectCardDetail = () => {

@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { MainContent, SideBar } from "."
+import { PageContent, SideBar } from "."
 import { ModalProvider } from "../providers/ModalProvider"
 import isAuth from "../lib/isAuth"
 
@@ -10,7 +10,7 @@ const App = ({children}: {children: React.ReactNode}) => {
   return (
     <ModalProvider>
       <SideBar />
-      <MainContent children={children} />
+      <PageContent children={children} />
     </ModalProvider>
   )
 }
