@@ -42,7 +42,7 @@ const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
     <div className='flex gap-8'>
       <Button
         isPrimary={true}
-        variant="red_cancel"
+        variant="cancel"
         className='mt-6 w-44'
         onClick={()=>{alert('Action button clicked'); toggleModal(false)}}
       >
@@ -50,7 +50,7 @@ const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
       </Button>
       <Button
         isPrimary={true}
-        variant="gray_close"
+        variant="close"
         className='mt-6 w-44'
         onClick={()=>toggleModal(false)}
       >
@@ -96,7 +96,7 @@ const ProjDenyModal = () => {
     <div className='flex gap-8'>
       <Button
         isPrimary={true}
-        variant="red_cancel"
+        variant="cancel"
         className='mt-6 w-44'
         onClick={()=>{alert('Action button clicked'); toggleModal(false)}}
       >
@@ -104,7 +104,7 @@ const ProjDenyModal = () => {
       </Button>
       <Button
         isPrimary={true}
-        variant="green_confirm"
+        variant="confirm"
         className='mt-6 w-44'
         onClick={()=>toggleModal(false)}
       >

@@ -62,34 +62,35 @@ const ProjectCardActions = () => {
     const action = event.currentTarget.textContent!.toLowerCase();
     // console.log("Clicked action button:", action);
 
-    if (action == "view") {
-      // Toggle project card details
-      return
-    } else if (action == "enroll") {
-      // Logic for validating student's requirement ?
-      let satisfied = false;                                                                                 // test
-      if (satisfied) {
-        setModalType("status_successEnroll");
-      } else {
-        let failReasons = ["Not enough credits accumulated ! (<90)", "Your GPA is too low ! (<8.0)"]       // test
-        setModalProps({title: "Project requirements not met !", messages: failReasons})
-        setModalType("status_EnrollWarn");
+    switch (action) {
+      case "view":
+        // Toggle project card details
+        return;
+      case "enroll":
+        // Logic for validating student's requirement ?
+        let satisfied = false;                                                                                  // test
+        if (satisfied) {
+          setModalType("status_success");
+          break;
+        } else {
+          let failReasons = ["Not enough credits accumulated ! (<90)", "Your GPA is too low ! (<8.0)"]          // test
+          setModalProps({title: "Project requirements not met !", messages: failReasons})
+          setModalType("status_warning");
+          break;
+        }
+      case "unenroll":
+        setModalType("project_unerollment");
+        break;
+      case "delete":
+        setModalType("project_deletion");
+        break;
+      case "deny":
+        setModalType("project_denial");
+        break;
+      default:
+        console.error("Invalid action button:", action);
+        return;
       }
-    }
-    else if (action == 'unenroll'){
-      setModalType("action_unenrollProj");
-    } 
-    else if (action == 'delete'){
-      setModalType("action_deleteProj");
-    }
-    else if (action == 'deny'){
-      setModalType("action_denyProj");
-    }
-    else {
-      console.error("Invalid action button:", action);
-      return;
-    }
-
     toggleModal(true);
   };
 

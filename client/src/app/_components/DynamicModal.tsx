@@ -27,11 +27,11 @@ const DynamicModal = () => {
     switch (modalType) {
       case "filter":
         return <FilterModal />;
-      case "status_successEnroll":
+      case "status_success":
         return <SuccessModal title="Project enrolled successfully !" />;
-      case "status_EnrollWarn":
+      case "status_warning":
         return <WarningModal title={modalProps?.title} messages={modalProps?.messages} />;
-      case "action_unenrollProj":
+      case "project_unerollment":
         return(
           <RemovalModal 
             title="Unenroll from this project ?" 
@@ -39,7 +39,7 @@ const DynamicModal = () => {
             buttonLabels={["Unenroll", "Cancel"]} 
           />
         )
-      case "action_deleteProj":
+      case "project_deletion":
         return(
           <RemovalModal 
             title="Delete this project ?" 
@@ -47,7 +47,7 @@ const DynamicModal = () => {
             buttonLabels={["Delete", "Cancel"]} 
           />
         )
-      case "action_denyProj":
+      case "project_denial":
         return(
           <ProjDenyModal />
         )

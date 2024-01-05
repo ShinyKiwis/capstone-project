@@ -37,7 +37,7 @@ const WarningModal = ({title, messages}: StatusModalProps) => {
     </div>
     <Button 
       isPrimary={true} 
-      variant="green_confirm" 
+      variant="confirm" 
       className='mt-6 w-44'
       onClick={()=>toggleModal(false)}
     >
@@ -62,7 +62,7 @@ const SuccessModal = ({title}: StatusModalProps) => {
     </div>
     <Button 
       isPrimary={true} 
-      variant="green_confirm" 
+      variant="confirm" 
       className='mt-8 w-44'
       onClick={()=>toggleModal(false)}
     >
