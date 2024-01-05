@@ -12,12 +12,6 @@ export interface ActionModalProps{
 }
 
 const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
-  // if (!content) return "No content passed for warning modal";
-  // if (!('title' in content) || typeof(content.title)!='string')
-  //   return "No title provided for warning modal";
-  // if (!('messages' in content) || !Array.isArray(content.messages))
-  //   return "No title provided for warning modal";
-
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     return "No context set up for rejection modal";
@@ -62,12 +56,6 @@ const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
 }
 
 const ProjDenyModal = () => {
-  // if (!content) return "No content passed for rejection modal";
-  // if (!('title' in content) || typeof(title)!='string')
-  //   return "No title provided for rejection modal";
-  // if (!('messages' in content) || !Array.isArray(messages))
-  //   return "No title provided for rejection modal";
-
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     return "No context set up for rejection modal";

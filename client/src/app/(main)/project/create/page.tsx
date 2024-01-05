@@ -47,7 +47,7 @@ const CreateProject = () => {
 
   const TableLabel = ({content, className}: {content: string, className: string}) => {
     return (
-
+      <div></div>
     )
   }
 
