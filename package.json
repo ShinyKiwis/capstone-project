@@ -1,8 +1,14 @@
 {
   "name": "capstone-project",
-  "packageManager": "yarn@3.4.1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/ShinyKiwis/capstone-project.git",
+  "author": "Nguyen Hua <nguyenhua.hcm@gmail.com>",
+  "license": "MIT",
   "scripts": {
-    "dev": "concurrently \"cd client && yarn dev\" \"cd server && yarn start:dev\" \"cd services && yarn dev\""
+    "setup": "concurrently \"yarn --cwd $PWD/client install\" \"yarn --cwd $PWD/services install\" \"yarn --cwd $PWD/server install\"",
+    "dev": "concurrently \"yarn --cwd $PWD/client dev\" \"yarn --cwd $PWD/services dev\" \"yarn --cwd $PWD/server start:dev\"",
+    "docker": "docker-compose -f ./server/docker-compose.yml up"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

@@ -10,6 +10,9 @@ export class CreateStudentDto {
   name: string;
 
   @IsNotEmpty()
+  username: string;
+
+  @IsNotEmpty()
   generation: number;
 
   @IsNotEmpty()

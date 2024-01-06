@@ -10,7 +10,7 @@ const PageContent = ({ children }: { children: React.ReactNode }) => {
   }
   const { showModal, toggleModal } = modalContextValue;
   return (
-    <div className="flex flex-col flex-1 h-screen">
+    <div className="flex flex-col flex-1 h-screen" suppressHydrationWarning={true}>
       <PageHeader />
       <div
         className="h-screen flex-1 overflow-auto px-8 pb-8"

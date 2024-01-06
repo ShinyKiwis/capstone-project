@@ -1,7 +1,10 @@
 "use client";
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
+import axios from "axios";
 import { Typography, InputBox, Button } from "../../_components";
 import Link from "next/link";
+import useUser from "@/app/hooks/useUser";
+import { useRouter } from "next/navigation";
 
 enum UserActionType {
   CHANGE_USERNAME = "CHANGE_USERNAME",
@@ -37,14 +40,32 @@ const reducer = (state: UserState, action: UserAction): UserState => {
 
 export default function Login() {
   const [state, dispatch] = useReducer(reducer, { username: "", password: "" });
+  const [error, setError] = useState("");
+  const router = useRouter()
+  const {login} = useUser()
 
-  const onSubmit = (e: React.SyntheticEvent) => {
+  const onSubmit = async(e: React.SyntheticEvent) => {
     e.preventDefault();
-    console.log(state);
+    const response = await axios.post("http://localhost:4000/api/auth/login", {
+        username: state.username,
+        password: state.password,
+      }, {
+        validateStatus: status => status >= 200 && status < 500
+      })
+      const { authenticated, token, cookie, user } = response.data;
+      console.log(response.data)
+      if (authenticated) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("cookie", JSON.stringify(cookie));
+        login(user.name, user.email)
+        router.push("/project?project=specialized")
+      } else {
+        setError(response.data.message)
+      }
   };
   return (
     <main className="mx-auto h-screen w-8/12 py-16">
-      <div className="flex h-full rounded-3xl bg-white shadow-lg shadow-zinc-300">
+      <div className="shadow-zinc-300 flex h-full rounded-3xl bg-white shadow-lg">
         <div className="relative w-3/5">
           <img
             src="https://hcmut.edu.vn/img/carouselItem/59840602.jpg?t=59840602"
@@ -54,6 +75,13 @@ export default function Login() {
         </div>
         <div className="flex w-2/5 flex-col items-center px-16 py-24">
           <img src="logo.svg" alt="software logo" className="w-64" />
+          {error && (
+            <Typography
+              variant="span"
+              text={error}
+              color="text-red"
+            />
+          )}
           <div className="w-full">
             <form
               className="flex w-full flex-col items-start gap-2"
@@ -73,7 +101,12 @@ export default function Login() {
                   })
                 }
               />
-              <Typography variant="h2" text="Password" color="text-blue" className="mt-2"/>
+              <Typography
+                variant="h2"
+                text="Password"
+                color="text-blue"
+                className="mt-2"
+              />
               <InputBox
                 inputName="password"
                 type="password"
@@ -86,10 +119,15 @@ export default function Login() {
                   })
                 }
               />
-              <Button isPrimary variant="normal" className="mt-8 py-2 w-full">
+              <Button isPrimary variant="normal" className="mt-8 w-full py-2">
                 <Typography variant="p" text="Login" color="text-white" />
               </Button>
-              <Link href={"#"} className="underline mx-auto text-gray hover:text-black duration-200">Forgot password?</Link>
+              <Link
+                href={"#"}
+                className="mx-auto text-gray underline duration-200 hover:text-black"
+              >
+                Forgot password?
+              </Link>
             </form>
           </div>
         </div>

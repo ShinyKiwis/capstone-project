@@ -1,21 +1,28 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+interface User {
+  name?: string;
+  email?: string;
+}
 
 export default function useUser() {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<User>({});
+  const router = useRouter()
 
-  useEffect(() => {
-
-  }, [])
-  
-  const login = (username:string, password:string) => {
-
-  }
+  const login = (name: string, email: string) => {
+    setUser({
+      name,
+      email,
+    });
+  };
 
   const logout = () => {
-    setUser(null)
-  }
+    setUser({});
+    router.push("/login") 
+  };
 
-  return {user, login, logout}
+  return { user, login, logout };
 }
