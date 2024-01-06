@@ -45,14 +45,59 @@ const CreateProject = () => {
     }
   ]
 
-  const TableLabel = ({content, className}: {content: string, className: string}) => {
+  const InputLabel = ({title}: {title: string}) => {
+    let className = "<w-44></w-44> text-lg font-semibold"
     return (
-      <div></div>
+      <div className={className}>{title}</div>
     )
   }
 
-  const TableInput = () => {
+  const InputField = ({children}: {children:React.ReactNode}) => {
+    let className = "w-full"
+    return(
+      <div className={className}>{children}</div>
+    )
+  }
 
+  const InputsTable = () => {
+    return(
+      <table className="border-separate border-spacing-3">
+        <tbody>
+          <tr>
+            <td><InputLabel title="Project ID:"/></td>
+            <td className="bg-lightgray rounded-md px-2 py-2">Draft ID</td>
+          </tr>
+          <tr>
+            <td><InputLabel title="Branch:" /></td>
+            <td>
+              <InputField><DropdownMenu name="projectBranch" options={branchOptions} /></InputField>
+            </td>
+          </tr>
+          <tr>
+            <td><InputLabel title="Program:" /></td>
+            <td>
+              <InputField><DropdownMenu name="projectProgram" options={programOptions} /></InputField>
+            </td>
+          </tr>
+          <tr>
+            <td><InputLabel title="Members number:" /></td>
+            <td>
+            <InputField>
+              <input
+                type="number"
+                name="membersLimit"
+                min={1}
+                max={20}
+                defaultValue={1}
+                className="w-full bg-lightgray rounded-md px-2 py-2"
+              >
+              </input>
+            </InputField>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    )
   }
 
   return (
@@ -70,41 +115,7 @@ const CreateProject = () => {
       <div className="flex mt-8">
         <div className="w-1/3 pr-4">
           <p className="text-2xl font-bold mb-2">Project's information</p>
-          <div>
-            <table id="projCreateInputs">
-              <tbody>
-                <tr>
-                  <td className="projCreate_inputLabel">Project ID:</td>
-                  <td className="projCreate_inputField bg-lightgray rounded-md px-2 py-2">Draft ID</td>
-                </tr>
-                <tr>
-                  <td className="projCreate_inputLabel">Branch:</td>
-                  <td className="projCreate_inputField">
-                    <DropdownMenu name="projectBranch" options={branchOptions} />
-                  </td>
-                </tr>
-                <tr>
-                  <td className="projCreate_inputLabel">Program:</td>
-                  <td className="projCreate_inputField">
-                    <DropdownMenu name="projectProgram" options={programOptions} />
-                  </td>
-                </tr>
-                <tr>
-                  <td className="projCreate_inputLabel">Members limit:</td>
-                  <td className="projCreate_inputField">
-                  <input
-                    type="number"
-                    name="membersLimit"
-                    min={1}
-                    max={20}
-                    defaultValue={1}
-                    className="w-full bg-lightgray rounded-md px-2 py-2"
-                  >
-                  </input></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <InputsTable />
           
           <div>
             <p className="text-2xl font-bold mb-4">Supervisors list</p>
@@ -137,13 +148,13 @@ const CreateProject = () => {
           <div className="flex gap-4 pt-4 justify-end">
             <Button 
               isPrimary={true} 
-              variant="green_confirm" 
+              variant="confirm" 
               children={"Submit for approval"}
               onClick={()=>alert(`Project description:\n ${desc} \n Project tasks:\n ${tasks} \n Project refs:\n ${refs}`)}
             ></Button>
             <Button 
               isPrimary={true} 
-              variant="blue_confirm" 
+              variant="confirm" 
               children={"Save Changes"} 
             ></Button>
           </div>
