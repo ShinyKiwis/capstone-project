@@ -66,7 +66,7 @@ const DynamicModal = () => {
         <div className="absolute right-0">
           <CgClose
             size={30}
-            className="cursor-pointer text-lightgray hover:text-blue"
+            className="cursor-pointer text-lightgray hover:text-black"
             onClick={() => toggleModal(false)}
           />
         </div>
