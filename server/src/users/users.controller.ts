@@ -12,14 +12,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { EnrollProjectDto } from './dto/enroll-project.dto';
+import { AssignRolesDto } from './dto/assign-role.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  createAUser(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.createAUser(createUserDto);
+  updateOrCreateAUser(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.updateOrCreateAUser(createUserDto);
   }
 
   @Post('/student')
@@ -35,6 +36,11 @@ export class UsersController {
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Post('/:id/roles')
+  assignRoles(@Param('id') id: string, @Body() assignRolesDto: AssignRolesDto) {
+    return this.usersService.assignRoles(+id, assignRolesDto);
   }
 
   @Get(':id')

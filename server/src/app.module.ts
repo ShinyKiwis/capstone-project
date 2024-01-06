@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SemestersModule } from './semesters/semesters.module';
 import { RolesModule } from './roles/roles.module';
 import { ResourcesModule } from './resources/resources.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ResourcesModule } from './resources/resources.module';
     SemestersModule,
     RolesModule,
     ResourcesModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

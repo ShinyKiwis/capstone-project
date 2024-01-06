@@ -2,6 +2,7 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const helper = require("./helper")
 const jwt = require("jsonwebtoken")
+const axios = require("axios")
 require('dotenv').config()
 
 const app = express()
@@ -35,15 +36,29 @@ app.use(authenticateToken)
 
 const apiRouter = express.Router()
 
-apiRouter.post("/auth/login", (req, res) => {
-  const user =req.body
+apiRouter.post("/auth/login", async (req, res) => {
+  let user = req.body
   if(!helper.authenticate(user)) {
     return res.status(401).json({message: 'Invalid username or password'})
   }
+  // Call BE => Create User/Get User
+  user = helper.getUser(user)
+  try {
+  const userResponse = await axios.post('http://localhost:3500/auth', {
+    id: user.id,
+    name: user.username,
+    email: user.email,
+  });
+
+  // Return token
   const token = helper.jwt_generation(user)
   res.json({
-    message: token
-  })
+    token: token,
+    ...userResponse.data
+  });
+  } catch(error) {
+    console.log(error)
+  }
 })
 
 app.use("/api", apiRouter)

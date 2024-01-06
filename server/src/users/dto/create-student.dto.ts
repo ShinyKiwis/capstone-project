@@ -3,9 +3,6 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 export class CreateStudentDto {
   id: number;
 
-  @IsNotEmpty()
-  password: string;
-
   @IsEmail()
   email: string;
 

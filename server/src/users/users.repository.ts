@@ -1,11 +1,17 @@
 import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { Student } from './entities/student.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { EnrollProjectDto } from './dto/enroll-project.dto';
 import { ProjectsRepository } from 'src/projects/projects.repository';
+import { AssignRolesDto } from './dto/assign-role.dto';
 
 @Injectable()
 export class UsersRepository extends Repository<User> {
@@ -14,27 +20,51 @@ export class UsersRepository extends Repository<User> {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const { id, name, password, email } = createUserDto;
+    const { id, name, email } = createUserDto;
 
     const user = this.create({
       id,
       name,
-      password,
       email,
     });
 
-    this.save(user);
+    try {
+      await this.save(user);
+    } catch (error) {
+      if (error.code === '23505') {
+        // Duplicate user
+        throw new ConflictException('User already exists');
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
 
     return user;
   }
 
   async getUserById(id: number) {
-    const found = await this.findOneBy({ id });
+    const found = await this.findOne({
+      where: { id },
+      relations: { roles: true },
+    });
 
     if (!found) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
     return found;
+  }
+
+  async updateOrCreateAUser(createUserDto: CreateUserDto) {
+    await this.upsert(createUserDto, ['id']);
+    const user = await this.getUserById(createUserDto.id);
+    return user;
+  }
+
+  async assignRoles(id: number, assignRolesDto: AssignRolesDto) {
+    const user = await this.getUserById(id);
+    user.roles = assignRolesDto.roles;
+    await this.save(user);
+    return user;
   }
 }
 
@@ -49,13 +79,11 @@ export class StudentsRepository extends Repository<Student> {
   }
 
   async createStudent(createStudentDto: CreateStudentDto): Promise<User> {
-    const { id, name, email, password, generation, credits, GPA } =
-      createStudentDto;
+    const { id, name, email, generation, credits, GPA } = createStudentDto;
     const user = await this.userRepository.createUser({
       id,
       name,
       email,
-      password,
     });
 
     const student = this.create({
