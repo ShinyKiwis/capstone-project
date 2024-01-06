@@ -17,9 +17,10 @@ interface VariantMappings {
 const variantPrimaryMappings: VariantMappings = {
   normal:
     "text-white bg-blue border-2 border-blue hover:bg-lightblue hover:border-lightblue hover:scale-105 duration-300",
-  confirm: "text-white bg-lightgreen min-w-fit px-8 py-2 text-xl font-medium",
-  cancel: "text-white bg-red min-w-fit px-8 py-2 text-xl font-medium",
-  close: "text-white bg-gray min-w-fit px-8 py-2 text-xl font-medium",
+  action: "text-white bg-lightblue min-w-fit",
+  confirm: "text-white bg-lightgreen min-w-fit",
+  cancel: "text-white bg-red min-w-fit",
+  close: "text-white bg-gray min-w-fit",
 };
 
 const variantSecondaryMappings: VariantMappings = {

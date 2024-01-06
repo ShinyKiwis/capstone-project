@@ -37,7 +37,7 @@ const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
       <Button
         isPrimary={true}
         variant="cancel"
-        className='mt-6 w-44'
+        className='mt-6 w-44 py-2 text-lg'
         onClick={()=>{alert('Action button clicked'); toggleModal(false)}}
       >
         {buttonLabels[0]}
@@ -45,7 +45,7 @@ const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
       <Button
         isPrimary={true}
         variant="close"
-        className='mt-6 w-44'
+        className='mt-6 w-44 py-2 text-lg'
         onClick={()=>toggleModal(false)}
       >
         {buttonLabels[1]}
@@ -85,7 +85,7 @@ const ProjDenyModal = () => {
       <Button
         isPrimary={true}
         variant="cancel"
-        className='mt-6 w-44'
+        className='mt-6 w-44 py-2 text-lg'
         onClick={()=>{alert('Action button clicked'); toggleModal(false)}}
       >
         Deny
@@ -93,7 +93,7 @@ const ProjDenyModal = () => {
       <Button
         isPrimary={true}
         variant="confirm"
-        className='mt-6 w-44'
+        className='mt-6 w-44 py-2 text-lg'
         onClick={()=>toggleModal(false)}
       >
         Cancel

@@ -114,13 +114,13 @@ const ProjectCardActions = () => {
       </Button>
 
       {/* Buttons for testing other modals */}
-      <div>
+      {/* <div>
         <p>Test modals</p>
         <button className="border-2" onClick={handleAction}>Unenroll</button>
         <button className="border-2" onClick={handleAction}>Delete</button>
         <button className="border-2" onClick={handleAction}>Deny</button>
         <button className="border-2" onClick={handleAction}>Invalid</button>(Check console log for err msg)
-      </div>
+      </div> */}
 
     </div>
   );

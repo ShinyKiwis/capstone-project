@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
 import "react-quill/dist/quill.snow.css";
-import "../globals.css"
+import "../globals.css";
 import ReactQuill from "react-quill";
 
 interface RichTextEditorProps {
-  onChange: any,
-  initialContent?:string
+  onChange: any;
+  initialContent?: string;
 }
 
 const modules = {
@@ -14,7 +14,7 @@ const modules = {
     [{ header: "1" }, { header: "2" }, { font: [] }],
     [{ size: [] }],
     ["bold", "italic", "underline", "strike"],
-    [{align: []}],
+    [{ align: [] }],
     [
       { list: "ordered" },
       { list: "bullet" },
@@ -31,18 +31,32 @@ const modules = {
 };
 
 const formats = [
-  "header", "font", "size",
-  "bold", "italic", "underline", "strike",
-  "align", "list", "bullet", "indent",
-  "link"
+  "header",
+  "font",
+  "size",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "align",
+  "list",
+  "bullet",
+  "indent",
+  "link",
 ];
 
-const RichTextEditor = ({onChange, initialContent}: RichTextEditorProps) => {
+const RichTextEditor = ({ onChange, initialContent }: RichTextEditorProps) => {
   // Pass a useState setter to onChange from parent element to get the inputted value
   // InitialContent is html code for rendering pre-made contents
   return (
     <div className="h-fit">
-      <ReactQuill  modules={modules} formats={formats} onChange={onChange} defaultValue={initialContent} theme="snow"/>
+      <ReactQuill
+        modules={modules}
+        formats={formats}
+        onChange={onChange}
+        defaultValue={initialContent}
+        theme="snow"
+      />
     </div>
   );
 };
