@@ -65,6 +65,7 @@ export default function Login() {
                 inputName="username"
                 type="text"
                 placeholderText="Username"
+                className="px-4 py-2"
                 onChange={(e) =>
                   dispatch({
                     type: UserActionType.CHANGE_USERNAME,
@@ -77,6 +78,7 @@ export default function Login() {
                 inputName="password"
                 type="password"
                 placeholderText="Password"
+                className="px-4 py-2"
                 onChange={(e) =>
                   dispatch({
                     type: UserActionType.CHANGE_PASSWORD,
