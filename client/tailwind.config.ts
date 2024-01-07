@@ -22,6 +22,7 @@ const config: Config = {
       black: '#000000',
       gray: '#878787',
       lightgray: '#CACACA',
+      lightergray: 'rgba(153, 194, 255, 0.20);',
       lightgreen: '#6ED10A',
       yellow: '#FFD400',
       red: '#CA3D3D',
