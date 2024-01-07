@@ -4,6 +4,7 @@ import axios from "axios";
 import { Typography, InputBox, Button } from "../../_components";
 import Link from "next/link";
 import { AuthContext } from "@/app/providers/AuthProvider";
+import DynamicInputBox from "./DynamicInputBox";
 
 enum UserActionType {
   CHANGE_USERNAME = "CHANGE_USERNAME",
@@ -89,7 +90,7 @@ export default function Login() {
               onSubmit={(e) => onSubmit(e)}
             >
               <Typography variant="h2" text="Username" color="text-blue" />
-              <InputBox
+              <DynamicInputBox
                 autoFocus={true}
                 inputName="username"
                 type="text"
@@ -108,7 +109,7 @@ export default function Login() {
                 color="text-blue"
                 className="mt-2"
               />
-              <InputBox
+              <DynamicInputBox
                 inputName="password"
                 type="password"
                 placeholderText="Password"
