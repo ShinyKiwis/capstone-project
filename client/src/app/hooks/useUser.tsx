@@ -1,28 +1,16 @@
-"use client";
+import React, { useContext } from 'react'
+import { AuthContext } from '../providers/AuthProvider'
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-
-interface User {
-  name?: string;
-  email?: string;
+const useUser = () => {
+  const authContext = useContext(AuthContext)
+  if(!authContext) {
+    return {name: "Loading", email: "Loading", roles: []}
+  }
+  const {user} = authContext
+  if(!user) {
+    return {name: "Invalid", email: "Invalid", roles: []}
+  }
+  return user
 }
 
-export default function useUser() {
-  const [user, setUser] = useState<User>({});
-  const router = useRouter()
-
-  const login = (name: string, email: string) => {
-    setUser({
-      name,
-      email,
-    });
-  };
-
-  const logout = () => {
-    setUser({});
-    router.push("/login") 
-  };
-
-  return { user, login, logout };
-}
+export default useUser

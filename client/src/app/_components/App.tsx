@@ -1,18 +1,24 @@
-"use client"
+"use client";
 
-import React from "react"
-import { PageContent, SideBar } from "."
-import { ModalProvider } from "../providers/ModalProvider"
-import isAuth from "../lib/isAuth"
+import React, { useEffect, useState } from "react";
+import { PageContent, SideBar } from ".";
+import { ModalProvider } from "../providers/ModalProvider";
+import isAuth from "../lib/isAuth";
 
+const App = ({ children }: { children: React.ReactNode }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-const App = ({children}: {children: React.ReactNode}) => {
   return (
-    <ModalProvider>
-      <SideBar />
-      <PageContent children={children} />
-    </ModalProvider>
-  )
-}
+    mounted && (
+      <ModalProvider>
+        <SideBar />
+        <PageContent children={children} />
+      </ModalProvider>
+    )
+  );
+};
 
-export default isAuth(App)
+export default isAuth(App);

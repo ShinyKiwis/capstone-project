@@ -1,18 +1,13 @@
 "use client";
-import { Typography } from "@/app/_components";
-
+import { Button, Profile, Typography } from "@/app/_components";
 import { usePathname, useSearchParams } from "next/navigation";
-
-import Image from "next/image";
 import { FaBell } from "react-icons/fa";
 import { MdArrowDropDown } from "react-icons/md";
 import useUser from "@/app/hooks/useUser";
+import { useState } from "react";
+import LogoutButton from "../UserAction/Buttons/LogoutButton";
 
-///////////// Test session data
-let userFullName = "User Name";
-let usermail = "username@hcmut.edu.vn";
 let userRole = "student";
-let profileImgSrc = "/logoHCMUT.png";
 
 interface TitlePathMappings {
   [key: string]: object;
@@ -105,119 +100,43 @@ function getTitle() {
   } else return "No role found, not logged in ?";
 }
 
-const ProfileExpandableSection = ({
-  profileImg,
-  fullName,
-}: {
-  profileImg: string;
-  fullName: string;
-}) => {
-  return (
-    <div
-      className="flex h-14 w-fit flex-auto cursor-pointer items-center gap-3"
-      onClick={() => {
-        const profileModal = document.getElementById("topBar-profileModal");
-        if (profileModal) {
-          if (profileModal.style.opacity == "0") {
-            // profileModal.style.maxHeight = '25em';
-            profileModal.style.display = "flex";
-            const fadeTimeout = setTimeout(function removeModal() {
-              profileModal.style.opacity = "1.0";
-              clearTimeout(fadeTimeout);
-            }, 10);
-          } else {
-            // profileModal.style.maxHeight = '0em';
-            profileModal.style.opacity = "0";
-            const fadeTimeout = setTimeout(function removeModal() {
-              profileModal.style.display = "none";
-              clearTimeout(fadeTimeout);
-            }, 300);
-          }
-        }
-      }}
-    >
-      <div className="relative h-11 w-11 overflow-hidden rounded-full px-1 py-1">
-        <Image
-          src={profileImg}
-          fill={true}
-          sizes="2.75rem"
-          alt="User's profile picture"
-        />
-      </div>
-      <div className="max-h-14 w-fit max-w-xs overflow-hidden whitespace-nowrap font-medium">
-        {fullName}
-      </div>
-      <MdArrowDropDown size={35} />
-    </div>
-  );
-};
-
-const ProfileModal = ({
-  profileImg,
-  fullName,
-  email,
-}: {
-  profileImg: string;
-  fullName: string;
-  email: string;
-}) => {
-  const { logout } = useUser();
-  return (
-    <div
-      className="absolute z-20 w-80 flex-col items-center gap-2 overflow-hidden rounded-xl bg-white py-5 shadow-xl transition-opacity delay-100 duration-200 ease-in-out"
-      id="topBar-profileModal"
-      style={{
-        left: "auto",
-        right: "3.5rem",
-        top: "5em",
-        maxHeight: "25em",
-        opacity: "0",
-        display: "none",
-      }}
-    >
-      <div className="relative h-20 w-20 overflow-hidden rounded-full px-1 py-1">
-        <Image
-          src={profileImg}
-          fill={true}
-          sizes="2.75rem"
-          alt="User's profile picture"
-        />
-      </div>
-      <div className="w-full overflow-hidden px-20 text-center text-lg font-medium">
-        {fullName}
-      </div>
-      <div className="w-full overflow-hidden px-20 text-center text-sm font-normal">
-        {email}
-      </div>
-      <button
-        className="mt-2 w-fit rounded-lg border-2 border-solid bg-red px-10 py-2 font-semibold text-white"
-        onClick={() => logout()}
-      >
-        Logout
-      </button>
-    </div>
-  );
-};
-
 const PageHeader = () => {
+  const [toggleProfileModal, setToggleProfileModal] = useState(false);
+  const user = useUser();
+
   return (
-    <div className="flex h-20 items-center gap-4 pl-8 pr-14 pt-5">
-      <div className="w-full flex-auto">
+    <div className="relative flex h-20 items-center gap-4 pl-8 pr-14 pt-5">
+      <div>
         <Typography variant="h1" text={getTitle()} color="text-darkblue" />
       </div>
-      <button className="w-fit flex-auto">
-        <FaBell size={25} />
-      </button>
-
-      <ProfileExpandableSection
-        profileImg={profileImgSrc}
-        fullName={userFullName}
-      />
-      <ProfileModal
-        profileImg={profileImgSrc}
-        fullName={userFullName}
-        email={usermail}
-      />
+      <div
+        className="ms-auto flex gap-4"
+        onClick={() => setToggleProfileModal(!toggleProfileModal)}
+      >
+        <button className="w-fit">
+          <FaBell size={25} />
+        </button>
+        <div className="flex gap-2">
+          <Profile username={user!.name} type="horizontal" />
+          <MdArrowDropDown size={35} className="cursor-pointer" />
+        </div>
+      </div>
+      <div
+        className={`absolute right-14 top-20 z-20 rounded-md bg-white p-8 ${
+          toggleProfileModal
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
+        }  transition-opacity duration-500 ease-in-out`}
+        style={{
+          boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+          border: "0.5px solid #D7D7D7",
+        }}
+      >
+        <Profile username={user!.name} type="vertical" email={user!.email} />
+        <div>
+          <LogoutButton />
+        </div>
+      </div>
     </div>
   );
 };

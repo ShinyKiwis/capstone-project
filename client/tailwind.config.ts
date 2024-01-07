@@ -25,6 +25,7 @@ const config: Config = {
       lightgreen: '#6ED10A',
       yellow: '#FFD400',
       red: '#CA3D3D',
+      lightred: '#cc5050',
       white: '#FFFFFF'
     }
   },

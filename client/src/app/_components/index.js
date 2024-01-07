@@ -1,6 +1,6 @@
 export {default as Typography} from "./Typography"
 export {default as InputBox} from "./UserAction/InputBox"
-export {default as Button} from "./UserAction/Button"
+export {default as Button} from "./UserAction/Buttons/Button"
 export {default as SideBar} from "./SideBar"
 export {default as ProjectCard} from "./Project/ProjectCard"
 export {default as ProjectCardDetail} from "./Project/ProjectCardDetail"

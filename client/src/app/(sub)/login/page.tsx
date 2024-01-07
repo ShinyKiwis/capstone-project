@@ -1,10 +1,9 @@
 "use client";
-import { useReducer, useState } from "react";
+import { useContext, useReducer, useState } from "react";
 import axios from "axios";
 import { Typography, InputBox, Button } from "../../_components";
 import Link from "next/link";
-import useUser from "@/app/hooks/useUser";
-import { useRouter } from "next/navigation";
+import { AuthContext } from "@/app/providers/AuthProvider";
 
 enum UserActionType {
   CHANGE_USERNAME = "CHANGE_USERNAME",
@@ -41,8 +40,11 @@ const reducer = (state: UserState, action: UserAction): UserState => {
 export default function Login() {
   const [state, dispatch] = useReducer(reducer, { username: "", password: "" });
   const [error, setError] = useState("");
-  const router = useRouter()
-  const {login} = useUser()
+  const authContext = useContext(AuthContext)
+  if(!authContext) {
+    return <div>Loading...</div>
+  }
+  const {login} = authContext
 
   const onSubmit = async(e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -57,8 +59,7 @@ export default function Login() {
       if (authenticated) {
         localStorage.setItem("token", token);
         localStorage.setItem("cookie", JSON.stringify(cookie));
-        login(user.name, user.email)
-        router.push("/project?project=specialized")
+        login(user)
       } else {
         setError(response.data.message)
       }
