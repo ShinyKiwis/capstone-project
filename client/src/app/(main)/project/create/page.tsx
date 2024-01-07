@@ -4,15 +4,18 @@ import {
   Button,
   RichTextEditor,
   DropdownMenu,
+  SearchBox,
   MultiselectDropdown,
+  Profile
 } from "@/app/_components";
 import { useState } from "react";
+import { CgClose } from "react-icons/cg";
 
 const CreateProject = () => {
   const [title, setTitle] = useState("");
   const [instructors, setInstructors] = useState();
-  const [branch, setBranch] = useState();
-  const [program, setProgram] = useState();
+  // const [branch, setBranch] = useState();
+  // const [program, setProgram] = useState();
   const [desc, setDesc] = useState("");
   const [tasks, setTasks] = useState("");
   const [refs, setRefs] = useState("");
@@ -34,6 +37,21 @@ const CreateProject = () => {
     let className = "w-full";
     return <div className={className}>{children}</div>;
   };
+
+  const ProfileItems = ({name, id, email}:{name:string, id:string, email:string}) => {
+    return(
+      <div className="w-full flex items-center pt-4">
+        <div><Profile type="horizontal" username={name}/></div>
+        <div className="ml-auto right-0">
+          <CgClose
+            size={25}
+            className="cursor-pointer text-lack hover:text-lightgray"
+            onClick={() => {}}
+          />
+        </div>
+      </div>
+    )
+  }
 
   const branchOptions = [
     // retrieve from DB ?
@@ -71,14 +89,27 @@ const CreateProject = () => {
     },
   ];
 
-  const instructorsList = [
-    // retrieve from DB ?
+  const instructorsList = [ // retrieve from DB ?
     { value: "211300", label: "211300 - Nguyen Van A" },
     { value: "211301", label: "211301 - Pham Van C" },
     { value: "211302", label: "211302 - Do Hong D" },
     { value: "211303", label: "211303 - Phan Cao E" },
     { value: "211304", label: "211304 - Nguyen Hua F" },
     { value: "211305", label: "211305 - Do Cao G" },
+  ];
+  
+  const membersList = [ 
+    // retrieve from DB ?
+    {
+      id: '2013314',
+      fullName: 'Nguyen Van A',
+      email: 'vanA@hcmut.edu.vn'
+    },
+    {
+      id: '2023214',
+      fullName: 'Tran Van B',
+      email: 'Btran@hcmut.edu.vn'
+    }
   ];
 
   const InputsTable = () => {
@@ -93,17 +124,9 @@ const CreateProject = () => {
           </tr>
           <tr>
             <td>
-              <InputLabel title="Instructors:" />
+              <InputLabel title="Project owner:" />
             </td>
-            <td>
-              <MultiselectDropdown
-                name="supervisors"
-                isMulti={true}
-                options={instructorsList}
-                placeholder="Add instructors"
-                onChange={setInstructors}
-              />
-            </td>
+            <td className="rounded-md bg-lightgray px-2 py-2">Its youuuuuuuuuuuuuuu</td>
           </tr>
           <tr>
             <td>
@@ -114,7 +137,6 @@ const CreateProject = () => {
                 <DropdownMenu
                   name="projectBranch"
                   options={branchOptions}
-                  onChange={setBranch}
                 />
               </InputField>
             </td>
@@ -128,14 +150,13 @@ const CreateProject = () => {
                 <DropdownMenu
                   name="projectProgram"
                   options={programOptions}
-                  onChange={setProgram}
                 />
               </InputField>
             </td>
           </tr>
           <tr>
             <td>
-              <InputLabel title="Members number:" />
+              <InputLabel title="Number of members:" />
             </td>
             <td>
               <InputField>
@@ -170,10 +191,31 @@ const CreateProject = () => {
       <div className="mt-8 flex">
         {/* Project metadata section: */}
         <div className="w-1/3 pr-[16px]">
-          <InputFieldTitle title="Project's information" />
-          <InputsTable />
+          <div>
+            <InputFieldTitle title="Project's information" />
+            <InputsTable />
+          </div>
+
+          <div>
+            <InputFieldTitle title="Instructors" />
+            <SearchBox placeholder="Search instructor's name, id..."/>
+            <MultiselectDropdown
+              name="supervisors"
+              isMulti={true}
+              options={instructorsList}
+              placeholder="Add instructors"
+              // onChange={setInstructors}
+            />
+          </div>
 
           <InputFieldTitle title="Members" />
+          <SearchBox placeholder="Search student's name, id..."/>
+          {
+            membersList.map(function(member){
+              return(<ProfileItems name={member.fullName} id="123" email="123@gmai.com"/>)
+            })
+          }
+          
         </div>
 
         {/* Project details section: */}
@@ -210,8 +252,11 @@ const CreateProject = () => {
               variant="confirm"
               className="px-[0.8em] py-[0.25em] text-lg"
               onClick={() =>
+                // alert(
+                //   `SUBMITTING PROJECT:\nTitle:${title}\n\nInstructors:\n${JSON.stringify(instructors)}\n\nBranch: ${branch}\n\nProgram: ${program}\n\nProject description:\n ${desc} \n Project tasks:\n ${tasks} \n Project refs:\n ${refs}`
+                // )
                 alert(
-                  `SUBMITTING PROJECT:\nTitle:${title}\n\nInstructors:\n${JSON.stringify(instructors)}\n\nBranch: ${branch}\n\nProgram: ${program}\n\nProject description:\n ${desc} \n Project tasks:\n ${tasks} \n Project refs:\n ${refs}`,
+                  `SUBMITTING PROJECT:\nTitle:${title}\n\nProject description:\n ${desc} \n Project tasks:\n ${tasks} \n Project refs:\n ${refs}`
                 )
               }
             >

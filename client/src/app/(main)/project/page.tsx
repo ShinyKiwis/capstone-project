@@ -41,7 +41,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
       <div className="w-3/6">
         <div className="mt-4 flex gap-4">
           <div className="w-10/12">
-            <SearchBox />
+            <SearchBox placeholder="Search projects..."/>
           </div>
           <Button
             variant="normal"

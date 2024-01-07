@@ -8,8 +8,7 @@ interface DropdownMenuProps {
   options: {
     title: string,
     value: string
-  }[],
-  onChange?: any
+  }[]
 }
 
 interface VariantMappings {
@@ -25,7 +24,7 @@ const variantMappings: VariantMappings = {
     
 
 
-const DropdownMenu = ({name, variant, selectClassname, optionClassname, options, onChange}: DropdownMenuProps) => {
+const DropdownMenu = ({name, variant, selectClassname, optionClassname, options}: DropdownMenuProps) => {
   let selectVariantClass: string;
   let optionVariantClass: string;
   if (variant && variant in variantMappings){
@@ -42,14 +41,13 @@ const DropdownMenu = ({name, variant, selectClassname, optionClassname, options,
     <select 
       name={name} 
       className={`${selectClassname} ${selectVariantClass}`}
-      onChange={(e)=>onChange(e.target.value)}
     >
       {options.map(function(opt, index){
         return(
           <option 
             value={opt.value} 
             key={index}
-            className={`${optionClassname} ${optionVariantClass}`}
+            className={`${optionClassname} ${optionVariantClass}` }
           >
             {opt.title}
           </option>
