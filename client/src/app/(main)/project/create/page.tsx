@@ -6,7 +6,7 @@ import {
   DropdownMenu,
   SearchBox,
   MultiselectDropdown,
-  Profile
+  Profile,
 } from "@/app/_components";
 import { useState } from "react";
 import { CgClose } from "react-icons/cg";
@@ -23,6 +23,7 @@ const CreateProject = () => {
   //Test rendering pre-made content in richtext input
   const [TestContent, setTestContent] = useState("");
 
+  //////////////////////////////// Display components  ////////////////////////////////////////////
   const InputFieldTitle = ({ title }: { title: string }) => {
     let className = "text-2xl font-bold mb-2";
     return <div className={className}>{title}</div>;
@@ -38,21 +39,98 @@ const CreateProject = () => {
     return <div className={className}>{children}</div>;
   };
 
-  const ProfileItems = ({name, id, email}:{name:string, id:string, email:string}) => {
-    return(
-      <div className="w-full flex items-center pt-4">
-        <div><Profile type="horizontal" username={name}/></div>
-        <div className="ml-auto right-0">
+  const InputsTable = () => {
+    return (
+      <table className="border-separate border-spacing-3">
+        <tbody>
+          <tr>
+            <td>
+              <InputLabel title="Project ID:" />
+            </td>
+            <td className="rounded-md bg-lightgray px-2 py-2">Draft ID</td>
+          </tr>
+          <tr>
+            <td>
+              <InputLabel title="Project owner:" />
+            </td>
+            <td className="rounded-md bg-lightgray px-2 py-2">
+              Its youuuuuuuuuuuuuuu
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <InputLabel title="Branch:" />
+            </td>
+            <td>
+              <InputField>
+                <DropdownMenu name="projectBranch" options={branchOptions} />
+              </InputField>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <InputLabel title="Program:" />
+            </td>
+            <td>
+              <InputField>
+                <DropdownMenu name="projectProgram" options={programOptions} />
+              </InputField>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <InputLabel title="Number of members:" />
+            </td>
+            <td>
+              <InputField>
+                <input
+                  type="number"
+                  name="membersLimit"
+                  min={1}
+                  max={20}
+                  defaultValue={1}
+                  className="w-full rounded-md bg-lightgray px-2 py-2"
+                ></input>
+              </InputField>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    );
+  };
+
+  const ProfileItems = ({
+    name,
+    id,
+    email,
+  }: {
+    name: string;
+    id: string;
+    email: string;
+  }) => {
+    return (
+      <div className="flex w-full items-center pt-4">
+        <div>
+          <Profile
+            type="horizontal-detailed"
+            username={name}
+            userEmail={email}
+            userId={id}
+          />
+        </div>
+        <div className="right-0 ml-auto">
           <CgClose
             size={25}
-            className="cursor-pointer text-lack hover:text-lightgray"
+            className="text-lack cursor-pointer hover:text-lightgray"
             onClick={() => {}}
           />
         </div>
       </div>
-    )
-  }
+    );
+  };
 
+
+  ////////////////////////// Test data   ///////////////////////////////////////////////////
   const branchOptions = [
     // retrieve from DB ?
     {
@@ -89,7 +167,8 @@ const CreateProject = () => {
     },
   ];
 
-  const instructorsList = [ // retrieve from DB ?
+  const instructorsList = [
+    // retrieve from DB ?
     { value: "211300", label: "211300 - Nguyen Van A" },
     { value: "211301", label: "211301 - Pham Van C" },
     { value: "211302", label: "211302 - Do Hong D" },
@@ -97,87 +176,44 @@ const CreateProject = () => {
     { value: "211304", label: "211304 - Nguyen Hua F" },
     { value: "211305", label: "211305 - Do Cao G" },
   ];
-  
-  const membersList = [ 
-    // retrieve from DB ?
+
+  var selectedMembersList = [
+    // Use state ?
     {
-      id: '2013314',
-      fullName: 'Nguyen Van A',
-      email: 'vanA@hcmut.edu.vn'
+      id: "2013314",
+      fullName: "Nguyen Van A",
+      email: "vanA@hcmut.edu.vn",
     },
     {
-      id: '2023214',
-      fullName: 'Tran Van B',
-      email: 'Btran@hcmut.edu.vn'
-    }
+      id: "2023214",
+      fullName: "Tran Van B",
+      email: "Btran@hcmut.edu.vn",
+    },
+    {
+      id: "2023214 Long ID 2023214",
+      fullName: "Loooong Loooooooong Maaaaaaaaaannnnnnn",
+      email: "LoooooooooongEmaillllllll@hcmut.edu.vn",
+    },
   ];
 
-  const InputsTable = () => {
-    return (
-      <table className="border-separate border-spacing-3">
-        <tbody>
-          <tr>
-            <td>
-              <InputLabel title="Project ID:" />
-            </td>
-            <td className="rounded-md bg-lightgray px-2 py-2">Draft ID</td>
-          </tr>
-          <tr>
-            <td>
-              <InputLabel title="Project owner:" />
-            </td>
-            <td className="rounded-md bg-lightgray px-2 py-2">Its youuuuuuuuuuuuuuu</td>
-          </tr>
-          <tr>
-            <td>
-              <InputLabel title="Branch:" />
-            </td>
-            <td>
-              <InputField>
-                <DropdownMenu
-                  name="projectBranch"
-                  options={branchOptions}
-                />
-              </InputField>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <InputLabel title="Program:" />
-            </td>
-            <td>
-              <InputField>
-                <DropdownMenu
-                  name="projectProgram"
-                  options={programOptions}
-                />
-              </InputField>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <InputLabel title="Number of members:" />
-            </td>
-            <td>
-              <InputField>
-                <input
-                  type="number"
-                  name="membersLimit"
-                  min={1}
-                  max={20}
-                  defaultValue={1}
-                  className="w-full rounded-md bg-lightgray px-2 py-2"
-                ></input>
-              </InputField>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    );
-  };
+  var selectedInstructorsList= [
+    // Use state ?
+    {
+      id: "1013314",
+      fullName: "Nguyen Hoang A",
+      email: "AHoang@hcmut.edu.vn",
+    },
+    {
+      id: "1023214",
+      fullName: "Nguyen Van B",
+      email: "Bnguyen@hcmut.edu.vn",
+    },
+  ];
+  
 
   return (
     <div className="w-full flex-1 bg-white">
+
       {/* Project title section: */}
       <textarea
         className="max-h-[5em] w-full border-b-2 border-gray py-2 pb-4 pt-8 text-center text-3xl font-semibold focus:outline-none"
@@ -196,27 +232,45 @@ const CreateProject = () => {
             <InputsTable />
           </div>
 
-          <div>
+          <div className="pt-4">
             <InputFieldTitle title="Instructors" />
-            <SearchBox placeholder="Search instructor's name, id..."/>
-            <MultiselectDropdown
+            <SearchBox placeholder="Search instructor's name, id..." />
+            {/* <MultiselectDropdown
               name="supervisors"
               isMulti={true}
               options={instructorsList}
               placeholder="Add instructors"
-              // onChange={setInstructors}
-            />
+            /> */}
+            <div>
+              {selectedInstructorsList.map(function (instructor) {
+                return (
+                  <ProfileItems
+                    name={instructor.fullName}
+                    id={instructor.id}
+                    email={instructor.email}
+                  />
+                );
+              })}
+            </div>
           </div>
 
-          <InputFieldTitle title="Members" />
-          <SearchBox placeholder="Search student's name, id..."/>
-          {
-            membersList.map(function(member){
-              return(<ProfileItems name={member.fullName} id="123" email="123@gmai.com"/>)
-            })
-          }
-          
+          <div className="mt-6">
+            <InputFieldTitle title="Members" />
+            <SearchBox placeholder="Search student's name, id..." />
+            <div>
+              {selectedMembersList.map(function (member) {
+                return (
+                  <ProfileItems
+                    name={member.fullName}
+                    id={member.id}
+                    email={member.email}
+                  />
+                );
+              })}
+            </div>
+          </div>
         </div>
+
 
         {/* Project details section: */}
         <div className="w-2/3">
@@ -245,6 +299,7 @@ const CreateProject = () => {
           </button>
           {/* test rendering content in richtext input */}
 
+
           {/* Actions section */}
           <div className="flex justify-end gap-4 pt-4">
             <Button
@@ -256,7 +311,7 @@ const CreateProject = () => {
                 //   `SUBMITTING PROJECT:\nTitle:${title}\n\nInstructors:\n${JSON.stringify(instructors)}\n\nBranch: ${branch}\n\nProgram: ${program}\n\nProject description:\n ${desc} \n Project tasks:\n ${tasks} \n Project refs:\n ${refs}`
                 // )
                 alert(
-                  `SUBMITTING PROJECT:\nTitle:${title}\n\nProject description:\n ${desc} \n Project tasks:\n ${tasks} \n Project refs:\n ${refs}`
+                  `SUBMITTING PROJECT:\nTitle:${title}\n\nProject description:\n ${desc} \n Project tasks:\n ${tasks} \n Project refs:\n ${refs}`,
                 )
               }
             >
