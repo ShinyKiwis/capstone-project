@@ -232,7 +232,7 @@ const CreateProject = () => {
             <InputsTable />
           </div>
 
-          <div className="pt-4">
+          <div className="pt-4 w-full">
             <InputFieldTitle title="Instructors" />
             <SearchBox placeholder="Search instructor's name, id..." />
             {/* <MultiselectDropdown
@@ -241,7 +241,7 @@ const CreateProject = () => {
               options={instructorsList}
               placeholder="Add instructors"
             /> */}
-            <div>
+            <div className="px-3">
               {selectedInstructorsList.map(function (instructor) {
                 return (
                   <ProfileItems
@@ -252,12 +252,13 @@ const CreateProject = () => {
                 );
               })}
             </div>
+
           </div>
 
-          <div className="mt-6">
+          <div className="mt-6 w-full">
             <InputFieldTitle title="Members" />
             <SearchBox placeholder="Search student's name, id..." />
-            <div>
+            <div className="px-3">
               {selectedMembersList.map(function (member) {
                 return (
                   <ProfileItems
@@ -268,6 +269,7 @@ const CreateProject = () => {
                 );
               })}
             </div>
+
           </div>
         </div>
 
