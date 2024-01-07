@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Button, Typography } from "..";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { CgClose } from "react-icons/cg";
@@ -20,11 +20,17 @@ const UploadedFileItem = ({fileName, fileExtension}:{fileName:string, fileExtens
 }
 
 const UploadFileModal = () => {
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   var fileInput = useRef(null);
   return (
     <div>
       <Typography variant="h2" text="Upload file or multiple files" />
-      <div className="mx-10 my-14 flex h-fit w-[65vw] flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-lightblue bg-lightergray">
+      <div 
+        className="mx-10 my-14 flex h-fit w-[65vw] flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-lightblue bg-lightergray cursor-pointer"
+        onClick={() => {
+          if (fileInput) fileInput.current!.click();
+        }}
+      >
         <div className="mt-3">
           <MdOutlineFileUpload size={60} className="text-blue" />
         </div>
@@ -34,9 +40,9 @@ const UploadFileModal = () => {
           isPrimary={true}
           variant="normal"
           className="mb-6 mt-2 px-6 py-1"
-          onClick={() => {
-            if (fileInput) fileInput.current!.click();
-          }}
+          // onClick={() => {
+          //   if (fileInput) fileInput.current!.click();
+          // }}
         >
           Browse files
         </Button>
@@ -46,6 +52,11 @@ const UploadFileModal = () => {
             className="hidden"
             ref={fileInput}
             accept=".txt,.doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            onChange={({target: {files}})=>{
+              if (files){
+                console.log(files[0]?.name);
+              }
+            }}
           />
         </form>
       </div>
