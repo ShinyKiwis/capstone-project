@@ -26,12 +26,12 @@ const titleRoleMappings: TitleRoleMappings = {
     other: "Program pages",
   },
   specializedProject_roles: {
-    student: "Specialized project enrollment",
-    other: "Specialized project management",
+    student: "Specialized Project Enrollment",
+    other: "Specialized Project Management",
   },
   capstoneProject_roles: {
-    student: "Capstone project enrollment",
-    other: "Capstone project management",
+    student: "Capstone Project Enrollment",
+    other: "Capstone Project Management",
   },
   assessment_roles: {
     other: "Assessment pages",

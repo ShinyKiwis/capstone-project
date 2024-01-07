@@ -20,11 +20,11 @@ export class UsersRepository extends Repository<User> {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const { id, name, email } = createUserDto;
+    const { id, username, email } = createUserDto;
 
     const user = this.create({
       id,
-      name,
+      username,
       email,
     });
 
@@ -79,11 +79,12 @@ export class StudentsRepository extends Repository<Student> {
   }
 
   async createStudent(createStudentDto: CreateStudentDto): Promise<User> {
-    const { id, name, email, generation, credits, GPA } = createStudentDto;
+    const { id, username, name, email, generation, credits, GPA } = createStudentDto;
     const user = await this.userRepository.createUser({
       id,
-      name,
+      username,
       email,
+      name
     });
 
     const student = this.create({

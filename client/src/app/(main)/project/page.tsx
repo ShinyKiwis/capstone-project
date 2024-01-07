@@ -6,10 +6,13 @@ import {
   Typography,
   ProjectCardDetail,
 } from "@/app/_components";
-import { IoOptions } from "react-icons/io5";
+import { IoOptions, IoCreate } from "react-icons/io5";
+import { RiUpload2Fill } from "react-icons/ri";
 import React, { useContext, useState } from "react";
 import { ModalContext } from "@/app/providers/ModalProvider";
 import Image from "next/image";
+import useUser from "@/app/hooks/useUser";
+import hasRole from "@/app/lib/hasRole";
 
 interface ProjectHeaderProps {
   type: string;
@@ -22,6 +25,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
   }
   const [projectsPerPage, setProjectsPerPage] = useState("");
   const { toggleModal, setModalType } = modalContextValue;
+  const user = useUser()
 
   const handleProjectsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -41,7 +45,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
       <div className="w-3/6">
         <div className="mt-4 flex gap-4">
           <div className="w-10/12">
-            <SearchBox />
+            <SearchBox placeholder="Search projects..."/>
           </div>
           <Button
             variant="normal"
@@ -53,6 +57,18 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
             <span>Filter</span>
           </Button>
         </div>
+        {
+          !hasRole("student")  && <div className="flex gap-4 mt-4">
+            <Button isPrimary variant="normal" className="flex gap-2 px-4 py-2 items-center">
+              <IoCreate size={25}/>
+              Create project
+            </Button>
+            <Button isPrimary variant="normal" className="flex gap-2 px-4 py-2 items-center">
+              <RiUpload2Fill size={25}/>
+              Upload file
+            </Button>
+          </div>
+        }
         <div className="mt-4 w-fit font-medium text-blue">
           <span>View: </span>
           <input

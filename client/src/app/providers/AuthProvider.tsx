@@ -12,7 +12,10 @@ interface AuthContextProps {
 interface User {
   name: string;
   email: string;
-  roles: [string];
+  roles: [{
+    id:string,
+    name:string
+  }];
 }
 
 export const AuthContext = createContext<AuthContextProps | null>(null);
