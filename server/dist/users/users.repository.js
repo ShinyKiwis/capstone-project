@@ -21,10 +21,10 @@ let UsersRepository = class UsersRepository extends typeorm_1.Repository {
         this.dataSource = dataSource;
     }
     async createUser(createUserDto) {
-        const { id, name, email } = createUserDto;
+        const { id, username, email } = createUserDto;
         const user = this.create({
             id,
-            name,
+            username,
             email,
         });
         try {
@@ -75,11 +75,12 @@ let StudentsRepository = class StudentsRepository extends typeorm_1.Repository {
         this.projectRepository = projectRepository;
     }
     async createStudent(createStudentDto) {
-        const { id, name, email, generation, credits, GPA } = createStudentDto;
+        const { id, username, name, email, generation, credits, GPA } = createStudentDto;
         const user = await this.userRepository.createUser({
             id,
-            name,
+            username,
             email,
+            name
         });
         const student = this.create({
             userId: user.id,

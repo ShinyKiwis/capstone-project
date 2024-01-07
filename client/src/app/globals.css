@@ -4,7 +4,6 @@
 
 /* Styling for quill richtext editor */
 .quill .ql-editor {
-    min-height: 10em;
-    max-height: 18em;
+    min-height: 15em;
     line-break: anywhere;
 }

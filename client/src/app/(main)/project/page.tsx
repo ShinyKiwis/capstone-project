@@ -13,6 +13,8 @@ import { ModalContext } from "@/app/providers/ModalProvider";
 import Image from "next/image";
 import useUser from "@/app/hooks/useUser";
 import hasRole from "@/app/lib/hasRole";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 interface ProjectHeaderProps {
   type: string;
@@ -26,6 +28,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
   const [projectsPerPage, setProjectsPerPage] = useState("");
   const { toggleModal, setModalType } = modalContextValue;
   const user = useUser()
+  const searchParams = useSearchParams()
 
   const handleProjectsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -59,9 +62,11 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
         </div>
         {
           !hasRole("student")  && <div className="flex gap-4 mt-4">
-            <Button isPrimary variant="normal" className="flex gap-2 px-4 py-2 items-center">
-              <IoCreate size={25}/>
-              Create project
+            <Button isPrimary variant="normal" className="px-4 py-2">
+              <Link href={`/project/create?project=${searchParams.get('project')}`} className="flex gap-2 items-center">
+                <IoCreate size={25}/>
+                Create project
+              </Link>
             </Button>
             <Button isPrimary variant="normal" className="flex gap-2 px-4 py-2 items-center">
               <RiUpload2Fill size={25}/>

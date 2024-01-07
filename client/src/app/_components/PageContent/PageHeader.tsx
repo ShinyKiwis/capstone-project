@@ -7,12 +7,7 @@ import useUser from "@/app/hooks/useUser";
 import { useState } from "react";
 import LogoutButton from "../UserAction/Buttons/LogoutButton";
 
-///////////// Test session data													/////////////////// Test data
-let userFullName = "User Name";
-let usermail = "username@hcmut.edu.vn";
-let userRole = 'supervisor';
-let profileImgSrc = '/logoHCMUT.png'
-
+let userRole = "student";
 
 interface TitlePathMappings {
   [key: string]: object;
@@ -77,16 +72,13 @@ const titlePathMappings: TitlePathMappings = {
 	}
 };
 
-function getTitle(){
-	let currentPath = usePathname();
-	let searchParam = useSearchParams();
-	let currParam = null;
-	console.log("Current path:", currentPath);
-
-	// Currently mapping title with last param on the url
-	searchParam.forEach((value, key) => {
-		currParam = value;
-	});
+function getTitle() {
+  let currentPath = usePathname();
+  let searchParam = useSearchParams();
+  let currParam = null;
+  searchParam.forEach((value, key) => {
+    currParam = value;
+  });
 
   // Get title sets based on current path
   let pathRoles = titlePathMappings[currentPath];
@@ -134,17 +126,16 @@ const PageHeader = () => {
         <button className="w-fit">
           <FaBell size={25} />
         </button>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <Profile username={user!.name} type="horizontal" />
           <MdArrowDropDown size={35} className="cursor-pointer" />
         </div>
       </div>
       <div
-        className={`absolute right-14 top-20 z-20 rounded-md bg-white p-8 ${
-          toggleProfileModal
+        className={`absolute right-14 top-20 z-20 rounded-md bg-white p-8 ${toggleProfileModal
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0"
-        }  transition-opacity duration-500 ease-in-out`}
+          }  transition-opacity duration-500 ease-in-out`}
         style={{
           boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
           border: "0.5px solid #D7D7D7",

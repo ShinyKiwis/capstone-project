@@ -112,9 +112,9 @@ const CreateProject = () => {
       <div className="flex w-full items-center pt-4">
         <div>
           <Profile
-            type="horizontal-detailed"
+            type="horizontal"
             username={name}
-            userEmail={email}
+            email={email}
             userId={id}
           />
         </div>
@@ -306,12 +306,9 @@ const CreateProject = () => {
           <div className="flex justify-end gap-4 pt-4">
             <Button
               isPrimary={true}
-              variant="confirm"
-              className="px-[0.8em] py-[0.25em] text-lg"
+              variant="success"
+              className="px-4 py-2 text-lg"
               onClick={() =>
-                // alert(
-                //   `SUBMITTING PROJECT:\nTitle:${title}\n\nInstructors:\n${JSON.stringify(instructors)}\n\nBranch: ${branch}\n\nProgram: ${program}\n\nProject description:\n ${desc} \n Project tasks:\n ${tasks} \n Project refs:\n ${refs}`
-                // )
                 alert(
                   `SUBMITTING PROJECT:\nTitle:${title}\n\nProject description:\n ${desc} \n Project tasks:\n ${tasks} \n Project refs:\n ${refs}`,
                 )
@@ -321,8 +318,8 @@ const CreateProject = () => {
             </Button>
             <Button
               isPrimary={true}
-              variant="action"
-              className="px-[0.8em] py-[0.25em] text-lg"
+              variant="normal"
+              className="px-4 py-2 text-lg"
             >
               Save Changes
             </Button>
