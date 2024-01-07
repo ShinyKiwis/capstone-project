@@ -5,7 +5,8 @@ interface ProfileProps {
   type: string;
   username: string;
   userAvatar?: string;
-  email?: string;
+  userId?: string;
+  email?: string
 }
 
 const DefaultProfileImage = ({
@@ -29,22 +30,63 @@ const DefaultProfileImage = ({
   );
 };
 
-const Profile = ({ type, username, userAvatar, email }: ProfileProps) => {
-  return (
-    <div
-      className={`flex ${
-        type == "horizontal" ? "gap-2" : "flex-col"
-      } w-full items-center`}
-    >
-      {userAvatar ? (
-        <Image src={userAvatar} width={50} height={50} alt="user profile" />
-      ) : (
-        <DefaultProfileImage username={username} type={type} />
-      )}
-      <span className="text-lg">{username}</span>
-      <span>{email}</span>
-    </div>
-  );
+const Profile = ({ type, username, userAvatar, userId, email }: ProfileProps) => {
+  switch (type){
+    case 'horizontal':
+      return (
+        <div
+          className={`flex gap-2 w-full items-center`}
+        >
+          {userAvatar ? 
+          <Image src={userAvatar} width={50} height={50} alt="user profile" />:
+          <DefaultProfileImage username={username} type={type}/>
+          }
+          <span className="text-lg">{username}</span>
+        </div>
+      );
+    case 'vertical':
+      return(
+        <div
+          className={`flex flex-col gap-2 w-full items-center`}
+        >
+          {userAvatar ? 
+          <Image src={userAvatar} width={50} height={50} alt="user profile" />:
+          <DefaultProfileImage username={username} type={type}/>
+          }
+          <span className="text-lg">{username}</span>
+        </div>
+      )
+      
+    case 'horizontal-detailed':
+      return(
+        <div
+          className={`flex gap-2 w-full items-center`}
+        >
+          {userAvatar ? 
+          <Image src={userAvatar} width={50} height={50} alt="user profile" />:
+          <DefaultProfileImage username={username} type={type}/>
+          }
+          <div>
+            <div className="text-lg break-normal">{username}</div>
+            <div className="break-normal">{userId} - {email}</div>
+          </div>
+        </div>
+      )
+      
+  }
+  // return (
+  //   <div
+  //     className={`flex ${
+  //       type == "horizontal" ? "gap-2" : "flex-col"
+  //     } w-full items-center`}
+  //   >
+  //     {userAvatar ? 
+  //     <Image src={userAvatar} width={50} height={50} alt="user profile" />:
+  //     <DefaultProfileImage username={username} />
+  //     }
+  //     <span className="text-lg">{username}</span>
+  //   </div>
+  // );
 };
 
 export default Profile;

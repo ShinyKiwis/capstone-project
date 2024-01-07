@@ -7,7 +7,12 @@ import useUser from "@/app/hooks/useUser";
 import { useState } from "react";
 import LogoutButton from "../UserAction/Buttons/LogoutButton";
 
-let userRole = "student";
+///////////// Test session data													/////////////////// Test data
+let userFullName = "User Name";
+let usermail = "username@hcmut.edu.vn";
+let userRole = 'supervisor';
+let profileImgSrc = '/logoHCMUT.png'
+
 
 interface TitlePathMappings {
   [key: string]: object;
@@ -18,57 +23,70 @@ interface TitleRoleMappings {
 }
 
 const titleRoleMappings: TitleRoleMappings = {
-  // Map user's role with the correct title
-  administrate_roles: {
-    dean: "Administrative pages",
-  },
-  program_roles: {
-    other: "Program pages",
-  },
-  specializedProject_roles: {
-    student: "Specialized Project Enrollment",
-    other: "Specialized Project Management",
-  },
-  capstoneProject_roles: {
-    student: "Capstone Project Enrollment",
-    other: "Capstone Project Management",
-  },
-  assessment_roles: {
-    other: "Assessment pages",
-  },
-  evaluation_roles: {
-    other: "Evaluation pages",
-  },
-};
+	// Map user's role with the correct title
+	administrate_roles: {
+		dean: "Administrative pages"
+	},
+	program_roles: {
+		other: "Program pages"
+	},
+	specializedProject_roles: {
+		student: "Specialized project enrollment",
+		other: "Specialized project management",
+	},
+	capstoneProject_roles: {
+		student: "Capstone project enrollment",
+		other: "Capstone project management",
+	},
+	assessment_roles: {
+		other: "Assessment pages"
+	},
+	evaluation_roles: {
+		other: "Evaluation pages"
+	},
+	specializedProjectCreation_roles: {
+		supervisor: "Create a new specialized project"
+	},
+	capstoneProjectCreation_roles: {
+		supervisor: "Create a new capstone project"
+	}
+}
 
 const titlePathMappings: TitlePathMappings = {
-  // Determine role-title sets with path and param
-  "/administrate": {
-    any: titleRoleMappings["administrate_roles"],
-  },
-  "/program": {
-    any: titleRoleMappings["program_roles"],
-  },
-  "/project": {
-    specialized: titleRoleMappings["specializedProject_roles"],
-    capstone: titleRoleMappings["capstoneProject_roles"],
-    any: titleRoleMappings["incorrect_param"],
-  },
-  "/assessment": {
-    any: titleRoleMappings["assessment_roles"],
-  },
-  "/evaluation": {
-    any: titleRoleMappings["evaluation_roles"],
-  },
+	// Determine role-title sets with path and param
+	'/administrate': {
+		'any': titleRoleMappings['administrate_roles']
+	},
+	'/program': {
+		'any': titleRoleMappings['program_roles']
+	},
+	'/project': {
+		'specialized': titleRoleMappings['specializedProject_roles'],
+		'capstone': titleRoleMappings['capstoneProject_roles'],
+		'any': titleRoleMappings['incorrect_param']
+	},
+	'/assessment': {
+		'any': titleRoleMappings['assessment_roles']
+	},
+	'/evaluation': {
+		'any': titleRoleMappings['evaluation_roles']
+	},
+	'/project/create': {
+		'specialized': titleRoleMappings['specializedProjectCreation_roles'],
+		'capstone': titleRoleMappings['capstoneProjectCreation_roles'],
+	}
 };
 
-function getTitle() {
-  let currentPath = usePathname();
-  let searchParam = useSearchParams();
-  let currParam = null;
-  searchParam.forEach((value, key) => {
-    currParam = value;
-  });
+function getTitle(){
+	let currentPath = usePathname();
+	let searchParam = useSearchParams();
+	let currParam = null;
+	console.log("Current path:", currentPath);
+
+	// Currently mapping title with last param on the url
+	searchParam.forEach((value, key) => {
+		currParam = value;
+	});
 
   // Get title sets based on current path
   let pathRoles = titlePathMappings[currentPath];

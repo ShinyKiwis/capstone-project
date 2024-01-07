@@ -12,12 +12,6 @@ export interface ActionModalProps{
 }
 
 const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
-  // if (!content) return "No content passed for warning modal";
-  // if (!('title' in content) || typeof(content.title)!='string')
-  //   return "No title provided for warning modal";
-  // if (!('messages' in content) || !Array.isArray(content.messages))
-  //   return "No title provided for warning modal";
-
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     return "No context set up for rejection modal";
@@ -43,7 +37,7 @@ const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
       <Button
         isPrimary={true}
         variant="cancel"
-        className='mt-6 w-44'
+        className='mt-6 w-44 py-2 text-lg'
         onClick={()=>{alert('Action button clicked'); toggleModal(false)}}
       >
         {buttonLabels[0]}
@@ -51,7 +45,7 @@ const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
       <Button
         isPrimary={true}
         variant="close"
-        className='mt-6 w-44'
+        className='mt-6 w-44 py-2 text-lg'
         onClick={()=>toggleModal(false)}
       >
         {buttonLabels[1]}
@@ -62,12 +56,6 @@ const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
 }
 
 const ProjDenyModal = () => {
-  // if (!content) return "No content passed for rejection modal";
-  // if (!('title' in content) || typeof(title)!='string')
-  //   return "No title provided for rejection modal";
-  // if (!('messages' in content) || !Array.isArray(messages))
-  //   return "No title provided for rejection modal";
-
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     return "No context set up for rejection modal";
@@ -97,7 +85,7 @@ const ProjDenyModal = () => {
       <Button
         isPrimary={true}
         variant="cancel"
-        className='mt-6 w-44'
+        className='mt-6 w-44 py-2 text-lg'
         onClick={()=>{alert('Action button clicked'); toggleModal(false)}}
       >
         Deny
@@ -105,7 +93,7 @@ const ProjDenyModal = () => {
       <Button
         isPrimary={true}
         variant="confirm"
-        className='mt-6 w-44'
+        className='mt-6 w-44 py-2 text-lg'
         onClick={()=>toggleModal(false)}
       >
         Cancel
