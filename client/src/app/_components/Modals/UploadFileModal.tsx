@@ -2,19 +2,21 @@ import React, { SyntheticEvent, useRef, useState } from "react";
 import { Button, Typography } from "..";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { CgClose } from "react-icons/cg";
-import { FaAngleDoubleDown } from "react-icons/fa";
+import { FaAngleDoubleDown, FaRegFileWord } from "react-icons/fa";
 
 const UploadedFileItem = ({
-  fileName,
-  fileExtension,
+  file,
 }: {
-  fileName: string;
-  fileExtension: string;
+  file: File;
 }) => {
+  let icon: React.ReactNode
+  if (file.name.endsWith('.doc') || file.name.endsWith('.docx')) icon=<FaRegFileWord size={35} className='text-blue'/>
+  else icon=<FaRegFileWord size={25}/>
+
   return (
-    <div className="w-full mt-3 flex items-center rounded-lg bg-lightergray px-3 py-2">
-      <div>Icon</div>
-      <div className="text-lg font-semibold text-lightblue">{fileName}</div>
+    <div className="w-full mt-3 flex gap-3 items-center rounded-lg bg-lightergray px-3 py-2">
+      {icon}
+      <div className="text-lg font-semibold text-lightblue">{file.name}</div>
       <div className="right-0 ml-auto">
         <CgClose
           size={25}
@@ -27,9 +29,24 @@ const UploadedFileItem = ({
 };
 
 const UploadFileModal = () => {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [dragActive, setDragActive] = React.useState(false);
   var fileInput = useRef<any>(null);
+
+  function handleFileUpload(files: FileList){
+    let newFilesList = uploadedFiles;
+    Array.from(files).map((file) =>{
+      // console.log('Added file:', file)
+      newFilesList = newFilesList.concat(file);
+    })
+    setUploadedFiles(newFilesList);
+    // console.log("File uploaded:",files)
+    fileInput.current.value='';   // clear file input for new uploads
+  }
+
+  function handleFileRemove(){
+
+  }
 
   const handleDrag = function (e: any) {
     e.preventDefault();
@@ -46,9 +63,8 @@ const UploadFileModal = () => {
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      // at least one file has been dropped so do something
-      // handleFiles(e.dataTransfer.files);
-      console.log(e.dataTransfer.files);
+      // File added by drag&drop
+      handleFileUpload(e.dataTransfer.files);
     }
   };
 
@@ -90,11 +106,12 @@ const UploadFileModal = () => {
             type="file"
             className="hidden"
             ref={fileInput}
-            accept=".txt,.doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            accept=".txt,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             multiple={true}
-            onChange={({ target: { files } }) => {
-              if (files) {
-                console.log(files[0]?.name);
+            onChange={(e) => {
+              // Upload files via browse window
+              if (e.target.files) {
+                handleFileUpload(e.target.files)
               }
             }}
           />
@@ -110,7 +127,16 @@ const UploadFileModal = () => {
         )}
       </div>
 
-      <UploadedFileItem fileName="ProjectVS.txt" fileExtension=".txt" />
+      <div className="h-[40%] mt-3 overflow-y-auto">
+        {
+          uploadedFiles &&
+          Array.from(uploadedFiles).map((file, index) =>{
+            return(
+              <UploadedFileItem file={file} key={index}/>
+            )
+          })
+        }
+      </div>
     </div>
   );
 };
