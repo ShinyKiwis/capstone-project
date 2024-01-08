@@ -21,11 +21,12 @@ let UsersRepository = class UsersRepository extends typeorm_1.Repository {
         this.dataSource = dataSource;
     }
     async createUser(createUserDto) {
-        const { id, username, email } = createUserDto;
+        const { id, username, email, name } = createUserDto;
         const user = this.create({
             id,
             username,
             email,
+            name
         });
         try {
             await this.save(user);
@@ -61,6 +62,11 @@ let UsersRepository = class UsersRepository extends typeorm_1.Repository {
         await this.save(user);
         return user;
     }
+    async getAllInstructors() {
+        const query = this.createQueryBuilder('user').leftJoin('user.roles', 'roles').where('roles.id=:id', { id: 2 }).select(['user.id', 'user.name']);
+        const lecturer = await query.getMany();
+        return lecturer;
+    }
 };
 exports.UsersRepository = UsersRepository;
 exports.UsersRepository = UsersRepository = __decorate([
@@ -76,6 +82,7 @@ let StudentsRepository = class StudentsRepository extends typeorm_1.Repository {
     }
     async createStudent(createStudentDto) {
         const { id, username, name, email, generation, credits, GPA } = createStudentDto;
+        console.log(createStudentDto);
         const user = await this.userRepository.createUser({
             id,
             username,

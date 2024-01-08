@@ -6,13 +6,13 @@ export class User {
   @PrimaryColumn()
   id: number;
 
-  @Column({ unique: true, nullable: true })
+  @Column({ unique: true })
   email: string;
 
-  @Column({unique: true, nullable: true})
+  @Column({ unique: true })
   username: string;
 
-  @Column({nullable: true})
+  @Column()
   name: string;
 
   @ManyToMany(() => Role)

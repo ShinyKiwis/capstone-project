@@ -25,6 +25,7 @@ export class UsersController {
 
   @Post('/student')
   create(@Body() createStudentDto: CreateStudentDto) {
+    console.log(createStudentDto);
     return this.usersService.createAStudentUser(createStudentDto);
   }
 
@@ -36,6 +37,11 @@ export class UsersController {
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get('/instructors')
+  getAllInstructors() {
+    return this.usersService.getAllInstructors();
   }
 
   @Post('/:id/roles')

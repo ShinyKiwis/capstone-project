@@ -28,6 +28,7 @@ let UsersController = class UsersController {
         return this.usersService.updateOrCreateAUser(createUserDto);
     }
     create(createStudentDto) {
+        console.log(createStudentDto);
         return this.usersService.createAStudentUser(createStudentDto);
     }
     enrollToAProject(enrollProjectDto) {
@@ -35,6 +36,9 @@ let UsersController = class UsersController {
     }
     findAll() {
         return this.usersService.findAll();
+    }
+    getAllInstructors() {
+        return this.usersService.getAllInstructors();
     }
     assignRoles(id, assignRolesDto) {
         return this.usersService.assignRoles(+id, assignRolesDto);
@@ -77,6 +81,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('/instructors'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "getAllInstructors", null);
 __decorate([
     (0, common_1.Post)('/:id/roles'),
     __param(0, (0, common_1.Param)('id')),

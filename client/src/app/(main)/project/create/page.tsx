@@ -8,6 +8,7 @@ import {
   MultiselectDropdown,
   Profile,
 } from "@/app/_components";
+import {useBranch, useMajor, useUser} from "@/app/hooks"
 import { useState } from "react";
 import { CgClose } from "react-icons/cg";
 
@@ -23,7 +24,6 @@ const CreateProject = () => {
   //Test rendering pre-made content in richtext input
   const [TestContent, setTestContent] = useState("");
 
-  //////////////////////////////// Display components  ////////////////////////////////////////////
   const InputFieldTitle = ({ title }: { title: string }) => {
     let className = "text-2xl font-bold mb-2";
     return <div className={className}>{title}</div>;
@@ -40,6 +40,9 @@ const CreateProject = () => {
   };
 
   const InputsTable = () => {
+    const user = useUser()
+    const {branches} = useBranch()
+    const {majors} = useMajor()
     return (
       <table className="border-separate border-spacing-3">
         <tbody>
@@ -47,14 +50,14 @@ const CreateProject = () => {
             <td>
               <InputLabel title="Project ID:" />
             </td>
-            <td className="rounded-md bg-lightgray px-2 py-2">Draft ID</td>
+            <td className="rounded-md bg-lightgray px-2 py-2">Draft</td>
           </tr>
           <tr>
             <td>
               <InputLabel title="Project owner:" />
             </td>
             <td className="rounded-md bg-lightgray px-2 py-2">
-              Its youuuuuuuuuuuuuuu
+              {user.name}
             </td>
           </tr>
           <tr>
@@ -63,17 +66,17 @@ const CreateProject = () => {
             </td>
             <td>
               <InputField>
-                <DropdownMenu name="projectBranch" options={branchOptions} />
+                <DropdownMenu name="projectBranch" options={branches} />
               </InputField>
             </td>
           </tr>
           <tr>
             <td>
-              <InputLabel title="Program:" />
+              <InputLabel title="Major:" />
             </td>
             <td>
               <InputField>
-                <DropdownMenu name="projectProgram" options={programOptions} />
+                <DropdownMenu name="projectProgram" options={majors} />
               </InputField>
             </td>
           </tr>
@@ -87,7 +90,7 @@ const CreateProject = () => {
                   type="number"
                   name="membersLimit"
                   min={1}
-                  max={20}
+                  max={10}
                   defaultValue={1}
                   className="w-full rounded-md bg-lightgray px-2 py-2"
                 ></input>
@@ -129,43 +132,6 @@ const CreateProject = () => {
     );
   };
 
-
-  ////////////////////////// Test data   ///////////////////////////////////////////////////
-  const branchOptions = [
-    // retrieve from DB ?
-    {
-      title: "High Quality",
-      value: "CC",
-    },
-    {
-      title: "Standard Program",
-      value: "SD",
-    },
-    {
-      title: "Vie - JP",
-      value: "VJ",
-    },
-    {
-      title: "Vie - Fr",
-      value: "VF",
-    },
-  ];
-
-  const programOptions = [
-    // retrieve from DB ?
-    {
-      title: "Computer Science",
-      value: "CS",
-    },
-    {
-      title: "Computer Engineering",
-      value: "CE",
-    },
-    {
-      title: "Very Long Computer Engineering Program Long Name",
-      value: "long",
-    },
-  ];
 
   const instructorsList = [
     // retrieve from DB ?
@@ -235,12 +201,12 @@ const CreateProject = () => {
           <div className="pt-4 w-full">
             <InputFieldTitle title="Instructors" />
             <SearchBox placeholder="Search instructor's name, id..." />
-            {/* <MultiselectDropdown
+            <MultiselectDropdown
               name="supervisors"
               isMulti={true}
               options={instructorsList}
               placeholder="Add instructors"
-            /> */}
+            />
             <div className="px-3">
               {selectedInstructorsList.map(function (instructor) {
                 return (

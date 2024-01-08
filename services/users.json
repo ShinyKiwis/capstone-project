@@ -69,6 +69,12 @@
       "name": "Liên Mai",
       "password": "CJaKE7t9",
       "email": "lienmai@hcmut.edu.vn"
+    }, {
+      "id": 2619,
+      "username": "chauvtn",
+      "name": "Võ Thị Ngọc Châu",
+      "password": "chauvtn",
+      "email": "chauvtn@hcmut.edu.vn"
     }
   ]
 }

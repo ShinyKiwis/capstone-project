@@ -55,11 +55,14 @@ export default function Login() {
       }, {
         validateStatus: status => status >= 200 && status < 500
       })
-      const { authenticated, token, cookie, user } = response.data;
+      const { authenticated, token, cookie, user, instructors, majors, branches } = response.data;
       console.log(response.data)
       if (authenticated) {
         localStorage.setItem("token", token);
         localStorage.setItem("cookie", JSON.stringify(cookie));
+        sessionStorage.setItem("instructors", JSON.stringify(instructors))
+        sessionStorage.setItem("majors", JSON.stringify(majors))
+        sessionStorage.setItem("branches", JSON.stringify(branches))
         login(user)
       } else {
         setError(response.data.message)

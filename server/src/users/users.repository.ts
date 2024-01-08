@@ -20,12 +20,13 @@ export class UsersRepository extends Repository<User> {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const { id, username, email } = createUserDto;
+    const { id, username, email, name } = createUserDto;
 
     const user = this.create({
       id,
       username,
       email,
+      name
     });
 
     try {
@@ -66,6 +67,12 @@ export class UsersRepository extends Repository<User> {
     await this.save(user);
     return user;
   }
+
+  async getAllInstructors() {
+    const query = this.createQueryBuilder('user').leftJoin('user.roles', 'roles').where('roles.id=:id', { id: 2 }).select(['user.id', 'user.name']);
+    const lecturer = await query.getMany();
+    return lecturer;
+  }
 }
 
 @Injectable()
@@ -80,6 +87,16 @@ export class StudentsRepository extends Repository<Student> {
 
   async createStudent(createStudentDto: CreateStudentDto): Promise<User> {
     const { id, username, name, email, generation, credits, GPA } = createStudentDto;
+    console.log(createStudentDto);
+    // let user;
+    // try {
+
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    //   throw error;
+    // }
+
     const user = await this.userRepository.createUser({
       id,
       username,

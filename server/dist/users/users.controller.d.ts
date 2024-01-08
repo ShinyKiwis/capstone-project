@@ -11,6 +11,7 @@ export declare class UsersController {
     create(createStudentDto: CreateStudentDto): Promise<import("./entities/user.entity").User>;
     enrollToAProject(enrollProjectDto: EnrollProjectDto): Promise<void>;
     findAll(): string;
+    getAllInstructors(): Promise<import("./entities/user.entity").User[]>;
     assignRoles(id: string, assignRolesDto: AssignRolesDto): Promise<import("./entities/user.entity").User>;
     getAUser(id: string): Promise<import("./entities/user.entity").User>;
     update(id: string, updateUserDto: UpdateUserDto): string;

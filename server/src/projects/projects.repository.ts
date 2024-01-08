@@ -17,7 +17,7 @@ export class ProjectsRepository extends Repository<Project> {
   }
 
   async createProject(createProjectDto: CreateProjectDto): Promise<Project> {
-    const { name, stage, detail, semester, requirements, supervisors } =
+    const { name, stage, detail, semester, requirements, supervisors, majors, branches, limit } =
       createProjectDto;
 
     const project = this.create({
@@ -26,6 +26,9 @@ export class ProjectsRepository extends Repository<Project> {
       detail,
       semester,
       supervisors,
+      majors,
+      branches,
+      limit,
       status: ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD,
     });
     await this.save(project);
@@ -47,6 +50,8 @@ export class ProjectsRepository extends Repository<Project> {
       .leftJoinAndSelect('project.requirements', 'requirements')
       .leftJoinAndSelect('project.students', 'students')
       .leftJoinAndSelect('project.supervisors', 'supervisors')
+      .leftJoinAndSelect('project.majors', 'majors')
+      .leftJoinAndSelect('project.branches', 'branches')
       // .leftJoinAndSelect('students.userId', 'students')
       .loadRelationCountAndMap('project.studentsCount', 'project.students');
 
@@ -77,7 +82,7 @@ export class ProjectsRepository extends Repository<Project> {
   async getProjectByCode(code: number) {
     const found = await this.findOne({
       where: { code },
-      relations: { semester: true, supervisors: true, students: true },
+      relations: { semester: true, supervisors: true, students: true, majors: true, branches: true },
     });
 
     if (!found) {

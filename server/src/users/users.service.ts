@@ -21,6 +21,10 @@ export class UsersService {
     return this.studentsRepository.createStudent(createStudentDto);
   }
 
+  getAllInstructors() {
+    return this.usersRepository.getAllInstructors();
+  }
+
   findAll() {
     return `This action returns all users`;
   }

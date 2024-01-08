@@ -8,19 +8,53 @@ import {
 } from "@/app/_components";
 import { IoOptions, IoCreate } from "react-icons/io5";
 import { RiUpload2Fill } from "react-icons/ri";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ModalContext } from "@/app/providers/ModalProvider";
 import Image from "next/image";
 import useUser from "@/app/hooks/useUser";
 import hasRole from "@/app/lib/hasRole";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import axios from 'axios';
 
-interface ProjectHeaderProps {
-  type: string;
-}
+type ProjectData = {
+  code: number;
+  name: string;
+  stage: number;
+  detail: string;
+  status: string;
+  semester: {
+    year: number;
+    no: number;
+    start: string;
+    end: string
+  };
+  requirements: any[];
+  students: {
+    userId: string;
+    credits: number;
+    generation: number;
+    GPA: string;
+    enrolledAt: string;
+  }[];
+  supervisors: {
+    id: number;
+    email: string;
+    username: string;
+    name: string
+  }[];
+  majors: {
+    id: number;
+    name: string
+  }[];
+  branches: {
+    id: number;
+    name: string;
+  }[];
+  studentsCount: number
+};
 
-const ProjectHeader = ({ type }: ProjectHeaderProps) => {
+const ProjectHeader = () => {
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     return null;
@@ -48,7 +82,7 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
       <div className="w-3/6">
         <div className="mt-4 flex gap-4">
           <div className="w-10/12">
-            <SearchBox placeholder="Search projects..."/>
+            <SearchBox placeholder="Search projects..." />
           </div>
           <Button
             variant="normal"
@@ -61,15 +95,15 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
           </Button>
         </div>
         {
-          !hasRole("student")  && <div className="flex gap-4 mt-4">
+          !hasRole("student") && <div className="flex gap-4 mt-4">
             <Button isPrimary variant="normal" className="px-4 py-2">
               <Link href={`/project/create?project=${searchParams.get('project')}`} className="flex gap-2 items-center">
-                <IoCreate size={25}/>
+                <IoCreate size={25} />
                 Create project
               </Link>
             </Button>
             <Button isPrimary variant="normal" className="flex gap-2 px-4 py-2 items-center">
-              <RiUpload2Fill size={25}/>
+              <RiUpload2Fill size={25} />
               Upload file
             </Button>
           </div>
@@ -93,29 +127,62 @@ const ProjectHeader = ({ type }: ProjectHeaderProps) => {
 const NoData = () => {
   return (
     <div className="mx-auto flex flex-col gap-8 items-center mt-44">
-      <Image src="/cat.png" width="150" height="150" alt="empty prompt"/>
-      <Typography variant="p" text="There is no project at the moment. Please come back later" className="text-gray text-xl"/>
+      <Image src="/cat.png" width="150" height="150" alt="empty prompt" />
+      <Typography variant="p" text="There is no project at the moment. Please come back later" className="text-gray text-xl" />
     </div>
   )
 }
 
 const Project = () => {
+  const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [viewing, setViewing] = useState<ProjectData>();
+
+  React.useEffect(() => {
+    axios.get("http://localhost:3500/projects").then((response) => {
+      setProjects(response.data.projects);
+      setViewing(response.data.projects[0]);
+    });
+  }, []);
+
+
+
   return (
     <div className="w-full">
-      <ProjectHeader type="Specialzed" />
+      <ProjectHeader />
       <div className="mt-4 flex gap-4 flex-auto">
         {/* <NoData /> */}
         <div className="flex w-1/2 flex-col gap-4">
-          <ProjectCard />
-          <ProjectCard />
-          <ProjectCard />
-          <ProjectCard />
-          <ProjectCard />
-          <ProjectCard />
-          <ProjectCard />
+          {
+            projects && projects.map(function(project) {
+              return (
+                <ProjectCard 
+                  key={project.code}
+                  id={project.code}
+                  title={project.name}
+                  description={project.detail}
+                  programs={project.branches}
+                  majors={project.majors}
+                  instructors={project.supervisors}
+                  membersNumber={project.studentsCount}
+                  members={project.students}
+                />
+              )
+            })
+          }
         </div>
         <div className="w-1/2">
-          <ProjectCardDetail />
+          {viewing &&
+            <ProjectCardDetail
+              id={viewing.code}
+              title={viewing.name}
+              description={viewing.detail}
+              programs={viewing.branches}
+              majors={viewing.majors}
+              instructors={viewing.supervisors}
+              membersNumber={viewing.studentsCount}
+              members={viewing.students}
+            />
+          }
         </div>
       </div>
     </div>
