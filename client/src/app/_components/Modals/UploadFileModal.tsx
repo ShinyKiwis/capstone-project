@@ -6,8 +6,10 @@ import { FaAngleDoubleDown, FaRegFileWord } from "react-icons/fa";
 
 const UploadedFileItem = ({
   file,
+  removeFunction
 }: {
   file: File;
+  removeFunction: any;
 }) => {
   let icon: React.ReactNode
   if (file.name.endsWith('.doc') || file.name.endsWith('.docx')) icon=<FaRegFileWord size={35} className='text-blue'/>
@@ -21,7 +23,7 @@ const UploadedFileItem = ({
         <CgClose
           size={25}
           className="text-lack cursor-pointer hover:text-lightgray"
-          onClick={() => {}}
+          onClick={() => {removeFunction(file)}}
         />
       </div>
     </div>
@@ -44,8 +46,14 @@ const UploadFileModal = () => {
     fileInput.current.value='';   // clear file input for new uploads
   }
 
-  function handleFileRemove(){
+  function handleFileRemove(target: File){
+    const index = uploadedFiles.indexOf(target);
+    // console.log("Removing:", index)
+    if (index > -1) { // only splice array when item is found
 
+      uploadedFiles.splice(0, 1);
+      setUploadedFiles([...uploadedFiles]);
+    }
   }
 
   const handleDrag = function (e: any) {
@@ -132,7 +140,7 @@ const UploadFileModal = () => {
           uploadedFiles &&
           Array.from(uploadedFiles).map((file, index) =>{
             return(
-              <UploadedFileItem file={file} key={index}/>
+              <UploadedFileItem file={file} removeFunction={handleFileRemove} key={index}/>
             )
           })
         }
