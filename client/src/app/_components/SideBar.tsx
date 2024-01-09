@@ -16,7 +16,7 @@ import {
 interface SideBarItemProps {
   Icon?: any;
   title: string;
-  path: string;
+  paths: string[];
   pages: any;
 }
 
@@ -29,8 +29,9 @@ const parseUrlString = (pathString: string) => {
   return({path: pathName, paramName: paramName, paramVal: paramVal})
 }
 
-const SideBarItem = ({ Icon, title, path, pages }: SideBarItemProps) => {
+const SideBarItem = ({ Icon, title, paths, pages }: SideBarItemProps) => {
   const pathname = usePathname();
+  let currPageBelongToPaths = paths.some((path)=>path===pathname);
 
   const toggleAccordion = (accordBtn: any) => {
     let currTarget = accordBtn.parentNode.childNodes[1];
@@ -48,7 +49,7 @@ const SideBarItem = ({ Icon, title, path, pages }: SideBarItemProps) => {
   return (
     <div className="mb-2 w-4/5" key={title}>
       <button className="font-medium w-full" onClick={(e)=>toggleAccordion(e.currentTarget)}>
-        {path == pathname ? (
+        {currPageBelongToPaths ? (
           <div className="flex items-center gap-2 rounded-md bg-blue p-2 text-white ">
             {Icon && <Icon size={25} />}
             <span>{title}</span>
@@ -63,7 +64,7 @@ const SideBarItem = ({ Icon, title, path, pages }: SideBarItemProps) => {
 
       <div 
         className= "ease-in-out duration-300 delay-150"
-        style={{maxHeight: path == pathname ? '5em' : '0px', overflow:'hidden'}}
+        style={{maxHeight: currPageBelongToPaths ? '5em' : '0px', overflow:'hidden'}}
       >
         {pages.map(function(accordLink: any){     // Process each subpage
           const searchParam = useSearchParams();
@@ -96,7 +97,7 @@ const SideBar = () => {
     {
       Icon: MdManageAccounts,
       title: "Administration",
-      path: "/administrate",
+      paths: ["/administrate"],             // paths belonging to the sidebar tab option
       pages: [
         {
           title: "Manage users",
@@ -111,7 +112,7 @@ const SideBar = () => {
     {
       Icon: FaChalkboardTeacher,
       title: "Program",
-      path: "/program",
+      paths: ["/program"],
       pages: [
         {
           title: "Manage programs",
@@ -126,7 +127,7 @@ const SideBar = () => {
     {
       Icon: FaProjectDiagram,
       title: "Projects",
-      path: '/project',
+      paths: ['/project', '/project/create'],
       pages: [
         {
           title: "Specialized Projects",
@@ -141,7 +142,7 @@ const SideBar = () => {
     {
       Icon: FaUserGraduate,
       title: "Assessment",
-      path: '/assessment',
+      paths: ["/assessment"],
       pages: [
         {
           title: "Assessment schemes",
@@ -156,8 +157,7 @@ const SideBar = () => {
     {
       Icon: VscGraph,
       title: "Evaluation",
-      href: "/evaluation",
-      path: '/evaluation',
+      paths: ['/evaluation'],
       pages: [
         {
           title: "Input assessments",

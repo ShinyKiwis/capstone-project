@@ -7,7 +7,7 @@ import useUser from "@/app/hooks/useUser";
 import { useState } from "react";
 import LogoutButton from "../UserAction/Buttons/LogoutButton";
 
-let userRole = "student";
+let userRole = "supervisor";
 
 interface TitlePathMappings {
   [key: string]: object;
