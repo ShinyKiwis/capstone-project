@@ -1,4 +1,5 @@
-import React, { SyntheticEvent, useRef, useState } from "react";
+import React, { SyntheticEvent, useContext, useRef, useState } from "react";
+import { ModalContext } from "../../providers/ModalProvider";
 import { Button, Typography } from "..";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { CgClose } from "react-icons/cg";
@@ -6,24 +7,27 @@ import { FaAngleDoubleDown, FaRegFileWord } from "react-icons/fa";
 
 const UploadedFileItem = ({
   file,
-  removeFunction
+  removeFunction,
 }: {
   file: File;
   removeFunction: any;
 }) => {
-  let icon: React.ReactNode
-  if (file.name.endsWith('.doc') || file.name.endsWith('.docx')) icon=<FaRegFileWord size={35} className='text-blue'/>
-  else icon=<FaRegFileWord size={25}/>
+  let icon: React.ReactNode;
+  if (file.name.endsWith(".doc") || file.name.endsWith(".docx"))
+    icon = <FaRegFileWord size={35} className="text-blue" />;
+  else icon = <FaRegFileWord size={25} />;
 
   return (
-    <div className="w-full mt-3 flex gap-3 items-center rounded-lg bg-lightergray px-3 py-2">
+    <div className="mt-3 flex w-full items-center gap-3 rounded-lg bg-lightergray px-3 py-2">
       {icon}
       <div className="text-lg font-semibold text-lightblue">{file.name}</div>
       <div className="right-0 ml-auto">
         <CgClose
           size={25}
           className="text-lack cursor-pointer hover:text-lightgray"
-          onClick={() => {removeFunction(file)}}
+          onClick={() => {
+            removeFunction(file);
+          }}
         />
       </div>
     </div>
@@ -31,29 +35,41 @@ const UploadedFileItem = ({
 };
 
 const UploadFileModal = () => {
+  const modalContextValue = useContext(ModalContext);
+  if (!modalContextValue) {
+    console.error("Modal context not initiated for upload file modal !");
+    return;
+  }
+  const { toggleModal } = modalContextValue;
+
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [dragActive, setDragActive] = React.useState(false);
   var fileInput = useRef<any>(null);
 
-  function handleFileUpload(files: FileList){
+  function handleFileUpload(files: FileList) {
     let newFilesList = uploadedFiles;
-    Array.from(files).map((file) =>{
+    Array.from(files).map((file) => {
       // console.log('Added file:', file)
       newFilesList = newFilesList.concat(file);
-    })
+    });
     setUploadedFiles(newFilesList);
     // console.log("File uploaded:",files)
-    fileInput.current.value='';   // clear file input for new uploads
+    fileInput.current.value = ""; // clear file input for new uploads
   }
 
-  function handleFileRemove(target: File){
+  function handleFileRemove(target: File) {
     const index = uploadedFiles.indexOf(target);
     // console.log("Removing:", index)
-    if (index > -1) { // only splice array when item is found
+    if (index > -1) {
+      // only splice array when item is found
 
       uploadedFiles.splice(0, 1);
       setUploadedFiles([...uploadedFiles]);
     }
+  }
+
+  function handleFileSubmit() {
+    console.log(uploadedFiles);
   }
 
   const handleDrag = function (e: any) {
@@ -78,7 +94,11 @@ const UploadFileModal = () => {
 
   return (
     <div className="h-[80vh] w-[80vw]">
-      <Typography variant="h2" text="Upload file or multiple files" className="mb-4"/>
+      <Typography
+        variant="h2"
+        text="Upload file or multiple files"
+        className="mb-4"
+      />
       <div
         className=" flex h-1/2 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-lightblue bg-lightergray"
         onClick={() => {
@@ -119,7 +139,7 @@ const UploadFileModal = () => {
             onChange={(e) => {
               // Upload files via browse window
               if (e.target.files) {
-                handleFileUpload(e.target.files)
+                handleFileUpload(e.target.files);
               }
             }}
           />
@@ -135,15 +155,35 @@ const UploadFileModal = () => {
         )}
       </div>
 
-      <div className="h-[40%] mt-3 overflow-y-auto">
-        {
-          uploadedFiles &&
-          Array.from(uploadedFiles).map((file, index) =>{
-            return(
-              <UploadedFileItem file={file} removeFunction={handleFileRemove} key={index}/>
-            )
-          })
-        }
+      <div className="mt-3 h-[33%] overflow-y-auto">
+        {uploadedFiles &&
+          Array.from(uploadedFiles).map((file, index) => {
+            return (
+              <UploadedFileItem
+                file={file}
+                removeFunction={handleFileRemove}
+                key={index}
+              />
+            );
+          })}
+      </div>
+
+      <div className="mt-4 flex justify-end gap-3">
+        <Button
+          isPrimary={true}
+          variant={"normal"}
+          className="px-8 py-2"
+          onClick={handleFileSubmit}
+        >
+          Upload
+        </Button>
+        <Button
+          isPrimary={true}
+          variant={"cancel"}
+          onClick={() => toggleModal(false)}
+        >
+          Cancel
+        </Button>
       </div>
     </div>
   );
