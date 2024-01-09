@@ -54,6 +54,7 @@ type ProjectData = {
     name: string;
   }[];
   studentsCount: number;
+  limit: number
 };
 
 const ProjectHeader = () => {
@@ -179,6 +180,7 @@ const Project = () => {
                       "majors": project.majors,
                       "instructors": project.supervisors,
                       "membersNumber": project.studentsCount,
+                      "limit": project.limit,
                       "members": project.students,
                     }}
                     detailedViewSetter={setViewing}
@@ -199,6 +201,7 @@ const Project = () => {
                   instructors={viewing.supervisors}
                   membersNumber={viewing.studentsCount}
                   members={viewing.students}
+                  limit={viewing.limit}
                 />
               )}
             </div>

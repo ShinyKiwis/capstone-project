@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 /* Styling for quill richtext editor */
-.quill .ql-editor {
-    min-height: 15em;
-    line-break: anywhere;
+.quill {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }

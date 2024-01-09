@@ -35,6 +35,7 @@ export interface ProjectProps {
   }[];
   membersNumber: number;
   members: Member[];
+  limit: number
 }
 
 interface ProjectCardProps {
@@ -46,7 +47,7 @@ interface ProjectCardMetadataProps extends Pick<ProjectProps, 'id' | 'programs' 
 
 interface ProjectCardContentProps extends Pick<ProjectProps, 'title' | 'description'> { }
 
-interface ProjectCardListProps extends Pick<ProjectProps, 'membersNumber' | 'members'> {
+interface ProjectCardListProps extends Pick<ProjectProps, 'membersNumber' | 'members' | 'limit'> {
   className: string
 }
 
@@ -71,12 +72,12 @@ const ProjectCardContent = ({ title, description }: ProjectCardContentProps) => 
   );
 };
 
-export const ProjectCardList = ({ className, membersNumber, members }: ProjectCardListProps) => {
+export const ProjectCardList = ({ className, membersNumber, limit,  members }: ProjectCardListProps) => {
   return (
     <div className={`flex flex-col ${className}`}>
       <div className="ms-auto flex items-center gap-2">
         <BsFillPeopleFill size={20} />
-        <span>{members.length}/{membersNumber}</span>
+        <span>{members.length}/{limit}</span>
       </div>
       <div className="flex flex-col gap-2">
         {
@@ -153,6 +154,7 @@ const ProjectCardActions = ({ viewSet, viewTarget }: { viewSet: any, viewTarget:
           supervisors : viewTarget.instructors,
           studentsCount : viewTarget.membersNumber,
           students : viewTarget.members,
+          limit: viewTarget.limit
         })}
       >
         View
@@ -185,7 +187,7 @@ const ProjectCard = ({ projectObject, detailedViewSetter }: ProjectCardProps) =>
       <div className="flex">
         <ProjectCardMetadata id={projectObject.id} programs={projectObject.programs} majors={projectObject.majors} instructors={projectObject.instructors} />
         <ProjectCardContent title={projectObject.title} description={projectObject.description} />
-        <ProjectCardList className="w-1/4" membersNumber={projectObject.membersNumber} members={projectObject.members} />
+        <ProjectCardList className="w-1/4" membersNumber={projectObject.membersNumber} members={projectObject.members} limit={projectObject.limit}/>
       </div>
       <ProjectCardActions viewSet={detailedViewSetter} viewTarget={projectObject} />
     </div>

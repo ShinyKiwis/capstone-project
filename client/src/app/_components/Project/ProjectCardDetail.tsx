@@ -3,7 +3,7 @@ import parse from 'html-react-parser'
 import { Button, ProjectInformationTable, Typography } from "..";
 import { ProjectCardList, ProjectProps } from "./ProjectCard";
 
-const ProjectCardDetail = ({ id, title, description, tasks, references, programs, majors, instructors, membersNumber: membersNo, members }: ProjectProps) => {
+const ProjectCardDetail = ({ id, title, description, tasks, references, programs, majors, instructors, membersNumber, limit, members }: ProjectProps) => {
   return (
     <div className="rounded-md border border-black px-8 py-4">
       <Typography variant="h1" text={id.toString()} />
@@ -11,7 +11,7 @@ const ProjectCardDetail = ({ id, title, description, tasks, references, programs
       <div className="mb-4 flex w-full">
         <ProjectInformationTable fontSize="text-lg" programs={programs} majors={majors} instructors={instructors} />
         <div className="ms-auto">
-          <ProjectCardList className="w-full" membersNumber={membersNo} members={members} />
+          <ProjectCardList className="w-full" membersNumber={membersNumber} members={members} limit={limit}/>
         </div>
       </div>
       <Typography variant="h2" text="Description" />

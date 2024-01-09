@@ -49,7 +49,7 @@ const RichTextEditor = ({ onChange, initialContent }: RichTextEditorProps) => {
   // Pass a useState setter to onChange from parent element to get the inputted value
   // InitialContent is html code for rendering pre-made contents
   return (
-    <div className="h-fit">
+    <div className="grow">
       <ReactQuill
         modules={modules}
         formats={formats}
