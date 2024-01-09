@@ -52,7 +52,7 @@ export const ProjectCardList = ({ className }: { className: string }) => {
 const ProjectCardActions = () => {
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
-    console.error("Action buttons will not work - model context not initiated !");
+    console.error("Action buttons will not work - modal context not initiated !");
     return;
   }
   const { toggleModal, setModalType, setModalProps, modalProps } = modalContextValue;
