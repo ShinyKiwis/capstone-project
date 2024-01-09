@@ -39,7 +39,15 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Project.prototype, "detail", void 0);
+], Project.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Project.prototype, "tasks", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Project.prototype, "references", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)

@@ -9,7 +9,9 @@ export declare class Project {
     code: number;
     name: string;
     stage: number;
-    detail: string;
+    description: string;
+    tasks: string;
+    references: string;
     status: ProjectStatus;
     semester: Semester;
     requirements: Requirement[];

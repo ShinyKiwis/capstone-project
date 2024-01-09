@@ -5,7 +5,9 @@ import { User } from 'src/users/entities/user.entity';
 export declare class CreateProjectDto {
     name: string;
     stage: number;
-    detail: string;
+    description: string;
+    tasks: string;
+    references: string;
     semester: Semester;
     requirements: CreateProjectRequirementDto[];
     supervisors: User[];

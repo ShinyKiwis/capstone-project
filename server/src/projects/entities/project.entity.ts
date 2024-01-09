@@ -27,7 +27,13 @@ export class Project {
   stage: number;
 
   @Column()
-  detail: string;
+  description: string;
+
+  @Column()
+  tasks: string;
+
+  @Column()
+  references: string;
 
   @Column()
   status: ProjectStatus;

@@ -24,10 +24,17 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateProjectDto.prototype, "stage", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateProjectDto.prototype, "detail", void 0);
+], CreateProjectDto.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateProjectDto.prototype, "tasks", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateProjectDto.prototype, "references", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Array)

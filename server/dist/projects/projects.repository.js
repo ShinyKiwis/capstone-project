@@ -22,11 +22,13 @@ let ProjectsRepository = class ProjectsRepository extends typeorm_1.Repository {
         this.requirementRepository = requirementRepository;
     }
     async createProject(createProjectDto) {
-        const { name, stage, detail, semester, requirements, supervisors, majors, branches, limit } = createProjectDto;
+        const { name, stage, description, tasks, references, semester, requirements, supervisors, majors, branches, limit } = createProjectDto;
         const project = this.create({
             name,
             stage,
-            detail,
+            description,
+            tasks,
+            references,
             semester,
             supervisors,
             majors,

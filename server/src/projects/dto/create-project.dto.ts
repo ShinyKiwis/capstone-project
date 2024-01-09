@@ -18,9 +18,14 @@ export class CreateProjectDto {
   @IsNumber()
   stage: number;
 
-  @IsString()
   @IsNotEmpty()
-  detail: string;
+  description: string;
+
+  @IsNotEmpty()
+  tasks: string;
+
+  @IsNotEmpty()
+  references: string;
 
   semester: Semester;
 
