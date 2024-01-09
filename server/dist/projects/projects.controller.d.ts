@@ -1,3 +1,4 @@
+/// <reference types="multer" />
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
@@ -14,5 +15,10 @@ export declare class ProjectsController {
     }>;
     getProjectByCode(code: string): Promise<Project>;
     updateProjectStatus(id: string, updateProjectStatusDto: UpdateProjectStatusDto): Promise<Project>;
+    uploadFileAndCreateProject(file: Express.Multer.File): Promise<{
+        originalname: string;
+        filename: string;
+        path: string;
+    }>;
     deleteProject(code: string): Promise<void>;
 }

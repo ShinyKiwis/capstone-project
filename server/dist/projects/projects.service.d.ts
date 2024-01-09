@@ -15,4 +15,35 @@ export declare class ProjectsService {
     getProjectByCode(code: number): Promise<Project>;
     updateProjectStatus(code: number, status: ProjectStatus): Promise<Project>;
     deleteProject(code: number): Promise<void>;
+    currentTime(): number;
+    extractProjectTitle(inputText: string): {
+        vietnameseTitle: string;
+        englishTitle: string;
+    };
+    extractProjectInstructors(text: string): {
+        instructors: {};
+        emails: {};
+    };
+    extractMajor(inputText: string): {
+        major: string;
+    };
+    extractBranch(inputText: string): {
+        branch: string;
+    };
+    extractNumberOfParticipants(inputText: string): {
+        numberOfParticipants: number;
+    };
+    extractParticipants(inputText: string): {
+        pariticipants: {
+            name: string;
+            studentID: string;
+        }[];
+    };
+    extractInfo(inputText: any, type: any, startString: any, endString: any): {
+        [x: number]: any;
+    };
+    extractRefs(inputText: any): {
+        references: any;
+    };
+    extractProject(filepath: any): void;
 }

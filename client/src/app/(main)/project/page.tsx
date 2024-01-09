@@ -21,7 +21,9 @@ type ProjectData = {
   code: number;
   name: string;
   stage: number;
-  detail: string;
+  description: string;
+  tasks: string;
+  references: string;
   status: string;
   semester: {
     year: number;
@@ -150,6 +152,7 @@ const Project = () => {
 
   React.useEffect(() => {
     axios.get("http://localhost:3500/projects").then((response) => {
+      // console.log("Retreived projects:", response.data.projects);
       setProjects(response.data.projects);
       setViewing(response.data.projects[0]);
     });
@@ -166,14 +169,19 @@ const Project = () => {
                 return (
                   <ProjectCard
                     key={project.code}
-                    id={project.code}
-                    title={project.name}
-                    description={project.detail}
-                    programs={project.branches}
-                    majors={project.majors}
-                    instructors={project.supervisors}
-                    membersNumber={project.studentsCount}
-                    members={project.students}
+                    projectObject={{
+                      "id": project.code,
+                      "title": project.name,
+                      "description": project.description,
+                      "tasks": project.tasks,
+                      "references": project.references,
+                      "programs": project.branches,
+                      "majors": project.majors,
+                      "instructors": project.supervisors,
+                      "membersNumber": project.studentsCount,
+                      "members": project.students,
+                    }}
+                    detailedViewSetter={setViewing}
                   />
                 );
               })}
@@ -183,7 +191,9 @@ const Project = () => {
                 <ProjectCardDetail
                   id={viewing.code}
                   title={viewing.name}
-                  description={viewing.detail}
+                  description={viewing.description}
+                  tasks={viewing.tasks}
+                  references={viewing.references}
                   programs={viewing.branches}
                   majors={viewing.majors}
                   instructors={viewing.supervisors}

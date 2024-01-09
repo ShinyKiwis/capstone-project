@@ -3,6 +3,7 @@ import { Button, Profile, ProjectInformationTable, Typography } from "..";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { ModalContext } from "../../providers/ModalProvider";
 import { subscribe } from "diagnostics_channel";
+import parse from 'html-react-parser'
 
 type Member = {
   userId: string;
@@ -16,6 +17,8 @@ export interface ProjectProps {
   id: number;
   title: string;
   description: string;
+  tasks: string;
+  references: string;
   programs: {
     id: number;
     name: string;
@@ -34,9 +37,14 @@ export interface ProjectProps {
   members: Member[];
 }
 
+interface ProjectCardProps {
+  projectObject: ProjectProps;
+  detailedViewSetter: any
+}
+
 interface ProjectCardMetadataProps extends Pick<ProjectProps, 'id' | 'programs' | 'majors' | 'instructors'> { }
 
-interface ProjectCardContentProps extends Pick<ProjectProps, 'title' | 'description'> {}
+interface ProjectCardContentProps extends Pick<ProjectProps, 'title' | 'description'> { }
 
 interface ProjectCardListProps extends Pick<ProjectProps, 'membersNumber' | 'members'> {
   className: string
@@ -56,11 +64,9 @@ const ProjectCardContent = ({ title, description }: ProjectCardContentProps) => 
   return (
     <div className="w-3/6">
       <Typography variant="h2" text={title} />
-      <Typography
-        variant="p"
-        text={description}
-        className="text-sm"
-      />
+      <div className="text-sm [&>ol]:list-decimal [&>ol]:list-inside [&>ul]:list-disc [&>ul]:list-inside">
+        {parse(description)}
+      </div>
     </div>
   );
 };
@@ -85,7 +91,7 @@ export const ProjectCardList = ({ className, membersNumber, members }: ProjectCa
   );
 };
 
-const ProjectCardActions = () => {
+const ProjectCardActions = ({ viewSet, viewTarget }: { viewSet: any, viewTarget: ProjectProps }) => {
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     console.error("Action buttons will not work - model context not initiated !");
@@ -136,7 +142,18 @@ const ProjectCardActions = () => {
         isPrimary={false}
         variant="normal"
         className="w-full py-2"
-        onClick={handleAction}
+        onClick={() => viewSet({
+          code : viewTarget.id,
+          name : viewTarget.title,
+          description : viewTarget.description,
+          tasks : viewTarget.tasks,
+          references : viewTarget.references,
+          branches : viewTarget.programs,
+          majors : viewTarget.majors,
+          supervisors : viewTarget.instructors,
+          studentsCount : viewTarget.membersNumber,
+          students : viewTarget.members,
+        })}
       >
         View
       </Button>
@@ -162,15 +179,15 @@ const ProjectCardActions = () => {
   );
 };
 
-const ProjectCard = ({ id, title, description, programs, majors, instructors, membersNumber, members }: ProjectProps) => {
+const ProjectCard = ({ projectObject, detailedViewSetter }: ProjectCardProps) => {
   return (
     <div className="flex w-full cursor-pointer flex-col rounded-md border border-black px-4 py-4">
       <div className="flex">
-        <ProjectCardMetadata id={id} programs={programs} majors={majors} instructors={instructors} />
-        <ProjectCardContent title={title} description={description} />
-        <ProjectCardList className="w-1/4" membersNumber={membersNumber} members={members} />
+        <ProjectCardMetadata id={projectObject.id} programs={projectObject.programs} majors={projectObject.majors} instructors={projectObject.instructors} />
+        <ProjectCardContent title={projectObject.title} description={projectObject.description} />
+        <ProjectCardList className="w-1/4" membersNumber={projectObject.membersNumber} members={projectObject.members} />
       </div>
-      <ProjectCardActions />
+      <ProjectCardActions viewSet={detailedViewSetter} viewTarget={projectObject} />
     </div>
   );
 };

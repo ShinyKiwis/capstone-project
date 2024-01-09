@@ -18,6 +18,7 @@ const projects_service_1 = require("./projects.service");
 const create_project_dto_1 = require("./dto/create-project.dto");
 const get_projects_filter_dto_1 = require("./dto/get-projects-filter.dto");
 const update_project_status_dto_1 = require("./dto/update-project-status.dto");
+const projectFiles_interceptor_1 = require("./projectFiles.interceptor");
 let ProjectsController = class ProjectsController {
     constructor(projectsService) {
         this.projectsService = projectsService;
@@ -34,6 +35,15 @@ let ProjectsController = class ProjectsController {
     async updateProjectStatus(id, updateProjectStatusDto) {
         const { status } = updateProjectStatusDto;
         return this.projectsService.updateProjectStatus(+id, status);
+    }
+    async uploadFileAndCreateProject(file) {
+        const response = {
+            originalname: file.originalname,
+            filename: file.filename,
+            path: file.path
+        };
+        this.projectsService.extractProject(file.path);
+        return response;
     }
     async deleteProject(code) {
         return this.projectsService.deleteProject(+code);
@@ -69,6 +79,17 @@ __decorate([
     __metadata("design:paramtypes", [String, update_project_status_dto_1.UpdateProjectStatusDto]),
     __metadata("design:returntype", Promise)
 ], ProjectsController.prototype, "updateProjectStatus", null);
+__decorate([
+    (0, common_1.Post)('file'),
+    (0, common_1.UseInterceptors)((0, projectFiles_interceptor_1.default)({
+        fieldName: 'file',
+        path: '/projects'
+    })),
+    __param(0, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProjectsController.prototype, "uploadFileAndCreateProject", null);
 __decorate([
     (0, common_1.Delete)(':code'),
     __param(0, (0, common_1.Param)('code')),

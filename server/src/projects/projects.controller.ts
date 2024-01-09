@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { Project } from './entities/project.entity';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
+import ProjectFilesInterceptor from './projectFiles.interceptor';
 
 @Controller('projects')
 export class ProjectsController {
@@ -40,6 +43,21 @@ export class ProjectsController {
   ) {
     const { status } = updateProjectStatusDto;
     return this.projectsService.updateProjectStatus(+id, status);
+  }
+
+  @Post('file')
+  @UseInterceptors(ProjectFilesInterceptor({
+    fieldName: 'file',
+    path: '/projects'
+  }))
+  async uploadFileAndCreateProject(@UploadedFile() file: Express.Multer.File) {
+    const response = {
+    	originalname: file.originalname,
+    	filename: file.filename,
+      path: file.path
+    };
+    this.projectsService.extractProject(file.path);
+    return response;
   }
 
   @Delete(':code')
