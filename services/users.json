@@ -3,62 +3,78 @@
     {
       "id": 1,
       "username": "daonam",
-      "password": "J2dqSFa3",
+      "name": "Đào Nam",
+      "password": "daonam",
       "email": "daonam@hcmut.edu.vn"
     },
     {
       "id": 2,
       "username": "danvi",
+      "name": "Dân Vĩ",
       "password": "pWRGCmt5",
       "email": "danvi@hcmut.edu.vn"
     },
     {
       "id": 3,
       "username": "giabao",
-      "password": "QJe7fKw2",
+      "name": "Gia Bảo",
+      "password": "giabao",
       "email": "giabao@hcmut.edu.vn"
     },
     {
       "id": 4,
       "username": "hoangduong",
+      "name": "Hoàng Dương",
       "password": "t6PnVCwz",
       "email": "hoangduong@hcmut.edu.vn"
     },
     {
       "id": 5,
       "username": "hoanggia",
+      "name": "Hoàng Gia",
       "password": "ChMXfqp5",
       "email": "hoanggia@hcmut.edu.vn"
     },
     {
       "id": 6,
       "username": "hoanghoa",
+      "name": "Hoàng Hoa",
       "password": "VQtJPm42",
       "email": "hoanghoa@hcmut.edu.vn"
     },
     {
       "id": 7,
       "username": "hongnhi",
+      "name": "Hồng Nhi",
       "password": "PaBFzKf3",
       "email": "hongnhi@hcmut.edu.vn"
     },
     {
       "id": 8,
       "username": "hongvy",
+      "name": "Hồng Vy",
       "password": "nCMQJtR6",
       "email": "hongvy@hcmut.edu.vn"
     },
     {
       "id": 9,
       "username": "lanphuong",
+      "name": "Lan Phương",
       "password": "zhWMVpq8",
       "email": "lanphuong@hcmut.edu.vn"
     },
     {
       "id": 10,
       "username": "lienmai",
+      "name": "Liên Mai",
       "password": "CJaKE7t9",
       "email": "lienmai@hcmut.edu.vn"
+    }, {
+      "id": 2619,
+      "username": "chauvtn",
+      "name": "Võ Thị Ngọc Châu",
+      "password": "chauvtn",
+      "email": "chauvtn@hcmut.edu.vn"
     }
   ]
 }

@@ -36,6 +36,18 @@ __decorate([
     (0, class_validator_1.ArrayNotEmpty)(),
     __metadata("design:type", Array)
 ], CreateProjectDto.prototype, "supervisors", void 0);
+__decorate([
+    (0, class_validator_1.ArrayNotEmpty)(),
+    __metadata("design:type", Array)
+], CreateProjectDto.prototype, "majors", void 0);
+__decorate([
+    (0, class_validator_1.ArrayNotEmpty)(),
+    __metadata("design:type", Array)
+], CreateProjectDto.prototype, "branches", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateProjectDto.prototype, "limit", void 0);
 class CreateProjectRequirementDto {
 }
 exports.CreateProjectRequirementDto = CreateProjectRequirementDto;

@@ -10,6 +10,7 @@ export declare class UsersService {
     constructor(usersRepository: UsersRepository, studentsRepository: StudentsRepository);
     createAUser(createUserDto: CreateUserDto): Promise<import("./entities/user.entity").User>;
     createAStudentUser(createStudentDto: CreateStudentDto): Promise<import("./entities/user.entity").User>;
+    getAllInstructors(): Promise<import("./entities/user.entity").User[]>;
     findAll(): string;
     getAUser(id: number): Promise<import("./entities/user.entity").User>;
     updateOrCreateAUser(createUserDto: CreateUserDto): Promise<import("./entities/user.entity").User>;

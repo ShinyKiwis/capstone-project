@@ -3,6 +3,7 @@ import { Sintony, Poppins } from "next/font/google";
 
 import "../globals.css";
 import App from "../_components/App";
+import { AuthProvider } from "../providers/AuthProvider";
 
 const sintony = Sintony({ weight: ["400"], subsets: ["latin"] });
 const poppins = Poppins({ weight: ["400", "500", "600"], subsets: ["latin"] });
@@ -16,7 +17,9 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
   return (
     <html lang="en">
       <body className={`${sintony.className} ${poppins.className} flex`}>
-        <App children={children}/>
+        <AuthProvider>
+          <App children={children}/>
+        </AuthProvider>
       </body>
     </html>
   );

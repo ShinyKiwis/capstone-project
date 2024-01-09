@@ -1,8 +1,8 @@
 import React from "react";
 import { BiSearch } from "react-icons/bi";
 
-interface SearchBoxProps{
-  placeholder?: string
+interface SearchBoxProps {
+  placeholder: string;
 }
 
 const SearchBox = ({placeholder}: SearchBoxProps) => {

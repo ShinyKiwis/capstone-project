@@ -17,10 +17,10 @@ interface VariantMappings {
 const variantPrimaryMappings: VariantMappings = {
   normal:
     "text-white bg-blue border-2 border-blue hover:bg-lightblue hover:border-lightblue hover:scale-105 duration-300",
-  action: "text-white bg-lightblue min-w-fit",
-  confirm: "text-white bg-lightgreen min-w-fit",
-  cancel: "text-white bg-red min-w-fit",
-  close: "text-white bg-gray min-w-fit",
+  danger: "text-white bg-red border-2 border-red hover:bg-lightred hover:border-lightred hover:scale-105 duration-300",
+  success: "text-white bg-green border-green hover:bg-lightgreen hover:border-lightgreen hover:scale-105 duration-300",
+  cancel: "text-white bg-red min-w-fit px-8 py-2 text-xl",
+  close: "text-white bg-gray min-w-fit px-8 py-2 text-xl",
 };
 
 const variantSecondaryMappings: VariantMappings = {
@@ -42,7 +42,7 @@ const Button = ({
   return (
     <button
       onClick={onClick}
-      className={`rounded-md text-center  ${className} ${variantStyle}`}
+      className={`rounded-md text-center font-medium ${className} ${variantStyle}`}
     >
       {children}
     </button>

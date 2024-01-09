@@ -4,46 +4,82 @@ import { BsFillPeopleFill } from "react-icons/bs";
 import { ModalContext } from "../../providers/ModalProvider";
 import { subscribe } from "diagnostics_channel";
 
-interface ProjectProps {
-  id: string;
-  title: string;
-  description: string;
-  program: string;
-  major: string;
-  instructors: [string];
+type Member = {
+  userId: string;
+  credits: number;
+  generation: number;
+  GPA: string;
+  enrolledAt: string;
 }
 
-const ProjectCardMetadata = () => {
+export interface ProjectProps {
+  id: number;
+  title: string;
+  description: string;
+  programs: {
+    id: number;
+    name: string;
+  }[];
+  majors: {
+    id: number;
+    name: string
+  }[];
+  instructors: {
+    id: number;
+    email: string;
+    username: string;
+    name: string
+  }[];
+  membersNumber: number;
+  members: Member[];
+}
+
+interface ProjectCardMetadataProps extends Pick<ProjectProps, 'id' | 'programs' | 'majors' | 'instructors'> { }
+
+interface ProjectCardContentProps extends Pick<ProjectProps, 'title' | 'description'> {}
+
+interface ProjectCardListProps extends Pick<ProjectProps, 'membersNumber' | 'members'> {
+  className: string
+}
+
+
+const ProjectCardMetadata = ({ id, programs, majors, instructors }: ProjectCardMetadataProps) => {
   return (
     <div className="flex w-2/6 flex-col items-center">
-      <Typography variant="h2" text="CS220" />
-      <ProjectInformationTable fontSize="text-sm" />
+      <Typography variant="h2" text={id.toString()} />
+      <ProjectInformationTable fontSize="text-sm" programs={programs} majors={majors} instructors={instructors} />
     </div>
   );
 };
 
-const ProjectCardContent = () => {
+const ProjectCardContent = ({ title, description }: ProjectCardContentProps) => {
   return (
     <div className="w-3/6">
-      <Typography variant="h2" text="Image Segmentation" />
+      <Typography variant="h2" text={title} />
       <Typography
         variant="p"
-        text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        text={description}
         className="text-sm"
       />
     </div>
   );
 };
 
-export const ProjectCardList = ({ className }: { className: string }) => {
+export const ProjectCardList = ({ className, membersNumber, members }: ProjectCardListProps) => {
   return (
     <div className={`flex flex-col ${className}`}>
       <div className="ms-auto flex items-center gap-2">
         <BsFillPeopleFill size={20} />
-        <span>1/4</span>
+        <span>{members.length}/{membersNumber}</span>
       </div>
       <div className="flex flex-col gap-2">
-        <Profile type="horizontal" username="Nguyen Van B" />
+        {
+          members.map(function (member: Member) {
+            return (
+              <Profile key={member.userId} type="horizontal" username="Nguyen Van B" />
+            )
+          })
+        }
       </div>
     </div>
   );
@@ -74,7 +110,7 @@ const ProjectCardActions = () => {
           break;
         } else {
           let failReasons = ["Not enough credits accumulated ! (<90)", "Your GPA is too low ! (<8.0)"]          // test
-          setModalProps({title: "Project requirements not met !", messages: failReasons})
+          setModalProps({ title: "Project requirements not met !", messages: failReasons })
           setModalType("status_warning");
           break;
         }
@@ -90,7 +126,7 @@ const ProjectCardActions = () => {
       default:
         console.error("Invalid action button:", action);
         return;
-      }
+    }
     toggleModal(true);
   };
 
@@ -126,13 +162,13 @@ const ProjectCardActions = () => {
   );
 };
 
-const ProjectCard = () => {
+const ProjectCard = ({ id, title, description, programs, majors, instructors, membersNumber, members }: ProjectProps) => {
   return (
     <div className="flex w-full cursor-pointer flex-col rounded-md border border-black px-4 py-4">
       <div className="flex">
-        <ProjectCardMetadata />
-        <ProjectCardContent />
-        <ProjectCardList className="w-1/4" />
+        <ProjectCardMetadata id={id} programs={programs} majors={majors} instructors={instructors} />
+        <ProjectCardContent title={title} description={description} />
+        <ProjectCardList className="w-1/4" membersNumber={membersNumber} members={members} />
       </div>
       <ProjectCardActions />
     </div>

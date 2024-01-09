@@ -46,7 +46,7 @@ const SideBarItem = ({ Icon, title, path, pages }: SideBarItemProps) => {
   var selectedOption = null;
   // console.log("Current path:",pathname);
   return (
-    <div className="mb-2 w-4/5">
+    <div className="mb-2 w-4/5" key={title}>
       <button className="font-medium w-full" onClick={(e)=>toggleAccordion(e.currentTarget)}>
         {path == pathname ? (
           <div className="flex items-center gap-2 rounded-md bg-blue p-2 text-white ">
@@ -73,7 +73,7 @@ const SideBarItem = ({ Icon, title, path, pages }: SideBarItemProps) => {
             selected = true
 
           return(
-            <div>
+            <div key={accordLink.href}>
               <Link href={accordLink.href} className="block ml-4">
                 {selected ? 
                   <span className="text-blue font-medium hover:text-blue">{accordLink.title}</span>
@@ -179,7 +179,7 @@ const SideBar = () => {
 
       <div className="flex flex-col items-center">
         {sidebarItems.map(function (element) {
-          return SideBarItem(element);
+          return <SideBarItem {...element} key={element.title}/>;
         })}
       </div>
     </div>

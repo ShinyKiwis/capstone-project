@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Sintony, Poppins } from "next/font/google";
 import "../globals.css";
+import { AuthProvider } from "../providers/AuthProvider";
 
 const sintony = Sintony({ weight: ["400"], subsets: ["latin"] });
 const poppins = Poppins({ weight: ["400", "500", "600"], subsets: ["latin"] });
@@ -18,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${sintony.className} ${poppins.className}`}>
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

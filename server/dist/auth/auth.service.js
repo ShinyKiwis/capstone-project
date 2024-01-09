@@ -11,21 +11,31 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
+const branches_repository_1 = require("../programs/branches.repository");
+const majors_repository_1 = require("../programs/majors.repository");
 const users_repository_1 = require("../users/users.repository");
 let AuthService = class AuthService {
-    constructor(usersRepository) {
+    constructor(usersRepository, branchesRepository, majorsRepository) {
         this.usersRepository = usersRepository;
+        this.branchesRepository = branchesRepository;
+        this.majorsRepository = majorsRepository;
     }
     async getAuthSession(session, createUserDto) {
         const user = await this.usersRepository.updateOrCreateAUser(createUserDto);
+        const branches = await this.branchesRepository.getAllBranches();
+        const majors = await this.majorsRepository.getAllMajors();
+        const lecturer = await this.usersRepository.getAllInstructors();
         session.authenticated = true;
         session.user = user;
+        session.branches = branches,
+            session.majors = majors;
+        session.instructors = lecturer;
         return session;
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_repository_1.UsersRepository])
+    __metadata("design:paramtypes", [users_repository_1.UsersRepository, branches_repository_1.BranchesRepository, majors_repository_1.MajorsRepository])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

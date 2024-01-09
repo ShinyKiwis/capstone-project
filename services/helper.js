@@ -14,8 +14,19 @@ const usersByUsername = userData["users"].reduce((acc, user) => {
   return acc
 }, {})
 
+function getUser(user) {
+  let authenticatedUser = null
+  userData["users"].forEach(storedUser => {
+    if(storedUser.username === user.username) {
+      authenticatedUser = storedUser
+      return
+    }
+  })
+  return authenticatedUser
+}
 
 function authenticate(user) {
+  console.log(user)
   const {username, password, _} = user
   return usersByUsername[username]["password"] === password
 }
@@ -29,5 +40,6 @@ function jwt_generation(user) {
 
 module.exports = {
   jwt_generation,
+  getUser,
   authenticate
 }

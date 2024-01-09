@@ -5,6 +5,7 @@ interface InputBoxProps {
   placeholderText: string;
   autoFocus?: boolean;
   type?: string;
+  className?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -13,6 +14,7 @@ const InputBox = ({
   placeholderText,
   autoFocus = false,
   type,
+  className,
   onChange,
 }: InputBoxProps) => {
   const inputType = type || "";
@@ -22,7 +24,7 @@ const InputBox = ({
       name={inputName}
       placeholder={placeholderText}
       type={inputType}
-      className="focus:outline-blue flex w-full items-center rounded border-2 px-4 py-2 focus:border-transparent focus:outline"
+      className={`focus:outline-blue flex w-full items-center rounded border-2 focus:border-transparent focus:outline ${className}`}
       onChange={(e) => onChange(e)}
     />
   );

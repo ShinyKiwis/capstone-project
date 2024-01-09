@@ -13,6 +13,7 @@ export declare class UsersRepository extends Repository<User> {
     getUserById(id: number): Promise<User>;
     updateOrCreateAUser(createUserDto: CreateUserDto): Promise<User>;
     assignRoles(id: number, assignRolesDto: AssignRolesDto): Promise<User>;
+    getAllInstructors(): Promise<User[]>;
 }
 export declare class StudentsRepository extends Repository<Student> {
     private dataSource;

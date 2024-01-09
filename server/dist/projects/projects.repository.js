@@ -22,13 +22,16 @@ let ProjectsRepository = class ProjectsRepository extends typeorm_1.Repository {
         this.requirementRepository = requirementRepository;
     }
     async createProject(createProjectDto) {
-        const { name, stage, detail, semester, requirements, supervisors } = createProjectDto;
+        const { name, stage, detail, semester, requirements, supervisors, majors, branches, limit } = createProjectDto;
         const project = this.create({
             name,
             stage,
             detail,
             semester,
             supervisors,
+            majors,
+            branches,
+            limit,
             status: project_status_enum_1.ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD,
         });
         await this.save(project);
@@ -49,6 +52,8 @@ let ProjectsRepository = class ProjectsRepository extends typeorm_1.Repository {
             .leftJoinAndSelect('project.requirements', 'requirements')
             .leftJoinAndSelect('project.students', 'students')
             .leftJoinAndSelect('project.supervisors', 'supervisors')
+            .leftJoinAndSelect('project.majors', 'majors')
+            .leftJoinAndSelect('project.branches', 'branches')
             .loadRelationCountAndMap('project.studentsCount', 'project.students');
         if (members) {
         }
@@ -70,7 +75,7 @@ let ProjectsRepository = class ProjectsRepository extends typeorm_1.Repository {
     async getProjectByCode(code) {
         const found = await this.findOne({
             where: { code },
-            relations: { semester: true, supervisors: true, students: true },
+            relations: { semester: true, supervisors: true, students: true, majors: true, branches: true },
         });
         if (!found) {
             throw new common_1.NotFoundException(`Project with code "${code}" not found`);

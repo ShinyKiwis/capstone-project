@@ -1,3 +1,5 @@
+import { Branch } from "@/app/hooks/useBranch";
+import { Major } from "@/app/hooks/useMajor";
 import React from "react";
 
 interface DropdownMenuProps {
@@ -5,10 +7,7 @@ interface DropdownMenuProps {
   variant?: string,
   selectClassname?: string,
   optionClassname?: string,
-  options: {
-    title: string,
-    value: string
-  }[]
+  options: (Branch|Major)[]
 }
 
 interface VariantMappings {
@@ -42,14 +41,14 @@ const DropdownMenu = ({name, variant, selectClassname, optionClassname, options}
       name={name} 
       className={`${selectClassname} ${selectVariantClass}`}
     >
-      {options.map(function(opt, index){
+      {options.map(function(option){
         return(
           <option 
-            value={opt.value} 
-            key={index}
+            value={option.name} 
+            key={option.id}
             className={`${optionClassname} ${optionVariantClass}` }
           >
-            {opt.title}
+            {option.name}
           </option>
         )
       })}

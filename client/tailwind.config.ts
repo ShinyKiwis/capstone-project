@@ -22,9 +22,11 @@ const config: Config = {
       black: '#000000',
       gray: '#878787',
       lightgray: '#CACACA',
+      green: '#7BC92D',
       lightgreen: '#6ED10A',
       yellow: '#FFD400',
       red: '#CA3D3D',
+      lightred: '#cc5050',
       white: '#FFFFFF'
     }
   },
