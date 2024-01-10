@@ -77,7 +77,7 @@ let ProjectsRepository = class ProjectsRepository extends typeorm_1.Repository {
     async getProjectByCode(code) {
         const found = await this.findOne({
             where: { code },
-            relations: { semester: true, supervisors: true, students: true, majors: true, branches: true },
+            relations: { semester: true, supervisors: true, students: true, majors: true, branches: true, requirements: true },
         });
         if (!found) {
             throw new common_1.NotFoundException(`Project with code "${code}" not found`);

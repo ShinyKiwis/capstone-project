@@ -84,7 +84,7 @@ export class ProjectsRepository extends Repository<Project> {
   async getProjectByCode(code: number) {
     const found = await this.findOne({
       where: { code },
-      relations: { semester: true, supervisors: true, students: true, majors: true, branches: true },
+      relations: { semester: true, supervisors: true, students: true, majors: true, branches: true, requirements: true },
     });
 
     if (!found) {

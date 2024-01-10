@@ -19,15 +19,14 @@ type InstructorOptType = {
   value: string
 }
 
-const EditProject = ({params}: {params: {slug: string}}) => {
+const EditProject = ({params}: {params: {id: string}}) => {
   const { branches } = useBranch()
   const { majors } = useMajor()
   const { instructors } = useInstructor()
   const navigate = useNavigate()
   const searchParams = useSearchParams()
   const user = useUser()
-  const project = useProject(params.slug)
-  console.log(params.slug)
+  const project = useProject(params.id)
 
   const [title, setTitle] = useState("");
   const [instructorList, setInstructorList] = useState<InstructorOptType[]>([]);
@@ -54,7 +53,14 @@ const EditProject = ({params}: {params: {slug: string}}) => {
       setBranch(branches[0].name)
       setMajor(majors[0].name)
     }
-  }, [branches, majors])
+    if(project) {
+      setTitle(project.name)
+      setDescription(project.description)
+      setTasks(project.tasks)
+      setRefs(project.references)
+      setNumberOfMembers(project.limit)
+    }
+  }, [branches, majors, project])
 
   const InputFieldTitle = ({ title
       }: { title: string }) => {
@@ -93,7 +99,7 @@ const EditProject = ({params}: {params: {slug: string}}) => {
             <td>
               <InputLabel title="Project ID:" />
             </td>
-            <td className="rounded-md bg-lightgray px-2 py-2">Draft</td>
+            <td className="rounded-md bg-lightgray px-2 py-2">{project?.code}</td>
           </tr>
           <tr>
             <td>
@@ -211,6 +217,7 @@ const EditProject = ({params}: {params: {slug: string}}) => {
         rows={1}
         style={{ resize: "none" }}
         required
+        value={title}
         onChange={(e) => setTitle(e.target.value)}
       ></textarea>
 
@@ -259,7 +266,7 @@ const EditProject = ({params}: {params: {slug: string}}) => {
           <div className="w-2/3">
             <div className="h-full flex flex-col">
               <p className="text-2xl font-bold mb-4">Description</p>
-              <RichTextEditor onChange={setDescription} />
+              <RichTextEditor onChange={setDescription} initialContent={description}/>
             </div>
           </div>
         </div>
@@ -271,7 +278,7 @@ const EditProject = ({params}: {params: {slug: string}}) => {
           <div className="w-2/3">
             <div className="h-full flex flex-col">
               <p className="text-2xl font-bold mb-4">Tasks/Missions</p>
-              <RichTextEditor onChange={setTasks} />
+              <RichTextEditor onChange={setTasks} initialContent={tasks}/>
             </div>
           </div>
         </div>
@@ -281,7 +288,7 @@ const EditProject = ({params}: {params: {slug: string}}) => {
           <div className="w-2/3">
             <div className="h-full flex flex-col">
               <p className="text-2xl font-bold mb-4">References</p>
-              <RichTextEditor onChange={setRefs} />
+              <RichTextEditor onChange={setRefs} initialContent={refs}/>
             </div>
           </div>
         </div>
