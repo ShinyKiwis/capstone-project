@@ -144,9 +144,9 @@ const ProfileSelector = ({
     department: string;
   }) => {
     return (
-      <div className="flex flex-col w-full items-center pt-8">
+      <div className="flex flex-col w-full h-full items-center justify-center pt-8">
         <Profile type="vertical" username={name} />
-        <InfoTable id={id} email={email} department={department} className="mt-4 ml-12"/>
+        <InfoTable id={id} email={email} department={department} className="mt-4"/>
       </div>
     );
   };
@@ -172,7 +172,7 @@ const ProfileSelector = ({
   }
 
   return (
-    <div className="grow">
+    <div className='grow'>
       <MultiselectDropdown
         name="supervisors"
         isMulti={true}
@@ -183,7 +183,7 @@ const ProfileSelector = ({
         }
       />
 
-      <div className="px-3">
+      <div className="flex flex-col px-3 items-center justify-center">
         {selected.length > 0 &&
           selected.map(function (selectedOption: OptionType) {
             // Map list of selected options with data list from DB

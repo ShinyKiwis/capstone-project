@@ -115,8 +115,10 @@ const FilterModal = () => {
               text="Instructor"
               className="mb-2 text-2xl font-bold"
             />
-            <ProfileSelector type="instructors" valueSetter={setInstructor} isMulti={false}/>
-            <div className="h-full">{instructor.length<1 && <NoInstructor />}</div>
+            <div className={`${instructor.length>0 ? 'h-full' : ''}`}>
+              <ProfileSelector type="instructors" valueSetter={setInstructor} isMulti={false}/>
+            </div>
+            <div className={`${instructor.length>0 ? '' : 'h-full'}`}>{instructor.length<1 && <NoInstructor />}</div>
           </div>
         </div>
         <div className="ms-auto flex gap-4">
