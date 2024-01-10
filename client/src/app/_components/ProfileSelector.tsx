@@ -177,7 +177,7 @@ const ProfileSelector = ({
         name="supervisors"
         isMulti={true}
         options={optionsList || []}
-        placeholder={`Search ${type} name, id`}
+        placeholder={`Search ${type} name, id...`}
         onChange={(newOpt: OptionType[]) =>
           handleSelectAdd(newOpt, selected, setSelected)
         }

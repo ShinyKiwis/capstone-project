@@ -5,6 +5,8 @@ import { Button, InputBox, SearchBox, Typography } from "..";
 import CheckBox from "../UserAction/CheckBox";
 import ProfileSelector from "../ProfileSelector";
 import Image from "next/image";
+import { useUser } from "@/app/hooks";
+import hasRole from "@/app/lib/hasRole";
 
 const NoInstructor = () => {
   return (
@@ -25,12 +27,20 @@ const NoInstructor = () => {
 };
 
 const FilterModal = () => {
+  const user = useUser();
   const [numberOfParticipants, setNumberOfParticipants] = useState("1");
   const [instructor, setInstructor] = useState<{label:string, value:string}[]>([]);
   const programOptions = [
     "Computer Science",
     "Computer Engineering",
     "Multidisciplinary Project",
+  ];
+
+  const branchOptions = [
+    "High quality",
+    "PFIEV",
+    "VJEP",
+    "Regular program"
   ];
 
   const handleChangeNumberOfParticipants = (
@@ -44,7 +54,34 @@ const FilterModal = () => {
     <div className="h-[80vh] w-[80vw]">
       <form className="flex h-full w-full flex-col">
         <div className="flex h-full w-full">
+          
           <div className="w-1/2">
+            {hasRole("student")?
+            ""
+            :
+            <>
+              <Typography
+                variant="p"
+                text="Project type"
+                className="mb-4 text-2xl font-bold"
+              />
+              <div className="flex gap-4">
+                <CheckBox option="Personal projects" key="Personal projects" />
+                <CheckBox option="All projects" key="All projects" />
+              </div>
+
+              <Typography
+                variant="p"
+                text="Branch"
+                className="mb-4 text-2xl font-bold"
+              />
+              <div className="flex gap-4">
+                {branchOptions.map((option) => {
+                  return <CheckBox option={option} key={option} />;
+                })}
+              </div>
+            </>
+            }
             <Typography
               variant="p"
               text="Program"
@@ -79,7 +116,7 @@ const FilterModal = () => {
               className="mb-2 text-2xl font-bold"
             />
             <ProfileSelector type="instructors" valueSetter={setInstructor} isMulti={false}/>
-            <div className="h-full">{!instructor && <NoInstructor />}</div>
+            <div className="h-full">{instructor.length<1 && <NoInstructor />}</div>
           </div>
         </div>
         <div className="ms-auto flex gap-4">
