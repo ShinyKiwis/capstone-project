@@ -28,7 +28,7 @@ const DynamicModal = () => {
       case "filter":
         return <FilterModal />;
       case "status_success":
-        return <SuccessModal title="Project enrolled successfully !" />;
+        return <SuccessModal title="Enrolled successfully !" />;
       case "status_warning":
         return <WarningModal title={modalProps?.title} messages={modalProps?.messages} />;
       case "project_unerollment":

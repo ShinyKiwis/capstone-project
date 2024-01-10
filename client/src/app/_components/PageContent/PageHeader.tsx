@@ -6,6 +6,7 @@ import { MdArrowDropDown } from "react-icons/md";
 import useUser from "@/app/hooks/useUser";
 import { useState } from "react";
 import LogoutButton from "../UserAction/Buttons/LogoutButton";
+import { usePageTitle } from "@/app/hooks";
 
 let userRole = "student";
 
@@ -112,12 +113,15 @@ function getTitle() {
 
 const PageHeader = () => {
   const [toggleProfileModal, setToggleProfileModal] = useState(false);
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const pageTitle = usePageTitle(pathname+searchParams.toString())
   const user = useUser();
 
   return (
     <div className="relative flex h-20 items-center gap-4 pl-8 pr-14 pt-5">
       <div>
-        <Typography variant="h1" text={getTitle()} color="text-darkblue" />
+        <Typography variant="h1" text={pageTitle} color="text-darkblue" />
       </div>
       <div
         className="ms-auto flex gap-4"

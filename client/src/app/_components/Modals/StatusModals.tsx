@@ -62,7 +62,7 @@ const SuccessModal = ({title}: StatusModalProps) => {
     </div>
     <Button 
       isPrimary={true} 
-      variant="confirm" 
+      variant="success" 
       className='mt-8 w-44 py-2 text-lg'
       onClick={()=>toggleModal(false)}
     >

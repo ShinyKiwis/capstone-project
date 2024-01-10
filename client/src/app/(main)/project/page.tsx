@@ -64,7 +64,6 @@ const ProjectHeader = () => {
   }
   const [projectsPerPage, setProjectsPerPage] = useState("");
   const { toggleModal, setModalType } = modalContextValue;
-  const user = useUser();
   const searchParams = useSearchParams();
 
   const handleProjectsPerPageChange = (

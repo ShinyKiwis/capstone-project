@@ -36,6 +36,7 @@ const CreateProject = () => {
   const [tasks, setTasks] = useState("");
   const [refs, setRefs] = useState("");
   const [numberOfMembers, setNumberOfMembers] = useState(1)
+  console.log(instructors)
   const instructorsOptions: InstructorOptType[] = useMemo(() => {
     if (instructors.length !== 0) {
       return instructors.map((instructor) => ({
