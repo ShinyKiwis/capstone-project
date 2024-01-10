@@ -26,8 +26,8 @@ const NoInstructor = () => {
 
 const FilterModal = () => {
   const [numberOfParticipants, setNumberOfParticipants] = useState("1");
-  const [instructor, setInstructor] = useState(null);
-  const options = [
+  const [instructor, setInstructor] = useState<{label:string, value:string}[]>([]);
+  const programOptions = [
     "Computer Science",
     "Computer Engineering",
     "Multidisciplinary Project",
@@ -51,7 +51,7 @@ const FilterModal = () => {
               className="mb-4 text-2xl font-bold"
             />
             <div className="flex gap-4">
-              {options.map((option) => {
+              {programOptions.map((option) => {
                 return <CheckBox option={option} key={option} />;
               })}
             </div>
@@ -78,7 +78,7 @@ const FilterModal = () => {
               text="Instructor"
               className="mb-2 text-2xl font-bold"
             />
-            <ProfileSelector type="instructors"/>
+            <ProfileSelector type="instructors" valueSetter={setInstructor} isMulti={false}/>
             <div className="h-full">{!instructor && <NoInstructor />}</div>
           </div>
         </div>
@@ -87,6 +87,7 @@ const FilterModal = () => {
             isPrimary
             variant="normal"
             className="px-8 py-1 font-bold text-white"
+            onClick={(e)=>{e.preventDefault(); console.log(instructor)}}
           >
             Apply
           </Button>

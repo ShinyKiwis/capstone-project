@@ -7,6 +7,7 @@ import {
   SearchBox,
   MultiselectDropdown,
   Profile,
+  ProfileSelector,
 } from "@/app/_components";
 import axios from "axios";
 import { useBranch, useInstructor, useMajor, useNavigate, useUser } from "@/app/hooks"
@@ -22,7 +23,6 @@ type InstructorOptType = {
 const CreateProject = () => {
   const { branches } = useBranch()
   const { majors } = useMajor()
-  const { instructors } = useInstructor()
   const navigate = useNavigate()
   const searchParams = useSearchParams()
   const user = useUser()
@@ -36,16 +36,6 @@ const CreateProject = () => {
   const [tasks, setTasks] = useState("");
   const [refs, setRefs] = useState("");
   const [numberOfMembers, setNumberOfMembers] = useState(1)
-  console.log(instructors)
-  const instructorsOptions: InstructorOptType[] = useMemo(() => {
-    if (instructors.length !== 0) {
-      return instructors.map((instructor) => ({
-        label: `${instructor.id} - ${instructor.name}`,
-        value: instructor.id.toString(),
-      }));
-    }
-    return [];
-  }, [instructors]);
 
   useEffect(() => {
     if (branches.length > 0 || majors.length > 0) {
@@ -143,61 +133,6 @@ const CreateProject = () => {
     );
   };
 
-  const ProfileItems = ({
-    name,
-    id,
-    email,
-  }: {
-    name: string;
-    id: string;
-    email: string;
-  }) => {
-    return (
-      <div className="flex w-full items-center pt-4">
-        <div>
-          <Profile
-            type="horizontal"
-            username={name}
-            email={email}
-            userId={id}
-          />
-        </div>
-        <div className="right-0 ml-auto">
-          <CgClose
-            size={25}
-            className="text-lack cursor-pointer hover:text-lightgray"
-            onClick={() => {
-              const targetInstructor = instructorsOptions.find(obj => {
-                return obj.value === id;
-              })
-              // console.log("Remove target:", targetInstructor)
-              let targetIndex = -1;
-              if (targetInstructor && instructorList.length > 0) {
-                targetIndex = instructorList.findIndex((obj) => obj.value === id);
-              }
-              // console.log("Found index:", targetIndex)
-              if (targetIndex > -1) {
-                instructorList.splice(targetIndex, 1);
-                setInstructorList([...instructorList])
-              }
-            }}
-          />
-        </div>
-      </div>
-    );
-  };
-
-  function handleSelectAdd(newOpt: any, targetArr: any, targetArrSetter: any) {
-    console.log(newOpt)
-    let found = targetArr.findIndex((obj: any) => obj.value === newOpt[0].value);
-    console.log(found);
-    if (found === -1) {
-      let newArr = targetArr.concat(newOpt);
-      console.log("New array", newArr);
-      targetArrSetter(newArr);
-    }
-  }
-
   return (
     <div className="w-full flex-1 bg-white">
 
@@ -228,30 +163,7 @@ const CreateProject = () => {
         <div className="flex gap-4 h-fit mt-4">
           <div className="w-1/3 h-64">
             <InputFieldTitle title="Instructors" />
-            <MultiselectDropdown
-              name="supervisors"
-              isMulti={true}
-              options={instructorsOptions}
-              placeholder="Search instructor name, id"
-              onChange={(newOpt: InstructorOptType) => handleSelectAdd(newOpt, instructorList, setInstructorList)}
-            />
-            <div className="px-3">
-              {instructorList.length > 0 && instructorList.map(function (selectedOption: { value: string, label: string }) {
-                // Map list of selected options with list from DB
-                console.log(selectedOption);
-                const instructorData = instructors.find(obj => {
-                  return obj.id.toString() === selectedOption.value
-                })
-
-                return (
-                  <ProfileItems
-                    name={instructorData!.name}
-                    id={instructorData!.id.toString()}
-                    email={instructorData!.email}
-                  />
-                );
-              })}
-            </div>
+            <ProfileSelector type="instructors" valueSetter={setInstructorList} isMulti={true}/>
           </div>
           <div className="w-2/3">
             <div className="h-full flex flex-col">
@@ -334,6 +246,7 @@ const CreateProject = () => {
           isPrimary={true}
           variant="normal"
           className="px-4 py-2 text-lg"
+          onClick={()=>console.log(instructorList)}
         >
           Save Changes
         </Button>
