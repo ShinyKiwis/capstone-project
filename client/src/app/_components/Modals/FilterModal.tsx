@@ -1,6 +1,9 @@
+'use client'
+
 import React, { useState } from "react";
 import { Button, InputBox, SearchBox, Typography } from "..";
 import CheckBox from "../UserAction/CheckBox";
+import ProfileSelector from "../ProfileSelector";
 import Image from "next/image";
 
 const NoInstructor = () => {
@@ -75,7 +78,7 @@ const FilterModal = () => {
               text="Instructor"
               className="mb-2 text-2xl font-bold"
             />
-            <SearchBox placeholder="Nguyen Van A" />
+            <ProfileSelector type="instructors"/>
             <div className="h-full">{!instructor && <NoInstructor />}</div>
           </div>
         </div>
