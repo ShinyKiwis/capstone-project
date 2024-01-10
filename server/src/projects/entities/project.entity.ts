@@ -11,9 +11,9 @@ import {
 import { ProjectStatus } from '../project-status.enum';
 import { Requirement } from './requirement.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Student } from 'src/users/entities/student.entity';
 import { Major } from 'src/programs/entities/major.entity';
 import { Branch } from 'src/programs/entities/branch.entity';
+import { Student } from 'src/students/entities/student.entity';
 
 @Entity()
 export class Project {

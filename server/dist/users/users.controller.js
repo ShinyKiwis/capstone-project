@@ -17,9 +17,9 @@ const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
 const create_user_dto_1 = require("./dto/create-user.dto");
 const update_user_dto_1 = require("./dto/update-user.dto");
-const create_student_dto_1 = require("./dto/create-student.dto");
-const enroll_project_dto_1 = require("./dto/enroll-project.dto");
 const assign_role_dto_1 = require("./dto/assign-role.dto");
+const create_student_dto_1 = require("../students/dto/create-student.dto");
+const enroll_project_dto_1 = require("../students/dto/enroll-project.dto");
 let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;

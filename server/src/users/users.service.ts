@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateStudentDto } from './dto/create-student.dto';
-import { StudentsRepository, UsersRepository } from './users.repository';
-import { EnrollProjectDto } from './dto/enroll-project.dto';
+import { UsersRepository } from './users.repository';
 import { AssignRolesDto } from './dto/assign-role.dto';
+import { StudentsRepository } from 'src/students/students.repository';
+import { CreateStudentDto } from 'src/students/dto/create-student.dto';
+import { EnrollProjectDto } from 'src/students/dto/enroll-project.dto';
 
 @Injectable()
 export class UsersService {
@@ -29,12 +30,26 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  getAUser(id: number) {
-    return this.usersRepository.getUserById(id);
+  async getAUser(id: number) {
+    const user = await this.usersRepository.getUserById(id);
+    const student = await this.studentsRepository.getStudentById(id);
+    console.log(user);
+    console.log(student);
+    if(student) {
+      return {...user, ...student};
+    }
+    return user;
   }
 
-  updateOrCreateAUser(createUserDto: CreateUserDto) {
-    return this.usersRepository.updateOrCreateAUser(createUserDto);
+  async updateOrCreateAUser(createUserDto: CreateUserDto) {
+    const user = await this.usersRepository.updateOrCreateAUser(createUserDto);
+    const student = await this.studentsRepository.getStudentById(user.id);
+    console.log(user);
+    console.log(student);
+    if(student) {
+      return {...user, ...student};
+    }
+    return user;
   }
 
   enrollToAProject(enrollProjectDto: EnrollProjectDto) {

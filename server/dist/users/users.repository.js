@@ -9,12 +9,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StudentsRepository = exports.UsersRepository = void 0;
+exports.UsersRepository = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
-const student_entity_1 = require("./entities/student.entity");
 const common_1 = require("@nestjs/common");
-const projects_repository_1 = require("../projects/projects.repository");
 let UsersRepository = class UsersRepository extends typeorm_1.Repository {
     constructor(dataSource) {
         super(user_entity_1.User, dataSource.createEntityManager());
@@ -46,8 +44,15 @@ let UsersRepository = class UsersRepository extends typeorm_1.Repository {
             where: { id },
             relations: { roles: true },
         });
+        const foundStudent = await this.findOne({
+            where: { id },
+        });
         if (!found) {
             throw new common_1.NotFoundException(`User with ID "${id}" not found`);
+        }
+        let result;
+        if (foundStudent) {
+            result = { ...result, ...foundStudent };
         }
         return found;
     }
@@ -73,52 +78,4 @@ exports.UsersRepository = UsersRepository = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeorm_1.DataSource])
 ], UsersRepository);
-let StudentsRepository = class StudentsRepository extends typeorm_1.Repository {
-    constructor(dataSource, userRepository, projectRepository) {
-        super(student_entity_1.Student, dataSource.createEntityManager());
-        this.dataSource = dataSource;
-        this.userRepository = userRepository;
-        this.projectRepository = projectRepository;
-    }
-    async createStudent(createStudentDto) {
-        const { id, username, name, email, generation, credits, GPA } = createStudentDto;
-        console.log(createStudentDto);
-        const user = await this.userRepository.createUser({
-            id,
-            username,
-            email,
-            name
-        });
-        const student = this.create({
-            userId: user.id,
-            generation,
-            credits,
-            GPA,
-        });
-        await this.save(student);
-        return user;
-    }
-    async getStudentById(id) {
-        const found = await this.findOneBy({ userId: id });
-        if (!found) {
-            throw new common_1.NotFoundException(`Student with ID "${id}" not found`);
-        }
-        return found;
-    }
-    async enrollProject(enrollProjectDto) {
-        const { studentId, projectCode } = enrollProjectDto;
-        const project = await this.projectRepository.getProjectByCode(projectCode);
-        const student = await this.getStudentById(studentId);
-        student.project = project;
-        student.enrolledAt = new Date();
-        await this.save(student);
-    }
-};
-exports.StudentsRepository = StudentsRepository;
-exports.StudentsRepository = StudentsRepository = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeorm_1.DataSource,
-        UsersRepository,
-        projects_repository_1.ProjectsRepository])
-], StudentsRepository);
 //# sourceMappingURL=users.repository.js.map

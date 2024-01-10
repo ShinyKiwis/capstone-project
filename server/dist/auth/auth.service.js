@@ -13,15 +13,21 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const branches_repository_1 = require("../programs/branches.repository");
 const majors_repository_1 = require("../programs/majors.repository");
+const students_repository_1 = require("../students/students.repository");
 const users_repository_1 = require("../users/users.repository");
 let AuthService = class AuthService {
-    constructor(usersRepository, branchesRepository, majorsRepository) {
+    constructor(usersRepository, branchesRepository, majorsRepository, studentsRepository) {
         this.usersRepository = usersRepository;
         this.branchesRepository = branchesRepository;
         this.majorsRepository = majorsRepository;
+        this.studentsRepository = studentsRepository;
     }
     async getAuthSession(session, createUserDto) {
-        const user = await this.usersRepository.updateOrCreateAUser(createUserDto);
+        let user = await this.usersRepository.updateOrCreateAUser(createUserDto);
+        const student = await this.studentsRepository.getStudentById(user.id);
+        if (student) {
+            user = { ...user, ...student };
+        }
         const branches = await this.branchesRepository.getAllBranches();
         const majors = await this.majorsRepository.getAllMajors();
         const lecturer = await this.usersRepository.getAllInstructors();
@@ -36,6 +42,6 @@ let AuthService = class AuthService {
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_repository_1.UsersRepository, branches_repository_1.BranchesRepository, majors_repository_1.MajorsRepository])
+    __metadata("design:paramtypes", [users_repository_1.UsersRepository, branches_repository_1.BranchesRepository, majors_repository_1.MajorsRepository, students_repository_1.StudentsRepository])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

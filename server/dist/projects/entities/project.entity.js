@@ -15,9 +15,9 @@ const typeorm_1 = require("typeorm");
 const project_status_enum_1 = require("../project-status.enum");
 const requirement_entity_1 = require("./requirement.entity");
 const user_entity_1 = require("../../users/entities/user.entity");
-const student_entity_1 = require("../../users/entities/student.entity");
 const major_entity_1 = require("../../programs/entities/major.entity");
 const branch_entity_1 = require("../../programs/entities/branch.entity");
+const student_entity_1 = require("../../students/entities/student.entity");
 let Project = class Project {
     constructor(project) {
         Object.assign(this, project);

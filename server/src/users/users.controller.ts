@@ -10,9 +10,9 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateStudentDto } from './dto/create-student.dto';
-import { EnrollProjectDto } from './dto/enroll-project.dto';
 import { AssignRolesDto } from './dto/assign-role.dto';
+import { CreateStudentDto } from 'src/students/dto/create-student.dto';
+import { EnrollProjectDto } from 'src/students/dto/enroll-project.dto';
 
 @Controller('users')
 export class UsersController {

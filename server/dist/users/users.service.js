@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const users_repository_1 = require("./users.repository");
+const students_repository_1 = require("../students/students.repository");
 let UsersService = class UsersService {
     constructor(usersRepository, studentsRepository) {
         this.usersRepository = usersRepository;
@@ -29,11 +30,25 @@ let UsersService = class UsersService {
     findAll() {
         return `This action returns all users`;
     }
-    getAUser(id) {
-        return this.usersRepository.getUserById(id);
+    async getAUser(id) {
+        const user = await this.usersRepository.getUserById(id);
+        const student = await this.studentsRepository.getStudentById(id);
+        console.log(user);
+        console.log(student);
+        if (student) {
+            return { ...user, ...student };
+        }
+        return user;
     }
-    updateOrCreateAUser(createUserDto) {
-        return this.usersRepository.updateOrCreateAUser(createUserDto);
+    async updateOrCreateAUser(createUserDto) {
+        const user = await this.usersRepository.updateOrCreateAUser(createUserDto);
+        const student = await this.studentsRepository.getStudentById(user.id);
+        console.log(user);
+        console.log(student);
+        if (student) {
+            return { ...user, ...student };
+        }
+        return user;
     }
     enrollToAProject(enrollProjectDto) {
         return this.studentsRepository.enrollProject(enrollProjectDto);
@@ -52,6 +67,6 @@ exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [users_repository_1.UsersRepository,
-        users_repository_1.StudentsRepository])
+        students_repository_1.StudentsRepository])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

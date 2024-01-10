@@ -13,13 +13,16 @@ const auth_service_1 = require("./auth.service");
 const users_repository_1 = require("../users/users.repository");
 const branches_repository_1 = require("../programs/branches.repository");
 const majors_repository_1 = require("../programs/majors.repository");
+const students_repository_1 = require("../students/students.repository");
+const projects_repository_1 = require("../projects/projects.repository");
+const requirements_repository_1 = require("../projects/requirements.repository");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, users_repository_1.UsersRepository, branches_repository_1.BranchesRepository, majors_repository_1.MajorsRepository],
+        providers: [auth_service_1.AuthService, users_repository_1.UsersRepository, branches_repository_1.BranchesRepository, majors_repository_1.MajorsRepository, students_repository_1.StudentsRepository, projects_repository_1.ProjectsRepository, requirements_repository_1.RequirementRepository],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

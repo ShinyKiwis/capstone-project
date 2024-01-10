@@ -1,9 +1,10 @@
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateStudentDto } from './dto/create-student.dto';
-import { StudentsRepository, UsersRepository } from './users.repository';
-import { EnrollProjectDto } from './dto/enroll-project.dto';
+import { UsersRepository } from './users.repository';
 import { AssignRolesDto } from './dto/assign-role.dto';
+import { StudentsRepository } from 'src/students/students.repository';
+import { CreateStudentDto } from 'src/students/dto/create-student.dto';
+import { EnrollProjectDto } from 'src/students/dto/enroll-project.dto';
 export declare class UsersService {
     private usersRepository;
     private studentsRepository;

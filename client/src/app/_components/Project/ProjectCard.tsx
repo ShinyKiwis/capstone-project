@@ -4,7 +4,7 @@ import { BsFillPeopleFill } from "react-icons/bs";
 import { ModalContext } from "../../providers/ModalProvider";
 import axios from "axios";
 import parse from "html-react-parser";
-import { useUser } from "@/app/hooks";
+import { useNavigate, useUser } from "@/app/hooks";
 import hasRole from "@/app/lib/hasRole";
 
 type Member = {
@@ -118,6 +118,97 @@ export const ProjectCardList = ({
   );
 };
 
+const StudentButtons = ({
+  viewSet,
+  viewTarget,
+  handleAction,
+}: {
+  viewSet: any;
+  viewTarget: ProjectProps;
+  handleAction: any;
+}) => {
+  return (
+    <>
+      <Button
+        isPrimary={false}
+        variant="normal"
+        className="w-full py-2"
+        onClick={() =>
+          viewSet({
+            code: viewTarget.id,
+            name: viewTarget.title,
+            description: viewTarget.description,
+            tasks: viewTarget.tasks,
+            references: viewTarget.references,
+            branches: viewTarget.programs,
+            majors: viewTarget.majors,
+            supervisors: viewTarget.instructors,
+            studentsCount: viewTarget.membersNumber,
+            students: viewTarget.members,
+            limit: viewTarget.limit,
+          })
+        }
+      >
+        View
+      </Button>
+      <Button
+        isPrimary
+        variant="normal"
+        className="mt-2 w-full py-2"
+        onClick={handleAction}
+      >
+        Enroll
+      </Button>
+    </>
+  );
+};
+
+const ManagementButtons = ({
+  viewSet,
+  viewTarget,
+  handleAction,
+}: {
+  viewSet: any;
+  viewTarget: ProjectProps;
+  handleAction: any;
+}) => {
+  const navigate = useNavigate()
+  return (
+    <>
+      <Button
+        isPrimary={false}
+        variant="normal"
+        className="w-full py-2"
+        onClick={() => {navigate(`/project/edit/${viewTarget.id}`)}}
+      >
+        Edit
+      </Button>
+      <Button
+        isPrimary
+        variant="normal"
+        className="w-full py-2 mt-2"
+        onClick={() =>
+          viewSet({
+            code: viewTarget.id,
+            name: viewTarget.title,
+            description: viewTarget.description,
+            tasks: viewTarget.tasks,
+            references: viewTarget.references,
+            branches: viewTarget.programs,
+            majors: viewTarget.majors,
+            supervisors: viewTarget.instructors,
+            studentsCount: viewTarget.membersNumber,
+            students: viewTarget.members,
+            limit: viewTarget.limit,
+          })
+        }
+      >
+        View
+      </Button>
+    </>
+  );
+};
+
 const ProjectCardActions = ({
   viewSet,
   viewTarget,
@@ -186,38 +277,18 @@ const ProjectCardActions = ({
 
   return (
     <div className="ms-auto mt-4 w-1/4">
-      <Button
-        isPrimary={false}
-        variant="normal"
-        className="w-full py-2"
-        onClick={() =>
-          viewSet({
-            code: viewTarget.id,
-            name: viewTarget.title,
-            description: viewTarget.description,
-            tasks: viewTarget.tasks,
-            references: viewTarget.references,
-            branches: viewTarget.programs,
-            majors: viewTarget.majors,
-            supervisors: viewTarget.instructors,
-            studentsCount: viewTarget.membersNumber,
-            students: viewTarget.members,
-            limit: viewTarget.limit,
-          })
-        }
-      >
-        View
-      </Button>
-
-      {hasRole("student") && (
-        <Button
-          isPrimary
-          variant="normal"
-          className="mt-2 w-full py-2"
-          onClick={handleAction}
-        >
-          Enroll
-        </Button>
+      {hasRole("student") ? (
+        <StudentButtons
+          viewSet={viewSet}
+          viewTarget={viewTarget}
+          handleAction={handleAction}
+        />
+      ) : (
+        <ManagementButtons
+          viewSet={viewSet}
+          viewTarget={viewTarget}
+          handleAction={handleAction}
+        />
       )}
       {/* Buttons for testing other modals */}
       {/* <div>
