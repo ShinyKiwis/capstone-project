@@ -34,6 +34,7 @@ type ProjectData = {
   };
   requirements: any[];
   students: {
+    name: string;
     userId: string;
     credits: number;
     generation: number;
@@ -172,19 +173,7 @@ const Project = () => {
                   return (
                     <ProjectCard
                       key={project.code}
-                      projectObject={{
-                        "id": project.code,
-                        "title": project.name,
-                        "description": project.description,
-                        "tasks": project.tasks,
-                        "references": project.references,
-                        "programs": project.branches,
-                        "majors": project.majors,
-                        "instructors": project.supervisors,
-                        "membersNumber": project.studentsCount,
-                        "limit": project.limit,
-                        "members": project.students,
-                      }}
+                      projectObject={project}
                       detailedViewSetter={setViewing}
                     />
                   );
@@ -192,19 +181,7 @@ const Project = () => {
               </div>
               <div className="w-1/2">
                 {viewing && (
-                  <ProjectCardDetail
-                    id={viewing.code}
-                    title={viewing.name}
-                    description={viewing.description}
-                    tasks={viewing.tasks}
-                    references={viewing.references}
-                    programs={viewing.branches}
-                    majors={viewing.majors}
-                    instructors={viewing.supervisors}
-                    membersNumber={viewing.studentsCount}
-                    members={viewing.students}
-                    limit={viewing.limit}
-                  />
+                  <ProjectCardDetail projectObject={viewing}/>
                 )}
               </div>
             </>

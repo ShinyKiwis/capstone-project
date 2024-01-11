@@ -19,8 +19,8 @@ const variantPrimaryMappings: VariantMappings = {
     "text-white bg-blue border-2 border-blue hover:bg-lightblue hover:border-lightblue hover:scale-105 duration-300",
   danger: "text-white bg-red border-2 border-red hover:bg-lightred hover:border-lightred hover:scale-105 duration-300",
   success: "text-white bg-green border-green hover:bg-lightgreen hover:border-lightgreen hover:scale-105 duration-300",
-  cancel: "text-white bg-red min-w-fit px-8 py-2 text-xl",
-  close: "text-white bg-gray min-w-fit px-8 py-2 text-xl",
+  cancel: "text-white bg-red min-w-fit px-8 py-2 hover:scale-105 duration-300",
+  close: "text-white bg-gray min-w-fit px-8 py-2",
 };
 
 const variantSecondaryMappings: VariantMappings = {
