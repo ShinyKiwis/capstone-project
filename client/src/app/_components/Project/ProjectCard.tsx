@@ -111,7 +111,7 @@ export const ProjectCardList = ({
             <Profile
               key={member.userId}
               type="horizontal"
-              username={member.name}
+              username='{member.name}'
             />
           );
         })}
@@ -130,6 +130,7 @@ const StudentButtons = ({
   handleAction: any;
 }) => {
   const user = useUser()
+  const authContext = useContext(AuthContext);
   return (
     <>
       <Button
