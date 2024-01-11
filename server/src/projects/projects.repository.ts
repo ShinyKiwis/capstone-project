@@ -5,7 +5,6 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectStatus } from './project-status.enum';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { RequirementRepository } from './requirements.repository';
-import { User } from 'src/users/entities/user.entity';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()

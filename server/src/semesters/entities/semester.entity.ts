@@ -1,4 +1,3 @@
-import { Project } from 'src/projects/entities/project.entity';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 
 @Entity()

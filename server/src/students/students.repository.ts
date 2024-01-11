@@ -5,9 +5,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
-import { ProjectsRepository } from 'src/projects/projects.repository';
-import { UsersRepository } from 'src/users/users.repository';
-import { User } from 'src/users/entities/user.entity';
+import { ProjectsRepository } from '../projects/projects.repository';
+import { UsersRepository } from '../users/users.repository';
+import { User } from '../users/entities/user.entity';
 import { EnrollProjectDto } from './dto/enroll-project.dto';
 import { Student } from './entities/student.entity';
 import { UnenrollProjectDto } from './dto/unenroll-project.dto';

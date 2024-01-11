@@ -11,9 +11,9 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AssignRolesDto } from './dto/assign-role.dto';
-import { CreateStudentDto } from 'src/students/dto/create-student.dto';
-import { EnrollProjectDto } from 'src/students/dto/enroll-project.dto';
-import { UnenrollProjectDto } from 'src/students/dto/unenroll-project.dto';
+import { CreateStudentDto } from '../students/dto/create-student.dto';
+import { EnrollProjectDto } from '../students/dto/enroll-project.dto';
+import { UnenrollProjectDto } from '../students/dto/unenroll-project.dto';
 
 @Controller('users')
 export class UsersController {

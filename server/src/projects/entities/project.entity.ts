@@ -1,4 +1,4 @@
-import { Semester } from 'src/semesters/entities/semester.entity';
+import { Semester } from '../../semesters/entities/semester.entity';
 import {
   Column,
   Entity,
@@ -10,10 +10,10 @@ import {
 } from 'typeorm';
 import { ProjectStatus } from '../project-status.enum';
 import { Requirement } from './requirement.entity';
-import { User } from 'src/users/entities/user.entity';
-import { Major } from 'src/programs/entities/major.entity';
-import { Branch } from 'src/programs/entities/branch.entity';
-import { Student } from 'src/students/entities/student.entity';
+import { User } from '../../users/entities/user.entity';
+import { Major } from '../../programs/entities/major.entity';
+import { Branch } from '../../programs/entities/branch.entity';
+import { Student } from '../../students/entities/student.entity';
 
 @Entity()
 export class Project {

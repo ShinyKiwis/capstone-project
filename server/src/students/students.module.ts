@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProjectsRepository } from 'src/projects/projects.repository';
-import { RequirementRepository } from 'src/projects/requirements.repository';
-import { UsersRepository } from 'src/users/users.repository';
+import { ProjectsRepository } from '../projects/projects.repository';
+import { RequirementRepository } from '../projects/requirements.repository';
+import { UsersRepository } from '../users/users.repository';
 import { Student } from './entities/student.entity';
 
 @Module({
