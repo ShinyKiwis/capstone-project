@@ -3,19 +3,19 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Student } from './entities/student.entity';
-import { StudentsRepository, UsersRepository } from './users.repository';
-import { ProjectsRepository } from 'src/projects/projects.repository';
-import { RequirementRepository } from 'src/projects/requirements.repository';
+import { UsersRepository } from './users.repository';
+import { ProjectsRepository } from '../projects/projects.repository';
+import { RequirementRepository } from '../projects/requirements.repository';
+import { StudentsRepository } from '../students/students.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Student])],
+  imports: [TypeOrmModule.forFeature([User])],
   controllers: [UsersController],
   providers: [
     UsersService,
     UsersRepository,
-    StudentsRepository,
     ProjectsRepository,
+    StudentsRepository,
     RequirementRepository,
   ],
 })

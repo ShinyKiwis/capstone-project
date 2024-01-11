@@ -10,7 +10,7 @@ type Instructor = {
 
 interface ProjectInformationTableProps {
   fontSize: string;
-  programs: {
+  branches: {
     id: number;
     name: string;
   }[];
@@ -18,7 +18,7 @@ interface ProjectInformationTableProps {
     id: number;
     name: string
   }[];
-  instructors: Instructor[]
+  supervisors: Instructor[]
 }
 
 function createString(arr:any, propName:string){
@@ -26,10 +26,10 @@ function createString(arr:any, propName:string){
   return arr.map((ele:any) => ele[`${propName}`]).join(', ');
 }
 
-const ProjectInformationTable = ({ fontSize, programs, majors, instructors }: ProjectInformationTableProps) => {
-  let programsString = createString(programs, 'name');
+const ProjectInformationTable = ({ fontSize, branches, majors, supervisors }: ProjectInformationTableProps) => {
+  let branchesString = createString(branches, 'name');
   let majorsString = createString(majors, 'name');
-  let instructorsString = createString(instructors, 'name');
+  let instructorsString = createString(supervisors, 'name');
   // let instructorsTail: Instructor[];
   // if (instructors.length > 1) instructorsTail = instructors.slice(1)
   // else instructorsTail = []
@@ -38,9 +38,9 @@ const ProjectInformationTable = ({ fontSize, programs, majors, instructors }: Pr
     <table className={`${fontSize}`}>
       <tbody>
         <tr>
-          <th className="text-left">Program</th>
+          <th className="text-left">Branches</th>
           <th className="pe-4">:</th>
-          <td>{programsString}</td>
+          <td>{branchesString}</td>
         </tr>
         <tr>
           <th className="text-left">Major</th>
@@ -52,17 +52,6 @@ const ProjectInformationTable = ({ fontSize, programs, majors, instructors }: Pr
           <th className="pe-4">:</th>
           <td>{instructorsString}</td>
         </tr>
-        {/* {
-          instructorsTail.map(function (instructor: Instructor, index) {
-            return (
-              <tr key={index}>
-                <th></th>
-                <th></th>
-                <td>{instructor.name}</td>
-              </tr>
-            )
-          })
-        } */}
       </tbody>
     </table>
   );

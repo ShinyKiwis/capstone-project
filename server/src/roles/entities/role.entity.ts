@@ -1,4 +1,4 @@
-import { Resource } from 'src/resources/entities/resource.entity';
+import { Resource } from '../../resources/entities/resource.entity';
 import {
   Column,
   Entity,

@@ -8,8 +8,9 @@ import {
 } from "@/app/_components";
 import { IoOptions, IoCreate } from "react-icons/io5";
 import { RiUpload2Fill } from "react-icons/ri";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, createContext } from "react";
 import { ModalContext } from "@/app/providers/ModalProvider";
+import { EnrolledProjContext, EnrolledProjProvider } from "@/app/providers/EnrolledProjProvider";
 import Image from "next/image";
 import useUser from "@/app/hooks/useUser";
 import hasRole from "@/app/lib/hasRole";
@@ -33,6 +34,7 @@ type ProjectData = {
   };
   requirements: any[];
   students: {
+    name: string;
     userId: string;
     credits: number;
     generation: number;
@@ -150,6 +152,7 @@ const Project = () => {
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [viewing, setViewing] = useState<ProjectData>();
 
+
   React.useEffect(() => {
     axios.get("http://localhost:3500/projects").then((response) => {
       // console.log("Retreived projects:", response.data.projects);
@@ -161,54 +164,32 @@ const Project = () => {
   return (
     <div className="w-full">
       <ProjectHeader />
-      <div className="mt-4 flex flex-auto gap-4">
-        {projects.length!=0 ? (
-          <>
-            <div className="flex w-1/2 flex-col gap-4">
-              {projects.map(function (project) {
-                return (
-                  <ProjectCard
-                    key={project.code}
-                    projectObject={{
-                      "id": project.code,
-                      "title": project.name,
-                      "description": project.description,
-                      "tasks": project.tasks,
-                      "references": project.references,
-                      "programs": project.branches,
-                      "majors": project.majors,
-                      "instructors": project.supervisors,
-                      "membersNumber": project.studentsCount,
-                      "limit": project.limit,
-                      "members": project.students,
-                    }}
-                    detailedViewSetter={setViewing}
-                  />
-                );
-              })}
-            </div>
-            <div className="w-1/2">
-              {viewing && (
-                <ProjectCardDetail
-                  id={viewing.code}
-                  title={viewing.name}
-                  description={viewing.description}
-                  tasks={viewing.tasks}
-                  references={viewing.references}
-                  programs={viewing.branches}
-                  majors={viewing.majors}
-                  instructors={viewing.supervisors}
-                  membersNumber={viewing.studentsCount}
-                  members={viewing.students}
-                  limit={viewing.limit}
-                />
-              )}
-            </div>
-          </>
-        ) : (
-          <NoData />
-        )}
-      </div>
+      <EnrolledProjProvider>
+        <div className="mt-4 flex flex-auto gap-4">
+          {projects.length!=0 ? (
+            <>
+              <div className="flex w-1/2 flex-col gap-4">
+                {projects.map(function (project) {
+                  return (
+                    <ProjectCard
+                      key={project.code}
+                      projectObject={project}
+                      detailedViewSetter={setViewing}
+                    />
+                  );
+                })}
+              </div>
+              <div className="w-1/2">
+                {viewing && (
+                  <ProjectCardDetail projectObject={viewing}/>
+                )}
+              </div>
+            </>
+          ) : (
+            <NoData />
+          )}
+        </div>
+      </EnrolledProjProvider>
     </div>
   );
 };

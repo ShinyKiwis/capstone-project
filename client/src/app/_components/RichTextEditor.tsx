@@ -54,7 +54,8 @@ const RichTextEditor = ({ onChange, initialContent }: RichTextEditorProps) => {
         modules={modules}
         formats={formats}
         onChange={onChange}
-        defaultValue={initialContent}
+        value={initialContent}
+        // defaultValue={initialContent}
         theme="snow"
       />
     </div>
