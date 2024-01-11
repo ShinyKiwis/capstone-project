@@ -8,7 +8,8 @@ import { useNavigate, useUser } from "@/app/hooks";
 import { AuthContext } from "@/app/providers/AuthProvider";
 import hasRole from "@/app/lib/hasRole";
 
-type Member = {
+type Student = {
+  name: string;
   userId: string;
   credits: number;
   generation: number;
@@ -17,12 +18,12 @@ type Member = {
 };
 
 export interface ProjectProps {
-  id: number;
-  title: string;
+  code: number;
+  name: string;
   description: string;
   tasks: string;
   references: string;
-  programs: {
+  branches: {
     id: number;
     name: string;
   }[];
@@ -30,14 +31,14 @@ export interface ProjectProps {
     id: number;
     name: string;
   }[];
-  instructors: {
+  supervisors: {
     id: number;
     email: string;
     username: string;
     name: string;
   }[];
-  membersNumber: number;
-  members: Member[];
+  studentsCount: number;
+  students: Student[];
   limit: number;
 }
 
@@ -47,42 +48,42 @@ interface ProjectCardProps {
 }
 
 interface ProjectCardMetadataProps
-  extends Pick<ProjectProps, "id" | "programs" | "majors" | "instructors"> {}
+  extends Pick<ProjectProps, "code" | "branches" | "majors" | "supervisors"> {}
 
 interface ProjectCardContentProps
-  extends Pick<ProjectProps, "title" | "description"> {}
+  extends Pick<ProjectProps, "name" | "description"> {}
 
 interface ProjectCardListProps
-  extends Pick<ProjectProps, "membersNumber" | "members" | "limit"> {
+  extends Pick<ProjectProps, "studentsCount" | "students" | "limit"> {
   className: string;
 }
 
 const ProjectCardMetadata = ({
-  id,
-  programs,
+  code,
+  branches,
   majors,
-  instructors,
+  supervisors,
 }: ProjectCardMetadataProps) => {
   return (
     <div className="flex w-2/6 flex-col items-center">
-      <Typography variant="h2" text={id.toString()} />
+      <Typography variant="h2" text={code.toString()} />
       <ProjectInformationTable
         fontSize="text-sm"
-        programs={programs}
+        branches={branches}
         majors={majors}
-        instructors={instructors}
+        supervisors={supervisors}
       />
     </div>
   );
 };
 
 const ProjectCardContent = ({
-  title,
+  name,
   description,
 }: ProjectCardContentProps) => {
   return (
     <div className="w-3/6">
-      <Typography variant="h2" text={title} />
+      <Typography variant="h2" text={name} />
       <div className="text-sm [&>ol]:list-inside [&>ol]:list-decimal [&>ul]:list-inside [&>ul]:list-disc">
         {parse(`${description.substring(0, 250)}...`)}
       </div>
@@ -92,25 +93,25 @@ const ProjectCardContent = ({
 
 export const ProjectCardList = ({
   className,
-  membersNumber,
+  studentsCount,
   limit,
-  members,
+  students,
 }: ProjectCardListProps) => {
   return (
     <div className={`flex flex-col ${className}`}>
       <div className="ms-auto flex items-center gap-2">
         <BsFillPeopleFill size={20} />
         <span>
-          {members.length}/{limit}
+          {studentsCount}/{limit}
         </span>
       </div>
       <div className="flex flex-col gap-2">
-        {members.map(function (member: Member) {
+        {students.map(function (member: Student) {
           return (
             <Profile
               key={member.userId}
               type="horizontal"
-              username="Nguyen Van B"
+              username={member.name}
             />
           );
         })}
@@ -136,25 +137,13 @@ const StudentButtons = ({
         variant="normal"
         className="w-full py-2"
         onClick={() =>
-          viewSet({
-            code: viewTarget.id,
-            name: viewTarget.title,
-            description: viewTarget.description,
-            tasks: viewTarget.tasks,
-            references: viewTarget.references,
-            branches: viewTarget.programs,
-            majors: viewTarget.majors,
-            supervisors: viewTarget.instructors,
-            studentsCount: viewTarget.membersNumber,
-            students: viewTarget.members,
-            limit: viewTarget.limit,
-          })
+          viewSet(viewTarget)
         }
       >
         View
       </Button>
 
-      {user.project?.code === viewTarget.id ? (
+      {authContext?.user?.project?.code === viewTarget.code ? (
         <Button
           isPrimary
           variant="cancel"
@@ -194,7 +183,7 @@ const ManagementButtons = ({
         variant="normal"
         className="w-full py-2"
         onClick={() => {
-          navigate(`/project/edit/${viewTarget.id}`);
+          navigate(`/project/edit/${viewTarget.code}`);
         }}
       >
         Edit
@@ -204,19 +193,7 @@ const ManagementButtons = ({
         variant="normal"
         className="mt-2 w-full py-2"
         onClick={() =>
-          viewSet({
-            code: viewTarget.id,
-            name: viewTarget.title,
-            description: viewTarget.description,
-            tasks: viewTarget.tasks,
-            references: viewTarget.references,
-            branches: viewTarget.programs,
-            majors: viewTarget.majors,
-            supervisors: viewTarget.instructors,
-            studentsCount: viewTarget.membersNumber,
-            students: viewTarget.members,
-            limit: viewTarget.limit,
-          })
+          viewSet(viewTarget)
         }
       >
         View
@@ -257,12 +234,12 @@ const ProjectCardActions = ({
         axios
           .post("http://localhost:3500/users/student/enroll", {
             studentId: user.id,
-            projectCode: viewTarget.id,
+            projectCode: viewTarget.code,
           })
           .then((res) => {
             if (res.statusText.toLowerCase() == "created") {
               setModalType("status_success");
-              authContext?.enroll(viewTarget.id);
+              authContext?.enroll(viewTarget.code);
             }
           });
 
@@ -354,19 +331,19 @@ const ProjectCard = ({
     <div className="flex w-full cursor-pointer flex-col rounded-md border border-black px-4 py-4">
       <div className="flex">
         <ProjectCardMetadata
-          id={projectObject.id}
-          programs={projectObject.programs}
+          code={projectObject.code}
+          branches={projectObject.branches}
           majors={projectObject.majors}
-          instructors={projectObject.instructors}
+          supervisors={projectObject.supervisors}
         />
         <ProjectCardContent
-          title={projectObject.title}
+          name={projectObject.name}
           description={projectObject.description}
         />
         <ProjectCardList
           className="w-1/4"
-          membersNumber={projectObject.membersNumber}
-          members={projectObject.members}
+          studentsCount={projectObject.studentsCount}
+          students={projectObject.students}
           limit={projectObject.limit}
         />
       </div>
