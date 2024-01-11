@@ -1,5 +1,6 @@
 import { DataSource, Repository } from 'typeorm';
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -9,6 +10,7 @@ import { UsersRepository } from 'src/users/users.repository';
 import { User } from 'src/users/entities/user.entity';
 import { EnrollProjectDto } from './dto/enroll-project.dto';
 import { Student } from './entities/student.entity';
+import { UnenrollProjectDto } from './dto/unenroll-project.dto';
 
 @Injectable()
 export class StudentsRepository extends Repository<Student> {
@@ -63,5 +65,16 @@ export class StudentsRepository extends Repository<Student> {
     student.project = project;
     student.enrolledAt = new Date();
     await this.save(student);
+  }
+
+  async unenrollProject(unenrollProjectDto: UnenrollProjectDto) {
+    const { id } = unenrollProjectDto;
+    const student = await this.getStudentById(id);
+    if(!student.project) {
+      throw new ConflictException(`User with id ${id} has not enrolled in any project`);
+    }
+    student.project = null;
+    student.enrolledAt = null;
+    return student;
   }
 }

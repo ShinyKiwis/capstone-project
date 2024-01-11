@@ -13,6 +13,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { AssignRolesDto } from './dto/assign-role.dto';
 import { CreateStudentDto } from 'src/students/dto/create-student.dto';
 import { EnrollProjectDto } from 'src/students/dto/enroll-project.dto';
+import { UnenrollProjectDto } from 'src/students/dto/unenroll-project.dto';
 
 @Controller('users')
 export class UsersController {
@@ -32,6 +33,11 @@ export class UsersController {
   @Post('/student/enroll')
   enrollToAProject(@Body() enrollProjectDto: EnrollProjectDto) {
     return this.usersService.enrollToAProject(enrollProjectDto);
+  }
+
+  @Post('/student/unenroll')
+  unenrollFromAProject(@Body() unenrollProjectDto: UnenrollProjectDto) {
+    return this.usersService.unenrollFromAProject(unenrollProjectDto);
   }
 
   @Get()

@@ -5,6 +5,7 @@ import { ProjectsRepository } from './projects.repository';
 import { ProjectStatus } from './project-status.enum';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import mammoth from 'mammoth';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -45,6 +46,10 @@ export class ProjectsService {
     if (result.affected === 0) {
       throw new NotFoundException(`Project with Code "${code}" not found`);
     }
+  }
+
+  async updateAProject(id: number, updateProjectDto: UpdateProjectDto) {
+    return this.projectsRepository.updateAProject(id, updateProjectDto);
   }
 
   currentTime() {

@@ -6,6 +6,7 @@ import { AssignRolesDto } from './dto/assign-role.dto';
 import { StudentsRepository } from 'src/students/students.repository';
 import { CreateStudentDto } from 'src/students/dto/create-student.dto';
 import { EnrollProjectDto } from 'src/students/dto/enroll-project.dto';
+import { UnenrollProjectDto } from 'src/students/dto/unenroll-project.dto';
 
 @Injectable()
 export class UsersService {
@@ -54,6 +55,10 @@ export class UsersService {
 
   enrollToAProject(enrollProjectDto: EnrollProjectDto) {
     return this.studentsRepository.enrollProject(enrollProjectDto);
+  }
+
+  unenrollFromAProject(unenrollProjectDto: UnenrollProjectDto) {
+    return this.studentsRepository.unenrollProject(unenrollProjectDto);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
