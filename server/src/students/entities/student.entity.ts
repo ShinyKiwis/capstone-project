@@ -6,8 +6,8 @@ import {
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
-import { Project } from 'src/projects/entities/project.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Project } from '../../projects/entities/project.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Student {

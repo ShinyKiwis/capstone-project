@@ -5,7 +5,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectStatus } from './project-status.enum';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { RequirementRepository } from './requirements.repository';
-import { User } from 'src/users/entities/user.entity';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectsRepository extends Repository<Project> {
@@ -17,8 +17,19 @@ export class ProjectsRepository extends Repository<Project> {
   }
 
   async createProject(createProjectDto: CreateProjectDto): Promise<Project> {
-    const { name, stage, description, tasks, references, semester, requirements, supervisors, majors, branches, limit } =
-      createProjectDto;
+    const {
+      name,
+      stage,
+      description,
+      tasks,
+      references,
+      semester,
+      requirements,
+      supervisors,
+      majors,
+      branches,
+      limit,
+    } = createProjectDto;
 
     const project = this.create({
       name,
@@ -43,6 +54,37 @@ export class ProjectsRepository extends Repository<Project> {
       }
     }
     return project;
+  }
+
+  async updateAProject(id: number, updateProjectDto: UpdateProjectDto) {
+    const {
+      name,
+      stage,
+      description,
+      tasks,
+      references,
+      semester,
+      requirements,
+      supervisors,
+      majors,
+      branches,
+      limit,
+    } = updateProjectDto;
+    const updatedProject = await this.update(id, {
+      name,
+      stage,
+      description,
+      tasks,
+      references,
+      semester,
+      requirements,
+      supervisors,
+      majors,
+      branches,
+      limit,
+    });
+
+    return updatedProject;
   }
 
   async getProjects(filterDto: GetProjectsFilterDto) {

@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AssignRolesDto } from './dto/assign-role.dto';
-import { StudentsRepository } from 'src/students/students.repository';
 
 @Injectable()
 export class UsersRepository extends Repository<User> {
