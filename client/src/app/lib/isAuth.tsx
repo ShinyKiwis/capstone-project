@@ -9,6 +9,7 @@ export default function isAuth(Component: any) {
     const user = useUser()
     console.log(user)
     const auth = user.name !== "Invalid"
+    // const auth = true
 
 
     useEffect(() => {

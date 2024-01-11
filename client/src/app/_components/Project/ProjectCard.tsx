@@ -5,6 +5,7 @@ import { ModalContext } from "../../providers/ModalProvider";
 import axios from "axios";
 import parse from "html-react-parser";
 import { useNavigate, useUser } from "@/app/hooks";
+import { AuthContext } from "@/app/providers/AuthProvider";
 import hasRole from "@/app/lib/hasRole";
 
 type Member = {
@@ -127,6 +128,7 @@ const StudentButtons = ({
   viewTarget: ProjectProps;
   handleAction: any;
 }) => {
+  const authContext = useContext(AuthContext);
   return (
     <>
       <Button
@@ -151,14 +153,26 @@ const StudentButtons = ({
       >
         View
       </Button>
-      <Button
-        isPrimary
-        variant="normal"
-        className="mt-2 w-full py-2"
-        onClick={handleAction}
-      >
-        Enroll
-      </Button>
+
+      {authContext?.user?.project?.code === viewTarget.id ? (
+        <Button
+          isPrimary
+          variant="cancel"
+          className="mt-2 w-full py-2"
+          onClick={handleAction}
+        >
+          Unenroll
+        </Button>
+      ) : (
+        <Button
+          isPrimary
+          variant="normal"
+          className="mt-2 w-full py-2"
+          onClick={handleAction}
+        >
+          Enroll
+        </Button>
+      )}
     </>
   );
 };
@@ -172,21 +186,23 @@ const ManagementButtons = ({
   viewTarget: ProjectProps;
   handleAction: any;
 }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
     <>
       <Button
         isPrimary={false}
         variant="normal"
         className="w-full py-2"
-        onClick={() => {navigate(`/project/edit/${viewTarget.id}`)}}
+        onClick={() => {
+          navigate(`/project/edit/${viewTarget.id}`);
+        }}
       >
         Edit
       </Button>
       <Button
         isPrimary
         variant="normal"
-        className="w-full py-2 mt-2"
+        className="mt-2 w-full py-2"
         onClick={() =>
           viewSet({
             code: viewTarget.id,
@@ -217,6 +233,7 @@ const ProjectCardActions = ({
   viewTarget: ProjectProps;
 }) => {
   const user = useUser();
+  const authContext = useContext(AuthContext);
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     console.error(
@@ -227,7 +244,7 @@ const ProjectCardActions = ({
   const { toggleModal, setModalType, setModalProps, modalProps } =
     modalContextValue;
 
-  const handleAction = (event: React.SyntheticEvent) => {
+  const handleStudentActions = (event: React.SyntheticEvent) => {
     event.stopPropagation();
     const action = event.currentTarget.textContent!.toLowerCase();
     // console.log("Clicked action button:", action);
@@ -245,8 +262,10 @@ const ProjectCardActions = ({
           .then((res) => {
             if (res.statusText.toLowerCase() == "created") {
               setModalType("status_success");
+              authContext?.enroll(viewTarget.id);
             }
           });
+
         // Logic for validating student's requirement ?
         // let satisfied = false;                                                                                  // test
         // if (satisfied) {
@@ -261,6 +280,25 @@ const ProjectCardActions = ({
         break;
       case "unenroll":
         setModalType("project_unerollment");
+        break;
+      default:
+        console.error("Invalid action button:", action);
+        return;
+    }
+    toggleModal(true);
+  };
+
+  const handleManagementActions = (event: React.SyntheticEvent) => {
+    event.stopPropagation();
+    const action = event.currentTarget.textContent!.toLowerCase();
+    // console.log("Clicked action button:", action);
+
+    switch (action) {
+      case "edit":
+        setModalType("project_deletion");
+        break;
+      case "deactivate":
+        setModalType("project_deletion");
         break;
       case "delete":
         setModalType("project_deletion");
@@ -281,13 +319,13 @@ const ProjectCardActions = ({
         <StudentButtons
           viewSet={viewSet}
           viewTarget={viewTarget}
-          handleAction={handleAction}
+          handleAction={handleStudentActions}
         />
       ) : (
         <ManagementButtons
           viewSet={viewSet}
           viewTarget={viewTarget}
-          handleAction={handleAction}
+          handleAction={handleManagementActions}
         />
       )}
       {/* Buttons for testing other modals */}
@@ -306,6 +344,12 @@ const ProjectCard = ({
   projectObject,
   detailedViewSetter,
 }: ProjectCardProps) => {
+  const authContext = useContext(AuthContext);
+  console.log(
+    "Currently enrolled project ID:",
+    authContext?.user?.project?.code,
+  );
+
   return (
     <div className="flex w-full cursor-pointer flex-col rounded-md border border-black px-4 py-4">
       <div className="flex">

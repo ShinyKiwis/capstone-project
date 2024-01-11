@@ -53,11 +53,6 @@ export class StudentsRepository extends Repository<Student> {
 
   async getStudentById(id: number) {
     const found = await this.findOne({ where: { userId: id }, relations: { project: true } });
-
-
-    if (!found) {
-      throw new NotFoundException(`Student with ID "${id}" not found`);
-    }
     return found;
   }
 
