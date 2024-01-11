@@ -11,6 +11,7 @@ import { User } from '../users/entities/user.entity';
 import { EnrollProjectDto } from './dto/enroll-project.dto';
 import { Student } from './entities/student.entity';
 import { UnenrollProjectDto } from './dto/unenroll-project.dto';
+import { Project } from 'src/projects/entities/project.entity';
 
 @Injectable()
 export class StudentsRepository extends Repository<Student> {
@@ -23,7 +24,8 @@ export class StudentsRepository extends Repository<Student> {
   }
 
   async createStudent(createStudentDto: CreateStudentDto): Promise<User> {
-    const { id, username, name, email, generation, credits, GPA } = createStudentDto;
+    const { id, username, name, email, generation, credits, GPA } =
+      createStudentDto;
     console.log(createStudentDto);
     // let user;
     // try {
@@ -38,7 +40,7 @@ export class StudentsRepository extends Repository<Student> {
       id,
       username,
       email,
-      name
+      name,
     });
 
     const student = this.create({
@@ -54,8 +56,24 @@ export class StudentsRepository extends Repository<Student> {
   }
 
   async getStudentById(id: number) {
-    const found = await this.findOne({ where: { userId: id }, relations: { project: true } });
-    return found;
+    // const found = await this.findOne({ where: { userId: id }, relations: { project: true } });
+    const query = this.createQueryBuilder('student')
+      .where({ userId: id })
+      .select([
+        'student.userId',
+        'student.credits',
+        'student.generation',
+        'student.GPA',
+        'student.enrolledAt',
+        'project.code',
+      ])
+      .leftJoin('student.project', 'project');
+    const found = await query.getOne();
+    console.log(found);
+    let result;
+    if (found.project == null) result = { ...found, project: -1 };
+    else result = found;
+    return result;
   }
 
   async enrollProject(enrollProjectDto: EnrollProjectDto) {
@@ -70,11 +88,14 @@ export class StudentsRepository extends Repository<Student> {
   async unenrollProject(unenrollProjectDto: UnenrollProjectDto) {
     const { id } = unenrollProjectDto;
     const student = await this.getStudentById(id);
-    if(!student.project) {
-      throw new ConflictException(`User with id ${id} has not enrolled in any project`);
+    if (!student.project) {
+      throw new ConflictException(
+        `User with id ${id} has not enrolled in any project`,
+      );
     }
     student.project = null;
     student.enrolledAt = null;
+    await this.save(student);
     return student;
   }
 }

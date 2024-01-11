@@ -100,9 +100,9 @@ export class ProjectsRepository extends Repository<Project> {
       .loadRelationCountAndMap('project.studentsCount', 'project.students');
 
     if (members) {
-      // query.andWhere('project.studentsCount = :members', {
-      //   members,
-      // });
+      query.andWhere('project.studentsCount = :members', {
+        members,
+      });
     }
 
     if (search) {
