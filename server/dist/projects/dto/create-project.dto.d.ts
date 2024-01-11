@@ -1,7 +1,7 @@
-import { Branch } from 'src/programs/entities/branch.entity';
-import { Major } from 'src/programs/entities/major.entity';
-import { Semester } from 'src/semesters/entities/semester.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Branch } from '../../programs/entities/branch.entity';
+import { Major } from '../../programs/entities/major.entity';
+import { Semester } from '../../semesters/entities/semester.entity';
+import { User } from '../../users/entities/user.entity';
 export declare class CreateProjectDto {
     name: string;
     stage: number;

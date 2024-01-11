@@ -22,7 +22,7 @@ let ProjectsRepository = class ProjectsRepository extends typeorm_1.Repository {
         this.requirementRepository = requirementRepository;
     }
     async createProject(createProjectDto) {
-        const { name, stage, description, tasks, references, semester, requirements, supervisors, majors, branches, limit } = createProjectDto;
+        const { name, stage, description, tasks, references, semester, requirements, supervisors, majors, branches, limit, } = createProjectDto;
         const project = this.create({
             name,
             stage,
@@ -46,6 +46,23 @@ let ProjectsRepository = class ProjectsRepository extends typeorm_1.Repository {
             }
         }
         return project;
+    }
+    async updateAProject(id, updateProjectDto) {
+        const { name, stage, description, tasks, references, semester, requirements, supervisors, majors, branches, limit, } = updateProjectDto;
+        const updatedProject = await this.update(id, {
+            name,
+            stage,
+            description,
+            tasks,
+            references,
+            semester,
+            requirements,
+            supervisors,
+            majors,
+            branches,
+            limit,
+        });
+        return updatedProject;
     }
     async getProjects(filterDto) {
         const { search, members, limit, page } = filterDto;

@@ -53,6 +53,9 @@ let UsersService = class UsersService {
     enrollToAProject(enrollProjectDto) {
         return this.studentsRepository.enrollProject(enrollProjectDto);
     }
+    unenrollFromAProject(unenrollProjectDto) {
+        return this.studentsRepository.unenrollProject(unenrollProjectDto);
+    }
     update(id, updateUserDto) {
         return `This action updates a #${id} user`;
     }

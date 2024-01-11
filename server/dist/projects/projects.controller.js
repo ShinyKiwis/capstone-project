@@ -19,6 +19,7 @@ const create_project_dto_1 = require("./dto/create-project.dto");
 const get_projects_filter_dto_1 = require("./dto/get-projects-filter.dto");
 const update_project_status_dto_1 = require("./dto/update-project-status.dto");
 const projectFiles_interceptor_1 = require("./projectFiles.interceptor");
+const update_project_dto_1 = require("./dto/update-project.dto");
 let ProjectsController = class ProjectsController {
     constructor(projectsService) {
         this.projectsService = projectsService;
@@ -31,6 +32,9 @@ let ProjectsController = class ProjectsController {
     }
     async getProjectByCode(code) {
         return this.projectsService.getProjectByCode(+code);
+    }
+    async updateAProject(id, updateProjectDto) {
+        return this.projectsService.updateAProject(+id, updateProjectDto);
     }
     async updateProjectStatus(id, updateProjectStatusDto) {
         const { status } = updateProjectStatusDto;
@@ -72,7 +76,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProjectsController.prototype, "getProjectByCode", null);
 __decorate([
-    (0, common_1.Patch)(':id/status'),
+    (0, common_1.Patch)(':code'),
+    __param(0, (0, common_1.Param)('code')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_project_dto_1.UpdateProjectDto]),
+    __metadata("design:returntype", Promise)
+], ProjectsController.prototype, "updateAProject", null);
+__decorate([
+    (0, common_1.Patch)(':code/status'),
     __param(0, (0, common_1.Param)('code')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

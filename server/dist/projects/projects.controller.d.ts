@@ -4,6 +4,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { Project } from './entities/project.entity';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 export declare class ProjectsController {
     private readonly projectsService;
     constructor(projectsService: ProjectsService);
@@ -14,6 +15,7 @@ export declare class ProjectsController {
         projects: Project[];
     }>;
     getProjectByCode(code: string): Promise<Project>;
+    updateAProject(id: string, updateProjectDto: UpdateProjectDto): Promise<import("typeorm").UpdateResult>;
     updateProjectStatus(id: string, updateProjectStatusDto: UpdateProjectStatusDto): Promise<Project>;
     uploadFileAndCreateProject(file: Express.Multer.File): Promise<{
         originalname: string;

@@ -38,6 +38,9 @@ let ProjectsService = class ProjectsService {
             throw new common_1.NotFoundException(`Project with Code "${code}" not found`);
         }
     }
+    async updateAProject(id, updateProjectDto) {
+        return this.projectsRepository.updateAProject(id, updateProjectDto);
+    }
     currentTime() {
         return Date.now() / 1000;
     }

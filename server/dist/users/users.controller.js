@@ -20,6 +20,7 @@ const update_user_dto_1 = require("./dto/update-user.dto");
 const assign_role_dto_1 = require("./dto/assign-role.dto");
 const create_student_dto_1 = require("../students/dto/create-student.dto");
 const enroll_project_dto_1 = require("../students/dto/enroll-project.dto");
+const unenroll_project_dto_1 = require("../students/dto/unenroll-project.dto");
 let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
@@ -33,6 +34,9 @@ let UsersController = class UsersController {
     }
     enrollToAProject(enrollProjectDto) {
         return this.usersService.enrollToAProject(enrollProjectDto);
+    }
+    unenrollFromAProject(unenrollProjectDto) {
+        return this.usersService.unenrollFromAProject(unenrollProjectDto);
     }
     findAll() {
         return this.usersService.findAll();
@@ -75,6 +79,13 @@ __decorate([
     __metadata("design:paramtypes", [enroll_project_dto_1.EnrollProjectDto]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "enrollToAProject", null);
+__decorate([
+    (0, common_1.Post)('/student/unenroll'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [unenroll_project_dto_1.UnenrollProjectDto]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "unenrollFromAProject", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

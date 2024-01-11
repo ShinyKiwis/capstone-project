@@ -128,7 +128,7 @@ const StudentButtons = ({
   viewTarget: ProjectProps;
   handleAction: any;
 }) => {
-  const authContext = useContext(AuthContext);
+  const user = useUser()
   return (
     <>
       <Button
@@ -154,7 +154,7 @@ const StudentButtons = ({
         View
       </Button>
 
-      {authContext?.user?.project?.code === viewTarget.id ? (
+      {user.project?.code === viewTarget.id ? (
         <Button
           isPrimary
           variant="cancel"

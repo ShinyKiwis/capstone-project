@@ -3,6 +3,7 @@ import { Project } from './entities/project.entity';
 import { ProjectsRepository } from './projects.repository';
 import { ProjectStatus } from './project-status.enum';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 export declare class ProjectsService {
     private readonly projectsRepository;
     constructor(projectsRepository: ProjectsRepository);
@@ -15,6 +16,7 @@ export declare class ProjectsService {
     getProjectByCode(code: number): Promise<Project>;
     updateProjectStatus(code: number, status: ProjectStatus): Promise<Project>;
     deleteProject(code: number): Promise<void>;
+    updateAProject(id: number, updateProjectDto: UpdateProjectDto): Promise<import("typeorm").UpdateResult>;
     currentTime(): number;
     extractProjectTitle(inputText: string): {
         vietnameseTitle: string;
