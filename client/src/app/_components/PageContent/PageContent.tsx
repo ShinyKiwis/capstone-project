@@ -14,7 +14,7 @@ const PageContent = ({ children }: { children: React.ReactNode }) => {
       <PageHeader />
       <div
         className="h-screen flex-1 overflow-auto px-8 pb-8"
-        onClick={() => toggleModal(false)}
+        onClick={() => {toggleModal(false)}}
       >
         {children}
       </div>

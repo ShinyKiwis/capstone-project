@@ -7,6 +7,8 @@ import parse from "html-react-parser";
 import { useNavigate, useUser } from "@/app/hooks";
 import { AuthContext } from "@/app/providers/AuthProvider";
 import hasRole from "@/app/lib/hasRole";
+import EnrollButton from "../UserAction/Buttons/EnrollButton";
+import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
 
 type Student = {
   name: string;
@@ -77,10 +79,7 @@ const ProjectCardMetadata = ({
   );
 };
 
-const ProjectCardContent = ({
-  name,
-  description,
-}: ProjectCardContentProps) => {
+const ProjectCardContent = ({ name, description }: ProjectCardContentProps) => {
   return (
     <div className="w-3/6">
       <Typography variant="h2" text={name} />
@@ -106,7 +105,7 @@ export const ProjectCardList = ({
         </span>
       </div>
       <div className="flex flex-col gap-2">
-        {students.map(function (member: Student) {
+        {/* {students.map(function (member: Student) {
           return (
             <Profile
               key={member.userId}
@@ -114,7 +113,7 @@ export const ProjectCardList = ({
               username={member.name}
             />
           );
-        })}
+        })} */}
       </div>
     </div>
   );
@@ -123,44 +122,25 @@ export const ProjectCardList = ({
 const StudentButtons = ({
   viewSet,
   viewTarget,
-  handleAction,
 }: {
   viewSet: any;
   viewTarget: ProjectProps;
-  handleAction: any;
 }) => {
-  const user = useUser()
+  const user = useUser();
   return (
     <>
       <Button
         isPrimary={false}
         variant="normal"
         className="w-full py-2"
-        onClick={() =>
-          viewSet(viewTarget)
-        }
+        onClick={() => viewSet(viewTarget)}
       >
         View
       </Button>
-
-      {authContext?.user?.project?.code === viewTarget.code ? (
-        <Button
-          isPrimary
-          variant="cancel"
-          className="mt-2 w-full py-2"
-          onClick={handleAction}
-        >
-          Unenroll
-        </Button>
+      {user.project.code === viewTarget.code ? (
+        <UnenrollButton className="mt-2 w-full py-2"/>
       ) : (
-        <Button
-          isPrimary
-          variant="normal"
-          className="mt-2 w-full py-2"
-          onClick={handleAction}
-        >
-          Enroll
-        </Button>
+        <EnrollButton className="mt-2 w-full py-2" projectId={viewTarget.code} />
       )}
     </>
   );
@@ -192,9 +172,7 @@ const ManagementButtons = ({
         isPrimary
         variant="normal"
         className="mt-2 w-full py-2"
-        onClick={() =>
-          viewSet(viewTarget)
-        }
+        onClick={() => viewSet(viewTarget)}
       >
         View
       </Button>
@@ -209,8 +187,6 @@ const ProjectCardActions = ({
   viewSet: any;
   viewTarget: ProjectProps;
 }) => {
-  const user = useUser();
-  const authContext = useContext(AuthContext);
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     console.error(
@@ -220,50 +196,6 @@ const ProjectCardActions = ({
   }
   const { toggleModal, setModalType, setModalProps, modalProps } =
     modalContextValue;
-
-  const handleStudentActions = (event: React.SyntheticEvent) => {
-    event.stopPropagation();
-    const action = event.currentTarget.textContent!.toLowerCase();
-    // console.log("Clicked action button:", action);
-
-    switch (action) {
-      case "view":
-        // Toggle project card details
-        return;
-      case "enroll":
-        axios
-          .post("http://localhost:3500/users/student/enroll", {
-            studentId: user.id,
-            projectCode: viewTarget.code,
-          })
-          .then((res) => {
-            if (res.statusText.toLowerCase() == "created") {
-              setModalType("status_success");
-              authContext?.enroll(viewTarget.code);
-            }
-          });
-
-        // Logic for validating student's requirement ?
-        // let satisfied = false;                                                                                  // test
-        // if (satisfied) {
-        //   setModalType("status_success");
-        //   break;
-        // } else {
-        //   let failReasons = ["Not enough credits accumulated ! (<90)", "Your GPA is too low ! (<8.0)"]          // test
-        //   setModalProps({ title: "Project requirements not met !", messages: failReasons })
-        //   setModalType("status_warning");
-        //   break;
-        // }
-        break;
-      case "unenroll":
-        setModalType("project_unerollment");
-        break;
-      default:
-        console.error("Invalid action button:", action);
-        return;
-    }
-    toggleModal(true);
-  };
 
   const handleManagementActions = (event: React.SyntheticEvent) => {
     event.stopPropagation();
@@ -293,11 +225,7 @@ const ProjectCardActions = ({
   return (
     <div className="ms-auto mt-4 w-1/4">
       {hasRole("student") ? (
-        <StudentButtons
-          viewSet={viewSet}
-          viewTarget={viewTarget}
-          handleAction={handleStudentActions}
-        />
+        <StudentButtons viewSet={viewSet} viewTarget={viewTarget} />
       ) : (
         <ManagementButtons
           viewSet={viewSet}

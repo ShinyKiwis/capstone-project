@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import parse from 'html-react-parser'
+import parse from "html-react-parser";
 import { Button, ProjectInformationTable, Typography } from "..";
 import { ProjectCardList, ProjectProps } from "./ProjectCard";
 import { AuthContext } from "@/app/providers/AuthProvider";
@@ -7,10 +7,15 @@ import { useNavigate, useUser } from "@/app/hooks";
 import hasRole from "@/app/lib/hasRole";
 import { ModalContext } from "@/app/providers/ModalProvider";
 import axios from "axios";
+import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
+import EnrollButton from "../UserAction/Buttons/EnrollButton";
 
-const ProjectCardDetail = ({projectObject}: {projectObject:ProjectProps}) => {
+const ProjectCardDetail = ({
+  projectObject,
+}: {
+  projectObject: ProjectProps;
+}) => {
   const user = useUser();
-  const authContext = useContext(AuthContext);
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     console.error(
@@ -21,79 +26,18 @@ const ProjectCardDetail = ({projectObject}: {projectObject:ProjectProps}) => {
   const { toggleModal, setModalType, setModalProps, modalProps } =
     modalContextValue;
 
-  const StudentButtons = ({
-    handleAction,
-  }: {
-    handleAction: any;
-  }) => {
-    const authContext = useContext(AuthContext);
+  const StudentButtons = ({}) => {
     return (
       <>
-        {authContext?.user?.project?.code === projectObject.code ? (
-          <Button
-            isPrimary
-            variant="cancel"
-            className="mt-2 w-fit py-2 px-6"
-            onClick={handleAction}
-          >
-            Unenroll
-          </Button>
+        {user.project.code === projectObject.code ? (
+          <div className="mt-2 w-fit">
+            <UnenrollButton className="mt-2 w-fit py-2 px-6"/>
+          </div>
         ) : (
-          <Button
-            isPrimary
-            variant="normal"
-            className="mt-2 w-fit py-2 px-6"
-            onClick={handleAction}
-          >
-            Enroll
-          </Button>
+          <EnrollButton className="mt-2 w-fit py-2 px-6" projectId={projectObject.code} />
         )}
       </>
     );
-  };
-  
-  const handleStudentActions = (event: React.SyntheticEvent) => {
-    event.stopPropagation();
-    const action = event.currentTarget.textContent!.toLowerCase();
-    // console.log("Clicked action button:", action);
-
-    switch (action) {
-      case "view":
-        // Toggle project card details
-        return;
-      case "enroll":
-        axios
-          .post("http://localhost:3500/users/student/enroll", {
-            studentId: user.id,
-            projectCode: projectObject.code,
-          })
-          .then((res) => {
-            if (res.statusText.toLowerCase() == "created") {
-              setModalType("status_success");
-              authContext?.enroll(projectObject.code);
-            }
-          });
-
-        // Logic for validating student's requirement ?
-        // let satisfied = false;                                                                                  // test
-        // if (satisfied) {
-        //   setModalType("status_success");
-        //   break;
-        // } else {
-        //   let failReasons = ["Not enough credits accumulated ! (<90)", "Your GPA is too low ! (<8.0)"]          // test
-        //   setModalProps({ title: "Project requirements not met !", messages: failReasons })
-        //   setModalType("status_warning");
-        //   break;
-        // }
-        break;
-      case "unenroll":
-        setModalType("project_unerollment");
-        break;
-      default:
-        console.error("Invalid action button:", action);
-        return;
-    }
-    toggleModal(true);
   };
 
   const ManagementButtons = ({
@@ -111,7 +55,7 @@ const ProjectCardDetail = ({projectObject}: {projectObject:ProjectProps}) => {
         <Button
           isPrimary={false}
           variant="normal"
-          className="mt-2 w-fit py-2 px-6"
+          className="mt-2 w-fit px-6 py-2"
           onClick={() => {
             navigate(`/project/edit/${projectObject.code}`);
           }}
@@ -121,10 +65,8 @@ const ProjectCardDetail = ({projectObject}: {projectObject:ProjectProps}) => {
         <Button
           isPrimary
           variant="normal"
-          className="mt-2 w-fit py-2 px-6"
-          onClick={() =>
-            viewSet(projectObject)
-          }
+          className="mt-2 w-fit px-6 py-2"
+          onClick={() => viewSet(projectObject)}
         >
           View
         </Button>
@@ -132,40 +74,43 @@ const ProjectCardDetail = ({projectObject}: {projectObject:ProjectProps}) => {
     );
   };
 
-
-
-
   return (
     <div className="rounded-md border border-black px-8 py-4">
       <Typography variant="h1" text={projectObject.code.toString()} />
       <Typography variant="h1" text={projectObject.name} />
       <div className="mb-4 flex w-full">
-        <ProjectInformationTable fontSize="text-lg" branches={projectObject.branches} majors={projectObject.majors} supervisors={projectObject.supervisors} />
+        <ProjectInformationTable
+          fontSize="text-lg"
+          branches={projectObject.branches}
+          majors={projectObject.majors}
+          supervisors={projectObject.supervisors}
+        />
         <div className="ms-auto">
-          <ProjectCardList className="w-full" studentsCount={projectObject.studentsCount} students={projectObject.students} limit={projectObject.limit}/>
+          <ProjectCardList
+            className="w-full"
+            studentsCount={projectObject.studentsCount}
+            students={projectObject.students}
+            limit={projectObject.limit}
+          />
         </div>
       </div>
       <Typography variant="h2" text="Description" />
-      <div className="text-md [&>ol]:list-decimal [&>ol]:list-inside [&>ul]:list-disc [&>ul]:list-inside">
+      <div className="text-md [&>ol]:list-inside [&>ol]:list-decimal [&>ul]:list-inside [&>ul]:list-disc">
         {parse(projectObject.description)}
       </div>
       <Typography variant="h2" text="Tasks" />
-      <div className="text-md [&>ol]:list-decimal [&>ol]:list-inside [&>ul]:list-disc [&>ul]:list-inside">
+      <div className="text-md [&>ol]:list-inside [&>ol]:list-decimal [&>ul]:list-inside [&>ul]:list-disc">
         {parse(projectObject.tasks)}
       </div>
       <Typography variant="h2" text="References" />
-      <div className="text-md [&>ol]:list-decimal [&>ol]:list-inside [&>ul]:list-disc [&>ul]:list-inside">
+      <div className="text-md [&>ol]:list-inside [&>ol]:list-decimal [&>ul]:list-inside [&>ul]:list-disc">
         {parse(projectObject.references)}
       </div>
       <div className="mt-4 flex justify-end">
         {hasRole("student") ? (
-          <StudentButtons
-            handleAction={handleStudentActions}
-          />
+          <StudentButtons />
         ) : (
-          <ManagementButtons
-            handleAction={''}
-          />
+          <ManagementButtons handleAction={""} />
         )}
       </div>
     </div>

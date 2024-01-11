@@ -13,6 +13,10 @@ import {
   ProjDenyModal,
 } from "./Modals/ActionModals";
 import UploadFileModal from "./Modals/UploadFileModal";
+import { useUser } from "../hooks";
+import { AuthContext } from "../providers/AuthProvider";
+import axios from "axios";
+import { unenroll } from "./UserAction/Buttons/UnenrollButton";
 
 type definedModalProps = StatusModalProps | ActionModalProps;
 
@@ -23,7 +27,9 @@ const DynamicModal = () => {
   }
   const { toggleModal, modalType, modalProps } = modalContextValue;
 
+
   const renderModal = (modalType: string, modalProps: definedModalProps) => {
+    console.log("MODAL", modalType)
     switch (modalType) {
       case "filter":
         return <FilterModal />;
@@ -31,12 +37,14 @@ const DynamicModal = () => {
         return <SuccessModal title="Enrolled successfully !" />;
       case "status_warning":
         return <WarningModal title={modalProps?.title} messages={modalProps?.messages} />;
-      case "project_unerollment":
+      case "project_unenrollment":
+        console.log("HERE")
         return(
           <RemovalModal 
             title="Unenroll from this project ?" 
             messages={["This action will remove your from the members list of this project."]} 
             buttonLabels={["Unenroll", "Cancel"]} 
+            mainAction={unenroll}
           />
         )
       case "project_deletion":
@@ -45,6 +53,7 @@ const DynamicModal = () => {
             title="Delete this project ?" 
             messages={["This action cannot be undone !"]} 
             buttonLabels={["Delete", "Cancel"]} 
+            mainAction={() => {}}
           />
         )
       case "project_denial":

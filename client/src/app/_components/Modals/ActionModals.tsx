@@ -7,11 +7,12 @@ import { ModalContext } from '@/app/providers/ModalProvider';
 
 export interface ActionModalProps{
   title: string,
-  messages?: string[]
-  buttonLabels: [string, string]
+  messages?: string[],
+  buttonLabels: [string, string],
+  mainAction: () => void
 }
 
-const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
+const RemovalModal = ({title, messages, buttonLabels, mainAction}: ActionModalProps) => {
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     return "No context set up for rejection modal";
@@ -38,7 +39,7 @@ const RemovalModal = ({title, messages, buttonLabels}: ActionModalProps) => {
         isPrimary={true}
         variant="cancel"
         className='mt-6 w-44 py-2 text-lg'
-        onClick={()=>{alert('Action button clicked'); toggleModal(false)}}
+        onClick={mainAction}
       >
         {buttonLabels[0]}
       </Button>
