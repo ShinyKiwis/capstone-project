@@ -96,7 +96,7 @@ export class ProjectsRepository extends Repository<Project> {
       .leftJoinAndSelect('project.supervisors', 'supervisors')
       .leftJoinAndSelect('project.majors', 'majors')
       .leftJoinAndSelect('project.branches', 'branches')
-      // .leftJoinAndSelect('students.userId', 'students')
+      .leftJoinAndSelect('students.user', 'users')
       .loadRelationCountAndMap('project.studentsCount', 'project.students');
 
     if (members) {
