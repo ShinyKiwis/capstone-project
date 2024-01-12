@@ -77,10 +77,10 @@ const ProjectHeader = () => {
     setProjectsPerPage(numericValue);
   };
 
-  const handleToggleModal = (event: React.SyntheticEvent) => {
+  const handleToggleModal = (event: React.SyntheticEvent, type:string) => {
     event.stopPropagation();
+    setModalType(type);
     toggleModal(true);
-    setModalType("filter");
   };
   return (
     <div className="sticky top-0 w-full bg-white pt-2">
@@ -93,7 +93,7 @@ const ProjectHeader = () => {
             variant="normal"
             isPrimary={false}
             className="flex w-2/12 items-center justify-center gap-2 text-xl"
-            onClick={handleToggleModal}
+            onClick={(e) => handleToggleModal(e,'filter')}
           >
             <IoOptions size={25} />
             <span>Filter</span>
@@ -114,6 +114,7 @@ const ProjectHeader = () => {
               isPrimary
               variant="normal"
               className="flex items-center gap-2 px-4 py-2"
+              onClick={(e) => handleToggleModal(e,'upload')}
             >
               <RiUpload2Fill size={25} />
               Upload file
