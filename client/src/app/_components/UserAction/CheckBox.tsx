@@ -10,6 +10,10 @@ const CheckBox = ({
   valueArray: string[]
 }) => {
   const [checked, setChecked] = useState(defaultChecked)
+  // if (defaultChecked && valueArray.length===0) {
+  //   valueArray.push(option);
+  //   defaultChecked = false;
+  // }
 
   return (
     <div className="text-lg">

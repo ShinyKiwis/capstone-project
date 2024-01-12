@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, InputBox, SearchBox, Typography } from "..";
 import CheckBox from "../UserAction/CheckBox";
 import ProfileSelector from "../ProfileSelector";
@@ -43,15 +43,9 @@ const FilterModal = () => {
     { label: string; value: string }[]
   >([]);
 
-  var selectedProjType = [
-    "personal projects",
-  ];
-  var selectedMajors = [
-    "computer science",
-  ];
-  var selectedBranches = [
-    "high quality",
-  ];
+  const [selectedProjType, setprojType] = useState<string[]>(['personal projects']);
+  const [selectedBranches, setSelectedBranches] = useState<string[]>(['high quality']);
+  const [selectedMajors, setSelectedMajors] = useState<string[]>(['computer science']);
 
   const majorOptions = [
     "Computer Science",
@@ -80,7 +74,7 @@ const FilterModal = () => {
                 <Typography
                   variant="p"
                   text="Project type"
-                  className="mb-4 text-2xl font-bold"
+                  className="mb-4 text-2xl font-bold mt-2"
                 />
                 <div className="flex gap-4">
                   <CheckBox
@@ -99,7 +93,7 @@ const FilterModal = () => {
                 <Typography
                   variant="p"
                   text="Branch"
-                  className="mb-4 text-2xl font-bold"
+                  className="mb-4 text-2xl font-bold mt-4"
                 />
                 <div className="flex gap-4">
                   <CheckBox
@@ -123,7 +117,7 @@ const FilterModal = () => {
             <Typography
               variant="p"
               text="Major"
-              className="mb-4 text-2xl font-bold"
+              className="mb-4 text-2xl font-bold mt-4"
             />
             <div className="flex gap-4">
               <CheckBox
