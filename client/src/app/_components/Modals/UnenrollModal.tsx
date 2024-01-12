@@ -33,7 +33,6 @@ const UnenrollModal = ({title, messages}: UnenrollModalProps) => {
     }
     const {setUser} = authContext
 
-    console.log("Calling unenroll API...", user)
     axios.post("http://localhost:3500/users/student/unenroll", {
       studentId: user.id
     })
@@ -51,7 +50,7 @@ const UnenrollModal = ({title, messages}: UnenrollModalProps) => {
         }
       }
       setUser(updatedUser)
-      console.log("user unenrolled successfully")
+      toggleModal(false)
     })
   }
 

@@ -1,3 +1,3 @@
 export class UnenrollProjectDto {
-  id: number;
+  studentId: number;
 }

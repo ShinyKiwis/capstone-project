@@ -86,11 +86,11 @@ export class StudentsRepository extends Repository<Student> {
   }
 
   async unenrollProject(unenrollProjectDto: UnenrollProjectDto) {
-    const { id } = unenrollProjectDto;
-    const student = await this.getStudentById(id);
+    const { studentId } = unenrollProjectDto;
+    const student = await this.getStudentById(studentId);
     if (!student.project) {
       throw new ConflictException(
-        `User with id ${id} has not enrolled in any project`,
+        `User with id ${studentId} has not enrolled in any project`,
       );
     }
     student.project = null;
