@@ -56,7 +56,7 @@ const ProfileSelector = ({
     valueSetter([...selected]);
   }, [selected]);
 
-  const ProfileItems_multi = ({
+  const ProfileItemsMultiMode = ({
     name,
     id,
     email,
@@ -105,21 +105,27 @@ const ProfileSelector = ({
     id,
     email,
     department,
-    className
+    className,
   }: {
     id: string;
     email: string;
     department: string;
     className?: string;
   }) => {
-    const EachRow = ({fieldName, value}:{fieldName:string, value:string}) => {
-      return(
+    const EachRow = ({
+      fieldName,
+      value,
+    }: {
+      fieldName: string;
+      value: string;
+    }) => {
+      return (
         <tr className="border-[1px]">
-          <th className="border-[1px] w-52 py-2 text-center">{fieldName}</th>
+          <th className="w-52 border-[1px] py-2 text-center">{fieldName}</th>
           <td className="border-[1px] px-8 py-2 text-center">{value}</td>
         </tr>
-      )
-    }
+      );
+    };
 
     return (
       <table className={`${className} border-collapse border-[1px]`}>
@@ -132,7 +138,7 @@ const ProfileSelector = ({
     );
   };
 
-  const ProfileItems_single = ({
+  const ProfileItemsSingleMode = ({
     name,
     id,
     email,
@@ -144,9 +150,14 @@ const ProfileSelector = ({
     department: string;
   }) => {
     return (
-      <div className="flex flex-col w-full h-full items-center justify-center pt-8">
+      <div className="flex h-full w-full flex-col items-center justify-center">
         <Profile type="vertical" username={name} />
-        <InfoTable id={id} email={email} department={department} className="mt-4"/>
+        <InfoTable
+          id={id}
+          email={email}
+          department={department}
+          className="mt-4"
+        />
       </div>
     );
   };
@@ -156,7 +167,7 @@ const ProfileSelector = ({
     targetArr: any,
     targetArrSetter: any,
   ) {
-    if (!isMulti){
+    if (!isMulti) {
       targetArrSetter(newOpt);
       return;
     }
@@ -167,12 +178,11 @@ const ProfileSelector = ({
     if (found === -1) {
       let newArr = targetArr.concat(newOpt);
       targetArrSetter(newArr);
-
     }
   }
 
   return (
-    <div className='grow'>
+    <div className="flex h-full flex-col">
       <MultiselectDropdown
         name="supervisors"
         isMulti={true}
@@ -183,7 +193,11 @@ const ProfileSelector = ({
         }
       />
 
-      <div className="flex flex-col px-3 items-center justify-center">
+      <div
+        className={`flex flex-col items-center justify-center px-3 ${
+          isMulti ? "" : "flex-1"
+        }`}
+      >
         {selected.length > 0 &&
           selected.map(function (selectedOption: OptionType) {
             // Map list of selected options with data list from DB
@@ -192,16 +206,15 @@ const ProfileSelector = ({
               return obj.id.toString() === selectedOption.value;
             });
 
-            return (
-              isMulti ?
-              <ProfileItems_multi
+            return isMulti ? (
+              <ProfileItemsMultiMode
                 key={data!.id}
                 name={data!.name}
                 id={data!.id.toString()}
                 email={data!.email}
               />
-              :
-              <ProfileItems_single
+            ) : (
+              <ProfileItemsSingleMode
                 key={data!.id}
                 name={data!.name}
                 id={data!.id.toString()}
