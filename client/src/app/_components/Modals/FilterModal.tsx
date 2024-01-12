@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, InputBox, SearchBox, Typography } from "..";
 import CheckBox from "../UserAction/CheckBox";
 import ProfileSelector from "../ProfileSelector";
 import Image from "next/image";
 import { useUser } from "@/app/hooks";
 import hasRole from "@/app/lib/hasRole";
+import { ModalContext } from "@/app/providers/ModalProvider";
 
 const NoInstructor = () => {
   return (
@@ -26,25 +27,17 @@ const NoInstructor = () => {
   );
 };
 
-function handleCheckboxChange(
-  valuesArray: string[],
-  arraySetter: React.Dispatch<React.SetStateAction<string[]>>,
-  checked: boolean,
-  targetValue: string,
-) {
-  if (checked) {
-    valuesArray.push(targetValue);
-    arraySetter([...valuesArray]);
-  } else {
-    // Uncheck option -> remove value from array
-    const targetIdx = valuesArray.findIndex((x) => x === targetValue);
-    valuesArray.splice(targetIdx, 1);
-    arraySetter([...valuesArray]);
-  }
-}
-
 const FilterModal = () => {
   const user = useUser();
+  const modalContextValue = useContext(ModalContext);
+  if (!modalContextValue) {
+    console.error(
+      "Filter modal's cancel button will not close modal - model context not initiated !",
+    );
+    return "Modal err...";
+  }
+  const {toggleModal} = modalContextValue;
+
   const [numberOfParticipants, setNumberOfParticipants] = useState("1");
   const [instructor, setInstructor] = useState<
     { label: string; value: string }[]
@@ -205,6 +198,7 @@ const FilterModal = () => {
             isPrimary
             variant="cancel"
             className="px-8 py-1 font-bold text-white"
+            onClick={()=>toggleModal(false)}
           >
             Cancel
           </Button>
