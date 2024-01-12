@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from "react";
 import { Button, InputBox, SearchBox, Typography } from "..";
 import CheckBox from "../UserAction/CheckBox";

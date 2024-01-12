@@ -12,11 +12,8 @@ import {
   RemovalModal,
   ProjDenyModal,
 } from "./Modals/ActionModals";
+import UnenrollModal from "./Modals/UnenrollModal";
 import UploadFileModal from "./Modals/UploadFileModal";
-import { useUser } from "../hooks";
-import { AuthContext } from "../providers/AuthProvider";
-import axios from "axios";
-import { unenroll } from "./UserAction/Buttons/UnenrollButton";
 
 type definedModalProps = StatusModalProps | ActionModalProps;
 
@@ -38,14 +35,8 @@ const DynamicModal = () => {
       case "status_warning":
         return <WarningModal title={modalProps?.title} messages={modalProps?.messages} />;
       case "project_unenrollment":
-        console.log("HERE")
         return(
-          <RemovalModal 
-            title="Unenroll from this project ?" 
-            messages={["This action will remove your from the members list of this project."]} 
-            buttonLabels={["Unenroll", "Cancel"]} 
-            mainAction={unenroll}
-          />
+          <UnenrollModal />
         )
       case "project_deletion":
         return(
