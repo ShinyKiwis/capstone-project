@@ -110,7 +110,7 @@ export const ProjectCardList = ({
             <Profile
               key={member.userId}
               type="horizontal"
-              username={member.name}
+              username='{member.name}'
             />
           );
         })} */}
@@ -126,7 +126,8 @@ const StudentButtons = ({
   viewSet: any;
   viewTarget: ProjectProps;
 }) => {
-  const user = useUser();
+  const user = useUser()
+  const authContext = useContext(AuthContext);
   return (
     <>
       <Button
