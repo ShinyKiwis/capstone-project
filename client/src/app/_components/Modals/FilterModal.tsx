@@ -58,7 +58,7 @@ const FilterModal = () => {
   const handleChangeNumberOfParticipants = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    e.target.value = +e.target.value <= 4 ? e.target.value : "4";
+    e.target.value = +e.target.value <= 999 ? e.target.value : "999";
     setNumberOfParticipants(e.target.value);
   };
 
@@ -143,7 +143,7 @@ const FilterModal = () => {
                 text="Number of participants"
                 className="w-10/12 text-2xl font-bold"
               />
-              <div className="w-1/12">
+              <div className="w-2/12">
                 <InputBox
                   inputName="numberOfParticipants"
                   placeholderText="1"
