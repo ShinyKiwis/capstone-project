@@ -143,7 +143,7 @@ const NoData = () => {
       <Image src="/cat.png" width="150" height="150" alt="empty prompt" />
       <Typography
         variant="p"
-        text="There is no project at the moment. Please come back later"
+        text={`There is no project at the moment. ${hasRole("student") ? "Please come back later": "Please create your project"}!`}
         className="text-xl text-gray"
       />
     </div>

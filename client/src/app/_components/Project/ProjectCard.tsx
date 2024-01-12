@@ -9,6 +9,7 @@ import { AuthContext } from "@/app/providers/AuthProvider";
 import hasRole from "@/app/lib/hasRole";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
+import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
 
 type Student = {
   name: string;
@@ -150,11 +151,9 @@ const StudentButtons = ({
 const ManagementButtons = ({
   viewSet,
   viewTarget,
-  handleAction,
 }: {
   viewSet: any;
   viewTarget: ProjectProps;
-  handleAction: any;
 }) => {
   const navigate = useNavigate();
   return (
@@ -177,6 +176,7 @@ const ManagementButtons = ({
       >
         View
       </Button>
+      <DeleteProjectButton className="mt-2 w-full py-2" projectId={viewTarget.code}/>
     </>
   );
 };
@@ -195,33 +195,6 @@ const ProjectCardActions = ({
     );
     return;
   }
-  const { toggleModal, setModalType, setModalProps, modalProps } =
-    modalContextValue;
-
-  const handleManagementActions = (event: React.SyntheticEvent) => {
-    event.stopPropagation();
-    const action = event.currentTarget.textContent!.toLowerCase();
-    // console.log("Clicked action button:", action);
-
-    switch (action) {
-      case "edit":
-        setModalType("project_deletion");
-        break;
-      case "deactivate":
-        setModalType("project_deletion");
-        break;
-      case "delete":
-        setModalType("project_deletion");
-        break;
-      case "deny":
-        setModalType("project_denial");
-        break;
-      default:
-        console.error("Invalid action button:", action);
-        return;
-    }
-    toggleModal(true);
-  };
 
   return (
     <div className="ms-auto mt-4 w-1/4">
@@ -231,7 +204,6 @@ const ProjectCardActions = ({
         <ManagementButtons
           viewSet={viewSet}
           viewTarget={viewTarget}
-          handleAction={handleManagementActions}
         />
       )}
       {/* Buttons for testing other modals */}

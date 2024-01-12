@@ -156,7 +156,7 @@ const CreateProject = () => {
           <div className="w-2/3">
             <div className="h-full flex flex-col">
               <p className="mb-4 text-2xl font-bold">Requirements</p>
-              <RichTextEditor onChange={setRequirements} />
+              <RichTextEditor onChange={setRequirements} initialContent={requirements}/>
             </div>
           </div>
         </div>
@@ -168,7 +168,7 @@ const CreateProject = () => {
           <div className="w-2/3">
             <div className="h-full flex flex-col">
               <p className="text-2xl font-bold mb-4">Description</p>
-              <RichTextEditor onChange={setDescription} />
+              <RichTextEditor onChange={setDescription} initialContent={description}/>
             </div>
           </div>
         </div>
@@ -180,7 +180,7 @@ const CreateProject = () => {
           <div className="w-2/3">
             <div className="h-full flex flex-col">
               <p className="text-2xl font-bold mb-4">Tasks/Missions</p>
-              <RichTextEditor onChange={setTasks} />
+              <RichTextEditor onChange={setTasks} initialContent={tasks}/>
             </div>
           </div>
         </div>
@@ -190,7 +190,7 @@ const CreateProject = () => {
           <div className="w-2/3">
             <div className="h-full flex flex-col">
               <p className="text-2xl font-bold mb-4">References</p>
-              <RichTextEditor onChange={setRefs} />
+              <RichTextEditor onChange={setRefs} initialContent={refs} />
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ interface ProjectContextProps {
   setViewing: (viewing: Project) => void;
   handleEnrollment: (projectId: number) => void;
   handleUnenrollment: (projectId: number) => void;
+  handleDeletion: (projectId: number) => void;
 }
 
 interface Project {
@@ -102,7 +103,7 @@ export const ProjectProvider = ({
         }
         return project;
       }),
-    );
+    );    
     if(viewing){
       setViewing({
         ...viewing,
@@ -111,6 +112,13 @@ export const ProjectProvider = ({
     }
   };
 
+  const handleDeletion = (projectId: number) => {
+    setProjects(projects => projects.filter(project => project.code != projectId))
+    if(viewing?.code === projectId) {
+      setViewing(undefined)
+    }
+  }
+
   const projectContextValue: ProjectContextProps = {
     projects,
     setProjects,
@@ -118,6 +126,7 @@ export const ProjectProvider = ({
     setViewing,
     handleEnrollment,
     handleUnenrollment,
+    handleDeletion,
   };
   return (
     <ProjectContext.Provider value={projectContextValue}>

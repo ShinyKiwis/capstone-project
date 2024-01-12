@@ -106,7 +106,7 @@ const ProjectCardDetail = ({
       <div className="text-md [&>ol]:list-inside [&>ol]:list-decimal [&>ul]:list-inside [&>ul]:list-disc">
         {parse(projectObject.references)}
       </div>
-      <div className="mt-4 flex justify-end">
+      <div className="mt-4 flex justify-end gap-4">
         {hasRole("student") ? (
           <StudentButtons />
         ) : (
