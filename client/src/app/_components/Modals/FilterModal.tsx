@@ -50,9 +50,15 @@ const FilterModal = () => {
     { label: string; value: string }[]
   >([]);
 
-  var selectedProjType = ["personal projects"];
-  var selectedMajors = ["computer science"];
-  var selectedBranches = ["high quality"];
+  var selectedProjType = [
+    "personal projects",
+  ];
+  var selectedMajors = [
+    "computer science",
+  ];
+  var selectedBranches = [
+    "high quality",
+  ];
 
   const majorOptions = [
     "Computer Science",
@@ -187,13 +193,9 @@ const FilterModal = () => {
             onClick={(e) => {
               e.preventDefault();
               alert(
-                hasRole("student")
-                  ? `${selectedBranches}\n\n$${numberOfParticipants}\n\n${JSON.stringify(
-                      instructor,
-                    )}`
-                  : `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${numberOfParticipants}\n\n${JSON.stringify(
-                      instructor,
-                    )}`,
+                `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${numberOfParticipants}\n\n${JSON.stringify(
+                  instructor,
+                )}`,
               );
             }}
           >
