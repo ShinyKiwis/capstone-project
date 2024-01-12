@@ -70,6 +70,7 @@ export class StudentsRepository extends Repository<Student> {
       .leftJoin('student.project', 'project');
     const found = await query.getOne();
     console.log(found);
+    if(!found) return found;
     let result;
     if (found.project == null) result = { ...found, project: -1 };
     else result = found;
