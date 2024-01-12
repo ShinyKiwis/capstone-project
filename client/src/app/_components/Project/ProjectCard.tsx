@@ -138,7 +138,7 @@ const StudentButtons = ({
         View
       </Button>
       {user.project.code === viewTarget.code ? (
-        <UnenrollButton className="mt-2 w-full py-2"/>
+        <UnenrollButton className="mt-2 w-full py-2" />
       ) : (
         <EnrollButton className="mt-2 w-full py-2" projectId={viewTarget.code} />
       )}

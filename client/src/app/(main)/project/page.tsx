@@ -17,6 +17,7 @@ import hasRole from "@/app/lib/hasRole";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
+import { ProjectContext } from "@/app/providers/ProjectProvider";
 
 type ProjectData = {
   code: number;
@@ -149,17 +150,10 @@ const NoData = () => {
 };
 
 const Project = () => {
-  const [projects, setProjects] = useState<ProjectData[]>([]);
-  const [viewing, setViewing] = useState<ProjectData>();
+  const projectContext = useContext(ProjectContext)
+  if(!projectContext) return <div>Loading</div>
+  const {projects, viewing, setViewing} = projectContext
 
-
-  React.useEffect(() => {
-    axios.get("http://localhost:3500/projects").then((response) => {
-      // console.log("Retreived projects:", response.data.projects);
-      setProjects(response.data.projects);
-      setViewing(response.data.projects[0]);
-    });
-  }, []);
 
   return (
     <div className="w-full">

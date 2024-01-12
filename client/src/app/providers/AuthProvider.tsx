@@ -1,6 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useState } from "react";
 import useNavigate from "../hooks/useNavigate";
 
 interface AuthContextProps {

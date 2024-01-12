@@ -7,6 +7,7 @@ import { ModalContext } from '@/app/providers/ModalProvider';
 import { useUser } from '@/app/hooks';
 import { AuthContext } from '@/app/providers/AuthProvider';
 import axios from 'axios';
+import { ProjectContext } from '@/app/providers/ProjectProvider';
 
 export interface UnenrollModalProps{
   title?: string,
@@ -23,16 +24,15 @@ const UnenrollModal = ({title, messages}: UnenrollModalProps) => {
 
   const user = useUser()
   const authContext = useContext(AuthContext)
+  const projectContext = useContext(ProjectContext)
 
   if (!messages) messages = ["This action will remove your from the members list of this project."]
+  if (!authContext) return <div>Loading</div>
+  if (!projectContext) return <div>Loading</div>
+  const {setUser} = authContext
+  const {handleUnenrollment} = projectContext
 
   function unenroll(){
-    if(!authContext) {
-      console.error("No authContext found !")
-      return;
-    }
-    const {setUser} = authContext
-
     axios.post("http://localhost:3500/users/student/unenroll", {
       studentId: user.id
     })
@@ -50,6 +50,7 @@ const UnenrollModal = ({title, messages}: UnenrollModalProps) => {
         }
       }
       setUser(updatedUser)
+      handleUnenrollment(user.project.code)
       toggleModal(false)
     })
   }

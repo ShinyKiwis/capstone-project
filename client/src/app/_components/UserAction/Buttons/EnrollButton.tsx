@@ -4,41 +4,54 @@ import { useUser } from "@/app/hooks";
 import axios from "axios";
 import { AuthContext } from "@/app/providers/AuthProvider";
 import { ModalContext } from "@/app/providers/ModalProvider";
+import { ProjectContext } from "@/app/providers/ProjectProvider";
 
-const EnrollButton = ({ projectId, className }: { projectId: number, className: string }) => {
+const EnrollButton = ({
+  projectId,
+  className,
+}: {
+  projectId: number;
+  className: string;
+}) => {
   const user = useUser();
-  const authContext = useContext(AuthContext)
-  const modalContext = useContext(ModalContext)
+  const authContext = useContext(AuthContext);
+  const modalContext = useContext(ModalContext);
+  const projectContext = useContext(ProjectContext);
 
-  if(!authContext) return <></>
-  if(!modalContext) return <></>
-  const { toggleModal, setModalType } =
-  modalContext;
-  const {setUser} = authContext
+  if (!authContext) return <></>;
+  if (!modalContext) return <></>;
+  if (!projectContext) return <></>;
+  const { toggleModal, setModalType } = modalContext;
+  const { setUser } = authContext;
+  const { handleEnrollment } = projectContext;
 
   const handleEnroll = (e: React.SyntheticEvent) => {
-    e.stopPropagation()
+    e.stopPropagation();
     axios
       .post("http://localhost:3500/users/student/enroll", {
         studentId: user.id,
         projectCode: projectId,
       })
       .then((_) => {
-        sessionStorage.setItem("user", JSON.stringify({
-          ...user,
-          project: {
-            code: projectId
-          }
-        }));
+        sessionStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...user,
+            project: {
+              code: projectId,
+            },
+          }),
+        );
         const updatedUser = {
           ...user,
           project: {
-            code: projectId
-          }
-        }
-        setUser(updatedUser)
-        setModalType("status_success")
-        toggleModal(true)
+            code: projectId,
+          },
+        };
+        setUser(updatedUser);
+        handleEnrollment(projectId)
+        setModalType("status_success");
+        toggleModal(true);
       });
   };
   return (
