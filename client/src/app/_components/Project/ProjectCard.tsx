@@ -13,6 +13,7 @@ import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
 import ActivateButton from "../UserAction/Buttons/ActivateButton";
 import { usePathname, useSearchParams } from "next/navigation";
 import DenyButton from "../UserAction/Buttons/DenyButton";
+import ProjectStatus from "./ProjectStatus";
 
 type Student = {
   name: string;
@@ -26,6 +27,7 @@ type Student = {
 export interface ProjectProps {
   code: number;
   name: string;
+  status: string;
   description: string;
   tasks: string;
   references: string;
@@ -161,7 +163,7 @@ const ManagementButtons = ({
   viewSet: any;
   viewTarget: ProjectProps;
 }) => {
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
   const navigate = useNavigate();
   const pathname = usePathname();
   return pathname.includes("approve") ? (
@@ -186,7 +188,11 @@ const ManagementButtons = ({
         variant="normal"
         className="w-full py-2"
         onClick={() => {
-          navigate(`/project/edit/${viewTarget.code}?project=${searchParams.get("project")}`);
+          navigate(
+            `/project/edit/${viewTarget.code}?project=${searchParams.get(
+              "project",
+            )}`,
+          );
         }}
       >
         Edit
@@ -199,10 +205,19 @@ const ManagementButtons = ({
       >
         View
       </Button>
-      <ActivateButton
-        className="mt-2 w-full py-2"
-        projectId={viewTarget.code}
-      />
+      {viewTarget.status.includes("DEACTIVATED") ? (
+        <ActivateButton
+          className="mt-2 w-full py-2"
+          projectId={viewTarget.code}
+          action="Activate"
+        />
+      ) : (
+        <ActivateButton
+          className="mt-2 w-full py-2"
+          projectId={viewTarget.code}
+          action="Deactivate"
+        />
+      )}
       <DeleteProjectButton
         className="mt-2 w-full py-2"
         projectId={viewTarget.code}
@@ -257,6 +272,7 @@ const ProjectCard = ({
 
   return (
     <div className="flex w-full cursor-pointer flex-col rounded-md border border-black px-4 py-4">
+      <ProjectStatus status={projectObject.status} />
       <div className="flex">
         <ProjectCardMetadata
           code={projectObject.code}

@@ -12,6 +12,7 @@ interface ProjectContextProps {
   handleUnenrollment: (projectId: number) => void;
   handleDeletion: (projectId: number) => void;
   handleUpdateProject: (projectId: number, project: Project) => void;
+  handleChangeProjectStatus: (projectId: number, status: string) => void;
 }
 
 interface Project {
@@ -95,6 +96,27 @@ export const ProjectProvider = ({
     );
   };
 
+  const handleChangeProjectStatus = (projectId:number, status: string) => {
+    setProjects(projects => {
+      return projects.map(prevProject => {
+        if(prevProject.code == projectId) {
+          return {
+            ...prevProject,
+            status: status
+          }
+        }else{
+          return prevProject
+        }
+      })
+    })
+    if(viewing?.code == projectId) {
+      setViewing({
+        ...viewing,
+        status: status
+      })
+    }
+  }
+
   const handleUnenrollment = (projectId: number) => {
     setProjects((projects) =>
       projects.map((project) => {
@@ -107,7 +129,7 @@ export const ProjectProvider = ({
         return project;
       }),
     );
-    if (viewing) {
+    if (viewing?.code == projectId) {
       setViewing({
         ...viewing,
         studentsCount: viewing!.studentsCount - 1,
@@ -133,6 +155,7 @@ export const ProjectProvider = ({
     handleUnenrollment,
     handleDeletion,
     handleUpdateProject,
+    handleChangeProjectStatus
   };
   return (
     <ProjectContext.Provider value={projectContextValue}>

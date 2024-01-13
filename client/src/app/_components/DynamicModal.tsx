@@ -16,7 +16,8 @@ import UnenrollModal from "./Modals/UnenrollModal";
 import UploadFileModal from "./Modals/UploadFileModal";
 import axios from "axios";
 import DeleteProjectModal from "./Modals/DeleteProjectModal";
-import DeactivateProjectModal from "./Modals/DeactivateProjectModal";
+import ActivateProjectModal from "./Modals/ActivateProjectModal";
+import { title } from "process";
 
 type definedModalProps = StatusModalProps | ActionModalProps;
 
@@ -46,7 +47,8 @@ const DynamicModal = () => {
       case "project_deletion":
         return <DeleteProjectModal projectId={modalProps.title} />;
       case "project_activation":
-        return <DeactivateProjectModal projectId={modalProps.title} />
+        const [id, action] = modalProps.title.split("-")
+        return <ActivateProjectModal projectId={id} action={action} />
       case "project_denial":
         return <ProjDenyModal />;
       case "upload":
