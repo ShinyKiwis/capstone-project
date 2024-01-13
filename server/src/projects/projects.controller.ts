@@ -17,6 +17,7 @@ import { Project } from './entities/project.entity';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
 import ProjectFilesInterceptor from './projectFiles.interceptor';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
 
 @Controller('projects')
 export class ProjectsController {
@@ -30,6 +31,11 @@ export class ProjectsController {
   @Get()
   async getProjects(@Query() filterDto: GetProjectsFilterDto) {
     return this.projectsService.getProjects(filterDto);
+  }
+
+  @Get('/status')
+  async getProjectsByStatus(@Body() getProjectsByStatusDto: GetProjectsByStatusDto) {
+    return this.projectsService.getProjectsByStatus(getProjectsByStatusDto);
   }
 
   @Get(':code')
