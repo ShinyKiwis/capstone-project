@@ -4,11 +4,11 @@ import { AuthContext } from '../providers/AuthProvider'
 const useUser = () => {
   const authContext = useContext(AuthContext)
   if(!authContext) {
-    return {id: -1, name: "Loading", email: "Loading", roles: [], project: {code: -1}}
+    return {id: -1, name: "Loading", email: "Loading", username: "Loading", roles: [], project: {code: -1}}
   }
   const {user} = authContext
   if(!user) {
-    return {id: -1,name: "Invalid", email: "Invalid", roles: [], project: {code: -1}}
+    return {id: -1,name: "Invalid", email: "Invalid", username: "Invalid", roles: [], project: {code: -1}}
   }
   return user
 }
