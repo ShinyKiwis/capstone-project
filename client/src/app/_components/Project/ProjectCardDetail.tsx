@@ -75,11 +75,19 @@ const ProjectCardDetail = ({
         >
           Edit
         </Button>
-        <ActivateButton
-          className="mt-2 w-fit px-6 py-2"
-          projectId={viewTarget.code}
-          action="Deactivate"
-        />
+        {viewTarget.status.includes("DEACTIVATED") ? (
+          <ActivateButton
+            className="mt-2 w-fit px-6 py-2"
+            projectId={viewTarget.code}
+            action="Activate"
+          />
+        ) : (
+          <ActivateButton
+            className="mt-2 w-fit px-6 py-2"
+            projectId={viewTarget.code}
+            action="Deactivate"
+          />
+        )}
         <DeleteProjectButton
           className="mt-2 w-fit px-6 py-2"
           projectId={viewTarget.code}
