@@ -27,7 +27,7 @@ export class Student {
   @Column('decimal', { precision: 6, scale: 2 })
   GPA: number;
 
-  @ManyToOne(() => Project)
+  @ManyToOne(() => Project, (project) => project.students)
   @JoinColumn()
   project: Project;
 

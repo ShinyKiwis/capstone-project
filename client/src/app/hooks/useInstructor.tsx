@@ -6,6 +6,7 @@ import { useUser } from ".";
 interface Instructor {
   id: number;
   email: string;
+  username: string;
   name: string;
 }
 

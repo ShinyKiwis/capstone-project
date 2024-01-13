@@ -11,7 +11,7 @@ import EnrollButton from "../UserAction/Buttons/EnrollButton";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
 import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
 import ActivateButton from "../UserAction/Buttons/ActivateButton";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import DenyButton from "../UserAction/Buttons/DenyButton";
 
 type Student = {
@@ -161,6 +161,7 @@ const ManagementButtons = ({
   viewSet: any;
   viewTarget: ProjectProps;
 }) => {
+  const searchParams = useSearchParams()
   const navigate = useNavigate();
   const pathname = usePathname();
   return pathname.includes("approve") ? (
@@ -185,7 +186,7 @@ const ManagementButtons = ({
         variant="normal"
         className="w-full py-2"
         onClick={() => {
-          navigate(`/project/edit/${viewTarget.code}`);
+          navigate(`/project/edit/${viewTarget.code}?project=${searchParams.get("project")}`);
         }}
       >
         Edit

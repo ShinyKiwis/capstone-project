@@ -17,9 +17,10 @@ import {
   useUser,
   useProject,
 } from "@/app/hooks";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useContext } from "react";
 import { useSearchParams } from "next/navigation";
 import { CgClose } from "react-icons/cg";
+import { ProjectContext } from "@/app/providers/ProjectProvider";
 
 type InstructorOptType = {
   label: string;
@@ -55,7 +56,10 @@ const EditProject = ({ params }: { params: { id: string } }) => {
     return [];
   }, [instructors]);
 
-  console.log(instructorList)
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) return <div>Loading</div>;
+  const { handleUpdateProject, setViewing } = projectContext;
+  console.log(instructorList);
 
   useEffect(() => {
     if (branches.length > 0 || majors.length > 0) {
@@ -68,6 +72,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       setDescription(project.description);
       setTasks(project.tasks);
       setRefs(project.references);
+      setBranch(project.branches[0].name);
+      setMajor(project.majors[0].name);
       setNumberOfMembers(project.limit);
       setInstructorList(
         project.supervisors.map((supervisor: any) => ({
@@ -95,6 +101,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
 
   const InputsTable = () => {
     const handleBranchSelectChange = (value: string) => {
+      console.log("HANDLE BRANCH",value)
       setBranch(value);
     };
 
@@ -289,21 +296,24 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                   console.log(instructors);
                   console.log(selectedOption);
                   const instructorData = instructors.find((obj) => {
-                    console.log("INSIDE", obj)
-                    console.log("INSIDE", selectedOption)
+                    console.log("INSIDE", obj);
+                    console.log("INSIDE", selectedOption);
                     return (
                       obj.id !== user.id &&
                       obj.id.toString() === selectedOption.value
                     );
                   });
-                  console.log("INSTRUCTOR DATA", instructorData)
+                  console.log("INSTRUCTOR DATA", instructorData);
 
-                  return instructorData && (
-                    <ProfileItems
-                      name={instructorData!.name}
-                      id={instructorData!.id.toString()}
-                      email={instructorData!.email}
-                    />
+                  return (
+                    instructorData && (
+                      <ProfileItems
+                        key={instructorData!.id}
+                        name={instructorData!.name}
+                        id={instructorData!.id.toString()}
+                        email={instructorData!.email}
+                      />
+                    )
                   );
                 })}
             </div>
@@ -346,49 +356,75 @@ const EditProject = ({ params }: { params: { id: string } }) => {
           variant="success"
           className="px-4 py-2 text-lg"
           onClick={() => {
+            const updateSupervisorIds = [
+              user.id,
+              ...instructorList
+                .map((instructor) => {
+                  if (+instructor.value != user.id) {
+                    return +instructor.value;
+                  }
+                })
+                .filter((storedInstructor) => storedInstructor !== undefined),
+            ];
+            console.log("supervisor ids", updateSupervisorIds);
+            console.log("MAJORS", majors);
+            console.log("MAJOR", major);
+            const updateProject = {
+              code: +params.id,
+              name: title,
+              status: project.status,
+              requirements: requirements,
+              stage: 1,
+              description,
+              tasks,
+              references: refs,
+              limit: numberOfMembers,
+              studentsCount: project.studentsCount,
+              supervisors: updateSupervisorIds,
+              majors: [
+                +majors.find((storedMajor) => storedMajor.name === major)!.id,
+              ],
+              branches: [
+                +branches.find((storedBranch) => storedBranch.name === branch)!
+                  .id,
+              ],
+            };
+            console.log("PROJECT", project);
             axios
-              .patch(`http://localhost:3500/projects/${params.id}`, {
-                name: title,
-                stage: 1,
-                description,
-                tasks,
-                references: refs,
-                limit: numberOfMembers,
-                semester: {
-                  year: 2023,
-                  no: 1,
-                },
-                supervisors: [
-                  {
-                    id: user.id,
-                  },
-                  ...instructorList.map((instructor) => {
-                    return {
-                      id: +instructor.value,
-                    };
-                  }),
-                ],
-                majors: [
-                  {
-                    id: majors.find(
-                      (storedMajor) => storedMajor.name === major,
-                    )!.id,
-                  },
-                ],
-                branches: [
-                  {
-                    id: branches.find(
-                      (storedBranch) => storedBranch.name === branch,
-                    )!.id,
-                  },
-                ],
-              })
+              .patch(
+                `http://localhost:3500/projects/${params.id}`,
+                updateProject,
+              )
               .then((_) => {
+                const parsedUpdateProject = {
+                  ...updateProject,
+                  students: project.students,
+                  supervisors: [
+                    {
+                      id: user.id,
+                      email: user.email,
+                      username: user.username,
+                      name: user.name,
+                    },
+                    ...instructors.filter((instructor) =>
+                      updateSupervisorIds.includes(instructor.id),
+                    ),
+                  ],
+                  majors: majors.filter(
+                    (storedMajor: any) => storedMajor.name === major,
+                  ),
+                  branches: branches.filter(
+                    (storedBranch: any) => storedBranch.name === branch,
+                  ),
+                };
+                console.log("FE UPDATE", parsedUpdateProject);
+                handleUpdateProject(+params.id, parsedUpdateProject);
+                setViewing(parsedUpdateProject);
                 navigate(`/project?project=${searchParams.get("project")}`);
               });
           }}
         >
-          Submit for approval
+          Update
         </Button>
         <Button isPrimary={true} variant="normal" className="px-4 py-2 text-lg">
           Save Changes
