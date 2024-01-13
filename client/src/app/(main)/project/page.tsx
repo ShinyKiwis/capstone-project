@@ -19,7 +19,7 @@ import Image from "next/image";
 import useUser from "@/app/hooks/useUser";
 import hasRole from "@/app/lib/hasRole";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
 
@@ -72,6 +72,7 @@ const ProjectHeader = () => {
   const [projectsPerPage, setProjectsPerPage] = useState("");
   const { toggleModal, setModalType } = modalContextValue;
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const handleProjectsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -106,31 +107,48 @@ const ProjectHeader = () => {
         {!hasRole("student") && (
           <div className="mt-4 flex gap-4">
             {!hasRole("student") && (
-              <Button isPrimary variant="normal" className="px-4 py-2">
-                <Link href="" className="flex items-center gap-2">
+              <Button
+                isPrimary
+                variant={pathname.includes("approve") ? "success" : "normal"}
+                className="px-4 py-2"
+              >
+                <Link
+                  href={`/project/approve?project=${searchParams.get(
+                    "project",
+                  )}`}
+                  className="flex items-center gap-2"
+                >
                   <FaCheckCircle size={23} />
-                  Approve projects
+                  {pathname.includes("approve")
+                    ? "Approve all"
+                    : "Approve projects"}
                 </Link>
               </Button>
             )}
-            <Button isPrimary variant="normal" className="px-4 py-2">
-              <Link
-                href={`/project/create?project=${searchParams.get("project")}`}
-                className="flex items-center gap-2"
-              >
-                <IoCreate size={25} />
-                Create project
-              </Link>
-            </Button>
-            <Button
-              isPrimary
-              variant="normal"
-              className="flex items-center gap-2 px-4 py-2"
-              onClick={(e) => handleToggleModal(e, "upload")}
-            >
-              <RiUpload2Fill size={25} />
-              Upload file
-            </Button>
+            {!pathname.includes("approve") && (
+              <>
+                <Button isPrimary variant="normal" className="px-4 py-2">
+                  <Link
+                    href={`/project/create?project=${searchParams.get(
+                      "project",
+                    )}`}
+                    className="flex items-center gap-2"
+                  >
+                    <IoCreate size={25} />
+                    Create project
+                  </Link>
+                </Button>
+                <Button
+                  isPrimary
+                  variant="normal"
+                  className="flex items-center gap-2 px-4 py-2"
+                  onClick={(e) => handleToggleModal(e, "upload")}
+                >
+                  <RiUpload2Fill size={25} />
+                  Upload file
+                </Button>
+              </>
+            )}
           </div>
         )}
         <div className="mt-4 w-fit font-medium text-blue">
@@ -174,30 +192,28 @@ const Project = () => {
   return (
     <div className="w-full">
       <ProjectHeader />
-      <EnrolledProjProvider>
-        <div className="mt-4 flex flex-auto gap-4">
-          {projects.length != 0 ? (
-            <>
-              <div className="flex w-1/2 flex-col gap-4">
-                {projects.map(function (project) {
-                  return (
-                    <ProjectCard
-                      key={project.code}
-                      projectObject={project}
-                      detailedViewSetter={setViewing}
-                    />
-                  );
-                })}
-              </div>
-              <div className="w-1/2">
-                {viewing && <ProjectCardDetail projectObject={viewing} />}
-              </div>
-            </>
-          ) : (
-            <NoData />
-          )}
-        </div>
-      </EnrolledProjProvider>
+      <div className="mt-4 flex flex-auto gap-4">
+        {projects.length != 0 ? (
+          <>
+            <div className="flex w-1/2 flex-col gap-4">
+              {projects.map(function (project) {
+                return (
+                  <ProjectCard
+                    key={project.code}
+                    projectObject={project}
+                    detailedViewSetter={setViewing}
+                  />
+                );
+              })}
+            </div>
+            <div className="w-1/2">
+              {viewing && <ProjectCardDetail projectObject={viewing} />}
+            </div>
+          </>
+        ) : (
+          <NoData />
+        )}
+      </div>
     </div>
   );
 };

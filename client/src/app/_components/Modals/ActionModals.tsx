@@ -85,7 +85,7 @@ const ProjDenyModal = () => {
     <div className='flex gap-8'>
       <Button
         isPrimary={true}
-        variant="cancel"
+        variant="danger"
         className='mt-6 w-44 py-2 text-lg'
         onClick={()=>{alert('Action button clicked'); toggleModal(false)}}
       >
@@ -93,7 +93,7 @@ const ProjDenyModal = () => {
       </Button>
       <Button
         isPrimary={true}
-        variant="confirm"
+        variant="close"
         className='mt-6 w-44 py-2 text-lg'
         onClick={()=>toggleModal(false)}
       >

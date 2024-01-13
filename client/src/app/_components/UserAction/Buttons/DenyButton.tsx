@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import Button from "./Button";
 import { ModalContext } from "@/app/providers/ModalProvider";
 
-const DeleteProjectButton = ({
+const DenyButton = ({
   className,
   projectId,
 }: {
@@ -12,11 +12,10 @@ const DeleteProjectButton = ({
   const modalContext = useContext(ModalContext);
   if (!modalContext) return <></>;
   const { toggleModal, setModalType, setModalProps } = modalContext;
-
-  const handleDeleteProjectClick = (e: React.SyntheticEvent) => {
-    e.stopPropagation()
-    setModalType("project_deletion");
-    setModalProps({title: projectId.toString()})
+  const handleDenyProjectClick = (e: React.SyntheticEvent) => {
+    e.stopPropagation();
+    setModalType("project_denial");
+    setModalProps({ title: projectId.toString() });
     toggleModal(true);
   };
   return (
@@ -24,11 +23,11 @@ const DeleteProjectButton = ({
       isPrimary
       variant="danger"
       className={className}
-      onClick={handleDeleteProjectClick}
+      onClick={handleDenyProjectClick}
     >
-      Delete
+      Deny
     </Button>
   );
 };
 
-export default DeleteProjectButton;
+export default DenyButton;

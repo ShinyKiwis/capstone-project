@@ -20,7 +20,7 @@ const variantPrimaryMappings: VariantMappings = {
   danger: "text-white bg-red border-2 border-red hover:bg-lightred hover:border-lightred hover:scale-105 duration-300",
   success: "text-white bg-green border-green hover:bg-lightgreen hover:border-lightgreen hover:scale-105 duration-300",
   cancel: "text-white bg-red min-w-fit px-8 py-2 hover:scale-105 duration-300",
-  close: "text-white bg-gray border-gray hover:scale-105 duration-300",
+  close: "text-white bg-gray border-gray hover:bg-lightgray hover:border-lightgray hover:scale-105 duration-300",
 };
 
 const variantSecondaryMappings: VariantMappings = {

@@ -125,7 +125,7 @@ const SideBar = () => {
     },
     {
       Icon: FaProjectDiagram,
-      title: "Projects",
+      title: "Project",
       path: '/project',
       pages: [
         {

@@ -11,6 +11,8 @@ import EnrollButton from "../UserAction/Buttons/EnrollButton";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
 import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
 import ActivateButton from "../UserAction/Buttons/ActivateButton";
+import { usePathname } from "next/navigation";
+import DenyButton from "../UserAction/Buttons/DenyButton";
 
 type Student = {
   name: string;
@@ -128,7 +130,7 @@ const StudentButtons = ({
   viewSet: any;
   viewTarget: ProjectProps;
 }) => {
-  const user = useUser()
+  const user = useUser();
   const authContext = useContext(AuthContext);
   return (
     <>
@@ -143,7 +145,10 @@ const StudentButtons = ({
       {user.project.code === viewTarget.code ? (
         <UnenrollButton className="mt-2 w-full py-2" />
       ) : (
-        <EnrollButton className="mt-2 w-full py-2" projectId={viewTarget.code} />
+        <EnrollButton
+          className="mt-2 w-full py-2"
+          projectId={viewTarget.code}
+        />
       )}
     </>
   );
@@ -157,7 +162,23 @@ const ManagementButtons = ({
   viewTarget: ProjectProps;
 }) => {
   const navigate = useNavigate();
-  return (
+  const pathname = usePathname();
+  return pathname.includes("approve") ? (
+    <>
+      <Button
+        isPrimary
+        variant="normal"
+        className="mt-2 w-full py-2"
+        onClick={() => viewSet(viewTarget)}
+      >
+        View
+      </Button>
+      <Button isPrimary variant="success" className="mt-2 w-full py-2">
+        Approve
+      </Button>
+      <DenyButton projectId={viewTarget.code} className="mt-2 w-full py-2" />
+    </>
+  ) : (
     <>
       <Button
         isPrimary={false}
@@ -177,8 +198,14 @@ const ManagementButtons = ({
       >
         View
       </Button>
-      <ActivateButton className="mt-2 w-full py-2" projectId={viewTarget.code} />
-      <DeleteProjectButton className="mt-2 w-full py-2" projectId={viewTarget.code}/>
+      <ActivateButton
+        className="mt-2 w-full py-2"
+        projectId={viewTarget.code}
+      />
+      <DeleteProjectButton
+        className="mt-2 w-full py-2"
+        projectId={viewTarget.code}
+      />
     </>
   );
 };
@@ -203,10 +230,7 @@ const ProjectCardActions = ({
       {hasRole("student") ? (
         <StudentButtons viewSet={viewSet} viewTarget={viewTarget} />
       ) : (
-        <ManagementButtons
-          viewSet={viewSet}
-          viewTarget={viewTarget}
-        />
+        <ManagementButtons viewSet={viewSet} viewTarget={viewTarget} />
       )}
       {/* Buttons for testing other modals */}
       {/* <div>

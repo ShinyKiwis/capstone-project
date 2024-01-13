@@ -13,7 +13,7 @@ const ActivateButton = ({
   if (!modalContext) return <></>;
   const { toggleModal, setModalType, setModalProps } = modalContext;
 
-  const handleDeactivateProject = (e: React.SyntheticEvent) => {
+  const handleDeactivateProjectClick = (e: React.SyntheticEvent) => {
     e.stopPropagation();
     setModalType("project_activation");
     setModalProps({ title: projectId.toString() });
@@ -24,7 +24,7 @@ const ActivateButton = ({
       isPrimary={false}
       variant="danger"
       className={className}
-      onClick={handleDeactivateProject}
+      onClick={handleDeactivateProjectClick}
     >
       Deactivate
     </Button>

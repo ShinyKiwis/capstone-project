@@ -11,6 +11,8 @@ import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
 import ActivateButton from "../UserAction/Buttons/ActivateButton";
 import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
+import { usePathname } from "next/navigation";
+import DenyButton from "../UserAction/Buttons/DenyButton";
 
 const ProjectCardDetail = ({
   projectObject,
@@ -33,10 +35,13 @@ const ProjectCardDetail = ({
       <>
         {user.project.code === projectObject.code ? (
           <div className="mt-2 w-fit">
-            <UnenrollButton className="mt-2 w-fit py-2 px-6"/>
+            <UnenrollButton className="mt-2 w-fit px-6 py-2" />
           </div>
         ) : (
-          <EnrollButton className="mt-2 w-fit py-2 px-6" projectId={projectObject.code} />
+          <EnrollButton
+            className="mt-2 w-fit px-6 py-2"
+            projectId={projectObject.code}
+          />
         )}
       </>
     );
@@ -50,7 +55,15 @@ const ProjectCardDetail = ({
     viewTarget: ProjectProps;
   }) => {
     const navigate = useNavigate();
-    return (
+    const pathname = usePathname();
+    return pathname.includes("approve") ? (
+      <>
+        <Button isPrimary variant="success" className="w-fit px-6 py-2">
+          Approve
+        </Button>
+        <DenyButton projectId={viewTarget.code} className="w-fit px-6 py-2" />
+      </>
+    ) : (
       <>
         <Button
           isPrimary={false}
@@ -62,16 +75,14 @@ const ProjectCardDetail = ({
         >
           Edit
         </Button>
-        <Button
-          isPrimary
-          variant="normal"
+        <ActivateButton
           className="mt-2 w-fit px-6 py-2"
-          onClick={() => viewSet(projectObject)}
-        >
-          View
-        </Button>
-        <ActivateButton className="mt-2 w-fit px-6 py-2" projectId={viewTarget.code} />
-        <DeleteProjectButton className="mt-2 w-fit px-6 py-2" projectId={viewTarget.code}/> 
+          projectId={viewTarget.code}
+        />
+        <DeleteProjectButton
+          className="mt-2 w-fit px-6 py-2"
+          projectId={viewTarget.code}
+        />
       </>
     );
   };
@@ -112,7 +123,7 @@ const ProjectCardDetail = ({
         {hasRole("student") ? (
           <StudentButtons />
         ) : (
-          <ManagementButtons viewTarget={projectObject}/>
+          <ManagementButtons viewTarget={projectObject} />
         )}
       </div>
     </div>

@@ -35,7 +35,7 @@ const DeleteProjectModal = ({ projectId }: { projectId: string }) => {
       <div className="flex gap-8">
         <Button
           isPrimary={true}
-          variant="cancel"
+          variant="danger"
           className="mt-6 w-44 py-2 text-lg"
           onClick={handleDeleteProject}
         >

@@ -10,6 +10,21 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/project/approve',
+        destination: '/project',
+        has: [{type: 'query', key: 'project'}]
+
+      },
+      {
+        source: '/project/approve',
+        destination: '/project',
+        has: [{type: 'query', key: 'project'}]
+      }
+    ]
+  }
 };
 
 module.exports = nextConfig;
