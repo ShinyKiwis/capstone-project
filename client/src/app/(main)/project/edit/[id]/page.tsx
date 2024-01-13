@@ -55,17 +55,26 @@ const EditProject = ({ params }: { params: { id: string } }) => {
     return [];
   }, [instructors]);
 
+  console.log(instructorList)
+
   useEffect(() => {
     if (branches.length > 0 || majors.length > 0) {
       setBranch(branches[0].name);
       setMajor(majors[0].name);
     }
     if (project) {
+      console.log(project);
       setTitle(project.name);
       setDescription(project.description);
       setTasks(project.tasks);
       setRefs(project.references);
       setNumberOfMembers(project.limit);
+      setInstructorList(
+        project.supervisors.map((supervisor: any) => ({
+          label: `${supervisor.id} - ${supervisor.name}`,
+          value: supervisor.id.toString(),
+        })),
+      );
     }
   }, [branches, majors, project]);
 
@@ -277,12 +286,19 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                   label: string;
                 }) {
                   // Map list of selected options with list from DB
+                  console.log(instructors);
                   console.log(selectedOption);
                   const instructorData = instructors.find((obj) => {
-                    return obj.id.toString() === selectedOption.value;
+                    console.log("INSIDE", obj)
+                    console.log("INSIDE", selectedOption)
+                    return (
+                      obj.id !== user.id &&
+                      obj.id.toString() === selectedOption.value
+                    );
                   });
+                  console.log("INSTRUCTOR DATA", instructorData)
 
-                  return (
+                  return instructorData && (
                     <ProfileItems
                       name={instructorData!.name}
                       id={instructorData!.id.toString()}

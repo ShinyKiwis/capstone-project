@@ -8,9 +8,13 @@ import {
 } from "@/app/_components";
 import { IoOptions, IoCreate } from "react-icons/io5";
 import { RiUpload2Fill } from "react-icons/ri";
+import { FaCheckCircle } from "react-icons/fa";
 import React, { useContext, useEffect, useState, createContext } from "react";
 import { ModalContext } from "@/app/providers/ModalProvider";
-import { EnrolledProjContext, EnrolledProjProvider } from "@/app/providers/EnrolledProjProvider";
+import {
+  EnrolledProjContext,
+  EnrolledProjProvider,
+} from "@/app/providers/EnrolledProjProvider";
 import Image from "next/image";
 import useUser from "@/app/hooks/useUser";
 import hasRole from "@/app/lib/hasRole";
@@ -57,7 +61,7 @@ type ProjectData = {
     name: string;
   }[];
   studentsCount: number;
-  limit: number
+  limit: number;
 };
 
 const ProjectHeader = () => {
@@ -77,7 +81,7 @@ const ProjectHeader = () => {
     setProjectsPerPage(numericValue);
   };
 
-  const handleToggleModal = (event: React.SyntheticEvent, type:string) => {
+  const handleToggleModal = (event: React.SyntheticEvent, type: string) => {
     event.stopPropagation();
     setModalType(type);
     toggleModal(true);
@@ -93,7 +97,7 @@ const ProjectHeader = () => {
             variant="normal"
             isPrimary={false}
             className="flex w-2/12 items-center justify-center gap-2 text-xl"
-            onClick={(e) => handleToggleModal(e,'filter')}
+            onClick={(e) => handleToggleModal(e, "filter")}
           >
             <IoOptions size={25} />
             <span>Filter</span>
@@ -101,6 +105,14 @@ const ProjectHeader = () => {
         </div>
         {!hasRole("student") && (
           <div className="mt-4 flex gap-4">
+            {!hasRole("student") && (
+              <Button isPrimary variant="normal" className="px-4 py-2">
+                <Link href="" className="flex items-center gap-2">
+                  <FaCheckCircle size={23} />
+                  Approve projects
+                </Link>
+              </Button>
+            )}
             <Button isPrimary variant="normal" className="px-4 py-2">
               <Link
                 href={`/project/create?project=${searchParams.get("project")}`}
@@ -114,7 +126,7 @@ const ProjectHeader = () => {
               isPrimary
               variant="normal"
               className="flex items-center gap-2 px-4 py-2"
-              onClick={(e) => handleToggleModal(e,'upload')}
+              onClick={(e) => handleToggleModal(e, "upload")}
             >
               <RiUpload2Fill size={25} />
               Upload file
@@ -143,7 +155,11 @@ const NoData = () => {
       <Image src="/cat.png" width="150" height="150" alt="empty prompt" />
       <Typography
         variant="p"
-        text={`There is no project at the moment. ${hasRole("student") ? "Please come back later": "Please create your project"}!`}
+        text={`There is no project at the moment. ${
+          hasRole("student")
+            ? "Please come back later"
+            : "Please create your project"
+        }!`}
         className="text-xl text-gray"
       />
     </div>
@@ -151,17 +167,16 @@ const NoData = () => {
 };
 
 const Project = () => {
-  const projectContext = useContext(ProjectContext)
-  if(!projectContext) return <div>Loading</div>
-  const {projects, viewing, setViewing} = projectContext
-
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) return <div>Loading</div>;
+  const { projects, viewing, setViewing } = projectContext;
 
   return (
     <div className="w-full">
       <ProjectHeader />
       <EnrolledProjProvider>
         <div className="mt-4 flex flex-auto gap-4">
-          {projects.length!=0 ? (
+          {projects.length != 0 ? (
             <>
               <div className="flex w-1/2 flex-col gap-4">
                 {projects.map(function (project) {
@@ -175,9 +190,7 @@ const Project = () => {
                 })}
               </div>
               <div className="w-1/2">
-                {viewing && (
-                  <ProjectCardDetail projectObject={viewing}/>
-                )}
+                {viewing && <ProjectCardDetail projectObject={viewing} />}
               </div>
             </>
           ) : (

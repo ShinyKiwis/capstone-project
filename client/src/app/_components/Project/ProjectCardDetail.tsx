@@ -9,6 +9,8 @@ import { ModalContext } from "@/app/providers/ModalProvider";
 import axios from "axios";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
+import ActivateButton from "../UserAction/Buttons/ActivateButton";
+import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
 
 const ProjectCardDetail = ({
   projectObject,
@@ -43,11 +45,9 @@ const ProjectCardDetail = ({
   const ManagementButtons = ({
     viewSet,
     viewTarget,
-    handleAction,
   }: {
     viewSet?: any;
-    viewTarget?: ProjectProps;
-    handleAction: any;
+    viewTarget: ProjectProps;
   }) => {
     const navigate = useNavigate();
     return (
@@ -70,6 +70,8 @@ const ProjectCardDetail = ({
         >
           View
         </Button>
+        <ActivateButton className="mt-2 w-fit px-6 py-2" projectId={viewTarget.code} />
+        <DeleteProjectButton className="mt-2 w-fit px-6 py-2" projectId={viewTarget.code}/> 
       </>
     );
   };
@@ -110,7 +112,7 @@ const ProjectCardDetail = ({
         {hasRole("student") ? (
           <StudentButtons />
         ) : (
-          <ManagementButtons handleAction={""} />
+          <ManagementButtons viewTarget={projectObject}/>
         )}
       </div>
     </div>

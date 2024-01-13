@@ -10,6 +10,7 @@ import hasRole from "@/app/lib/hasRole";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
 import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
+import ActivateButton from "../UserAction/Buttons/ActivateButton";
 
 type Student = {
   name: string;
@@ -176,6 +177,7 @@ const ManagementButtons = ({
       >
         View
       </Button>
+      <ActivateButton className="mt-2 w-full py-2" projectId={viewTarget.code} />
       <DeleteProjectButton className="mt-2 w-full py-2" projectId={viewTarget.code}/>
     </>
   );
