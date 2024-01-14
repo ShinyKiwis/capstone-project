@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from "react";
 import Select from "react-select";
 
@@ -145,7 +147,7 @@ const MultiselectDropdown = ({
       styles={customStyles}
       classNamePrefix="select"
       placeholder={placeholder}
-      isClearable={false}
+      isClearable={!isMulti}
       maxMenuHeight={250}
       controlShouldRenderValue={false}
       key={resetKey}

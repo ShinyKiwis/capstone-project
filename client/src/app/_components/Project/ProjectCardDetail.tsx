@@ -9,6 +9,10 @@ import { ModalContext } from "@/app/providers/ModalProvider";
 import axios from "axios";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
+import ActivateButton from "../UserAction/Buttons/ActivateButton";
+import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
+import { usePathname } from "next/navigation";
+import DenyButton from "../UserAction/Buttons/DenyButton";
 
 const ProjectCardDetail = ({
   projectObject,
@@ -31,10 +35,13 @@ const ProjectCardDetail = ({
       <>
         {user.project.code === projectObject.code ? (
           <div className="mt-2 w-fit">
-            <UnenrollButton className="mt-2 w-fit py-2 px-6"/>
+            <UnenrollButton className="mt-2 w-fit px-6 py-2" />
           </div>
         ) : (
-          <EnrollButton className="mt-2 w-fit py-2 px-6" projectId={projectObject.code} />
+          <EnrollButton
+            className="mt-2 w-fit px-6 py-2"
+            projectId={projectObject.code}
+          />
         )}
       </>
     );
@@ -43,14 +50,20 @@ const ProjectCardDetail = ({
   const ManagementButtons = ({
     viewSet,
     viewTarget,
-    handleAction,
   }: {
     viewSet?: any;
-    viewTarget?: ProjectProps;
-    handleAction: any;
+    viewTarget: ProjectProps;
   }) => {
     const navigate = useNavigate();
-    return (
+    const pathname = usePathname();
+    return pathname.includes("approve") ? (
+      <>
+        <Button isPrimary variant="success" className="w-fit px-6 py-2">
+          Approve
+        </Button>
+        <DenyButton projectId={viewTarget.code} className="w-fit px-6 py-2" />
+      </>
+    ) : (
       <>
         <Button
           isPrimary={false}
@@ -62,14 +75,23 @@ const ProjectCardDetail = ({
         >
           Edit
         </Button>
-        <Button
-          isPrimary
-          variant="normal"
+        {viewTarget.status.includes("DEACTIVATED") ? (
+          <ActivateButton
+            className="mt-2 w-fit px-6 py-2"
+            projectId={viewTarget.code}
+            action="Activate"
+          />
+        ) : (
+          <ActivateButton
+            className="mt-2 w-fit px-6 py-2"
+            projectId={viewTarget.code}
+            action="Deactivate"
+          />
+        )}
+        <DeleteProjectButton
           className="mt-2 w-fit px-6 py-2"
-          onClick={() => viewSet(projectObject)}
-        >
-          View
-        </Button>
+          projectId={viewTarget.code}
+        />
       </>
     );
   };
@@ -106,11 +128,11 @@ const ProjectCardDetail = ({
       <div className="text-md [&>ol]:list-inside [&>ol]:list-decimal [&>ul]:list-inside [&>ul]:list-disc">
         {parse(projectObject.references)}
       </div>
-      <div className="mt-4 flex justify-end">
+      <div className="mt-4 flex justify-end gap-4">
         {hasRole("student") ? (
           <StudentButtons />
         ) : (
-          <ManagementButtons handleAction={""} />
+          <ManagementButtons viewTarget={projectObject} />
         )}
       </div>
     </div>

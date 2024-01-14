@@ -7,6 +7,8 @@ import { UsersRepository } from './users.repository';
 import { ProjectsRepository } from '../projects/projects.repository';
 import { RequirementRepository } from '../projects/requirements.repository';
 import { StudentsRepository } from '../students/students.repository';
+import { BranchesRepository } from 'src/programs/branches.repository';
+import { MajorsRepository } from 'src/programs/majors.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
@@ -17,6 +19,8 @@ import { StudentsRepository } from '../students/students.repository';
     ProjectsRepository,
     StudentsRepository,
     RequirementRepository,
+    BranchesRepository,
+    MajorsRepository
   ],
 })
 export class UsersModule {}

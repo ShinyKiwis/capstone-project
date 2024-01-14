@@ -1,6 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { ProjectsRepository } from "./projects.repository";
 import { ProjectsService } from "./projects.service"
+import { ProjectStatus } from "./project-status.enum";
 
 const mockProjectsRepository = () => ({
   getProjects: jest.fn(),
@@ -11,6 +12,7 @@ const mockFilter = {
   members: 3,
   limit: 3,
   page: 1,
+  status: ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD
 }
 
 describe('ProjectsService', () => {

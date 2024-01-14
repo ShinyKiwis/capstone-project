@@ -1,4 +1,4 @@
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -6,12 +6,19 @@ import { ProjectStatus } from './project-status.enum';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { RequirementRepository } from './requirements.repository';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { UsersRepository } from 'src/users/users.repository';
+import { BranchesRepository } from 'src/programs/branches.repository';
+import { MajorsRepository } from 'src/programs/majors.repository';
+import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
 
 @Injectable()
 export class ProjectsRepository extends Repository<Project> {
   constructor(
     private dataSource: DataSource,
     private requirementRepository: RequirementRepository,
+    private usersRepository: UsersRepository,
+    private branchesRepository: BranchesRepository,
+    private majorsRepository: MajorsRepository,
   ) {
     super(Project, dataSource.createEntityManager());
   }
@@ -59,36 +66,136 @@ export class ProjectsRepository extends Repository<Project> {
   async updateAProject(id: number, updateProjectDto: UpdateProjectDto) {
     const {
       name,
-      stage,
       description,
       tasks,
       references,
-      semester,
-      requirements,
       supervisors,
       majors,
       branches,
       limit,
     } = updateProjectDto;
-    const updatedProject = await this.update(id, {
-      name,
-      stage,
-      description,
-      tasks,
-      references,
-      semester,
-      requirements,
-      supervisors,
-      majors,
-      branches,
-      limit,
+
+    const project = await this.findOneBy({
+      code: id,
     });
 
-    return updatedProject;
+    // const query = this.createQueryBuilder('project').update().set({
+    //   name,
+    //   description,
+    //   tasks,
+    //   references,
+    //   supervisors,
+    //   majors,
+    //   branches,
+    //   limit,
+    // }).where("code = :id", {id});
+
+    // const updatedProject = await query.execute();
+
+    // const updatedProject = await this.update({code: id}, {
+    //   name,
+    //   description,
+    //   tasks,
+    //   references,
+    //   supervisors,
+    //   majors,
+    //   branches,
+    //   limit,
+    // });
+
+    const supervisorsList = await this.usersRepository.find({
+      where: {
+        id: In(supervisors),
+      },
+    });
+
+    const branchesList = await this.branchesRepository.find({
+      where: {
+        id: In(branches),
+      },
+    });
+
+    const majorsList = await this.majorsRepository.find({
+      where: {
+        id: In(majors),
+      },
+    });
+
+    project.name = name;
+    project.description = description;
+    project.tasks = tasks;
+    project.references = references;
+    project.supervisors = supervisorsList;
+    project.majors = majorsList;
+    project.branches = branchesList;
+    project.limit = limit;
+
+    await this.save(project);
+
+    // const project = await this.findOneBy({code: id});
+    // Object.assign(project, {
+    //   name,
+    //   description,
+    //   tasks,
+    //   references,
+    //   supervisors,
+    //   majors,
+    //   branches,
+    //   limit,
+    // });
+
+    // const updatedProject = this.save(project);
+
+    // const updatedProject = await this.preload({
+    //   code: id,
+    //   name,
+    //   description,
+    //   tasks,
+    //   references,
+    //   supervisors,
+    //   majors,
+    //   branches,
+    //   limit,
+    // })
+
+    // await this.save(updatedProject);
+
+    // const updatedProject = await this.save({
+    //   code: id,
+    //   name,
+    //   description,
+    //   tasks,
+    //   references,
+    //   supervisors,
+    //   majors,
+    //   branches,
+    //   limit,
+    // })
+
+    // return updatedProject;
+    return project;
+  }
+
+  async getProjectsByStatus(getProjectsByStatusDto: GetProjectsByStatusDto) {
+    const { status } = getProjectsByStatusDto;
+    const query = this.createQueryBuilder('project')
+      .leftJoinAndSelect('project.semester', 'semester')
+      .leftJoinAndSelect('project.requirements', 'requirements')
+      .leftJoinAndSelect('project.students', 'students')
+      .leftJoinAndSelect('project.supervisors', 'supervisors')
+      .leftJoinAndSelect('project.majors', 'majors')
+      .leftJoinAndSelect('project.branches', 'branches')
+      .leftJoinAndSelect('students.user', 'users')
+      .loadRelationCountAndMap('project.studentsCount', 'project.students')
+      .where('status = :status', { status });
+    
+      const projects = await query.getMany();
+
+    return projects;
   }
 
   async getProjects(filterDto: GetProjectsFilterDto) {
-    const { search, members, limit, page } = filterDto;
+    const { search, members, limit, page, status } = filterDto;
     const query = this.createQueryBuilder('project')
       .leftJoinAndSelect('project.semester', 'semester')
       .leftJoinAndSelect('project.requirements', 'requirements')
@@ -99,23 +206,28 @@ export class ProjectsRepository extends Repository<Project> {
       .leftJoinAndSelect('students.user', 'users')
       .loadRelationCountAndMap('project.studentsCount', 'project.students');
 
-    if (members) {
-      query.andWhere('project.studentsCount = :members', {
-        members,
-      });
-    }
-
     if (search) {
       query.andWhere('LOWER(project.name) LIKE LOWER (:search)', {
         search: `%${search}%`,
       });
     }
 
+    if(status) {
+      query.andWhere('project.status = :status', { status })
+    }
+
     if (limit && page) {
       query.skip((page - 1) * limit).take(limit);
     }
 
-    const [projects, count] = await query.getManyAndCount();
+    // const projects = await query.getMany();
+    // const count = await query.getCount();
+    let [projects, count] = await query.getManyAndCount();
+
+    if (members) {
+      console.log(projects);
+      projects = projects.filter((project) => project.studentsCount == members);
+    }
     return {
       total: Math.ceil(count / limit),
       current: +page,
@@ -126,7 +238,14 @@ export class ProjectsRepository extends Repository<Project> {
   async getProjectByCode(code: number) {
     const found = await this.findOne({
       where: { code },
-      relations: { semester: true, supervisors: true, students: true, majors: true, branches: true, requirements: true },
+      relations: {
+        semester: true,
+        supervisors: true,
+        students: true,
+        majors: true,
+        branches: true,
+        requirements: true,
+      },
     });
 
     if (!found) {

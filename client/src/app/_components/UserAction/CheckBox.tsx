@@ -2,10 +2,18 @@ import React, { useState } from "react";
 
 const CheckBox = ({
   option,
+  defaultChecked,
+  valueArray
 }: {
   option: string;
+  defaultChecked?: boolean;
+  valueArray: string[]
 }) => {
-  const [checked, setChecked] = useState(option == "Computer Science")
+  const [checked, setChecked] = useState(defaultChecked)
+  // if (defaultChecked && valueArray.length===0) {
+  //   valueArray.push(option);
+  //   defaultChecked = false;
+  // }
 
   return (
     <div className="text-lg">
@@ -15,7 +23,17 @@ const CheckBox = ({
         id={option}
         className="me-2"
         checked={checked}
-        onChange={() => setChecked(!checked)}
+        onChange={() => {
+          setChecked(!checked);
+
+          if (!checked) {
+            valueArray.push(option.toLowerCase());
+          } else {
+            // Uncheck option -> remove value from array
+            const targetIdx = valueArray.findIndex((x) => x === option.toLowerCase());
+            valueArray.splice(targetIdx, 1);
+          }
+        }}
       />
       <label htmlFor={option}>{option}</label>
     </div>

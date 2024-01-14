@@ -3,6 +3,7 @@
 import "react-quill/dist/quill.snow.css";
 import "../globals.css";
 import ReactQuill from "react-quill";
+import { useEffect, useState } from "react";
 
 interface RichTextEditorProps {
   onChange: any;
@@ -46,8 +47,6 @@ const formats = [
 ];
 
 const RichTextEditor = ({ onChange, initialContent }: RichTextEditorProps) => {
-  // Pass a useState setter to onChange from parent element to get the inputted value
-  // InitialContent is html code for rendering pre-made contents
   return (
     <div className="grow">
       <ReactQuill
@@ -55,7 +54,6 @@ const RichTextEditor = ({ onChange, initialContent }: RichTextEditorProps) => {
         formats={formats}
         onChange={onChange}
         value={initialContent}
-        // defaultValue={initialContent}
         theme="snow"
       />
     </div>

@@ -1,6 +1,7 @@
 'use client';
 import { ProjectCard, AsyncMultiselectDropdown, MultiselectDropdown } from '@/app/_components'
 import React, { useState } from 'react'
+import { ModalContext } from '@/app/providers/ModalProvider';
 
 const toggleAccordion = (accordBtn: any) => {
   let accordionContent = accordBtn.parentNode.childNodes[1];

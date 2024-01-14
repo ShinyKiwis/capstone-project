@@ -10,6 +10,9 @@ interface ProjectContextProps {
   setViewing: (viewing: Project) => void;
   handleEnrollment: (projectId: number) => void;
   handleUnenrollment: (projectId: number) => void;
+  handleDeletion: (projectId: number) => void;
+  handleUpdateProject: (projectId: number, project: Project) => void;
+  handleChangeProjectStatus: (projectId: number, status: string) => void;
 }
 
 interface Project {
@@ -20,13 +23,7 @@ interface Project {
   tasks: string;
   references: string;
   status: string;
-  semester: {
-    year: number;
-    no: number;
-    start: string;
-    end: string;
-  };
-  requirements: any[];
+  requirements: string;
   students: {
     name: string;
     userId: string;
@@ -40,15 +37,15 @@ interface Project {
     email: string;
     username: string;
     name: string;
-  }[];
+  }[]
   majors: {
-    id: number;
-    name: string;
-  }[];
+    id: number,
+    name: string
+  }[],
   branches: {
-    id: number;
-    name: string;
-  }[];
+    id: number,
+    name: string
+  }[],
   studentsCount: number;
   limit: number;
 }
@@ -83,13 +80,42 @@ export const ProjectProvider = ({
         return project;
       }),
     );
-    if(viewing){
+    if (viewing) {
       setViewing({
         ...viewing,
         studentsCount: viewing!.studentsCount + 1,
       });
     }
   };
+
+  const handleUpdateProject = (projectId: number, project: Project) => {
+    setProjects((projects) =>
+      projects.map((prevProject) =>
+        prevProject.code == projectId ? project : prevProject,
+      ),
+    );
+  };
+
+  const handleChangeProjectStatus = (projectId:number, status: string) => {
+    setProjects(projects => {
+      return projects.map(prevProject => {
+        if(prevProject.code == projectId) {
+          return {
+            ...prevProject,
+            status: status
+          }
+        }else{
+          return prevProject
+        }
+      })
+    })
+    if(viewing?.code == projectId) {
+      setViewing({
+        ...viewing,
+        status: status
+      })
+    }
+  }
 
   const handleUnenrollment = (projectId: number) => {
     setProjects((projects) =>
@@ -103,11 +129,20 @@ export const ProjectProvider = ({
         return project;
       }),
     );
-    if(viewing){
+    if (viewing?.code == projectId) {
       setViewing({
         ...viewing,
         studentsCount: viewing!.studentsCount - 1,
       });
+    }
+  };
+
+  const handleDeletion = (projectId: number) => {
+    setProjects((projects) =>
+      projects.filter((project) => project.code != projectId),
+    );
+    if (viewing?.code === projectId) {
+      setViewing(undefined);
     }
   };
 
@@ -118,6 +153,9 @@ export const ProjectProvider = ({
     setViewing,
     handleEnrollment,
     handleUnenrollment,
+    handleDeletion,
+    handleUpdateProject,
+    handleChangeProjectStatus
   };
   return (
     <ProjectContext.Provider value={projectContextValue}>

@@ -9,6 +9,11 @@ import { AuthContext } from "@/app/providers/AuthProvider";
 import hasRole from "@/app/lib/hasRole";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
+import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
+import ActivateButton from "../UserAction/Buttons/ActivateButton";
+import { usePathname, useSearchParams } from "next/navigation";
+import DenyButton from "../UserAction/Buttons/DenyButton";
+import ProjectStatus from "./ProjectStatus";
 
 type Student = {
   name: string;
@@ -22,6 +27,7 @@ type Student = {
 export interface ProjectProps {
   code: number;
   name: string;
+  status: string;
   description: string;
   tasks: string;
   references: string;
@@ -110,7 +116,7 @@ export const ProjectCardList = ({
             <Profile
               key={member.userId}
               type="horizontal"
-              username={member.name}
+              username='{member.name}'
             />
           );
         })} */}
@@ -127,6 +133,7 @@ const StudentButtons = ({
   viewTarget: ProjectProps;
 }) => {
   const user = useUser();
+  const authContext = useContext(AuthContext);
   return (
     <>
       <Button
@@ -140,7 +147,10 @@ const StudentButtons = ({
       {user.project.code === viewTarget.code ? (
         <UnenrollButton className="mt-2 w-full py-2" />
       ) : (
-        <EnrollButton className="mt-2 w-full py-2" projectId={viewTarget.code} />
+        <EnrollButton
+          className="mt-2 w-full py-2"
+          projectId={viewTarget.code}
+        />
       )}
     </>
   );
@@ -149,21 +159,40 @@ const StudentButtons = ({
 const ManagementButtons = ({
   viewSet,
   viewTarget,
-  handleAction,
 }: {
   viewSet: any;
   viewTarget: ProjectProps;
-  handleAction: any;
 }) => {
+  const searchParams = useSearchParams();
   const navigate = useNavigate();
-  return (
+  const pathname = usePathname();
+  return pathname.includes("approve") ? (
+    <>
+      <Button
+        isPrimary
+        variant="normal"
+        className="mt-2 w-full py-2"
+        onClick={() => viewSet(viewTarget)}
+      >
+        View
+      </Button>
+      <Button isPrimary variant="success" className="mt-2 w-full py-2">
+        Approve
+      </Button>
+      <DenyButton projectId={viewTarget.code} className="mt-2 w-full py-2" />
+    </>
+  ) : (
     <>
       <Button
         isPrimary={false}
         variant="normal"
         className="w-full py-2"
         onClick={() => {
-          navigate(`/project/edit/${viewTarget.code}`);
+          navigate(
+            `/project/edit/${viewTarget.code}?project=${searchParams.get(
+              "project",
+            )}`,
+          );
         }}
       >
         Edit
@@ -176,6 +205,23 @@ const ManagementButtons = ({
       >
         View
       </Button>
+      {viewTarget.status.includes("DEACTIVATED") ? (
+        <ActivateButton
+          className="mt-2 w-full py-2"
+          projectId={viewTarget.code}
+          action="Activate"
+        />
+      ) : (
+        <ActivateButton
+          className="mt-2 w-full py-2"
+          projectId={viewTarget.code}
+          action="Deactivate"
+        />
+      )}
+      <DeleteProjectButton
+        className="mt-2 w-full py-2"
+        projectId={viewTarget.code}
+      />
     </>
   );
 };
@@ -194,44 +240,13 @@ const ProjectCardActions = ({
     );
     return;
   }
-  const { toggleModal, setModalType, setModalProps, modalProps } =
-    modalContextValue;
-
-  const handleManagementActions = (event: React.SyntheticEvent) => {
-    event.stopPropagation();
-    const action = event.currentTarget.textContent!.toLowerCase();
-    // console.log("Clicked action button:", action);
-
-    switch (action) {
-      case "edit":
-        setModalType("project_deletion");
-        break;
-      case "deactivate":
-        setModalType("project_deletion");
-        break;
-      case "delete":
-        setModalType("project_deletion");
-        break;
-      case "deny":
-        setModalType("project_denial");
-        break;
-      default:
-        console.error("Invalid action button:", action);
-        return;
-    }
-    toggleModal(true);
-  };
 
   return (
     <div className="ms-auto mt-4 w-1/4">
       {hasRole("student") ? (
         <StudentButtons viewSet={viewSet} viewTarget={viewTarget} />
       ) : (
-        <ManagementButtons
-          viewSet={viewSet}
-          viewTarget={viewTarget}
-          handleAction={handleManagementActions}
-        />
+        <ManagementButtons viewSet={viewSet} viewTarget={viewTarget} />
       )}
       {/* Buttons for testing other modals */}
       {/* <div>
@@ -257,6 +272,7 @@ const ProjectCard = ({
 
   return (
     <div className="flex w-full cursor-pointer flex-col rounded-md border border-black px-4 py-4">
+      <ProjectStatus status={projectObject.status} />
       <div className="flex">
         <ProjectCardMetadata
           code={projectObject.code}

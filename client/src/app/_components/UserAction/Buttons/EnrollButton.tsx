@@ -25,7 +25,7 @@ const EnrollButton = ({
   const { setUser } = authContext;
   const { handleEnrollment } = projectContext;
 
-  const handleEnroll = (e: React.SyntheticEvent) => {
+  const handleEnrollClick = (e: React.SyntheticEvent) => {
     e.stopPropagation();
     axios
       .post("http://localhost:3500/users/student/enroll", {
@@ -59,7 +59,7 @@ const EnrollButton = ({
       isPrimary
       variant="normal"
       className={className}
-      onClick={handleEnroll}
+      onClick={handleEnrollClick}
     >
       Enroll
     </Button>

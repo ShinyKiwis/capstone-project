@@ -44,25 +44,22 @@ export class Project {
   @OneToMany(() => Requirement, (requirement) => requirement.project)
   requirements: Requirement[];
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, { eager: true, onUpdate: 'CASCADE' })
   @JoinTable()
   supervisors: User[];
 
-  @OneToMany(() => Student, (student) => student.project)
+  @OneToMany(() => Student, (student) => student.project, { eager: true, onUpdate: 'CASCADE' })
   students: Student[];
 
-  @ManyToMany(() => Major)
+  @ManyToMany(() => Major, { eager: true, onUpdate: 'CASCADE' })
   @JoinTable()
-  majors: Major[]
+  majors: Major[];
 
-  @ManyToMany(() => Branch)
+  @ManyToMany(() => Branch, { eager: true, onUpdate: 'CASCADE' })
   @JoinTable()
-  branches: Branch[]
+  branches: Branch[];
 
   @Column()
   limit: number;
-
-  constructor(project: Partial<Project>) {
-    Object.assign(this, project);
-  }
+  studentsCount: number;
 }

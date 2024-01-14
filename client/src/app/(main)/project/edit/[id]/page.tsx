@@ -9,24 +9,32 @@ import {
   Profile,
 } from "@/app/_components";
 import axios from "axios";
-import { useBranch, useInstructor, useMajor, useNavigate, useUser, useProject } from "@/app/hooks"
-import { useEffect, useState, useMemo } from "react";
-import { useSearchParams } from 'next/navigation'
+import {
+  useBranch,
+  useInstructor,
+  useMajor,
+  useNavigate,
+  useUser,
+  useProject,
+} from "@/app/hooks";
+import { useEffect, useState, useMemo, useContext } from "react";
+import { useSearchParams } from "next/navigation";
 import { CgClose } from "react-icons/cg";
+import { ProjectContext } from "@/app/providers/ProjectProvider";
 
 type InstructorOptType = {
   label: string;
-  value: string
-}
+  value: string;
+};
 
-const EditProject = ({params}: {params: {id: string}}) => {
-  const { branches } = useBranch()
-  const { majors } = useMajor()
-  const { instructors } = useInstructor()
-  const navigate = useNavigate()
-  const searchParams = useSearchParams()
-  const user = useUser()
-  const project = useProject(params.id)
+const EditProject = ({ params }: { params: { id: string } }) => {
+  const { branches } = useBranch();
+  const { majors } = useMajor();
+  const { instructors } = useInstructor();
+  const navigate = useNavigate();
+  const searchParams = useSearchParams();
+  const user = useUser();
+  const project = useProject(params.id);
 
   const [title, setTitle] = useState("");
   const [instructorList, setInstructorList] = useState<InstructorOptType[]>([]);
@@ -36,8 +44,8 @@ const EditProject = ({params}: {params: {id: string}}) => {
   const [description, setDescription] = useState("");
   const [tasks, setTasks] = useState("");
   const [refs, setRefs] = useState("");
-  const [numberOfMembers, setNumberOfMembers] = useState(1)
-  console.log(instructors)
+  const [numberOfMembers, setNumberOfMembers] = useState(1);
+  console.log(instructors);
   const instructorsOptions: InstructorOptType[] = useMemo(() => {
     if (instructors.length !== 0) {
       return instructors.map((instructor) => ({
@@ -48,22 +56,35 @@ const EditProject = ({params}: {params: {id: string}}) => {
     return [];
   }, [instructors]);
 
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) return <div>Loading</div>;
+  const { handleUpdateProject, setViewing } = projectContext;
+  console.log(instructorList);
+
   useEffect(() => {
     if (branches.length > 0 || majors.length > 0) {
-      setBranch(branches[0].name)
-      setMajor(majors[0].name)
+      setBranch(branches[0].name);
+      setMajor(majors[0].name);
     }
-    if(project) {
-      setTitle(project.name)
-      setDescription(project.description)
-      setTasks(project.tasks)
-      setRefs(project.references)
-      setNumberOfMembers(project.limit)
+    if (project) {
+      console.log(project);
+      setTitle(project.name);
+      setDescription(project.description);
+      setTasks(project.tasks);
+      setRefs(project.references);
+      setBranch(project.branches[0].name);
+      setMajor(project.majors[0].name);
+      setNumberOfMembers(project.limit);
+      setInstructorList(
+        project.supervisors.map((supervisor: any) => ({
+          label: `${supervisor.id} - ${supervisor.name}`,
+          value: supervisor.id.toString(),
+        })),
+      );
     }
-  }, [branches, majors, project])
+  }, [branches, majors, project]);
 
-  const InputFieldTitle = ({ title
-      }: { title: string }) => {
+  const InputFieldTitle = ({ title }: { title: string }) => {
     let className = "text-2xl font-bold mb-4";
     return <div className={className}>{title}</div>;
   };
@@ -79,18 +100,20 @@ const EditProject = ({params}: {params: {id: string}}) => {
   };
 
   const InputsTable = () => {
-
     const handleBranchSelectChange = (value: string) => {
+      console.log("HANDLE BRANCH",value)
       setBranch(value);
-    }
+    };
 
     const handleMajorSelectChange = (value: string) => {
       setMajor(value);
-    }
+    };
 
-    const handleNumberOfMemberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setNumberOfMembers(+e.target.value)
-    }
+    const handleNumberOfMemberChange = (
+      e: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+      setNumberOfMembers(+e.target.value);
+    };
 
     return (
       <table className="border-separate border-spacing-3">
@@ -99,15 +122,15 @@ const EditProject = ({params}: {params: {id: string}}) => {
             <td>
               <InputLabel title="Project ID:" />
             </td>
-            <td className="rounded-md bg-lightgray px-2 py-2">{project?.code}</td>
+            <td className="rounded-md bg-lightgray px-2 py-2">
+              {project?.code}
+            </td>
           </tr>
           <tr>
             <td>
               <InputLabel title="Project owner:" />
             </td>
-            <td className="rounded-md bg-lightgray px-2 py-2">
-              {user.name}
-            </td>
+            <td className="rounded-md bg-lightgray px-2 py-2">{user.name}</td>
           </tr>
           <tr>
             <td>
@@ -115,7 +138,12 @@ const EditProject = ({params}: {params: {id: string}}) => {
             </td>
             <td>
               <InputField>
-                <DropdownMenu name="projectBranch" options={branches} onChange={handleBranchSelectChange} selected={branch} />
+                <DropdownMenu
+                  name="projectBranch"
+                  options={branches}
+                  onChange={handleBranchSelectChange}
+                  selected={branch}
+                />
               </InputField>
             </td>
           </tr>
@@ -125,7 +153,12 @@ const EditProject = ({params}: {params: {id: string}}) => {
             </td>
             <td>
               <InputField>
-                <DropdownMenu name="projectProgram" options={majors} onChange={handleMajorSelectChange} selected={major} />
+                <DropdownMenu
+                  name="projectProgram"
+                  options={majors}
+                  onChange={handleMajorSelectChange}
+                  selected={major}
+                />
               </InputField>
             </td>
           </tr>
@@ -176,18 +209,20 @@ const EditProject = ({params}: {params: {id: string}}) => {
             size={25}
             className="text-lack cursor-pointer hover:text-lightgray"
             onClick={() => {
-              const targetInstructor = instructorsOptions.find(obj => {
+              const targetInstructor = instructorsOptions.find((obj) => {
                 return obj.value === id;
-              })
+              });
               // console.log("Remove target:", targetInstructor)
               let targetIndex = -1;
               if (targetInstructor && instructorList.length > 0) {
-                targetIndex = instructorList.findIndex((obj) => obj.value === id);
+                targetIndex = instructorList.findIndex(
+                  (obj) => obj.value === id,
+                );
               }
               // console.log("Found index:", targetIndex)
               if (targetIndex > -1) {
                 instructorList.splice(targetIndex, 1);
-                setInstructorList([...instructorList])
+                setInstructorList([...instructorList]);
               }
             }}
           />
@@ -197,8 +232,10 @@ const EditProject = ({params}: {params: {id: string}}) => {
   };
 
   function handleSelectAdd(newOpt: any, targetArr: any, targetArrSetter: any) {
-    console.log(newOpt)
-    let found = targetArr.findIndex((obj: any) => obj.value === newOpt[0].value);
+    console.log(newOpt);
+    let found = targetArr.findIndex(
+      (obj: any) => obj.value === newOpt[0].value,
+    );
     console.log(found);
     if (found === -1) {
       let newArr = targetArr.concat(newOpt);
@@ -209,7 +246,6 @@ const EditProject = ({params}: {params: {id: string}}) => {
 
   return (
     <div className="w-full flex-1 bg-white">
-
       {/* Project title section: */}
       <textarea
         className="max-h-[5em] w-full border-b-2 border-gray py-2 pb-4 pt-8 text-center text-3xl font-semibold focus:outline-none"
@@ -222,73 +258,94 @@ const EditProject = ({params}: {params: {id: string}}) => {
       ></textarea>
 
       {/* Project metadata section: */}
-      <div className="w-full mt-8">
-        <div className="flex gap-4 h-fit">
+      <div className="mt-8 w-full">
+        <div className="flex h-fit gap-4">
           <div className="w-1/3">
             <InputFieldTitle title="Project's information" />
             <InputsTable />
           </div>
           <div className="w-2/3">
-            <div className="h-full flex flex-col">
+            <div className="flex h-full flex-col">
               <p className="mb-4 text-2xl font-bold">Requirements</p>
-              <RichTextEditor onChange={setRequirements} />
+              <RichTextEditor
+                onChange={setRequirements}
+                initialContent={requirements}
+              />
             </div>
           </div>
         </div>
-        <div className="flex gap-4 h-fit mt-4">
-          <div className="w-1/3 h-64">
+        <div className="mt-4 flex h-fit gap-4">
+          <div className="h-64 w-1/3">
             <InputFieldTitle title="Instructors" />
             <MultiselectDropdown
               name="supervisors"
               isMulti={true}
               options={instructorsOptions}
               placeholder="Search instructor name, id"
-              onChange={(newOpt: InstructorOptType) => handleSelectAdd(newOpt, instructorList, setInstructorList)}
+              onChange={(newOpt: InstructorOptType) =>
+                handleSelectAdd(newOpt, instructorList, setInstructorList)
+              }
             />
             <div className="px-3">
-              {instructorList.length > 0 && instructorList.map(function (selectedOption: { value: string, label: string }) {
-                // Map list of selected options with list from DB
-                console.log(selectedOption);
-                const instructorData = instructors.find(obj => {
-                  return obj.id.toString() === selectedOption.value
-                })
+              {instructorList.length > 0 &&
+                instructorList.map(function (selectedOption: {
+                  value: string;
+                  label: string;
+                }) {
+                  // Map list of selected options with list from DB
+                  console.log(instructors);
+                  console.log(selectedOption);
+                  const instructorData = instructors.find((obj) => {
+                    console.log("INSIDE", obj);
+                    console.log("INSIDE", selectedOption);
+                    return (
+                      obj.id !== user.id &&
+                      obj.id.toString() === selectedOption.value
+                    );
+                  });
+                  console.log("INSTRUCTOR DATA", instructorData);
 
-                return (
-                  <ProfileItems
-                    name={instructorData!.name}
-                    id={instructorData!.id.toString()}
-                    email={instructorData!.email}
-                  />
-                );
-              })}
+                  return (
+                    instructorData && (
+                      <ProfileItems
+                        key={instructorData!.id}
+                        name={instructorData!.name}
+                        id={instructorData!.id.toString()}
+                        email={instructorData!.email}
+                      />
+                    )
+                  );
+                })}
             </div>
           </div>
           <div className="w-2/3">
-            <div className="h-full flex flex-col">
-              <p className="text-2xl font-bold mb-4">Description</p>
-              <RichTextEditor onChange={setDescription} initialContent={description}/>
+            <div className="flex h-full flex-col">
+              <p className="mb-4 text-2xl font-bold">Description</p>
+              <RichTextEditor
+                onChange={setDescription}
+                initialContent={description}
+              />
             </div>
           </div>
         </div>
-        <div className="flex gap-4 h-fit mt-4">
-          <div className="w-1/3 h-64">
+        <div className="mt-4 flex h-fit gap-4">
+          <div className="h-64 w-1/3">
             <InputFieldTitle title="Members" />
             <SearchBox placeholder="Search student..." />
           </div>
           <div className="w-2/3">
-            <div className="h-full flex flex-col">
-              <p className="text-2xl font-bold mb-4">Tasks/Missions</p>
-              <RichTextEditor onChange={setTasks} initialContent={tasks}/>
+            <div className="flex h-full flex-col">
+              <p className="mb-4 text-2xl font-bold">Tasks/Missions</p>
+              <RichTextEditor onChange={setTasks} initialContent={tasks} />
             </div>
           </div>
         </div>
-        <div className="flex gap-4 h-fit mt-4">
-          <div className="w-1/3 h-64">
-          </div>
+        <div className="mt-4 flex h-fit gap-4">
+          <div className="h-64 w-1/3"></div>
           <div className="w-2/3">
-            <div className="h-full flex flex-col">
-              <p className="text-2xl font-bold mb-4">References</p>
-              <RichTextEditor onChange={setRefs} initialContent={refs}/>
+            <div className="flex h-full flex-col">
+              <p className="mb-4 text-2xl font-bold">References</p>
+              <RichTextEditor onChange={setRefs} initialContent={refs} />
             </div>
           </div>
         </div>
@@ -299,52 +356,77 @@ const EditProject = ({params}: {params: {id: string}}) => {
           variant="success"
           className="px-4 py-2 text-lg"
           onClick={() => {
-            axios.post("http://localhost:3500/projects", {
+            const updateSupervisorIds = [
+              user.id,
+              ...instructorList
+                .map((instructor) => {
+                  if (+instructor.value != user.id) {
+                    return +instructor.value;
+                  }
+                })
+                .filter((storedInstructor) => storedInstructor !== undefined),
+            ];
+            console.log("supervisor ids", updateSupervisorIds);
+            console.log("MAJORS", majors);
+            console.log("MAJOR", major);
+            const updateProject = {
+              code: +params.id,
               name: title,
+              status: project.status,
+              requirements: requirements,
               stage: 1,
               description,
               tasks,
               references: refs,
               limit: numberOfMembers,
-              semester: {
-                year: 2023,
-                no: 1
-              },
-              supervisors: [
-                {
-                  id: user.id
-                },
-                ...instructorList.map(instructor => {
-                  return {
-                    id: +instructor.value
-                  }
-                })
-              ],
+              studentsCount: project.studentsCount,
+              supervisors: updateSupervisorIds,
               majors: [
-                {
-                  id: majors.find(storedMajor => storedMajor.name === major)!.id
-                }
+                +majors.find((storedMajor) => storedMajor.name === major)!.id,
               ],
               branches: [
-                {
-                  id: branches.find(storedBranch => storedBranch.name === branch)!.id
-                }
-              ]
-            }).then(_ => {
-              navigate(`/project?project=${searchParams.get("project")}`)
-            })
-          }
-          }
+                +branches.find((storedBranch) => storedBranch.name === branch)!
+                  .id,
+              ],
+            };
+            console.log("PROJECT", project);
+            axios
+              .patch(
+                `http://localhost:3500/projects/${params.id}`,
+                updateProject,
+              )
+              .then((_) => {
+                const parsedUpdateProject = {
+                  ...updateProject,
+                  students: project.students,
+                  supervisors: [
+                    {
+                      id: user.id,
+                      email: user.email,
+                      username: user.username,
+                      name: user.name,
+                    },
+                    ...instructors.filter((instructor) =>
+                      updateSupervisorIds.includes(instructor.id),
+                    ),
+                  ],
+                  majors: majors.filter(
+                    (storedMajor: any) => storedMajor.name === major,
+                  ),
+                  branches: branches.filter(
+                    (storedBranch: any) => storedBranch.name === branch,
+                  ),
+                };
+                console.log("FE UPDATE", parsedUpdateProject);
+                handleUpdateProject(+params.id, parsedUpdateProject);
+                setViewing(parsedUpdateProject);
+                navigate(`/project?project=${searchParams.get("project")}`);
+              });
+          }}
         >
-          Submit for approval
-
-
+          Update
         </Button>
-        <Button
-          isPrimary={true}
-          variant="normal"
-          className="px-4 py-2 text-lg"
-        >
+        <Button isPrimary={true} variant="normal" className="px-4 py-2 text-lg">
           Save Changes
         </Button>
       </div>
