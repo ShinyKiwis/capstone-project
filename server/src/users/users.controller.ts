@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,6 +15,7 @@ import { AssignRolesDto } from './dto/assign-role.dto';
 import { CreateStudentDto } from '../students/dto/create-student.dto';
 import { EnrollProjectDto } from '../students/dto/enroll-project.dto';
 import { UnenrollProjectDto } from '../students/dto/unenroll-project.dto';
+import { GetStudentsDto } from 'src/students/dto/get-students.dto';
 
 @Controller('users')
 export class UsersController {
@@ -48,6 +50,11 @@ export class UsersController {
   @Get('/instructors')
   getAllInstructors() {
     return this.usersService.getAllInstructors();
+  }
+
+  @Get('/students')
+  getStudents(@Query() getStudentsDto: GetStudentsDto) {
+    return this.usersService.getStudents(getStudentsDto);
   }
 
   @Post('/:id/roles')

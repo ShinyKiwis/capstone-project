@@ -7,6 +7,7 @@ import { StudentsRepository } from '../students/students.repository';
 import { CreateStudentDto } from '../students/dto/create-student.dto';
 import { EnrollProjectDto } from '../students/dto/enroll-project.dto';
 import { UnenrollProjectDto } from '../students/dto/unenroll-project.dto';
+import { GetStudentsDto } from 'src/students/dto/get-students.dto';
 
 @Injectable()
 export class UsersService {
@@ -40,6 +41,10 @@ export class UsersService {
       return {...user, ...student};
     }
     return user;
+  }
+
+  async getStudents(getStudentsDto: GetStudentsDto) {
+    return this.studentsRepository.getStudents(getStudentsDto);
   }
 
   async updateOrCreateAUser(createUserDto: CreateUserDto) {
