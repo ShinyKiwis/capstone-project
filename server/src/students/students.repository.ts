@@ -80,7 +80,7 @@ export class StudentsRepository extends Repository<Student> {
 
   async getStudents(getStudentsDto: GetStudentsDto) {
     const { search } = getStudentsDto;
-    const query = this.createQueryBuilder('student').select(['student.userId', 'user.name']).leftJoin('student.user', 'user');
+    const query = this.createQueryBuilder('student').select(['student.userId', 'user.name', 'user.email']).leftJoin('student.user', 'user');
 
     if (search) {
       query.andWhere("LOWER(CONCAT(user.id, ' ', user.name)) LIKE LOWER (:search)", {
