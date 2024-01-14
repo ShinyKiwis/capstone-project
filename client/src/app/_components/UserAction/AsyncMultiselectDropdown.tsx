@@ -1,13 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AsyncSelect from 'react-select/async';
 import axios from 'axios';
+import { OptionType } from "../ProfileSelector";
 
-type OptionType = {
-  label: string;
-  value: string;
-}
-
-interface StudentDataType{
+export interface StudentDataType{
   id: string;
   email: string;
   name: string;
@@ -26,7 +22,6 @@ interface AsyncMultiselectDropdownProps {
   apiLink: string;
   value: OptionType[];
   onChange: any;
-  ref?: any
 }
 
 interface VariantMappings {
@@ -136,11 +131,13 @@ const AsyncMultiselectDropdown = ({
   apiLink,
   value,
   onChange,
-  ref
 }: AsyncMultiselectDropdownProps) => {
+  useEffect(() => {
+    console.log("Current val:", value)
+  }, [value]);
+
   let innerClassnames: object;
   let customStyles: object;
-  const [resetKey, setResetKey] = useState(0);
 
   if (variant && variant in variantMappings) {
     innerClassnames = variantMappings[variant]["innerClassnames"];
@@ -152,9 +149,9 @@ const AsyncMultiselectDropdown = ({
 
   const [currentTimeout, setCurrentTimeout] = useState<NodeJS.Timeout>();
   const defaultOptions = [    // retreived first 20 students ?
-    {value:'1', label:'Default1'},
-    {value:'2', label:'Default2'},
-    {value:'3', label:'Default3'},
+    {value:'1', label:'Default1', dataObject:{}},
+    {value:'2', label:'Default2', dataObject:{}},
+    {value:'3', label:'Default3', dataObject:{}},
   ]
 
   const promiseOptions = (query: string) =>{
@@ -172,7 +169,8 @@ const AsyncMultiselectDropdown = ({
         let newOptions = res.data.map((resData: StudentDataType) => {
           return {
             label:`${resData.id} - ${resData.name}`,
-            value:resData.id,
+            value: resData.id,
+            dataObject: resData
           }
         })
         console.log("Retreived options:", newOptions);        
@@ -185,7 +183,7 @@ const AsyncMultiselectDropdown = ({
 
   return (
     <AsyncSelect
-      defaultOptions={defaultOptions}
+      // defaultOptions={defaultOptions}
       isMulti={isMulti || false}
       name={name}
       className={className}
@@ -195,13 +193,9 @@ const AsyncMultiselectDropdown = ({
       placeholder={placeholder}
       isClearable={false}
       maxMenuHeight={250}
-      controlShouldRenderValue={true}
-      key={resetKey}
+      controlShouldRenderValue={false}
       value={value}
-      onChange={(selected:any)=>{
-        onChange(selected);
-        // setResetKey(resetKey+1);
-      }}
+      onChange={onChange}
       loadOptions={promiseOptions}
       cacheOptions={true}
     />

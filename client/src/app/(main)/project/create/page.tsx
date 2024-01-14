@@ -19,13 +19,9 @@ import {
 } from "@/app/hooks";
 import { useEffect, useState, useMemo, useContext } from "react";
 import { useSearchParams } from "next/navigation";
-import { CgClose } from "react-icons/cg";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
+import { OptionType } from "@/app/_components/ProfileSelector";
 
-type InstructorOptType = {
-  label: string;
-  value: string;
-};
 
 const CreateProject = () => {
   const projectContext = useContext(ProjectContext)
@@ -38,7 +34,8 @@ const CreateProject = () => {
   const user = useUser();
 
   const [title, setTitle] = useState("");
-  const [instructorList, setInstructorList] = useState<InstructorOptType[]>([]);
+  const [instructorList, setInstructorList] = useState<OptionType[]>([]);
+  const [studentsList, setStudentsList] = useState<OptionType[]>([]);
   const [branch, setBranch] = useState("");
   const [major, setMajor] = useState("");
   const [requirements, setRequirements] = useState("");
@@ -186,7 +183,8 @@ const CreateProject = () => {
             <InputFieldTitle title="Instructors" />
             <ProfileSelector
               type="instructors"
-              valueSetter={setInstructorList}
+              onChange={setInstructorList}
+              value={instructorList}
               isMulti={true}
             />
           </div>
@@ -203,7 +201,7 @@ const CreateProject = () => {
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3">
             <InputFieldTitle title="Members" />
-            <SearchBox placeholder="Search student..." />
+            <ProfileSelector type="students" onChange={setStudentsList} value={studentsList} isMulti={true} />
           </div>
           <div className="w-2/3">
             <div className="flex h-full flex-col">
@@ -276,7 +274,7 @@ const CreateProject = () => {
           isPrimary={true}
           variant="normal"
           className="px-4 py-2 text-lg"
-          onClick={() => console.log(instructorList)}
+          onClick={() => alert(`Instructors:\n${JSON.stringify(instructorList)}\n\nStudents:\n${JSON.stringify(studentsList)}`)}
         >
           Save Changes
         </Button>

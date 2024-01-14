@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from ".";
 
-interface Instructor {
+export interface Instructor {
   id: number;
   email: string;
   username: string;

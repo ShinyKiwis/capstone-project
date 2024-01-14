@@ -1,8 +1,12 @@
 'use client'
 
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import Select from "react-select";
 
+type OptionType = {
+  label: string;
+  value: string;
+};
 interface MultiselectDropdownProps {
   name: string;
   variant?: string;
@@ -13,8 +17,8 @@ interface MultiselectDropdownProps {
   isMulti?: boolean;
   className?: string;
   placeholder?: string;
-  onChange?: any;
-  ref?: any
+  onChange: any;
+  value: OptionType[];
 }
 
 interface VariantMappings {
@@ -123,7 +127,7 @@ const MultiselectDropdown = ({
   className,
   placeholder,
   onChange,
-  ref
+  value
 }: MultiselectDropdownProps) => {
   let innerClassnames: object;
   let customStyles: object;
@@ -151,10 +155,8 @@ const MultiselectDropdown = ({
       maxMenuHeight={250}
       controlShouldRenderValue={false}
       key={resetKey}
-      onChange={(selected:any)=>{
-        onChange(selected);
-        setResetKey(resetKey+1);
-      }}
+      onChange={onChange}
+      value={value}
     />
   );
 };

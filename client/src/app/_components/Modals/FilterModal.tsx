@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, InputBox, SearchBox, Typography } from "..";
 import CheckBox from "../UserAction/CheckBox";
 import ProfileSelector from "../ProfileSelector";
+import { OptionType } from "../ProfileSelector";
 import Image from "next/image";
 import { useUser } from "@/app/hooks";
 import hasRole from "@/app/lib/hasRole";
@@ -39,9 +40,7 @@ const FilterModal = () => {
   const {toggleModal} = modalContextValue;
 
   const [numberOfParticipants, setNumberOfParticipants] = useState("1");
-  const [instructor, setInstructor] = useState<
-    { label: string; value: string }[]
-  >([]);
+  const [instructor, setInstructor] = useState<OptionType[]>([]);
 
   const [selectedProjType, setprojType] = useState<string[]>(['personal projects']);
   const [selectedBranches, setSelectedBranches] = useState<string[]>(['high quality']);
@@ -163,7 +162,8 @@ const FilterModal = () => {
             <div className={`${instructor.length > 0 ? "h-full" : ""}`}>
               <ProfileSelector
                 type="instructors"
-                valueSetter={setInstructor}
+                onChange={setInstructor}
+                value={instructor}
                 isMulti={false}
               />
             </div>
