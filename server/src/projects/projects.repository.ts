@@ -37,6 +37,7 @@ export class ProjectsRepository extends Repository<Project> {
       name,
       stage,
       description,
+      status,
       tasks,
       references,
       semester,
@@ -58,7 +59,7 @@ export class ProjectsRepository extends Repository<Project> {
       majors,
       branches,
       limit,
-      status: ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD,
+      status,
     });
     await this.save(project);
     if (requirements) {
@@ -138,6 +139,7 @@ export class ProjectsRepository extends Repository<Project> {
     project.majors = majorsList;
     project.branches = branchesList;
     project.limit = limit;
+    project.status = ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD;
 
     await this.save(project);
 
@@ -212,8 +214,8 @@ export class ProjectsRepository extends Repository<Project> {
       .leftJoinAndSelect('project.supervisors', 'supervisors')
       .leftJoinAndSelect('project.majors', 'majors')
       .leftJoinAndSelect('project.branches', 'branches')
-      .leftJoinAndSelect('students.user', 'users');
-    // .loadRelationCountAndMap('project.studentsCount', 'project.students');
+      .leftJoinAndSelect('students.user', 'users')
+      .loadRelationCountAndMap('project.studentsCount', 'project.students');
 
     if (search) {
       query.andWhere('LOWER(project.name) LIKE LOWER (:search)', {
@@ -233,7 +235,8 @@ export class ProjectsRepository extends Repository<Project> {
           .from(Project, 'project')
           .leftJoin('project.students', 'student')
           .groupBy('project.code')
-          .having('COUNT(student.userId) = :members', { members }).getQuery();
+          .having('COUNT(student.userId) = :members', { members })
+          .getQuery();
         return 'project.code IN ' + subQuery;
       });
       // const subQuery = this.createQueryBuilder('project').select('project.code').leftJoin('project.students', 'student').groupBy('project.code').having("COUNT(student.userId) = :members", {members});
@@ -262,17 +265,28 @@ export class ProjectsRepository extends Repository<Project> {
   }
 
   async getProjectByCode(code: number) {
-    const found = await this.findOne({
-      where: { code },
-      relations: {
-        semester: true,
-        supervisors: true,
-        students: true,
-        majors: true,
-        branches: true,
-        requirements: true,
-      },
-    });
+    const query = this.createQueryBuilder('project')
+      .leftJoinAndSelect('project.semester', 'semester')
+      .leftJoinAndSelect('project.requirements', 'requirements')
+      .leftJoinAndSelect('project.students', 'students')
+      .leftJoinAndSelect('project.supervisors', 'supervisors')
+      .leftJoinAndSelect('project.majors', 'majors')
+      .leftJoinAndSelect('project.branches', 'branches')
+      .leftJoinAndSelect('students.user', 'users')
+      .loadRelationCountAndMap('project.studentsCount', 'project.students')
+      .andWhere('project.code = :code', { code });
+    // const found = await this.findOne({
+    //   where: { code },
+    //   relations: {
+    //     semester: true,
+    //     supervisors: true,
+    //     students: true,
+    //     majors: true,
+    //     branches: true,
+    //     requirements: true,
+    //   },
+    // });
+    const found = await query.getOne();
 
     if (!found) {
       throw new NotFoundException(`Project with code "${code}" not found`);

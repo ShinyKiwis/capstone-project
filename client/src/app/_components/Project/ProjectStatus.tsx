@@ -16,8 +16,8 @@ const getCustomStatus =(status: string) => {
       return 'Waiting for approval from Department Head'
     case 'WAITING_FOR_PROGRAM_CHAIR':
       return 'Waiting for approval from Program Chair'
-    case 'ACTIVATED':
-      return 'Activated'
+    case 'DRAFT':
+      return 'Draft'
     case "DEACTIVATED":
       return "Deactivated"
   }

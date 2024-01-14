@@ -33,7 +33,7 @@ const CreateProject = () => {
   const { handleCreation } = projectContext;
   const { branches } = useBranch();
   const { majors } = useMajor();
-  const {instructors} = useInstructor()
+  const { instructors } = useInstructor();
   const navigate = useNavigate();
   const searchParams = useSearchParams();
   const user = useUser();
@@ -234,6 +234,7 @@ const CreateProject = () => {
               stage: 1,
               description,
               tasks,
+              status: "WAITING_FOR_DEPARTMENT_HEAD",
               references: refs,
               limit: numberOfMembers,
               semester: {
@@ -275,16 +276,17 @@ const CreateProject = () => {
                         return +instructor.value;
                       }
                     })
-                    .filter((storedInstructor) => storedInstructor !== undefined),
+                    .filter(
+                      (storedInstructor) => storedInstructor !== undefined,
+                    ),
                 ];
                 const parsedProject = {
                   ...newProject,
                   code: res.data.code,
-                  status: "WAITING_FOR_DEPARTMENT_HEAD",
                   students: [],
                   studentsCount: 0,
                   requirements: requirements,
-                  supervisors:[
+                  supervisors: [
                     {
                       id: user.id,
                       email: user.email,
@@ -301,8 +303,8 @@ const CreateProject = () => {
                   branches: branches.filter(
                     (storedBranch: any) => storedBranch.name === branch,
                   ),
-                }
-                handleCreation(parsedProject)
+                };
+                handleCreation(parsedProject);
                 navigate(`/project?project=${searchParams.get("project")}`);
               });
           }}
@@ -313,7 +315,86 @@ const CreateProject = () => {
           isPrimary={true}
           variant="normal"
           className="px-4 py-2 text-lg"
-          onClick={() => console.log(instructorList)}
+          onClick={() => {
+            const newProject = {
+              name: title,
+              stage: 1,
+              description,
+              tasks,
+              status: "DRAFT",
+              references: refs,
+              limit: numberOfMembers,
+              semester: {
+                year: 2023,
+                no: 1,
+              },
+              supervisors: [
+                {
+                  id: user.id,
+                },
+                ...instructorList.map((instructor) => {
+                  return {
+                    id: +instructor.value,
+                  };
+                }),
+              ],
+              majors: [
+                {
+                  id: majors.find((storedMajor) => storedMajor.name === major)!
+                    .id,
+                },
+              ],
+              branches: [
+                {
+                  id: branches.find(
+                    (storedBranch) => storedBranch.name === branch,
+                  )!.id,
+                },
+              ],
+            };
+            axios
+              .post("http://localhost:3500/projects", newProject)
+              .then((res) => {
+                const newSupervisorIds = [
+                  user.id,
+                  ...instructorList
+                    .map((instructor) => {
+                      if (+instructor.value != user.id) {
+                        return +instructor.value;
+                      }
+                    })
+                    .filter(
+                      (storedInstructor) => storedInstructor !== undefined,
+                    ),
+                ];
+                const parsedProject = {
+                  ...newProject,
+                  code: res.data.code,
+                  students: [],
+                  studentsCount: 0,
+                  requirements: requirements,
+                  supervisors: [
+                    {
+                      id: user.id,
+                      email: user.email,
+                      username: user.username,
+                      name: user.name,
+                    },
+                    ...instructors.filter((instructor) =>
+                      newSupervisorIds.includes(instructor.id),
+                    ),
+                  ],
+                  majors: majors.filter(
+                    (storedMajor: any) => storedMajor.name === major,
+                  ),
+                  branches: branches.filter(
+                    (storedBranch: any) => storedBranch.name === branch,
+                  ),
+                };
+                handleCreation(parsedProject);
+                navigate(`/project?project=${searchParams.get("project")}`);
+              });
+          }}
         >
           Save Changes
         </Button>

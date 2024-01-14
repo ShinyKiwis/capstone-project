@@ -1,5 +1,6 @@
 import {
   ArrayNotEmpty,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -9,6 +10,7 @@ import { Branch } from '../../programs/entities/branch.entity';
 import { Major } from '../../programs/entities/major.entity';
 import { Semester } from '../../semesters/entities/semester.entity';
 import { User } from '../../users/entities/user.entity';
+import { ProjectStatus } from '../project-status.enum';
 
 export class CreateProjectDto {
   @IsString()
@@ -23,6 +25,9 @@ export class CreateProjectDto {
 
   @IsNotEmpty()
   tasks: string;
+
+  @IsEnum(ProjectStatus)
+  status: ProjectStatus;
 
   @IsNotEmpty()
   references: string;

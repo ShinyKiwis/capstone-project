@@ -366,13 +366,11 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                 })
                 .filter((storedInstructor) => storedInstructor !== undefined),
             ];
-            console.log("supervisor ids", updateSupervisorIds);
-            console.log("MAJORS", majors);
-            console.log("MAJOR", major);
+            console.log("PROJECT", project)
             const updateProject = {
               code: +params.id,
               name: title,
-              status: project.status,
+              status: "WAITING_FOR_DEPARTMENT_HEAD",
               requirements: requirements,
               stage: 1,
               description,
@@ -424,7 +422,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               });
           }}
         >
-          Update
+         Submit for approval 
         </Button>
         <Button isPrimary={true} variant="normal" className="px-4 py-2 text-lg">
           Save Changes
