@@ -1,6 +1,11 @@
 import { DataSource, In, Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectStatus } from './project-status.enum';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
@@ -10,6 +15,8 @@ import { UsersRepository } from 'src/users/users.repository';
 import { BranchesRepository } from 'src/programs/branches.repository';
 import { MajorsRepository } from 'src/programs/majors.repository';
 import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
+import { StudentsRepository } from 'src/students/students.repository';
+import { Student } from 'src/students/entities/student.entity';
 
 @Injectable()
 export class ProjectsRepository extends Repository<Project> {
@@ -19,6 +26,8 @@ export class ProjectsRepository extends Repository<Project> {
     private usersRepository: UsersRepository,
     private branchesRepository: BranchesRepository,
     private majorsRepository: MajorsRepository,
+    @Inject(forwardRef(() => StudentsRepository))
+    private studentsRepository: StudentsRepository,
   ) {
     super(Project, dataSource.createEntityManager());
   }
@@ -188,8 +197,8 @@ export class ProjectsRepository extends Repository<Project> {
       .leftJoinAndSelect('students.user', 'users')
       .loadRelationCountAndMap('project.studentsCount', 'project.students')
       .where('status = :status', { status });
-    
-      const projects = await query.getMany();
+
+    const projects = await query.getMany();
 
     return projects;
   }
@@ -203,8 +212,8 @@ export class ProjectsRepository extends Repository<Project> {
       .leftJoinAndSelect('project.supervisors', 'supervisors')
       .leftJoinAndSelect('project.majors', 'majors')
       .leftJoinAndSelect('project.branches', 'branches')
-      .leftJoinAndSelect('students.user', 'users')
-      .loadRelationCountAndMap('project.studentsCount', 'project.students');
+      .leftJoinAndSelect('students.user', 'users');
+    // .loadRelationCountAndMap('project.studentsCount', 'project.students');
 
     if (search) {
       query.andWhere('LOWER(project.name) LIKE LOWER (:search)', {
@@ -212,8 +221,25 @@ export class ProjectsRepository extends Repository<Project> {
       });
     }
 
-    if(status) {
-      query.andWhere('project.status = :status', { status })
+    if (status) {
+      query.andWhere('project.status = :status', { status });
+    }
+
+    if (members) {
+      query.andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('project.code')
+          .from(Project, 'project')
+          .leftJoin('project.students', 'student')
+          .groupBy('project.code')
+          .having('COUNT(student.userId) = :members', { members }).getQuery();
+        return 'project.code IN ' + subQuery;
+      });
+      // const subQuery = this.createQueryBuilder('project').select('project.code').leftJoin('project.students', 'student').groupBy('project.code').having("COUNT(student.userId) = :members", {members});
+      // console.log(subQuery.getSql());
+      // const result = await subQuery.getMany();
+      // console.log(result);
     }
 
     if (limit && page) {
@@ -224,10 +250,10 @@ export class ProjectsRepository extends Repository<Project> {
     // const count = await query.getCount();
     let [projects, count] = await query.getManyAndCount();
 
-    if (members) {
-      console.log(projects);
-      projects = projects.filter((project) => project.studentsCount == members);
-    }
+    // if (members) {
+    //   console.log(projects);
+    //   projects = projects.filter((project) => project.studentsCount == members);
+    // }
     return {
       total: Math.ceil(count / limit),
       current: +page,
