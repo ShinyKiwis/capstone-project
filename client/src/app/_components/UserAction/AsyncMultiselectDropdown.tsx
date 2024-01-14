@@ -6,6 +6,7 @@ import { OptionType } from "../ProfileSelector";
 export interface StudentDataType{
   id: string;
   email: string;
+  username: string;
   name: string;
 }
 
@@ -163,8 +164,8 @@ const AsyncMultiselectDropdown = ({
 
     return new Promise<OptionType[]>((resolve) => {
       let newTimeout = setTimeout(async() => {
-        console.log("start api calll")
-        const res = await axios.get(`${apiLink}`);
+        console.log(`Calling api: ${apiLink}${query}`)
+        const res = await axios.get(`${apiLink}${query}`);
         // const data = await res.json();
         let newOptions = res.data.map((resData: StudentDataType) => {
           return {

@@ -316,8 +316,9 @@ const CreateProject = () => {
           isPrimary={true}
           variant="normal"
           className="px-4 py-2 text-lg"
-          // onClick={() => alert(`Instructors:\n${JSON.stringify(instructorList)}\n\nStudents:\n${JSON.stringify(studentsList)}`)}
           onClick={() => {
+            alert(`Instructors:\n${JSON.stringify(instructorList)}\n\nStudents:\n${JSON.stringify(studentsList)}`)
+
             const newProject = {
               name: title,
               stage: 1,
@@ -343,6 +344,16 @@ const CreateProject = () => {
                   };
                 }),
               ],
+              // members: [
+              //   {
+              //     id: user.id,
+              //   },
+              //   ...studentsList.map((student) => {
+              //     return {
+              //       id: +student.value,
+              //     };
+              //   }),
+              // ],
               majors: [
                 {
                   id: majors.find((storedMajor) => storedMajor.name === major)!

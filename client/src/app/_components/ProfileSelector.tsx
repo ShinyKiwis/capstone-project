@@ -194,7 +194,7 @@ const ProfileSelector = ({
           onChange={onChange}
           isMulti={true}
           placeholder="Search for student's name, id..."
-          apiLink="http://localhost:3500/users/instructors"       // change to student's api call
+          apiLink="http://localhost:3500/users/students?search="       // change to student's api call
         />
 
         <div className="flex flex-col items-center justify-center px-3">
