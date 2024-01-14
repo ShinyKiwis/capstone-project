@@ -3,11 +3,13 @@ import AsyncSelect from 'react-select/async';
 import axios from 'axios';
 import { OptionType } from "../ProfileSelector";
 
-export interface StudentDataType{
-  id: string;
-  email: string;
-  username: string;
-  name: string;
+export interface SearchStudentDataType{
+  // As retreived from API call: http://localhost:3500/users/students?search=
+  userId: number;
+  user: {
+    email:string;
+    name: string;
+  }
 }
 
 interface AsyncMultiselectDropdownProps {
@@ -167,11 +169,15 @@ const AsyncMultiselectDropdown = ({
         console.log(`Calling api: ${apiLink}${query}`)
         const res = await axios.get(`${apiLink}${query}`);
         // const data = await res.json();
-        let newOptions = res.data.map((resData: StudentDataType) => {
+        let newOptions = res.data.map((resData: SearchStudentDataType) => {
           return {
-            label:`${resData.id} - ${resData.name}`,
-            value: resData.id,
-            dataObject: resData
+            label:`${resData.userId} - ${resData.user.name}`,
+            value: resData.userId.toString(),
+            dataObject: {
+              id: resData.userId.toString(),
+              email: resData.user.email,
+              name: resData.user.name
+            }
           }
         })
         console.log("Retreived options:", newOptions);        

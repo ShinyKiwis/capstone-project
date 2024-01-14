@@ -252,6 +252,13 @@ const CreateProject = () => {
                   };
                 }),
               ],
+              students: [
+                ...studentsList.map((student) => {
+                  return {
+                    userId: student.value,
+                  };
+                }),
+              ],
               majors: [
                 {
                   id: majors.find((storedMajor) => storedMajor.name === major)!
@@ -298,6 +305,7 @@ const CreateProject = () => {
                       newSupervisorIds.includes(instructor.id),
                     ),
                   ],
+                  
                   majors: majors.filter(
                     (storedMajor: any) => storedMajor.name === major,
                   ),
@@ -312,13 +320,14 @@ const CreateProject = () => {
         >
           Submit for approval
         </Button>
+
         <Button
           isPrimary={true}
           variant="normal"
           className="px-4 py-2 text-lg"
           onClick={() => {
-            alert(`Instructors:\n${JSON.stringify(instructorList)}\n\nStudents:\n${JSON.stringify(studentsList)}`)
-
+            // alert(`Instructors:\n${JSON.stringify(instructorList)}\n\nStudents:\n${JSON.stringify(studentsList)}`)
+            
             const newProject = {
               name: title,
               stage: 1,
@@ -344,16 +353,13 @@ const CreateProject = () => {
                   };
                 }),
               ],
-              // members: [
-              //   {
-              //     id: user.id,
-              //   },
-              //   ...studentsList.map((student) => {
-              //     return {
-              //       id: +student.value,
-              //     };
-              //   }),
-              // ],
+              students: [
+                ...studentsList.map((student) => {
+                  return {
+                    userId: student.value,
+                  };
+                }),
+              ],
               majors: [
                 {
                   id: majors.find((storedMajor) => storedMajor.name === major)!
@@ -368,6 +374,7 @@ const CreateProject = () => {
                 },
               ],
             };
+
             axios
               .post("http://localhost:3500/projects", newProject)
               .then((res) => {

@@ -8,11 +8,11 @@ import { AsyncMultiselectDropdown } from ".";
 import { CgClose } from "react-icons/cg";
 
 import { Instructor } from "../hooks/useInstructor";
-import { StudentDataType } from "./UserAction/AsyncMultiselectDropdown";
+import { SearchStudentDataType } from "./UserAction/AsyncMultiselectDropdown";
 export interface OptionType {
   label: string;
   value: string;
-  dataObject: {id:string, email:string, name:string} | Instructor | StudentDataType;
+  dataObject: {id:string, email:string, name:string} | Instructor;
 }
 
 interface ProfileSelectorProps {
@@ -200,7 +200,7 @@ const ProfileSelector = ({
         <div className="flex flex-col items-center justify-center px-3">
         {value.length > 0 &&
           value.map(function (selectedOption: OptionType) {
-            console.log('curr:', selectedOption)
+            // console.log('curr:', selectedOption)
             return (
               <ProfileItemsMultiMode
                 key={selectedOption.dataObject!.id}
