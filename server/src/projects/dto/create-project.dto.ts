@@ -12,6 +12,7 @@ import { Major } from '../../programs/entities/major.entity';
 import { Semester } from '../../semesters/entities/semester.entity';
 import { User } from '../../users/entities/user.entity';
 import { ProjectStatus } from '../project-status.enum';
+import { Student } from 'src/students/entities/student.entity';
 
 export class CreateProjectDto {
   @IsString()
@@ -50,6 +51,8 @@ export class CreateProjectDto {
 
   @IsNotEmptyObject()
   owner: User;
+
+  students: Student[]
 
   @IsNumber()
   limit: number;
