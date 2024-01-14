@@ -14,6 +14,7 @@ import ActivateButton from "../UserAction/Buttons/ActivateButton";
 import { usePathname, useSearchParams } from "next/navigation";
 import DenyButton from "../UserAction/Buttons/DenyButton";
 import ProjectStatus from "./ProjectStatus";
+import ApproveButton from "../UserAction/Buttons/ApproveButton";
 
 type Student = {
   name: string;
@@ -176,9 +177,7 @@ const ManagementButtons = ({
       >
         View
       </Button>
-      <Button isPrimary variant="success" className="mt-2 w-full py-2">
-        Approve
-      </Button>
+      <ApproveButton projectId={viewTarget.code} className="mt-2 w-full py-2" />
       <DenyButton projectId={viewTarget.code} className="mt-2 w-full py-2" />
     </>
   ) : (
