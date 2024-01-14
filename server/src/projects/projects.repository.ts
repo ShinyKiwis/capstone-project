@@ -212,7 +212,7 @@ export class ProjectsRepository extends Repository<Project> {
   }
 
   async getProjects(filterDto: GetProjectsFilterDto) {
-    const { search, members, limit, page, status, owner } = filterDto;
+    const { search, members, limit, page, status, owner, stage } = filterDto;
     const query = this.createQueryBuilder('project')
       .leftJoinAndSelect('project.semester', 'semester')
       .leftJoinAndSelect('project.requirements', 'requirements')
@@ -236,6 +236,10 @@ export class ProjectsRepository extends Repository<Project> {
 
     if (owner) {
       query.andWhere('owner.id = :owner', { owner });
+    }
+
+    if(stage) {
+      query.andWhere('project.stage = :stage', { stage });
     }
 
     if (members) {

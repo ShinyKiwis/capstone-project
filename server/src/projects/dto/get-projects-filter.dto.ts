@@ -21,4 +21,7 @@ export class GetProjectsFilterDto {
 
   @IsOptional()
   owner: number;
+
+  @IsOptional()
+  stage: number;
 }
