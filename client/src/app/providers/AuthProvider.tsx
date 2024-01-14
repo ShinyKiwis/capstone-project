@@ -9,7 +9,7 @@ interface AuthContextProps {
   setUser: any
 }
 
-interface User {
+export interface User {
   id: number;
   name: string;
   username: string;
@@ -18,6 +18,10 @@ interface User {
     id:string,
     name:string
   }];
+  credits: number;
+  generation: number;
+  GPA: number;
+  enrolledAt: string;
   project: {
     code: number,
   }

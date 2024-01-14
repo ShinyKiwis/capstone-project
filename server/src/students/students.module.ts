@@ -6,9 +6,10 @@ import { UsersRepository } from '../users/users.repository';
 import { Student } from './entities/student.entity';
 import { BranchesRepository } from 'src/programs/branches.repository';
 import { MajorsRepository } from 'src/programs/majors.repository';
+import { StudentsRepository } from './students.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Student])],
-  providers: [ProjectsRepository, UsersRepository, RequirementRepository, BranchesRepository, MajorsRepository]
+  providers: [ProjectsRepository, UsersRepository, RequirementRepository, BranchesRepository, MajorsRepository, StudentsRepository]
 })
 export class StudentsModule {}

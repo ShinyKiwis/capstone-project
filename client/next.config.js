@@ -22,6 +22,10 @@ const nextConfig = {
         source: '/project/approve',
         destination: '/project',
         has: [{type: 'query', key: 'project'}]
+      },
+      {
+        source: '/',
+        destination: '/login'
       }
     ]
   }

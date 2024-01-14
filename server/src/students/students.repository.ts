@@ -12,6 +12,7 @@ import { EnrollProjectDto } from './dto/enroll-project.dto';
 import { Student } from './entities/student.entity';
 import { UnenrollProjectDto } from './dto/unenroll-project.dto';
 import { Project } from 'src/projects/entities/project.entity';
+import { GetStudentsDto } from './dto/get-students.dto';
 
 @Injectable()
 export class StudentsRepository extends Repository<Student> {
@@ -75,6 +76,20 @@ export class StudentsRepository extends Repository<Student> {
     if (found.project == null) result = { ...found, project: -1 };
     else result = found;
     return result;
+  }
+
+  async getStudents(getStudentsDto: GetStudentsDto) {
+    const { search } = getStudentsDto;
+    const query = this.createQueryBuilder('student').leftJoinAndSelect('student.user', 'user');
+
+    if (search) {
+      query.andWhere("LOWER(CONCAT(user.id, ' ', user.name)) LIKE LOWER (:search)", {
+        search: `%${search}%`,
+      });
+    }
+
+    const students = await query.getMany();
+    return students;
   }
 
   async enrollProject(enrollProjectDto: EnrollProjectDto) {

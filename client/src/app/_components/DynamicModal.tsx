@@ -34,7 +34,7 @@ const DynamicModal = () => {
       case "filter":
         return <FilterModal />;
       case "status_success":
-        return <SuccessModal title="Enrolled successfully !" />;
+        return <SuccessModal title="Enrolled successfully!" />;
       case "status_warning":
         return (
           <WarningModal
@@ -49,6 +49,8 @@ const DynamicModal = () => {
       case "project_activation":
         const [id, action] = modalProps.title.split("-")
         return <ActivateProjectModal projectId={id} action={action} />
+      case "project_approval":
+        return <SuccessModal title="Approved this project successfully!"/>
       case "project_denial":
         return <ProjDenyModal />;
       case "upload":

@@ -1,3 +1,4 @@
+"use client"
 import React, { SyntheticEvent, useContext, useRef, useState } from "react";
 import { ModalContext } from "../../providers/ModalProvider";
 import { Button, Typography } from "..";

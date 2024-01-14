@@ -5,7 +5,7 @@ import { ModalContext } from "../../providers/ModalProvider";
 import axios from "axios";
 import parse from "html-react-parser";
 import { useNavigate, useUser } from "@/app/hooks";
-import { AuthContext } from "@/app/providers/AuthProvider";
+import { AuthContext, User } from "@/app/providers/AuthProvider";
 import hasRole from "@/app/lib/hasRole";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
@@ -14,9 +14,10 @@ import ActivateButton from "../UserAction/Buttons/ActivateButton";
 import { usePathname, useSearchParams } from "next/navigation";
 import DenyButton from "../UserAction/Buttons/DenyButton";
 import ProjectStatus from "./ProjectStatus";
+import ApproveButton from "../UserAction/Buttons/ApproveButton";
 
 type Student = {
-  name: string;
+  user: User;
   userId: string;
   credits: number;
   generation: number;
@@ -111,15 +112,16 @@ export const ProjectCardList = ({
         </span>
       </div>
       <div className="flex flex-col gap-2">
-        {/* {students.map(function (member: Student) {
+        {students.map(function (member: Student) {
+          console.log(member)
           return (
             <Profile
               key={member.userId}
               type="horizontal"
-              username='{member.name}'
+              username={member.user.name}
             />
           );
-        })} */}
+        })}
       </div>
     </div>
   );
@@ -176,9 +178,7 @@ const ManagementButtons = ({
       >
         View
       </Button>
-      <Button isPrimary variant="success" className="mt-2 w-full py-2">
-        Approve
-      </Button>
+      <ApproveButton projectId={viewTarget.code} className="mt-2 w-full py-2" />
       <DenyButton projectId={viewTarget.code} className="mt-2 w-full py-2" />
     </>
   ) : (
@@ -272,7 +272,7 @@ const ProjectCard = ({
 
   return (
     <div className="flex w-full cursor-pointer flex-col rounded-md border border-black px-4 py-4">
-      <ProjectStatus status={projectObject.status} />
+      {!hasRole("student") && <ProjectStatus status={projectObject.status} />}
       <div className="flex">
         <ProjectCardMetadata
           code={projectObject.code}

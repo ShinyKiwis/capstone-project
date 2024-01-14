@@ -9,10 +9,11 @@ import { RequirementRepository } from './requirements.repository';
 import { UsersRepository } from 'src/users/users.repository';
 import { BranchesRepository } from 'src/programs/branches.repository';
 import { MajorsRepository } from 'src/programs/majors.repository';
+import { StudentsRepository } from 'src/students/students.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Project, Requirement])],
   controllers: [ProjectsController],
-  providers: [ProjectsService, ProjectsRepository, RequirementRepository, UsersRepository, BranchesRepository, MajorsRepository],
+  providers: [ProjectsService, ProjectsRepository, RequirementRepository, UsersRepository, BranchesRepository, MajorsRepository, StudentsRepository],
 })
 export class ProjectsModule {}

@@ -24,11 +24,12 @@ import { OptionType } from "@/app/_components/ProfileSelector";
 
 
 const CreateProject = () => {
-  const projectContext = useContext(ProjectContext)
-  if(!projectContext) return <div>Loading</div>
-  const {projects, setProjects} = projectContext
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) return <div>Loading</div>;
+  const { handleCreation } = projectContext;
   const { branches } = useBranch();
   const { majors } = useMajor();
+  const { instructors } = useInstructor();
   const navigate = useNavigate();
   const searchParams = useSearchParams();
   const user = useUser();
@@ -230,6 +231,10 @@ const CreateProject = () => {
               name: title,
               stage: 1,
               description,
+              status: "WAITING_FOR_DEPARTMENT_HEAD",
+              owner: {
+                id: user.id
+              },
               tasks,
               references: refs,
               limit: numberOfMembers,
@@ -263,9 +268,46 @@ const CreateProject = () => {
             };
             axios
               .post("http://localhost:3500/projects", newProject)
-              .then((_) => {
+              .then((res) => {
+                const newSupervisorIds = [
+                  user.id,
+                  ...instructorList
+                    .map((instructor) => {
+                      if (+instructor.value != user.id) {
+                        return +instructor.value;
+                      }
+                    })
+                    .filter(
+                      (storedInstructor) => storedInstructor !== undefined,
+                    ),
+                ];
+                const parsedProject = {
+                  ...newProject,
+                  code: res.data.code,
+                  students: [],
+                  studentsCount: 0,
+                  requirements: requirements,
+                  supervisors: [
+                    {
+                      id: user.id,
+                      email: user.email,
+                      username: user.username,
+                      name: user.name,
+                    },
+                    ...instructors.filter((instructor) =>
+                      newSupervisorIds.includes(instructor.id),
+                    ),
+                  ],
+                  majors: majors.filter(
+                    (storedMajor: any) => storedMajor.name === major,
+                  ),
+                  branches: branches.filter(
+                    (storedBranch: any) => storedBranch.name === branch,
+                  ),
+                };
+                handleCreation(parsedProject);
                 navigate(`/project?project=${searchParams.get("project")}`);
-              });
+              }).catch(err => {console.log(err)});
           }}
         >
           Submit for approval
@@ -274,7 +316,93 @@ const CreateProject = () => {
           isPrimary={true}
           variant="normal"
           className="px-4 py-2 text-lg"
-          onClick={() => alert(`Instructors:\n${JSON.stringify(instructorList)}\n\nStudents:\n${JSON.stringify(studentsList)}`)}
+          // onClick={() => alert(`Instructors:\n${JSON.stringify(instructorList)}\n\nStudents:\n${JSON.stringify(studentsList)}`)}
+          onClick={() => {
+            const newProject = {
+              name: title,
+              stage: 1,
+              description,
+              tasks,
+              status: "DRAFT",
+              references: refs,
+              owner: {
+                id: user.id
+              },
+              limit: numberOfMembers,
+              semester: {
+                year: 2023,
+                no: 1,
+              },
+              supervisors: [
+                {
+                  id: user.id,
+                },
+                ...instructorList.map((instructor) => {
+                  return {
+                    id: +instructor.value,
+                  };
+                }),
+              ],
+              majors: [
+                {
+                  id: majors.find((storedMajor) => storedMajor.name === major)!
+                    .id,
+                },
+              ],
+              branches: [
+                {
+                  id: branches.find(
+                    (storedBranch) => storedBranch.name === branch,
+                  )!.id,
+                },
+              ],
+            };
+            axios
+              .post("http://localhost:3500/projects", newProject)
+              .then((res) => {
+                const newSupervisorIds = [
+                  user.id,
+                  ...instructorList
+                    .map((instructor) => {
+                      if (+instructor.value != user.id) {
+                        return +instructor.value;
+                      }
+                    })
+                    .filter(
+                      (storedInstructor) => storedInstructor !== undefined,
+                    ),
+                ];
+                const parsedProject = {
+                  ...newProject,
+                  code: res.data.code,
+                  students: [],
+                  studentsCount: 0,
+                  requirements: requirements,
+                  owner: {
+                    id: user.id
+                  },
+                  supervisors: [
+                    {
+                      id: user.id,
+                      email: user.email,
+                      username: user.username,
+                      name: user.name,
+                    },
+                    ...instructors.filter((instructor) =>
+                      newSupervisorIds.includes(instructor.id),
+                    ),
+                  ],
+                  majors: majors.filter(
+                    (storedMajor: any) => storedMajor.name === major,
+                  ),
+                  branches: branches.filter(
+                    (storedBranch: any) => storedBranch.name === branch,
+                  ),
+                };
+                handleCreation(parsedProject);
+                navigate(`/project?project=${searchParams.get("project")}`);
+              });
+          }}
         >
           Save Changes
         </Button>

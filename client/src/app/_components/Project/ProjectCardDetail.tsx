@@ -13,6 +13,7 @@ import ActivateButton from "../UserAction/Buttons/ActivateButton";
 import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
 import { usePathname } from "next/navigation";
 import DenyButton from "../UserAction/Buttons/DenyButton";
+import ProjectStatus from "./ProjectStatus";
 
 const ProjectCardDetail = ({
   projectObject,
@@ -98,6 +99,7 @@ const ProjectCardDetail = ({
 
   return (
     <div className="rounded-md border border-black px-8 py-4">
+      {!hasRole("student") && <ProjectStatus status={projectObject.status} />}
       <Typography variant="h1" text={projectObject.code.toString()} />
       <Typography variant="h1" text={projectObject.name} />
       <div className="mb-4 flex w-full">

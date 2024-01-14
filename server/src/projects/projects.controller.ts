@@ -18,6 +18,9 @@ import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
 import ProjectFilesInterceptor from './projectFiles.interceptor';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
+import { ApproveProjectDto } from './dto/approve-project.dto';
+import { RejectProjectDto } from './dto/reject-project.dto';
+import { ApproveProjectsDto } from './dto/approve-projects.dto';
 
 @Controller('projects')
 export class ProjectsController {
@@ -46,6 +49,21 @@ export class ProjectsController {
   @Patch(':code')
   async updateAProject(@Param('code') id: string, @Body() updateProjectDto: UpdateProjectDto) {
     return this.projectsService.updateAProject(+id, updateProjectDto);
+  }
+
+  @Post('/approve')
+  async approveAProject(@Body() approveProjectDto: ApproveProjectDto) {
+    return this.projectsService.approveAProject(approveProjectDto);
+  }
+
+  @Post('/approve/all')
+  async approveProjects(@Body() approveProjectsDto: ApproveProjectsDto) {
+    return this.projectsService.approveProjects(approveProjectsDto);
+  }
+
+  @Post('/reject')
+  async rejectAProject(@Body() rejectProjectDto: RejectProjectDto) {
+    return this.projectsService.rejectAProject(rejectProjectDto);
   }
 
   @Patch(':code/status')
