@@ -69,6 +69,7 @@ const ProjectHeader = () => {
   if (!modalContextValue) {
     return null;
   }
+  const user = useUser()
   const [projectsPerPage, setProjectsPerPage] = useState("");
   const { toggleModal, setModalType } = modalContextValue;
   const searchParams = useSearchParams();
@@ -87,6 +88,15 @@ const ProjectHeader = () => {
     setModalType(type);
     toggleModal(true);
   };
+
+  const handleApproveAll = () => {
+    // if(pathname.includes("approve")){
+    //   axios.post('/projects/approve/all', {
+    //     id: user.id,
+
+    //   })
+    // }
+  }
   return (
     <div className="sticky top-0 w-full bg-white pt-2">
       <div className="w-3/6">
@@ -111,6 +121,7 @@ const ProjectHeader = () => {
                 isPrimary
                 variant={pathname.includes("approve") ? "success" : "normal"}
                 className="px-4 py-2"
+                onClick={handleApproveAll}
               >
                 <Link
                   href={`/project/approve?project=${searchParams.get(
@@ -186,8 +197,21 @@ const NoData = () => {
 
 const Project = () => {
   const projectContext = useContext(ProjectContext);
+  const user = useUser()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   if (!projectContext) return <div>Loading</div>;
-  const { projects, viewing, setViewing } = projectContext;
+  const { projects, viewing, setViewing, getProjects } = projectContext;
+  useEffect(()=>{
+    const isNotStudent = user.roles.find(role => role.name.toLowerCase() == "student")?.name.toLowerCase() !== 'student'
+    const stage = searchParams.get("project") === 'specialized' ? 1:2  
+    console.log(isNotStudent)
+    if(isNotStudent) {
+      getProjects(user.id,"",stage)
+    }else{
+      getProjects(0,"APPROVED",stage)
+    }
+  }, [])
 
   return (
     <div className="w-full">
