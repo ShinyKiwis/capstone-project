@@ -20,6 +20,8 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
   const [modalProps, setModalProps] = useState({title:''});
 
   const toggleModal = (value: boolean) => {
+    console.log("TOGGLE", value)
+    console.log("TOGGLE", modalType)
     setShowModal(value);
   };
   const modalContextValue: ModalContextProps = {

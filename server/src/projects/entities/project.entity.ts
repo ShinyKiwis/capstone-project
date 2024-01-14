@@ -1,4 +1,4 @@
-import { Semester } from 'src/semesters/entities/semester.entity';
+import { Semester } from '../../semesters/entities/semester.entity';
 import {
   Column,
   Entity,
@@ -10,10 +10,10 @@ import {
 } from 'typeorm';
 import { ProjectStatus } from '../project-status.enum';
 import { Requirement } from './requirement.entity';
-import { User } from 'src/users/entities/user.entity';
-import { Student } from 'src/users/entities/student.entity';
-import { Major } from 'src/programs/entities/major.entity';
-import { Branch } from 'src/programs/entities/branch.entity';
+import { User } from '../../users/entities/user.entity';
+import { Major } from '../../programs/entities/major.entity';
+import { Branch } from '../../programs/entities/branch.entity';
+import { Student } from '../../students/entities/student.entity';
 
 @Entity()
 export class Project {
@@ -27,7 +27,13 @@ export class Project {
   stage: number;
 
   @Column()
-  detail: string;
+  description: string;
+
+  @Column()
+  tasks: string;
+
+  @Column()
+  references: string;
 
   @Column()
   status: ProjectStatus;
@@ -38,25 +44,45 @@ export class Project {
   @OneToMany(() => Requirement, (requirement) => requirement.project)
   requirements: Requirement[];
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, { eager: true, onUpdate: 'CASCADE' })
   @JoinTable()
   supervisors: User[];
 
-  @OneToMany(() => Student, (student) => student.project)
+  @OneToMany(() => Student, (student) => student.project, {
+    eager: true,
+    onUpdate: 'CASCADE',
+  })
   students: Student[];
 
-  @ManyToMany(() => Major)
+  @ManyToMany(() => Major, { eager: true, onUpdate: 'CASCADE' })
   @JoinTable()
-  majors: Major[]
+  majors: Major[];
 
-  @ManyToMany(() => Branch)
+  @ManyToMany(() => Branch, { eager: true, onUpdate: 'CASCADE' })
   @JoinTable()
-  branches: Branch[]
+  branches: Branch[];
+
+  @ManyToOne(() => User)
+  owner: User;
+
+  @ManyToOne(() => User)
+  programChair: User;
+
+  @Column({ nullable: true })
+  programChairApprovedAt: Date;
+
+  @ManyToOne(() => User)
+  departmentHead: User;
+
+  @Column({ nullable: true })
+  departmentHeadApprovedAt: Date;
+
+  @ManyToOne(() => User)
+  rejectedBy: User;
+
+  @Column({ nullable: true })
+  rejectedReason: string;
 
   @Column()
   limit: number;
-
-  constructor(project: Partial<Project>) {
-    Object.assign(this, project);
-  }
 }

@@ -1,13 +1,8 @@
 import useUser from "../hooks/useUser";
 
-const hasRole = (roleName: string) => {
+const hasRole = (expectedRole: string) => {
   const user = useUser()
-  for (const role of user.roles) {
-    if (role!.name === roleName) {
-      return true
-    }
-  }
-  return false
+  return user.roles.find(role => role.name.toLowerCase() == expectedRole)
 }
 
 export default hasRole;

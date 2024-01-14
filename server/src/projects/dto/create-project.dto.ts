@@ -1,14 +1,17 @@
 import {
   ArrayNotEmpty,
+  IsEnum,
   IsNotEmpty,
+  IsNotEmptyObject,
   IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Branch } from 'src/programs/entities/branch.entity';
-import { Major } from 'src/programs/entities/major.entity';
-import { Semester } from 'src/semesters/entities/semester.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Branch } from '../../programs/entities/branch.entity';
+import { Major } from '../../programs/entities/major.entity';
+import { Semester } from '../../semesters/entities/semester.entity';
+import { User } from '../../users/entities/user.entity';
+import { ProjectStatus } from '../project-status.enum';
 
 export class CreateProjectDto {
   @IsString()
@@ -18,10 +21,19 @@ export class CreateProjectDto {
   @IsNumber()
   stage: number;
 
-  @IsString()
   @IsNotEmpty()
-  detail: string;
+  description: string;
 
+  @IsNotEmpty()
+  tasks: string;
+
+  @IsEnum(ProjectStatus)
+  status: ProjectStatus;
+
+  @IsNotEmpty()
+  references: string;
+
+  @IsNotEmptyObject()
   semester: Semester;
 
   @IsOptional()
@@ -36,6 +48,9 @@ export class CreateProjectDto {
   @ArrayNotEmpty()
   branches: Branch[];
 
+  @IsNotEmptyObject()
+  owner: User;
+
   @IsNumber()
   limit: number;
 
@@ -46,3 +61,4 @@ export class CreateProjectRequirementDto {
   operator: string;
   value: string;
 }
+

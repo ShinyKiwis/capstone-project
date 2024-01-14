@@ -1,4 +1,6 @@
-import React from "react";
+'use client'
+
+import React, { useState } from "react";
 import Select from "react-select";
 
 interface MultiselectDropdownProps {
@@ -12,6 +14,7 @@ interface MultiselectDropdownProps {
   className?: string;
   placeholder?: string;
   onChange?: any;
+  ref?: any
 }
 
 interface VariantMappings {
@@ -19,6 +22,46 @@ interface VariantMappings {
 }
 const variantMappings: VariantMappings = {
   normal: {
+    innerClassnames: {
+      control: ()=>"flex px-2 py-1 focus-within:border-blue",
+      valueContainer: () => "bg-white ",
+    },
+    customStyle: {
+      control: (baseStyles: any, state: any) => ({
+        // surrounding input box and clear, dropdown buttons
+        alignItems: 'center',
+        borderWidth: '2px',
+        borderColor: 'gray',
+        justifyContent: 'space-between',
+        minHeight: '38px',
+        transition: 'all 100ms',
+        borderRadius: '6px',
+      }),
+
+      indicatorsContainer: (baseStyles: any, state: any) => ({
+        // contains the clear and dropdown button
+        ...baseStyles,
+      }),
+      clearIndicator: (baseStyles: any, state: any) => ({
+        ...baseStyles,
+      }),
+      dropdownIndicator: (baseStyles: any, state: any) => ({
+        ...baseStyles,
+      }),
+
+      multiValueLabel: (baseStyles: any, state: any) => ({
+        ...baseStyles,
+      }),
+      multiValueRemove: (baseStyles: any, state: any) => ({
+        ...baseStyles,
+      }),
+      indicatorSeparator: (baseStyles: any, state: any) => ({
+        display: 'none',
+      }),
+    },
+  },
+
+  grayscale: {
     innerClassnames: {
       valueContainer: () => "bg-lightgray ",
     },
@@ -80,9 +123,11 @@ const MultiselectDropdown = ({
   className,
   placeholder,
   onChange,
+  ref
 }: MultiselectDropdownProps) => {
   let innerClassnames: object;
   let customStyles: object;
+  const [resetKey, setResetKey] = useState(0);
 
   if (variant && variant in variantMappings) {
     innerClassnames = variantMappings[variant]["innerClassnames"];
@@ -102,7 +147,14 @@ const MultiselectDropdown = ({
       styles={customStyles}
       classNamePrefix="select"
       placeholder={placeholder}
-      onChange={onChange}
+      isClearable={!isMulti}
+      maxMenuHeight={250}
+      controlShouldRenderValue={false}
+      key={resetKey}
+      onChange={(selected:any)=>{
+        onChange(selected);
+        setResetKey(resetKey+1);
+      }}
     />
   );
 };

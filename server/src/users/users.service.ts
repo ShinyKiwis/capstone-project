@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateStudentDto } from './dto/create-student.dto';
-import { StudentsRepository, UsersRepository } from './users.repository';
-import { EnrollProjectDto } from './dto/enroll-project.dto';
+import { UsersRepository } from './users.repository';
 import { AssignRolesDto } from './dto/assign-role.dto';
+import { StudentsRepository } from '../students/students.repository';
+import { CreateStudentDto } from '../students/dto/create-student.dto';
+import { EnrollProjectDto } from '../students/dto/enroll-project.dto';
+import { UnenrollProjectDto } from '../students/dto/unenroll-project.dto';
+import { GetStudentsDto } from 'src/students/dto/get-students.dto';
 
 @Injectable()
 export class UsersService {
@@ -29,16 +32,38 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  getAUser(id: number) {
-    return this.usersRepository.getUserById(id);
+  async getAUser(id: number) {
+    const user = await this.usersRepository.getUserById(id);
+    const student = await this.studentsRepository.getStudentById(id);
+    console.log(user);
+    console.log(student);
+    if(student) {
+      return {...user, ...student};
+    }
+    return user;
   }
 
-  updateOrCreateAUser(createUserDto: CreateUserDto) {
-    return this.usersRepository.updateOrCreateAUser(createUserDto);
+  async getStudents(getStudentsDto: GetStudentsDto) {
+    return this.studentsRepository.getStudents(getStudentsDto);
+  }
+
+  async updateOrCreateAUser(createUserDto: CreateUserDto) {
+    const user = await this.usersRepository.updateOrCreateAUser(createUserDto);
+    const student = await this.studentsRepository.getStudentById(user.id);
+    console.log(user);
+    console.log(student);
+    if(student) {
+      return {...user, ...student};
+    }
+    return user;
   }
 
   enrollToAProject(enrollProjectDto: EnrollProjectDto) {
     return this.studentsRepository.enrollProject(enrollProjectDto);
+  }
+
+  unenrollFromAProject(unenrollProjectDto: UnenrollProjectDto) {
+    return this.studentsRepository.unenrollProject(unenrollProjectDto);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

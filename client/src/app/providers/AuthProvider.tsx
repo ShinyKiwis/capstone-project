@@ -1,21 +1,30 @@
 "use client";
-import { useRouter } from "next/navigation";
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useState } from "react";
 import useNavigate from "../hooks/useNavigate";
 
 interface AuthContextProps {
   login: (user: User) => void;
   logout: () => void;
   user: User | null;
+  setUser: any
 }
 
-interface User {
+export interface User {
+  id: number;
   name: string;
+  username: string;
   email: string;
   roles: [{
     id:string,
     name:string
   }];
+  credits: number;
+  generation: number;
+  GPA: number;
+  enrolledAt: string;
+  project: {
+    code: number,
+  }
 }
 
 export const AuthContext = createContext<AuthContextProps | null>(null);
@@ -48,6 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     login,
     logout,
     user,
+    setUser
   };
 
   return (

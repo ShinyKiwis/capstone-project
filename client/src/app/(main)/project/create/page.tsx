@@ -7,25 +7,56 @@ import {
   SearchBox,
   MultiselectDropdown,
   Profile,
+  ProfileSelector,
 } from "@/app/_components";
-import {useBranch, useMajor, useUser} from "@/app/hooks"
-import { useState } from "react";
+import axios from "axios";
+import {
+  useBranch,
+  useInstructor,
+  useMajor,
+  useNavigate,
+  useUser,
+} from "@/app/hooks";
+import { useEffect, useState, useMemo, useContext } from "react";
+import { useSearchParams } from "next/navigation";
 import { CgClose } from "react-icons/cg";
+import { ProjectContext } from "@/app/providers/ProjectProvider";
+
+type InstructorOptType = {
+  label: string;
+  value: string;
+};
 
 const CreateProject = () => {
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) return <div>Loading</div>;
+  const { handleCreation } = projectContext;
+  const { branches } = useBranch();
+  const { majors } = useMajor();
+  const { instructors } = useInstructor();
+  const navigate = useNavigate();
+  const searchParams = useSearchParams();
+  const user = useUser();
+
   const [title, setTitle] = useState("");
-  const [instructors, setInstructors] = useState();
-  // const [branch, setBranch] = useState();
-  // const [program, setProgram] = useState();
-  const [desc, setDesc] = useState("");
+  const [instructorList, setInstructorList] = useState<InstructorOptType[]>([]);
+  const [branch, setBranch] = useState("");
+  const [major, setMajor] = useState("");
+  const [requirements, setRequirements] = useState("");
+  const [description, setDescription] = useState("");
   const [tasks, setTasks] = useState("");
   const [refs, setRefs] = useState("");
+  const [numberOfMembers, setNumberOfMembers] = useState(1);
 
-  //Test rendering pre-made content in richtext input
-  const [TestContent, setTestContent] = useState("");
+  useEffect(() => {
+    if (branches.length > 0 || majors.length > 0) {
+      setBranch(branches[0].name);
+      setMajor(majors[0].name);
+    }
+  }, [branches, majors]);
 
   const InputFieldTitle = ({ title }: { title: string }) => {
-    let className = "text-2xl font-bold mb-2";
+    let className = "text-2xl font-bold mb-4";
     return <div className={className}>{title}</div>;
   };
 
@@ -40,9 +71,20 @@ const CreateProject = () => {
   };
 
   const InputsTable = () => {
-    const user = useUser()
-    const {branches} = useBranch()
-    const {majors} = useMajor()
+    const handleBranchSelectChange = (value: string) => {
+      setBranch(value);
+    };
+
+    const handleMajorSelectChange = (value: string) => {
+      setMajor(value);
+    };
+
+    const handleNumberOfMemberChange = (
+      e: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+      setNumberOfMembers(+e.target.value);
+    };
+
     return (
       <table className="border-separate border-spacing-3">
         <tbody>
@@ -56,9 +98,7 @@ const CreateProject = () => {
             <td>
               <InputLabel title="Project owner:" />
             </td>
-            <td className="rounded-md bg-lightgray px-2 py-2">
-              {user.name}
-            </td>
+            <td className="rounded-md bg-lightgray px-2 py-2">{user.name}</td>
           </tr>
           <tr>
             <td>
@@ -66,7 +106,12 @@ const CreateProject = () => {
             </td>
             <td>
               <InputField>
-                <DropdownMenu name="projectBranch" options={branches} />
+                <DropdownMenu
+                  name="projectBranch"
+                  options={branches}
+                  onChange={handleBranchSelectChange}
+                  selected={branch}
+                />
               </InputField>
             </td>
           </tr>
@@ -76,7 +121,12 @@ const CreateProject = () => {
             </td>
             <td>
               <InputField>
-                <DropdownMenu name="projectProgram" options={majors} />
+                <DropdownMenu
+                  name="projectProgram"
+                  options={majors}
+                  onChange={handleMajorSelectChange}
+                  selected={major}
+                />
               </InputField>
             </td>
           </tr>
@@ -90,10 +140,11 @@ const CreateProject = () => {
                   type="number"
                   name="membersLimit"
                   min={1}
-                  max={10}
-                  defaultValue={1}
+                  max={4}
+                  value={numberOfMembers}
                   className="w-full rounded-md bg-lightgray px-2 py-2"
-                ></input>
+                  onChange={handleNumberOfMemberChange}
+                />
               </InputField>
             </td>
           </tr>
@@ -102,84 +153,8 @@ const CreateProject = () => {
     );
   };
 
-  const ProfileItems = ({
-    name,
-    id,
-    email,
-  }: {
-    name: string;
-    id: string;
-    email: string;
-  }) => {
-    return (
-      <div className="flex w-full items-center pt-4">
-        <div>
-          <Profile
-            type="horizontal"
-            username={name}
-            email={email}
-            userId={id}
-          />
-        </div>
-        <div className="right-0 ml-auto">
-          <CgClose
-            size={25}
-            className="text-lack cursor-pointer hover:text-lightgray"
-            onClick={() => {}}
-          />
-        </div>
-      </div>
-    );
-  };
-
-
-  const instructorsList = [
-    // retrieve from DB ?
-    { value: "211300", label: "211300 - Nguyen Van A" },
-    { value: "211301", label: "211301 - Pham Van C" },
-    { value: "211302", label: "211302 - Do Hong D" },
-    { value: "211303", label: "211303 - Phan Cao E" },
-    { value: "211304", label: "211304 - Nguyen Hua F" },
-    { value: "211305", label: "211305 - Do Cao G" },
-  ];
-
-  var selectedMembersList = [
-    // Use state ?
-    {
-      id: "2013314",
-      fullName: "Nguyen Van A",
-      email: "vanA@hcmut.edu.vn",
-    },
-    {
-      id: "2023214",
-      fullName: "Tran Van B",
-      email: "Btran@hcmut.edu.vn",
-    },
-    {
-      id: "2023214 Long ID 2023214",
-      fullName: "Loooong Loooooooong Maaaaaaaaaannnnnnn",
-      email: "LoooooooooongEmaillllllll@hcmut.edu.vn",
-    },
-  ];
-
-  var selectedInstructorsList= [
-    // Use state ?
-    {
-      id: "1013314",
-      fullName: "Nguyen Hoang A",
-      email: "AHoang@hcmut.edu.vn",
-    },
-    {
-      id: "1023214",
-      fullName: "Nguyen Van B",
-      email: "Bnguyen@hcmut.edu.vn",
-    },
-  ];
-  
-
   return (
     <div className="w-full flex-1 bg-white">
-
       {/* Project title section: */}
       <textarea
         className="max-h-[5em] w-full border-b-2 border-gray py-2 pb-4 pt-8 text-center text-3xl font-semibold focus:outline-none"
@@ -190,107 +165,248 @@ const CreateProject = () => {
         onChange={(e) => setTitle(e.target.value)}
       ></textarea>
 
-      <div className="mt-8 flex">
-        {/* Project metadata section: */}
-        <div className="w-1/3 pr-[16px]">
-          <div>
+      {/* Project metadata section: */}
+      <div className="mt-8 w-full">
+        <div className="flex h-fit gap-4">
+          <div className="w-1/3">
             <InputFieldTitle title="Project's information" />
             <InputsTable />
           </div>
-
-          <div className="pt-4 w-full">
+          <div className="w-2/3">
+            <div className="flex h-full flex-col">
+              <p className="mb-4 text-2xl font-bold">Requirements</p>
+              <RichTextEditor
+                onChange={setRequirements}
+                initialContent={requirements}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 flex h-fit gap-4">
+          <div className="h-64 w-1/3">
             <InputFieldTitle title="Instructors" />
-            <SearchBox placeholder="Search instructor's name, id..." />
-            <MultiselectDropdown
-              name="supervisors"
+            <ProfileSelector
+              type="instructors"
+              valueSetter={setInstructorList}
               isMulti={true}
-              options={instructorsList}
-              placeholder="Add instructors"
             />
-            <div className="px-3">
-              {selectedInstructorsList.map(function (instructor) {
-                return (
-                  <ProfileItems
-                    name={instructor.fullName}
-                    id={instructor.id}
-                    email={instructor.email}
-                  />
-                );
-              })}
-            </div>
-
           </div>
-
-          <div className="mt-6 w-full">
+          <div className="w-2/3">
+            <div className="flex h-full flex-col">
+              <p className="mb-4 text-2xl font-bold">Description</p>
+              <RichTextEditor
+                onChange={setDescription}
+                initialContent={description}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 flex h-fit gap-4">
+          <div className="h-64 w-1/3">
             <InputFieldTitle title="Members" />
-            <SearchBox placeholder="Search student's name, id..." />
-            <div className="px-3">
-              {selectedMembersList.map(function (member) {
-                return (
-                  <ProfileItems
-                    name={member.fullName}
-                    id={member.id}
-                    email={member.email}
-                  />
-                );
-              })}
+            <SearchBox placeholder="Search student..." />
+          </div>
+          <div className="w-2/3">
+            <div className="flex h-full flex-col">
+              <p className="mb-4 text-2xl font-bold">Tasks/Missions</p>
+              <RichTextEditor onChange={setTasks} initialContent={tasks} />
             </div>
-
           </div>
         </div>
-
-
-        {/* Project details section: */}
-        <div className="w-2/3">
-          <div>
-            <p className="mb-4 text-2xl font-bold">Description</p>
-            <RichTextEditor onChange={setDesc} />
-          </div>
-          <div>
-            <p className="my-4 text-2xl font-bold">Tasks</p>
-            <RichTextEditor onChange={setTasks} />
-          </div>
-          <p className="my-4 text-2xl font-bold">References</p>
-          <RichTextEditor onChange={setRefs} />
-
-          {/* test rendering content in richtext input */}
-          <p className="my-4 text-2xl font-bold">Test render</p>
-          <RichTextEditor
-            onChange={setTestContent}
-            initialContent="<h1>Header</h1><p><strong>This section test rendering pre-made project fields for project editing pages</strong></p><p><strong><em>List:</em></strong></p><ul><li>a</li><li>b</li><li>c</li></ul><p><u>Enumerate</u>:</p><ol><li>a</li><li>b</li><li>c</li><li>d</li></ol><p>Link to: <a href='https://javascript.plainenglish.io/creating-rich-text-editor-for-react-app-a-comprehensive-guide-using-the-quill-library-ae5ead8a0d3a' rel='noopener noreferrer' target='_blank'>https://javascript.plainenglish.io/creating-rich-text-editor-for-react-app-a-comprehensive-guide-using-the-quill-library-ae5ead8a0d3a</a></p>"
-          />
-          <button
-            className="border-2 bg-blue"
-            onClick={() => alert(TestContent)}
-          >
-            Get test content
-          </button>
-          {/* test rendering content in richtext input */}
-
-
-          {/* Actions section */}
-          <div className="flex justify-end gap-4 pt-4">
-            <Button
-              isPrimary={true}
-              variant="success"
-              className="px-4 py-2 text-lg"
-              onClick={() =>
-                alert(
-                  `SUBMITTING PROJECT:\nTitle:${title}\n\nProject description:\n ${desc} \n Project tasks:\n ${tasks} \n Project refs:\n ${refs}`,
-                )
-              }
-            >
-              Submit for approval
-            </Button>
-            <Button
-              isPrimary={true}
-              variant="normal"
-              className="px-4 py-2 text-lg"
-            >
-              Save Changes
-            </Button>
+        <div className="mt-4 flex h-fit gap-4">
+          <div className="h-64 w-1/3"></div>
+          <div className="w-2/3">
+            <div className="flex h-full flex-col">
+              <p className="mb-4 text-2xl font-bold">References</p>
+              <RichTextEditor onChange={setRefs} initialContent={refs} />
+            </div>
           </div>
         </div>
+      </div>
+      <div className="flex justify-end gap-4 pt-4">
+        <Button
+          isPrimary={true}
+          variant="success"
+          className="px-4 py-2 text-lg"
+          onClick={() => {
+            const newProject = {
+              name: title,
+              stage: 1,
+              description,
+              status: "WAITING_FOR_DEPARTMENT_HEAD",
+              owner: {
+                id: user.id
+              },
+              tasks,
+              references: refs,
+              limit: numberOfMembers,
+              semester: {
+                year: 2023,
+                no: 1,
+              },
+              supervisors: [
+                {
+                  id: user.id,
+                },
+                ...instructorList.map((instructor) => {
+                  return {
+                    id: +instructor.value,
+                  };
+                }),
+              ],
+              majors: [
+                {
+                  id: majors.find((storedMajor) => storedMajor.name === major)!
+                    .id,
+                },
+              ],
+              branches: [
+                {
+                  id: branches.find(
+                    (storedBranch) => storedBranch.name === branch,
+                  )!.id,
+                },
+              ],
+            };
+            axios
+              .post("http://localhost:3500/projects", newProject)
+              .then((res) => {
+                const newSupervisorIds = [
+                  user.id,
+                  ...instructorList
+                    .map((instructor) => {
+                      if (+instructor.value != user.id) {
+                        return +instructor.value;
+                      }
+                    })
+                    .filter(
+                      (storedInstructor) => storedInstructor !== undefined,
+                    ),
+                ];
+                const parsedProject = {
+                  ...newProject,
+                  code: res.data.code,
+                  students: [],
+                  studentsCount: 0,
+                  requirements: requirements,
+                  supervisors: [
+                    {
+                      id: user.id,
+                      email: user.email,
+                      username: user.username,
+                      name: user.name,
+                    },
+                    ...instructors.filter((instructor) =>
+                      newSupervisorIds.includes(instructor.id),
+                    ),
+                  ],
+                  majors: majors.filter(
+                    (storedMajor: any) => storedMajor.name === major,
+                  ),
+                  branches: branches.filter(
+                    (storedBranch: any) => storedBranch.name === branch,
+                  ),
+                };
+                handleCreation(parsedProject);
+                navigate(`/project?project=${searchParams.get("project")}`);
+              }).catch(err => {console.log(err)});
+          }}
+        >
+          Submit for approval
+        </Button>
+        <Button
+          isPrimary={true}
+          variant="normal"
+          className="px-4 py-2 text-lg"
+          onClick={() => {
+            const newProject = {
+              name: title,
+              stage: 1,
+              description,
+              tasks,
+              status: "DRAFT",
+              references: refs,
+              owner: {
+                id: user.id
+              },
+              limit: numberOfMembers,
+              semester: {
+                year: 2023,
+                no: 1,
+              },
+              supervisors: [
+                {
+                  id: user.id,
+                },
+                ...instructorList.map((instructor) => {
+                  return {
+                    id: +instructor.value,
+                  };
+                }),
+              ],
+              majors: [
+                {
+                  id: majors.find((storedMajor) => storedMajor.name === major)!
+                    .id,
+                },
+              ],
+              branches: [
+                {
+                  id: branches.find(
+                    (storedBranch) => storedBranch.name === branch,
+                  )!.id,
+                },
+              ],
+            };
+            axios
+              .post("http://localhost:3500/projects", newProject)
+              .then((res) => {
+                const newSupervisorIds = [
+                  user.id,
+                  ...instructorList
+                    .map((instructor) => {
+                      if (+instructor.value != user.id) {
+                        return +instructor.value;
+                      }
+                    })
+                    .filter(
+                      (storedInstructor) => storedInstructor !== undefined,
+                    ),
+                ];
+                const parsedProject = {
+                  ...newProject,
+                  code: res.data.code,
+                  students: [],
+                  studentsCount: 0,
+                  requirements: requirements,
+                  owner: {
+                    id: user.id
+                  },
+                  supervisors: [
+                    {
+                      id: user.id,
+                      email: user.email,
+                      username: user.username,
+                      name: user.name,
+                    },
+                    ...instructors.filter((instructor) =>
+                      newSupervisorIds.includes(instructor.id),
+                    ),
+                  ],
+                  majors: majors.filter(
+                    (storedMajor: any) => storedMajor.name === major,
+                  ),
+                  branches: branches.filter(
+                    (storedBranch: any) => storedBranch.name === branch,
+                  ),
+                };
+                handleCreation(parsedProject);
+                navigate(`/project?project=${searchParams.get("project")}`);
+              });
+          }}
+        >
+          Save Changes
+        </Button>
       </div>
     </div>
   );

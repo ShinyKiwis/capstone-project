@@ -1,4 +1,5 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { ProjectStatus } from '../project-status.enum';
 
 export class GetProjectsFilterDto {
   @IsOptional()
@@ -13,4 +14,14 @@ export class GetProjectsFilterDto {
 
   @IsOptional()
   page: number;
+
+  @IsEnum(ProjectStatus)
+  @IsOptional()
+  status: ProjectStatus;
+
+  @IsOptional()
+  owner: number;
+
+  @IsOptional()
+  stage: number;
 }

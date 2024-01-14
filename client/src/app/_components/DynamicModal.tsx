@@ -12,7 +12,12 @@ import {
   RemovalModal,
   ProjDenyModal,
 } from "./Modals/ActionModals";
+import UnenrollModal from "./Modals/UnenrollModal";
 import UploadFileModal from "./Modals/UploadFileModal";
+import axios from "axios";
+import DeleteProjectModal from "./Modals/DeleteProjectModal";
+import ActivateProjectModal from "./Modals/ActivateProjectModal";
+import { title } from "process";
 
 type definedModalProps = StatusModalProps | ActionModalProps;
 
@@ -24,33 +29,30 @@ const DynamicModal = () => {
   const { toggleModal, modalType, modalProps } = modalContextValue;
 
   const renderModal = (modalType: string, modalProps: definedModalProps) => {
+    console.log("MODAL", modalType);
     switch (modalType) {
       case "filter":
         return <FilterModal />;
       case "status_success":
-        return <SuccessModal title="Project enrolled successfully !" />;
+        return <SuccessModal title="Enrolled successfully!" />;
       case "status_warning":
-        return <WarningModal title={modalProps?.title} messages={modalProps?.messages} />;
-      case "project_unerollment":
-        return(
-          <RemovalModal 
-            title="Unenroll from this project ?" 
-            messages={["This action will remove your from the members list of this project."]} 
-            buttonLabels={["Unenroll", "Cancel"]} 
+        return (
+          <WarningModal
+            title={modalProps?.title}
+            messages={modalProps?.messages}
           />
-        )
+        );
+      case "project_unenrollment":
+        return <UnenrollModal />;
       case "project_deletion":
-        return(
-          <RemovalModal 
-            title="Delete this project ?" 
-            messages={["This action cannot be undone !"]} 
-            buttonLabels={["Delete", "Cancel"]} 
-          />
-        )
+        return <DeleteProjectModal projectId={modalProps.title} />;
+      case "project_activation":
+        const [id, action] = modalProps.title.split("-")
+        return <ActivateProjectModal projectId={id} action={action} />
+      case "project_approval":
+        return <SuccessModal title="Approved this project successfully!"/>
       case "project_denial":
-        return(
-          <ProjDenyModal />
-        )
+        return <ProjDenyModal />;
       case "upload":
         return <UploadFileModal />;
       default:
@@ -59,7 +61,7 @@ const DynamicModal = () => {
   };
   return (
     <div
-      className="min-w-64 min-h-40 fixed inset-x-0 inset-y-1/2 m-auto h-fit w-fit rounded-md border-2 border-lightgray bg-white px-10 py-6"
+      className="fixed inset-x-0 inset-y-1/2 m-auto h-fit min-h-40 w-fit min-w-64 rounded-md border-2 border-lightgray bg-white px-10 py-6"
       style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }}
     >
       <div className="relative">
