@@ -9,6 +9,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
 import { ApproveProjectDto } from './dto/approve-project.dto';
 import { RejectProjectDto } from './dto/reject-project.dto';
+import { ApproveProjectsDto } from './dto/approve-projects.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -51,6 +52,10 @@ export class ProjectsService {
   //   project.detail = updateProjectDto.detail;
   //   await this.projectsRepository.save(project);
   // }
+
+  async approveProjects(approveProjectsDto: ApproveProjectsDto) {
+    return this.projectsRepository.approveProjects(approveProjectsDto);
+  }
 
   async deleteProject(code: number) {
     const result = await this.projectsRepository.delete(code);

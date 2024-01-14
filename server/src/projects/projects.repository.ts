@@ -20,6 +20,7 @@ import { StudentsRepository } from 'src/students/students.repository';
 import { Student } from 'src/students/entities/student.entity';
 import { ApproveProjectDto } from './dto/approve-project.dto';
 import { RejectProjectDto } from './dto/reject-project.dto';
+import { ApproveProjectsDto } from './dto/approve-projects.dto';
 
 @Injectable()
 export class ProjectsRepository extends Repository<Project> {
@@ -49,7 +50,7 @@ export class ProjectsRepository extends Repository<Project> {
       majors,
       branches,
       limit,
-      status
+      status,
     } = createProjectDto;
 
     const project = this.create({
@@ -64,7 +65,7 @@ export class ProjectsRepository extends Repository<Project> {
       owner,
       branches,
       limit,
-      status
+      status,
     });
     await this.save(project);
     if (requirements) {
@@ -362,6 +363,16 @@ export class ProjectsRepository extends Repository<Project> {
 
     await this.save(project);
     return project;
+  }
+
+  async approveProjects(approveProjectsDto: ApproveProjectsDto) {
+    const { id, codes } = approveProjectsDto;
+    let result = [];
+    for (let code of codes) {
+      const project = await this.approveProject({ id, code });
+      result.push(project);
+    }
+    return result;
   }
 
   async getProjectByCode(code: number) {
