@@ -8,7 +8,7 @@ import { useState } from "react";
 import LogoutButton from "../UserAction/Buttons/LogoutButton";
 import { usePageTitle } from "@/app/hooks";
 
-// let userRole = "student";
+let userRole = "supervisor";
 
 // interface TitlePathMappings {
 //   [key: string]: object;
