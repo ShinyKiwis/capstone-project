@@ -7,6 +7,8 @@ import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import mammoth from 'mammoth';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
+import { ApproveProjectDto } from './dto/approve-project.dto';
+import { RejectProjectDto } from './dto/reject-project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -22,6 +24,14 @@ export class ProjectsService {
 
   async getProjectByCode(code: number) {
     return this.projectsRepository.getProjectByCode(code);
+  }
+
+  async approveAProject(approveProjectDto: ApproveProjectDto) {
+    return this.projectsRepository.approveProject(approveProjectDto);
+  }
+
+  async rejectAProject(rejectProjectDto: RejectProjectDto) {
+    return this.projectsRepository.rejectProject(rejectProjectDto);
   }
 
   async updateProjectStatus(

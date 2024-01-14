@@ -48,7 +48,10 @@ export class Project {
   @JoinTable()
   supervisors: User[];
 
-  @OneToMany(() => Student, (student) => student.project, { eager: true, onUpdate: 'CASCADE' })
+  @OneToMany(() => Student, (student) => student.project, {
+    eager: true,
+    onUpdate: 'CASCADE',
+  })
   students: Student[];
 
   @ManyToMany(() => Major, { eager: true, onUpdate: 'CASCADE' })
@@ -59,7 +62,27 @@ export class Project {
   @JoinTable()
   branches: Branch[];
 
+  @ManyToOne(() => User)
+  owner: User;
+
+  @ManyToOne(() => User)
+  programChair: User;
+
+  @Column({ nullable: true })
+  programChairApprovedAt: Date;
+
+  @ManyToOne(() => User)
+  departmentHead: User;
+
+  @Column({ nullable: true })
+  departmentHeadApprovedAt: Date;
+
+  @ManyToOne(() => User)
+  rejectedBy: User;
+
+  @Column({ nullable: true })
+  rejectedReason: string;
+
   @Column()
   limit: number;
-  studentsCount: number;
 }

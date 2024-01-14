@@ -18,4 +18,7 @@ export class GetProjectsFilterDto {
   @IsEnum(ProjectStatus)
   @IsOptional()
   status: ProjectStatus;
+
+  @IsOptional()
+  owner: number;
 }

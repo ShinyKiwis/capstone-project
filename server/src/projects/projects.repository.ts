@@ -1,6 +1,7 @@
 import { DataSource, In, Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import {
+  BadRequestException,
   Inject,
   Injectable,
   NotFoundException,
@@ -17,6 +18,8 @@ import { MajorsRepository } from 'src/programs/majors.repository';
 import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
 import { StudentsRepository } from 'src/students/students.repository';
 import { Student } from 'src/students/entities/student.entity';
+import { ApproveProjectDto } from './dto/approve-project.dto';
+import { RejectProjectDto } from './dto/reject-project.dto';
 
 @Injectable()
 export class ProjectsRepository extends Repository<Project> {
@@ -37,15 +40,16 @@ export class ProjectsRepository extends Repository<Project> {
       name,
       stage,
       description,
-      status,
       tasks,
       references,
       semester,
       requirements,
       supervisors,
+      owner,
       majors,
       branches,
       limit,
+      status
     } = createProjectDto;
 
     const project = this.create({
@@ -57,9 +61,10 @@ export class ProjectsRepository extends Repository<Project> {
       semester,
       supervisors,
       majors,
+      owner,
       branches,
       limit,
-      status,
+      status
     });
     await this.save(project);
     if (requirements) {
@@ -206,12 +211,13 @@ export class ProjectsRepository extends Repository<Project> {
   }
 
   async getProjects(filterDto: GetProjectsFilterDto) {
-    const { search, members, limit, page, status } = filterDto;
+    const { search, members, limit, page, status, owner } = filterDto;
     const query = this.createQueryBuilder('project')
       .leftJoinAndSelect('project.semester', 'semester')
       .leftJoinAndSelect('project.requirements', 'requirements')
       .leftJoinAndSelect('project.students', 'students')
       .leftJoinAndSelect('project.supervisors', 'supervisors')
+      .leftJoinAndSelect('project.owner', 'owner')
       .leftJoinAndSelect('project.majors', 'majors')
       .leftJoinAndSelect('project.branches', 'branches')
       .leftJoinAndSelect('students.user', 'users')
@@ -225,6 +231,10 @@ export class ProjectsRepository extends Repository<Project> {
 
     if (status) {
       query.andWhere('project.status = :status', { status });
+    }
+
+    if (owner) {
+      query.andWhere('owner.id = :owner', { owner });
     }
 
     if (members) {
@@ -262,6 +272,96 @@ export class ProjectsRepository extends Repository<Project> {
       current: +page,
       projects,
     };
+  }
+
+  async rejectProject(rejectProjectDto: RejectProjectDto) {
+    const { id, code, reason } = rejectProjectDto;
+    const project = await this.getProjectByCode(code);
+    const user = await this.usersRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id "${id}" not found`);
+    }
+
+    const status = project.status;
+    switch (status) {
+      case ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD:
+      case ProjectStatus.WAITING_FOR_PROGRAM_CHAIR:
+        project.status = ProjectStatus.REJECTED;
+        project.rejectedBy = user;
+        project.rejectedReason = reason;
+        break;
+      case ProjectStatus.APPROVED:
+        throw new BadRequestException(
+          `Cannot reject approved project with code ${code}`,
+        );
+      case ProjectStatus.REJECTED:
+        throw new BadRequestException(
+          `The project with code ${code} is alreay rejected`,
+        );
+      case ProjectStatus.DEACTIVATED:
+        throw new BadRequestException(
+          `Cannot reject project ${code} with status ${status}`,
+        );
+      case ProjectStatus.DRAFT:
+        throw new BadRequestException(
+          `Cannot reject project ${code} with status ${status}`,
+        );
+    }
+
+    await this.save(project);
+    return project;
+  }
+
+  async approveProject(approveProjectDto: ApproveProjectDto) {
+    const { id, code } = approveProjectDto;
+    const project = await this.getProjectByCode(code);
+    const user = await this.usersRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id "${id}" not found`);
+    }
+
+    const status = project.status;
+    switch (status) {
+      case ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD:
+        project.departmentHead = user;
+        project.departmentHeadApprovedAt = new Date();
+        project.status = ProjectStatus.WAITING_FOR_PROGRAM_CHAIR;
+        break;
+      case ProjectStatus.WAITING_FOR_PROGRAM_CHAIR:
+        project.programChair = user;
+        project.programChairApprovedAt = new Date();
+        project.status = ProjectStatus.APPROVED;
+        break;
+      case ProjectStatus.APPROVED:
+        throw new BadRequestException(
+          `The project with code ${code} is alreay approved`,
+        );
+      case ProjectStatus.REJECTED:
+        throw new BadRequestException(
+          `Cannot approve project ${code} with status ${status}`,
+        );
+      case ProjectStatus.DEACTIVATED:
+        throw new BadRequestException(
+          `Cannot approve project ${code} with status ${status}`,
+        );
+      case ProjectStatus.DRAFT:
+        throw new BadRequestException(
+          `Cannot approve project ${code} with status ${status}`,
+        );
+    }
+
+    await this.save(project);
+    return project;
   }
 
   async getProjectByCode(code: number) {

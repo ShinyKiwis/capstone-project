@@ -375,6 +375,9 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               stage: 1,
               description,
               tasks,
+              owner: {
+                id: user.id
+              },
               references: refs,
               limit: numberOfMembers,
               studentsCount: project.studentsCount,

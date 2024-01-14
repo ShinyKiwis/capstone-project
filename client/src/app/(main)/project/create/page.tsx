@@ -233,8 +233,11 @@ const CreateProject = () => {
               name: title,
               stage: 1,
               description,
-              tasks,
               status: "WAITING_FOR_DEPARTMENT_HEAD",
+              owner: {
+                id: user.id
+              },
+              tasks,
               references: refs,
               limit: numberOfMembers,
               semester: {
@@ -306,7 +309,7 @@ const CreateProject = () => {
                 };
                 handleCreation(parsedProject);
                 navigate(`/project?project=${searchParams.get("project")}`);
-              });
+              }).catch(err => {console.log(err)});
           }}
         >
           Submit for approval
@@ -323,6 +326,9 @@ const CreateProject = () => {
               tasks,
               status: "DRAFT",
               references: refs,
+              owner: {
+                id: user.id
+              },
               limit: numberOfMembers,
               semester: {
                 year: 2023,
@@ -373,6 +379,9 @@ const CreateProject = () => {
                   students: [],
                   studentsCount: 0,
                   requirements: requirements,
+                  owner: {
+                    id: user.id
+                  },
                   supervisors: [
                     {
                       id: user.id,

@@ -2,7 +2,7 @@ import React from 'react'
 
 const getStatusStyle = (status: string) => {
   const lowercaseStatus = status.toLowerCase()
-  if(lowercaseStatus.includes("waiting")) {
+  if(lowercaseStatus.includes("waiting") || lowercaseStatus.includes("rejected")) {
     return "bg-lightred/20 text-red"
   }else if(lowercaseStatus.includes("deactivated")) {
     return "bg-lightgray/20 text-gray"
@@ -20,6 +20,10 @@ const getCustomStatus =(status: string) => {
       return 'Draft'
     case "DEACTIVATED":
       return "Deactivated"
+    case "APPROVED":
+      return "Approved"
+    case "REJECTED":
+      return "Rejected"
   }
 }
 

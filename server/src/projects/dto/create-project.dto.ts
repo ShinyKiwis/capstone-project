@@ -2,6 +2,7 @@ import {
   ArrayNotEmpty,
   IsEnum,
   IsNotEmpty,
+  IsNotEmptyObject,
   IsNumber,
   IsOptional,
   IsString,
@@ -32,6 +33,7 @@ export class CreateProjectDto {
   @IsNotEmpty()
   references: string;
 
+  @IsNotEmptyObject()
   semester: Semester;
 
   @IsOptional()
@@ -46,6 +48,9 @@ export class CreateProjectDto {
   @ArrayNotEmpty()
   branches: Branch[];
 
+  @IsNotEmptyObject()
+  owner: User;
+
   @IsNumber()
   limit: number;
 
@@ -56,3 +61,4 @@ export class CreateProjectRequirementDto {
   operator: string;
   value: string;
 }
+
