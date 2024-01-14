@@ -18,10 +18,10 @@ import ApproveButton from "../UserAction/Buttons/ApproveButton";
 
 type Student = {
   user: User;
-  userId: string;
+  userId: number;
   credits: number;
   generation: number;
-  GPA: string;
+  GPA: number;
   enrolledAt: string;
 };
 
