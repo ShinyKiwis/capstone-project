@@ -1,17 +1,31 @@
 import React, { useState } from "react";
 import AsyncSelect from 'react-select/async';
+import axios from 'axios';
+
+type OptionType = {
+  label: string;
+  value: string;
+}
+
+interface StudentDataType{
+  id: string;
+  email: string;
+  name: string;
+}
 
 interface AsyncMultiselectDropdownProps {
   name: string;
   variant?: string;
-  options: {
-    label: string;
-    value: string;
-  }[];
+  // options: {
+  //   label: string;
+  //   value: string;
+  // }[];
   isMulti?: boolean;
   className?: string;
   placeholder?: string;
-  onChange?: any;
+  apiLink: string;
+  value: OptionType[];
+  onChange: any;
   ref?: any
 }
 
@@ -116,10 +130,11 @@ const variantMappings: VariantMappings = {
 const AsyncMultiselectDropdown = ({
   name,
   variant,
-  options,
   isMulti,
   className,
   placeholder,
+  apiLink,
+  value,
   onChange,
   ref
 }: AsyncMultiselectDropdownProps) => {
@@ -135,9 +150,42 @@ const AsyncMultiselectDropdown = ({
     customStyles = variantMappings["normal"]["customStyle"];
   }
 
+  const [currentTimeout, setCurrentTimeout] = useState<NodeJS.Timeout>();
+  const defaultOptions = [    // retreived first 20 students ?
+    {value:'1', label:'Default1'},
+    {value:'2', label:'Default2'},
+    {value:'3', label:'Default3'},
+  ]
+
+  const promiseOptions = (query: string) =>{
+    if (currentTimeout){
+      clearTimeout(currentTimeout);
+      // console.log('cleared timeout');
+    }
+    console.log("Query string:", query);
+
+    return new Promise<OptionType[]>((resolve) => {
+      let newTimeout = setTimeout(async() => {
+        console.log("start api calll")
+        const res = await axios.get(`${apiLink}`);
+        // const data = await res.json();
+        let newOptions = res.data.map((resData: StudentDataType) => {
+          return {
+            label:`${resData.id} - ${resData.name}`,
+            value:resData.id,
+          }
+        })
+        console.log("Retreived options:", newOptions);        
+        resolve(newOptions);
+      }, 350);
+
+      setCurrentTimeout(newTimeout);
+    });
+  }
+
   return (
     <AsyncSelect
-      options={options}
+      defaultOptions={defaultOptions}
       isMulti={isMulti || false}
       name={name}
       className={className}
@@ -147,12 +195,15 @@ const AsyncMultiselectDropdown = ({
       placeholder={placeholder}
       isClearable={false}
       maxMenuHeight={250}
-      controlShouldRenderValue={false}
+      controlShouldRenderValue={true}
       key={resetKey}
+      value={value}
       onChange={(selected:any)=>{
         onChange(selected);
-        setResetKey(resetKey+1);
+        // setResetKey(resetKey+1);
       }}
+      loadOptions={promiseOptions}
+      cacheOptions={true}
     />
   );
 };

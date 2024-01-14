@@ -1,6 +1,6 @@
 'use client';
-import { ProjectCard } from '@/app/_components'
-import React from 'react'
+import { ProjectCard, AsyncMultiselectDropdown, MultiselectDropdown } from '@/app/_components'
+import React, { useState } from 'react'
 
 const toggleAccordion = (accordBtn: any) => {
   let accordionContent = accordBtn.parentNode.childNodes[1];
@@ -8,7 +8,14 @@ const toggleAccordion = (accordBtn: any) => {
   accordionContent.classList.toggle('hidden');
 }
 
+type OptionType = {
+  label: string;
+  value: string;
+}
+
 const Administrate = () => {
+  const [selected, setSelected] = useState<OptionType[]>([]);
+
   return (
     <div>
       Administration. Below is for testing dropdowns, remove later...
@@ -44,6 +51,15 @@ const Administrate = () => {
         style={{maxHeight:'0px', overflow:'hidden'}}
       >
         Expanded content
+      </div>
+
+      <div>
+        Test async MultiselectDropdown:
+        <div className='w-1/2'>
+          <AsyncMultiselectDropdown name='test' value={selected} onChange={setSelected} isMulti={true} placeholder='test async' apiLink='http://localhost:3500/users/instructors'/>
+          <button className='bg-blue px-4 py-2 my-2' onClick={()=>alert(JSON.stringify(selected))} >Get selected values</button>
+          <button className='bg-red px-4 py-2 my-2 mx-4' onClick={()=>setSelected([])} >Clear selected values</button>
+        </div>
       </div>
     </div>
   )
