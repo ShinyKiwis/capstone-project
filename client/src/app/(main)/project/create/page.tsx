@@ -28,11 +28,12 @@ type InstructorOptType = {
 };
 
 const CreateProject = () => {
-  const projectContext = useContext(ProjectContext)
-  if(!projectContext) return <div>Loading</div>
-  const {projects, setProjects} = projectContext
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) return <div>Loading</div>;
+  const { handleCreation } = projectContext;
   const { branches } = useBranch();
   const { majors } = useMajor();
+  const {instructors} = useInstructor()
   const navigate = useNavigate();
   const searchParams = useSearchParams();
   const user = useUser();
@@ -265,7 +266,43 @@ const CreateProject = () => {
             };
             axios
               .post("http://localhost:3500/projects", newProject)
-              .then((_) => {
+              .then((res) => {
+                const newSupervisorIds = [
+                  user.id,
+                  ...instructorList
+                    .map((instructor) => {
+                      if (+instructor.value != user.id) {
+                        return +instructor.value;
+                      }
+                    })
+                    .filter((storedInstructor) => storedInstructor !== undefined),
+                ];
+                const parsedProject = {
+                  ...newProject,
+                  code: res.data.code,
+                  status: "WAITING_FOR_DEPARTMENT_HEAD",
+                  students: [],
+                  studentsCount: 0,
+                  requirements: requirements,
+                  supervisors:[
+                    {
+                      id: user.id,
+                      email: user.email,
+                      username: user.username,
+                      name: user.name,
+                    },
+                    ...instructors.filter((instructor) =>
+                      newSupervisorIds.includes(instructor.id),
+                    ),
+                  ],
+                  majors: majors.filter(
+                    (storedMajor: any) => storedMajor.name === major,
+                  ),
+                  branches: branches.filter(
+                    (storedBranch: any) => storedBranch.name === branch,
+                  ),
+                }
+                handleCreation(parsedProject)
                 navigate(`/project?project=${searchParams.get("project")}`);
               });
           }}

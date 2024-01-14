@@ -13,6 +13,7 @@ interface ProjectContextProps {
   handleDeletion: (projectId: number) => void;
   handleUpdateProject: (projectId: number, project: Project) => void;
   handleChangeProjectStatus: (projectId: number, status: string) => void;
+  handleCreation: (project: Project) => void;
 }
 
 interface Project {
@@ -146,6 +147,10 @@ export const ProjectProvider = ({
     }
   };
 
+  const handleCreation = (project: Project) => {
+    setProjects([...projects, project])
+  }
+
   const projectContextValue: ProjectContextProps = {
     projects,
     setProjects,
@@ -155,7 +160,8 @@ export const ProjectProvider = ({
     handleUnenrollment,
     handleDeletion,
     handleUpdateProject,
-    handleChangeProjectStatus
+    handleChangeProjectStatus,
+    handleCreation
   };
   return (
     <ProjectContext.Provider value={projectContextValue}>
