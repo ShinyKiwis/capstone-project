@@ -152,7 +152,7 @@ const ProfileSelector = ({
           name="supervisors"
           isMulti={true}
           options={optionsList || []}
-          placeholder={`Search instructor name, id...`}
+          placeholder={`Search co-instructor name, id...`}
           onChange={onChange}
           value={value}
         />

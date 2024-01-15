@@ -156,7 +156,7 @@ const FilterModal = () => {
           <div className="flex w-1/2 flex-col">
             <Typography
               variant="p"
-              text="Instructor"
+              text="Co-Instructor"
               className="mb-2 text-2xl font-bold"
             />
             <div className={`${instructor.length > 0 ? "h-full" : ""}`}>

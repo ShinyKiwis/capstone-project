@@ -64,7 +64,7 @@ type ProjectData = {
   limit: number;
 };
 
-const ProjectHeader = () => {
+const ProjectHeader = ({projects}: {projects: any[]}) => {
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     return null;
@@ -90,12 +90,13 @@ const ProjectHeader = () => {
   };
 
   const handleApproveAll = () => {
-    // if(pathname.includes("approve")){
-    //   axios.post('/projects/approve/all', {
-    //     id: user.id,
-
-    //   })
-    // }
+    if(pathname.includes("approve")){
+      const projectCodes = projects.map(project => project.code)
+      axios.post('http://localhost:3500/projects/approve/all', {
+        id: user.id,
+        codes: projectCodes
+      })
+    }
   }
   return (
     <div className="sticky top-0 w-full bg-white pt-2">
@@ -207,7 +208,8 @@ const Project = () => {
     const stage = searchParams.get("project") === 'specialized' ? 1:2  
     console.log(isNotStudent)
     if(isNotStudent) {
-      getProjects(user.id,"",stage)
+      const status = pathname.includes("approve") ? "":""
+      getProjects(user.id,status,stage)
     }else{
       getProjects(0,"APPROVED",stage)
     }
@@ -215,7 +217,7 @@ const Project = () => {
 
   return (
     <div className="w-full">
-      <ProjectHeader />
+      <ProjectHeader projects={projects}/>
       <div className="mt-4 flex flex-auto gap-4">
         {projects.length != 0 ? (
           <>

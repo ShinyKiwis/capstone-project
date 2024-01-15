@@ -282,9 +282,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               isMulti={true}
               options={instructorsOptions}
               placeholder="Search instructor name, id"
-              onChange={(newOpt: InstructorOptType) =>
-                handleSelectAdd(newOpt, instructorList, setInstructorList)
-              }
+              value={instructorList}
+              onChange={setInstructorList}
             />
             <div className="px-3">
               {instructorList.length > 0 &&

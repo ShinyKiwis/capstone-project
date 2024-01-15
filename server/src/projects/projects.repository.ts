@@ -326,13 +326,29 @@ export class ProjectsRepository extends Repository<Project> {
 
   async approveProject(approveProjectDto: ApproveProjectDto) {
     const { id, code } = approveProjectDto;
-    const project = await this.getProjectByCode(code);
+    const project = await this.findOne({
+      where: { code },
+      relations: {
+        semester: true,
+        supervisors: true,
+        students: true,
+        majors: true,
+        branches: true,
+        requirements: true,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException(`Project with id "${code}" not found`);
+    }
+
+
     const user = await this.usersRepository.findOne({
       where: {
         id,
       },
     });
-
+     
     if (!user) {
       throw new NotFoundException(`User with id "${id}" not found`);
     }

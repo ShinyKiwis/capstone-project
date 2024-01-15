@@ -51,6 +51,7 @@ export class Project {
   @OneToMany(() => Student, (student) => student.project, {
     eager: true,
     onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
   })
   students: Student[];
 
