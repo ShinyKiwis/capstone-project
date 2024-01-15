@@ -12,12 +12,10 @@ import { ProjectStatus } from './project-status.enum';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { RequirementRepository } from './requirements.repository';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { UsersRepository } from 'src/users/users.repository';
-import { BranchesRepository } from 'src/programs/branches.repository';
-import { MajorsRepository } from 'src/programs/majors.repository';
+import { UsersRepository } from '../users/users.repository';
+import { BranchesRepository } from '../programs/branches.repository';
+import { MajorsRepository } from '../programs/majors.repository';
 import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
-import { StudentsRepository } from 'src/students/students.repository';
-import { Student } from 'src/students/entities/student.entity';
 import { ApproveProjectDto } from './dto/approve-project.dto';
 import { RejectProjectDto } from './dto/reject-project.dto';
 import { ApproveProjectsDto } from './dto/approve-projects.dto';
@@ -30,8 +28,6 @@ export class ProjectsRepository extends Repository<Project> {
     private usersRepository: UsersRepository,
     private branchesRepository: BranchesRepository,
     private majorsRepository: MajorsRepository,
-    @Inject(forwardRef(() => StudentsRepository))
-    private studentsRepository: StudentsRepository,
   ) {
     super(Project, dataSource.createEntityManager());
   }

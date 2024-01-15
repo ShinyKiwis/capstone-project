@@ -35,24 +35,24 @@ export class CreateProjectDto {
   references: string;
 
   @IsNotEmptyObject()
-  semester: Semester;
+  semester: { year: number, no: number};
 
   @IsOptional()
   requirements: CreateProjectRequirementDto[];
 
   @ArrayNotEmpty()
-  supervisors: User[];
+  supervisors: {id: number}[];
 
   @ArrayNotEmpty()
-  majors: Major[];
+  majors: { id: number }[];
 
   @ArrayNotEmpty()
-  branches: Branch[];
+  branches: { id: number }[];
 
   @IsNotEmptyObject()
-  owner: User;
+  owner: { id: number };
 
-  students: Student[]
+  students: { userId: number }[]
 
   @IsNumber()
   limit: number;

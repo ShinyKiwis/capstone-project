@@ -21,6 +21,7 @@ import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
 import { ApproveProjectDto } from './dto/approve-project.dto';
 import { RejectProjectDto } from './dto/reject-project.dto';
 import { ApproveProjectsDto } from './dto/approve-projects.dto';
+import { promises } from 'fs';
 
 @Controller('projects')
 export class ProjectsController {
@@ -28,6 +29,7 @@ export class ProjectsController {
 
   @Post()
   async createProject(@Body() createProjectDto: CreateProjectDto) {
+    console.log(createProjectDto);
     return this.projectsService.createProject(createProjectDto);
   }
 
@@ -86,7 +88,14 @@ export class ProjectsController {
     	filename: file.filename,
       path: file.path
     };
-    this.projectsService.extractProject(file.path);
+    const fileData = await promises.readFile(file.path);
+    try {
+      this.projectsService.extractProject(file.path);
+    } catch (error) {
+      
+    } finally {
+      await promises.unlink(file.path);
+    }
     return response;
   }
 

@@ -10,6 +10,8 @@ import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
 import { ApproveProjectDto } from './dto/approve-project.dto';
 import { RejectProjectDto } from './dto/reject-project.dto';
 import { ApproveProjectsDto } from './dto/approve-projects.dto';
+import { join } from 'path';
+import { createWriteStream, unlink } from 'fs';
 
 @Injectable()
 export class ProjectsService {
@@ -255,4 +257,37 @@ export class ProjectsService {
         console.error(error);
       });
   }
+
+  // async processProjectFile(file: Express.Multer.File) {
+  //   const uploadFileName = file.filename;
+  //   const uploadDir = '../../uploads/';
+  //   const uploadFilePath = join(uploadDir, uploadFileName);
+  //   await this.saveFile(file.buffer, uploadFileName);
+  //   console.log(uploadFilePath);
+  //   this.extractProject(uploadFilePath);
+  //   await this.deleteFile(uploadFilePath);
+  // }
+
+  // private saveFile(fileBuffer: Buffer, filePath: string): Promise<void> {
+  //   return new Promise((resolve, reject) => {
+  //     const writeStream = createWriteStream(filePath);
+  //     writeStream.write(fileBuffer);
+  //     writeStream.end();
+
+  //     writeStream.on('finish', () => resolve());
+  //     writeStream.on('error', (error) => reject(error));
+  //   });
+  // }
+
+  // private deleteFile(filePath: string): Promise<void> {
+  //   return new Promise((resolve, reject) => {
+  //     unlink(filePath, (error) => {
+  //       if (error) {
+  //         reject(error);
+  //       } else {
+  //         resolve();
+  //       }
+  //     });
+  //   });
+  // }
 }
