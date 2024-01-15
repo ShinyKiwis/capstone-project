@@ -27,7 +27,7 @@ export class Student {
   @Column('decimal', { precision: 6, scale: 2 })
   GPA: number;
 
-  @ManyToOne(() => Project, (project) => project.students, { onDelete: 'CASCADE'})
+  @ManyToOne(() => Project, (project) => project.students, { onDelete: 'SET NULL'})
   @JoinColumn()
   project: Project;
 
