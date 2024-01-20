@@ -4,7 +4,6 @@ import {
   Button,
   RichTextEditor,
   DropdownMenu,
-  SearchBox,
   MultiselectDropdown,
   Profile,
   ProfileSelector,
@@ -46,6 +45,7 @@ const CreateProject = () => {
   const [numberOfMembers, setNumberOfMembers] = useState(1);
 
   useEffect(() => {
+    // Set values based on default options
     if (branches.length > 0 || majors.length > 0) {
       setBranch(branches[0].name);
       setMajor(majors[0].name);
@@ -189,6 +189,7 @@ const CreateProject = () => {
               isMulti={true}
             />
           </div>
+
           <div className="w-2/3">
             <div className="flex h-full flex-col">
               <p className="mb-4 text-2xl font-bold">Description</p>
@@ -199,11 +200,14 @@ const CreateProject = () => {
             </div>
           </div>
         </div>
+
+
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3">
             <InputFieldTitle title="Members" />
             <ProfileSelector type="students" onChange={setStudentsList} value={studentsList} isMulti={true} />
           </div>
+
           <div className="w-2/3">
             <div className="flex h-full flex-col">
               <p className="mb-4 text-2xl font-bold">Tasks/Missions</p>
@@ -211,6 +215,8 @@ const CreateProject = () => {
             </div>
           </div>
         </div>
+
+        
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3"></div>
           <div className="w-2/3">

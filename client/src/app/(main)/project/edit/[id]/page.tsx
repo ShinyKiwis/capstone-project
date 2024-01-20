@@ -7,6 +7,7 @@ import {
   SearchBox,
   MultiselectDropdown,
   Profile,
+  ProfileSelector,
 } from "@/app/_components";
 import axios from "axios";
 import {
@@ -21,11 +22,7 @@ import { useEffect, useState, useMemo, useContext } from "react";
 import { useSearchParams } from "next/navigation";
 import { CgClose } from "react-icons/cg";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
-
-type InstructorOptType = {
-  label: string;
-  value: string;
-};
+import { OptionType } from "@/app/_components/ProfileSelector";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   const { branches } = useBranch();
@@ -37,20 +34,22 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   const project = useProject(params.id);
 
   const [title, setTitle] = useState("");
-  const [instructorList, setInstructorList] = useState<InstructorOptType[]>([]);
+  const [instructorList, setInstructorList] = useState<OptionType[]>([]);
   const [branch, setBranch] = useState("");
   const [major, setMajor] = useState("");
   const [requirements, setRequirements] = useState("");
   const [description, setDescription] = useState("");
   const [tasks, setTasks] = useState("");
   const [refs, setRefs] = useState("");
+  const [studentsList, setStudentsList] = useState<OptionType[]>([]);
   const [numberOfMembers, setNumberOfMembers] = useState(1);
-  console.log(instructors);
-  const instructorsOptions: InstructorOptType[] = useMemo(() => {
+
+  const instructorsOptions: OptionType[] = useMemo(() => {
     if (instructors.length !== 0) {
       return instructors.map((instructor) => ({
         label: `${instructor.id} - ${instructor.name}`,
         value: instructor.id.toString(),
+        dataObject: instructor
       }));
     }
     return [];
@@ -59,14 +58,15 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   const projectContext = useContext(ProjectContext);
   if (!projectContext) return <div>Loading</div>;
   const { handleUpdateProject, setViewing } = projectContext;
-  console.log(instructorList);
 
   useEffect(() => {
+    // Set default values for branches, majors variable
     if (branches.length > 0 || majors.length > 0) {
       setBranch(branches[0].name);
       setMajor(majors[0].name);
     }
     if (project) {
+      // Render info of project currently open for edit
       console.log(project);
       setTitle(project.name);
       setDescription(project.description);
@@ -79,6 +79,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         project.supervisors.map((supervisor: any) => ({
           label: `${supervisor.id} - ${supervisor.name}`,
           value: supervisor.id.toString(),
+          dataObject: supervisor,
         })),
       );
     }
@@ -185,64 +186,6 @@ const EditProject = ({ params }: { params: { id: string } }) => {
     );
   };
 
-  const ProfileItems = ({
-    name,
-    id,
-    email,
-  }: {
-    name: string;
-    id: string;
-    email: string;
-  }) => {
-    return (
-      <div className="flex w-full items-center pt-4">
-        <div>
-          <Profile
-            type="horizontal"
-            username={name}
-            email={email}
-            userId={id}
-          />
-        </div>
-        <div className="right-0 ml-auto">
-          <CgClose
-            size={25}
-            className="text-lack cursor-pointer hover:text-lightgray"
-            onClick={() => {
-              const targetInstructor = instructorsOptions.find((obj) => {
-                return obj.value === id;
-              });
-              // console.log("Remove target:", targetInstructor)
-              let targetIndex = -1;
-              if (targetInstructor && instructorList.length > 0) {
-                targetIndex = instructorList.findIndex(
-                  (obj) => obj.value === id,
-                );
-              }
-              // console.log("Found index:", targetIndex)
-              if (targetIndex > -1) {
-                instructorList.splice(targetIndex, 1);
-                setInstructorList([...instructorList]);
-              }
-            }}
-          />
-        </div>
-      </div>
-    );
-  };
-
-  function handleSelectAdd(newOpt: any, targetArr: any, targetArrSetter: any) {
-    console.log(newOpt);
-    let found = targetArr.findIndex(
-      (obj: any) => obj.value === newOpt[0].value,
-    );
-    console.log(found);
-    if (found === -1) {
-      let newArr = targetArr.concat(newOpt);
-      console.log("New array", newArr);
-      targetArrSetter(newArr);
-    }
-  }
 
   return (
     <div className="w-full flex-1 bg-white">
@@ -277,46 +220,14 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3">
             <InputFieldTitle title="Instructors" />
-            <MultiselectDropdown
-              name="supervisors"
-              isMulti={true}
-              options={instructorsOptions}
-              placeholder="Search instructor name, id"
-              value={instructorList}
+            <ProfileSelector
+              type="instructors"
               onChange={setInstructorList}
+              value={instructorList}
+              isMulti={true}
             />
-            <div className="px-3">
-              {instructorList.length > 0 &&
-                instructorList.map(function (selectedOption: {
-                  value: string;
-                  label: string;
-                }) {
-                  // Map list of selected options with list from DB
-                  console.log(instructors);
-                  console.log(selectedOption);
-                  const instructorData = instructors.find((obj) => {
-                    console.log("INSIDE", obj);
-                    console.log("INSIDE", selectedOption);
-                    return (
-                      obj.id !== user.id &&
-                      obj.id.toString() === selectedOption.value
-                    );
-                  });
-                  console.log("INSTRUCTOR DATA", instructorData);
-
-                  return (
-                    instructorData && (
-                      <ProfileItems
-                        key={instructorData!.id}
-                        name={instructorData!.name}
-                        id={instructorData!.id.toString()}
-                        email={instructorData!.email}
-                      />
-                    )
-                  );
-                })}
-            </div>
           </div>
+          
           <div className="w-2/3">
             <div className="flex h-full flex-col">
               <p className="mb-4 text-2xl font-bold">Description</p>
@@ -327,10 +238,12 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
+
+
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3">
-            <InputFieldTitle title="Members" />
-            <SearchBox placeholder="Search student..." />
+          <InputFieldTitle title="Members" />
+          <ProfileSelector type="students" onChange={setStudentsList} value={studentsList} isMulti={true} />
           </div>
           <div className="w-2/3">
             <div className="flex h-full flex-col">
@@ -339,6 +252,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
+
+
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3"></div>
           <div className="w-2/3">
@@ -349,6 +264,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
       </div>
+
+
       <div className="flex justify-end gap-4 pt-4">
         <Button
           isPrimary={true}
