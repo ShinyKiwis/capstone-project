@@ -212,11 +212,11 @@ const FilterModal = () => {
             className="px-8 py-1 font-bold text-white"
             onClick={(e) => {
               e.preventDefault();
-              alert(
-                `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${membersNumber}\n\n${JSON.stringify(
-                  instructor,
-                )}`,
-              );
+              // alert(
+              //   `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${membersNumber}\n\n${JSON.stringify(
+              //     instructor,
+              //   )}`,
+              // );
               
               let branchParams = selectedBranches.map(selectedBranch=>`&branches=${selectedBranch}`).join('');
               let majorParams = selectedMajors.map(selectedMajor=>`&majors=${selectedMajor}`).join('');
