@@ -6,7 +6,7 @@ import CheckBox from "../UserAction/CheckBox";
 import ProfileSelector from "../ProfileSelector";
 import { OptionType } from "../ProfileSelector";
 import Image from "next/image";
-import { useUser } from "@/app/hooks";
+import { useBranch, useMajor, useUser } from "@/app/hooks";
 import hasRole from "@/app/lib/hasRole";
 import { ModalContext } from "@/app/providers/ModalProvider";
 import axios from "axios";
@@ -49,20 +49,32 @@ const FilterModal = () => {
   }
   const { setViewing, setProjects } = projectContext;
 
-  const [membersNumber, setMembersNumber] = useState("1");
+  const [membersNumber, setMembersNumber] = useState("");
   const [instructor, setInstructor] = useState<OptionType[]>([]);
 
-  const [selectedProjType, setprojType] = useState<string[]>(['personal projects']);
-  const [selectedBranches, setSelectedBranches] = useState<string[]>(['high quality']);
-  const [selectedMajors, setSelectedMajors] = useState<string[]>(['computer science']);
+  const [selectedProjType, setprojType] = useState<number[]>([1]);
+  const [selectedBranches, setSelectedBranches] = useState<number[]>([1]);
+  const [selectedMajors, setSelectedMajors] = useState<number[]>([1]);
 
-  const majorOptions = [
-    "Computer Science",
-    "Computer Engineering",
-    "Multidisciplinary Project",
-  ];
+  // const branchOptions = ["High quality", "PFIEV", "VJEP", "Regular program"];
+  const { branches } = useBranch();
+  const { majors } = useMajor();
+  // const majors = [
+  //   "Computer Science",
+  //   "Computer Engineering",
+  //   "Multidisciplinary Project",
+  // ];
 
-  const branchOptions = ["High quality", "PFIEV", "VJEP", "Regular program"];
+  useEffect(() => {
+    if (branches.length > 0 || majors.length > 0) {
+      // Set default values
+      setSelectedBranches([branches[0].id]);
+      setSelectedMajors([majors[0].id]);
+    }
+    console.log("Retreived branches", branches)
+    console.log("Retreived majors", majors)
+  }, [branches, majors]);
+  
 
   const handleChangeMembersNumber = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -72,11 +84,13 @@ const FilterModal = () => {
   };
 
   return (
+    branches.length>0 &&
     <div className="h-[80vh] w-[80vw]">
       <form className="flex h-full w-full flex-col">
         <div className="flex h-full w-full">
           <div className="w-1/2">
-            {hasRole("student") ? (
+            {/* options not available for student's view */}
+            {hasRole("student") ? ( 
               ""
             ) : (
               <>
@@ -90,11 +104,13 @@ const FilterModal = () => {
                     option="Personal projects"
                     key="Personal projects"
                     defaultChecked={true}
+                    value={1}
                     valueArray={selectedProjType}
                   />
                   <CheckBox
                     option="All projects"
                     key="All projects"
+                    value={2}
                     valueArray={selectedProjType}
                   />
                 </div>
@@ -106,16 +122,18 @@ const FilterModal = () => {
                 />
                 <div className="flex gap-4">
                   <CheckBox
-                    option={branchOptions[0]}
-                    key={branchOptions[0]}
+                    option={branches[0].name}
+                    key={branches[0].id}
                     defaultChecked={true}
+                    value={branches[0].id}
                     valueArray={selectedBranches}
                   />
-                  {branchOptions.slice(1).map((option) => {
+                  {branches.slice(1).map((option) => {
                     return (
                       <CheckBox
-                        option={option}
-                        key={option}
+                        option={option.name}
+                        key={option.id}
+                        value={option.id}
                         valueArray={selectedBranches}
                       />
                     );
@@ -123,6 +141,7 @@ const FilterModal = () => {
                 </div>
               </>
             )}
+
             <Typography
               variant="p"
               text="Major"
@@ -130,16 +149,18 @@ const FilterModal = () => {
             />
             <div className="flex gap-4">
               <CheckBox
-                option={majorOptions[0]}
-                key={majorOptions[0]}
+                option={majors[0].name}
+                key={majors[0].id}
                 defaultChecked={true}
+                value={majors[0].id}
                 valueArray={selectedMajors}
               />
-              {majorOptions.slice(1).map((option) => {
+              {majors.slice(1).map((option) => {
                 return (
                   <CheckBox
-                    option={option}
-                    key={option}
+                    option={option.name}
+                    key={option.id}
+                    value={option.id}
                     valueArray={selectedMajors}
                   />
                 );
@@ -155,7 +176,7 @@ const FilterModal = () => {
               <div className="w-2/12">
                 <InputBox
                   inputName="MembersNumber"
-                  placeholderText="1"
+                  placeholderText="No."
                   type="text"
                   className="px-2 py-1 text-center"
                   onChange={handleChangeMembersNumber}
@@ -190,15 +211,17 @@ const FilterModal = () => {
             onClick={(e) => {
               e.preventDefault();
               // alert(
-              //   `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${numberOfParticipants}\n\n${JSON.stringify(
+              //   `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${membersNumber}\n\n${JSON.stringify(
               //     instructor,
               //   )}`,
               // );
-
+              
+              let branchParams = selectedBranches.map(selectedBranch=>`&branches=${selectedBranch}`).join('');
+              let majorParams = selectedMajors.map(selectedMajor=>`&majors=${selectedMajor}`).join('');
               let filterQuery = `http://localhost:3500/projects?${
-                membersNumber ? `members=${membersNumber}` : ''}
-              `;
-              // console.log("Filter query:", filterQuery)
+                membersNumber ? `members=${membersNumber}` : ''}${branchParams}${majorParams}`;
+              console.log("Filter query:", filterQuery)
+
               axios.get(filterQuery)
               .then((response) => {
                 const data = response.data as { projects: Project[] };
