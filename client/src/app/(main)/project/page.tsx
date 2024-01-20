@@ -206,7 +206,7 @@ const Project = () => {
   useEffect(()=>{
     const isNotStudent = user.roles.find(role => role.name.toLowerCase() == "student")?.name.toLowerCase() !== 'student'
     const stage = searchParams.get("project") === 'specialized' ? 1:2  
-    console.log(isNotStudent)
+
     if(isNotStudent) {
       const status = pathname.includes("approve") ? "":""
       getProjects(user.id,status,stage)
