@@ -196,7 +196,7 @@ const FilterModal = () => {
               // );
 
               let filterQuery = `http://localhost:3500/projects?${
-                membersNumber ? `limit=${membersNumber}` : ''}
+                membersNumber ? `members=${membersNumber}` : ''}
               `;
               // console.log("Filter query:", filterQuery)
               axios.get(filterQuery)
