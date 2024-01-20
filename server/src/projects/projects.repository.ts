@@ -221,7 +221,8 @@ export class ProjectsRepository extends Repository<Project> {
   }
 
   async getProjects(filterDto: GetProjectsFilterDto) {
-    const { search, members, limit, page, status, owner, stage } = filterDto;
+    const { search, members, limit, page, status, owner, stage, majors, branches } =
+      filterDto;
     const query = this.createQueryBuilder('project')
       .leftJoinAndSelect('project.semester', 'semester')
       .leftJoinAndSelect('project.requirements', 'requirements')
@@ -247,22 +248,49 @@ export class ProjectsRepository extends Repository<Project> {
       query.andWhere('owner.id = :owner', { owner });
     }
 
-    if(stage) {
+    if (stage) {
       query.andWhere('project.stage = :stage', { stage });
     }
 
+    if (majors) {
+      // for(let major of majors) {
+      //   console.log(major);
+      //   query.andWhere('majors.id = :major', {major})
+      // }
+      let newMajors = [];
+      if (!Array.isArray(majors)) {
+        newMajors = [majors];
+      } else {
+        newMajors = majors;
+      }
+      query.andWhere('majors.id IN (:...majors)', { majors: newMajors });
+      query.leftJoinAndSelect('project.majors', 'allMajors');
+    }
+
+    if (branches) {
+      let newBranches = [];
+      if (!Array.isArray(branches)) {
+        newBranches = [branches];
+      } else {
+        newBranches = branches;
+      }
+      query.andWhere('branches.id IN (:...branches)', { branches: newBranches });
+      query.leftJoinAndSelect('project.branches', 'allBranches');
+    }
+
     if (members) {
-      query.andWhere((qb) => {
-        const subQuery = qb
-          .subQuery()
-          .select('project.code')
-          .from(Project, 'project')
-          .leftJoin('project.students', 'student')
-          .groupBy('project.code')
-          .having('COUNT(student.userId) = :members', { members })
-          .getQuery();
-        return 'project.code IN ' + subQuery;
-      });
+      // query.andWhere((qb) => {
+      //   const subQuery = qb
+      //     .subQuery()
+      //     .select('project.code')
+      //     .from(Project, 'project')
+      //     .leftJoin('project.students', 'student')
+      //     .groupBy('project.code')
+      //     .having('COUNT(student.userId) = :members', { members })
+      //     .getQuery();
+      //   return 'project.code IN ' + subQuery;
+      // });
+      query.andWhere('project.limit = :members', { members })
       // const subQuery = this.createQueryBuilder('project').select('project.code').leftJoin('project.students', 'student').groupBy('project.code').having("COUNT(student.userId) = :members", {members});
       // console.log(subQuery.getSql());
       // const result = await subQuery.getMany();
@@ -349,13 +377,12 @@ export class ProjectsRepository extends Repository<Project> {
       throw new NotFoundException(`Project with id "${code}" not found`);
     }
 
-
     const user = await this.usersRepository.findOne({
       where: {
         id,
       },
     });
-     
+
     if (!user) {
       throw new NotFoundException(`User with id "${id}" not found`);
     }
