@@ -83,6 +83,8 @@ const FilterModal = () => {
     setMembersNumber(e.target.value);
   };
 
+  const userIsStudent = hasRole("student");
+
   return (
     branches.length>0 &&
     <div className="h-[80vh] w-[80vw]">
@@ -90,7 +92,7 @@ const FilterModal = () => {
         <div className="flex h-full w-full">
           <div className="w-1/2">
             {/* options not available for student's view */}
-            {hasRole("student") ? ( 
+            {userIsStudent ? ( 
               ""
             ) : (
               <>
@@ -187,7 +189,7 @@ const FilterModal = () => {
           <div className="flex w-1/2 flex-col">
             <Typography
               variant="p"
-              text="Co-Instructor"
+              text="Instructor"
               className="mb-2 text-2xl font-bold"
             />
             <div className={`${instructor.length > 0 ? "h-full" : ""}`}>
@@ -219,8 +221,10 @@ const FilterModal = () => {
               let branchParams = selectedBranches.map(selectedBranch=>`&branches=${selectedBranch}`).join('');
               let majorParams = selectedMajors.map(selectedMajor=>`&majors=${selectedMajor}`).join('');
               let filterQuery = `http://localhost:3500/projects?${
-                membersNumber ? `members=${membersNumber}` : ''}${branchParams}${majorParams}`;
-              console.log("Filter query:", filterQuery)
+                membersNumber ? `members=${membersNumber}` : ''}${userIsStudent ? '' : branchParams}${majorParams}`;
+              
+              
+                console.log("Filter query:", filterQuery)
 
               axios.get(filterQuery)
               .then((response) => {
