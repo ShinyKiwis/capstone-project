@@ -162,6 +162,7 @@ const CreateProject = () => {
         onChange={(e) => setTitle(e.target.value)}
       ></textarea>
 
+
       {/* Project metadata section: */}
       <div className="mt-8 w-full">
         <div className="flex h-fit gap-4">
@@ -216,7 +217,7 @@ const CreateProject = () => {
           </div>
         </div>
 
-        
+
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3"></div>
           <div className="w-2/3">
@@ -227,6 +228,9 @@ const CreateProject = () => {
           </div>
         </div>
       </div>
+
+
+      {/* Action buttons: */}
       <div className="flex justify-end gap-4 pt-4">
         <Button
           isPrimary={true}

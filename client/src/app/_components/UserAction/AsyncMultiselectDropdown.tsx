@@ -136,7 +136,7 @@ const AsyncMultiselectDropdown = ({
   onChange,
 }: AsyncMultiselectDropdownProps) => {
   useEffect(() => {
-    console.log("Current val:", value)
+    // console.log("Current val:", value)
   }, [value]);
 
   let innerClassnames: object;
@@ -162,11 +162,11 @@ const AsyncMultiselectDropdown = ({
       clearTimeout(currentTimeout);
       // console.log('cleared timeout');
     }
-    console.log("Query string:", query);
+    // console.log("Query string:", query);
 
     return new Promise<OptionType[]>((resolve) => {
       let newTimeout = setTimeout(async() => {
-        console.log(`Calling api: ${apiLink}${query}`)
+        // console.log(`Calling api: ${apiLink}${query}`)
         const res = await axios.get(`${apiLink}${query}`);
         // const data = await res.json();
         let newOptions = res.data.map((resData: SearchStudentDataType) => {
@@ -180,7 +180,7 @@ const AsyncMultiselectDropdown = ({
             }
           }
         })
-        console.log("Retreived options:", newOptions);        
+        // console.log("Retreived options:", newOptions);        
         resolve(newOptions);
       }, 350);
 
