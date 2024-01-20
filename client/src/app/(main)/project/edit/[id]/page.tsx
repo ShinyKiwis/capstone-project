@@ -356,7 +356,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                 console.log("FE UPDATE", parsedUpdateProject);
                 handleUpdateProject(+params.id, parsedUpdateProject);
                 setViewing(parsedUpdateProject);
-                // navigate(`/project?project=${searchParams.get("project")}`);
+                navigate(`/project?project=${searchParams.get("project")}`);
               });
           }}
         >
