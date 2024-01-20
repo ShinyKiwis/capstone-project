@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
-import { Button, InputBox, SearchBox, Typography } from "..";
+import { Button, InputBox, RadioButton, SearchBox, Typography } from "..";
 import CheckBox from "../UserAction/CheckBox";
 import ProfileSelector from "../ProfileSelector";
 import { OptionType } from "../ProfileSelector";
@@ -52,7 +52,7 @@ const FilterModal = () => {
   const [membersNumber, setMembersNumber] = useState("");
   const [instructor, setInstructor] = useState<OptionType[]>([]);
 
-  const [selectedProjType, setprojType] = useState<number[]>([1]);
+  const [selectedProjType, setSelectedProjType] = useState<number>(1);
   const [selectedBranches, setSelectedBranches] = useState<number[]>([1]);
   const [selectedMajors, setSelectedMajors] = useState<number[]>([1]);
 
@@ -100,18 +100,18 @@ const FilterModal = () => {
                   className="mb-4 text-2xl font-bold mt-2"
                 />
                 <div className="flex gap-4">
-                  <CheckBox
-                    option="Personal projects"
-                    key="Personal projects"
-                    defaultChecked={true}
+                  <RadioButton 
+                    label="Personal Projects"
+                    name="projType"
                     value={1}
-                    valueArray={selectedProjType}
+                    valueSetter={setSelectedProjType}
+                    defaultChecked={true}
                   />
-                  <CheckBox
-                    option="All projects"
-                    key="All projects"
+                  <RadioButton 
+                    label="All Projects"
+                    name="projType"
                     value={2}
-                    valueArray={selectedProjType}
+                    valueSetter={setSelectedProjType}
                   />
                 </div>
 
@@ -210,11 +210,11 @@ const FilterModal = () => {
             className="px-8 py-1 font-bold text-white"
             onClick={(e) => {
               e.preventDefault();
-              // alert(
-              //   `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${membersNumber}\n\n${JSON.stringify(
-              //     instructor,
-              //   )}`,
-              // );
+              alert(
+                `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${membersNumber}\n\n${JSON.stringify(
+                  instructor,
+                )}`,
+              );
               
               let branchParams = selectedBranches.map(selectedBranch=>`&branches=${selectedBranch}`).join('');
               let majorParams = selectedMajors.map(selectedMajor=>`&majors=${selectedMajor}`).join('');
