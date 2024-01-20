@@ -3,11 +3,13 @@ import React, { useState } from "react";
 const CheckBox = ({
   option,
   defaultChecked,
+  value,
   valueArray
 }: {
   option: string;
   defaultChecked?: boolean;
-  valueArray: string[]
+  value: number
+  valueArray: any[]
 }) => {
   const [checked, setChecked] = useState(defaultChecked)
   // if (defaultChecked && valueArray.length===0) {
@@ -19,7 +21,7 @@ const CheckBox = ({
     <div className="text-lg">
       <input
         type="checkbox"
-        value={option}
+        value={value}
         id={option}
         className="me-2"
         checked={checked}
@@ -27,10 +29,10 @@ const CheckBox = ({
           setChecked(!checked);
 
           if (!checked) {
-            valueArray.push(option.toLowerCase());
+            valueArray.push(value);
           } else {
             // Uncheck option -> remove value from array
-            const targetIdx = valueArray.findIndex((x) => x === option.toLowerCase());
+            const targetIdx = valueArray.findIndex((x) => x === value);
             valueArray.splice(targetIdx, 1);
           }
         }}
