@@ -82,6 +82,13 @@ const EditProject = ({ params }: { params: { id: string } }) => {
           dataObject: supervisor,
         })),
       );
+      setStudentsList(
+        project.students.map((student: any) => ({
+          label: `${student.user.id} - ${student.user.name}`,
+          value: student.user.id.toString(),
+          dataObject: student.user,
+        })),
+      );
     }
   }, [branches, majors, project]);
 
