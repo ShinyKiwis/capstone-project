@@ -113,7 +113,6 @@ export const ProjectCardList = ({
       </div>
       <div className="flex flex-col gap-2">
         {students.map(function (member: Student) {
-          console.log(member)
           return (
             <Profile
               key={member.userId}

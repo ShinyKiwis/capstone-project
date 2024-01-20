@@ -77,7 +77,7 @@ export const ProjectProvider = ({
     const apiURL = `http://localhost:3500/projects?${
       ownerId ? `owner=${ownerId}` : ""
     }${status ? `&status=${status}` : ""}${stage ? `&stage=${stage}` : ""}`;
-    console.log(apiURL)
+
     axios.get(apiURL).then((response) => {
       const data = response.data as { projects: Project[] };
       setProjects(data.projects);
