@@ -19,6 +19,7 @@ import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
 import { ApproveProjectDto } from './dto/approve-project.dto';
 import { RejectProjectDto } from './dto/reject-project.dto';
 import { ApproveProjectsDto } from './dto/approve-projects.dto';
+import { StudentsRepository } from 'src/students/students.repository';
 
 @Injectable()
 export class ProjectsRepository extends Repository<Project> {
@@ -28,6 +29,8 @@ export class ProjectsRepository extends Repository<Project> {
     private usersRepository: UsersRepository,
     private branchesRepository: BranchesRepository,
     private majorsRepository: MajorsRepository,
+    @Inject(forwardRef(() => StudentsRepository))
+    private studentsRepository: StudentsRepository,
   ) {
     super(Project, dataSource.createEntityManager());
   }
@@ -84,6 +87,7 @@ export class ProjectsRepository extends Repository<Project> {
       tasks,
       references,
       supervisors,
+      students,
       majors,
       branches,
       limit,
@@ -123,6 +127,12 @@ export class ProjectsRepository extends Repository<Project> {
       },
     });
 
+    const studentsList = await this.studentsRepository.find({
+      where: {
+        userId: In(students),
+      },
+    });
+
     const branchesList = await this.branchesRepository.find({
       where: {
         id: In(branches),
@@ -144,6 +154,7 @@ export class ProjectsRepository extends Repository<Project> {
     project.branches = branchesList;
     project.limit = limit;
     project.status = ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD;
+    project.students = studentsList;
 
     await this.save(project);
 
