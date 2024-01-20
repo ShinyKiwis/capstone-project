@@ -9,6 +9,8 @@ import Image from "next/image";
 import { useUser } from "@/app/hooks";
 import hasRole from "@/app/lib/hasRole";
 import { ModalContext } from "@/app/providers/ModalProvider";
+import axios from "axios";
+import { Project, ProjectContext } from "@/app/providers/ProjectProvider";
 
 const NoInstructor = () => {
   return (
@@ -29,7 +31,6 @@ const NoInstructor = () => {
 };
 
 const FilterModal = () => {
-  const user = useUser();
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     console.error(
@@ -39,7 +40,16 @@ const FilterModal = () => {
   }
   const {toggleModal} = modalContextValue;
 
-  const [numberOfParticipants, setNumberOfParticipants] = useState("1");
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) {
+    console.error(
+      "Filtering will not work, project context not initiated",
+    );
+    return "Modal err...";
+  }
+  const { setViewing, setProjects } = projectContext;
+
+  const [membersNumber, setMembersNumber] = useState("1");
   const [instructor, setInstructor] = useState<OptionType[]>([]);
 
   const [selectedProjType, setprojType] = useState<string[]>(['personal projects']);
@@ -54,11 +64,11 @@ const FilterModal = () => {
 
   const branchOptions = ["High quality", "PFIEV", "VJEP", "Regular program"];
 
-  const handleChangeNumberOfParticipants = (
+  const handleChangeMembersNumber = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     e.target.value = +e.target.value <= 999 ? e.target.value : "999";
-    setNumberOfParticipants(e.target.value);
+    setMembersNumber(e.target.value);
   };
 
   return (
@@ -144,11 +154,11 @@ const FilterModal = () => {
               />
               <div className="w-2/12">
                 <InputBox
-                  inputName="numberOfParticipants"
+                  inputName="MembersNumber"
                   placeholderText="1"
                   type="text"
                   className="px-2 py-1 text-center"
-                  onChange={handleChangeNumberOfParticipants}
+                  onChange={handleChangeMembersNumber}
                 />
               </div>
             </div>
@@ -179,11 +189,26 @@ const FilterModal = () => {
             className="px-8 py-1 font-bold text-white"
             onClick={(e) => {
               e.preventDefault();
-              alert(
-                `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${numberOfParticipants}\n\n${JSON.stringify(
-                  instructor,
-                )}`,
-              );
+              // alert(
+              //   `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${numberOfParticipants}\n\n${JSON.stringify(
+              //     instructor,
+              //   )}`,
+              // );
+
+              let filterQuery = `http://localhost:3500/projects?${
+                membersNumber ? `limit=${membersNumber}` : ''}
+              `;
+              // console.log("Filter query:", filterQuery)
+              axios.get(filterQuery)
+              .then((response) => {
+                const data = response.data as { projects: Project[] };
+                setProjects(data.projects);
+                setViewing(data.projects[0]);
+              }, (error) => {
+                console.log(error);
+              });
+
+              toggleModal(false)
             }}
           >
             Apply

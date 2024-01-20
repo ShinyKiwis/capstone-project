@@ -19,7 +19,7 @@ interface ProjectContextProps {
   handleCreation: (project: Project) => void;
 }
 
-interface Project {
+export interface Project {
   code: number;
   name: string;
   stage: number;
