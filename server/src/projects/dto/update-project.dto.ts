@@ -32,6 +32,8 @@ export class UpdateProjectDto {
   @ArrayNotEmpty()
   branches: number[];
 
+  students: number[];
+
   @IsNumber()
   limit: number;
 }
