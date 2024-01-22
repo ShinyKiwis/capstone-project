@@ -9,6 +9,21 @@ import { CgClose } from "react-icons/cg";
 
 import { Instructor } from "../hooks/useInstructor";
 import { SearchStudentDataType } from "./UserAction/AsyncMultiselectDropdown";
+import { useUser } from "../hooks";
+
+// type StudentType = {
+//   userId: number | string
+//   GPA: string;
+//   credits: number;
+//   enrolledAt: any;
+//   generation: number;
+//   user: {
+//     id: number | string;
+//     email: string;
+//     name: string;
+//     username: string
+//   };
+// }
 export interface OptionType {
   label: string;
   value: string;
@@ -28,6 +43,7 @@ const ProfileSelector = ({
   value,
   isMulti,
 }: ProfileSelectorProps) => {
+  const user = useUser();
 
   const ProfileItemsMultiMode = ({
     name,
@@ -57,7 +73,7 @@ const ProfileSelector = ({
               let targetIndex = -1;
               if (value.length > 0) {
                 targetIndex = value.findIndex((selectedOpt) => selectedOpt.dataObject.id.toString() === id);
-              }
+              } 
               // console.log("Found index:", targetIndex)
               if (targetIndex > -1) {
                 value.splice(targetIndex, 1);
@@ -164,7 +180,7 @@ const ProfileSelector = ({
         >
           {value.length > 0 &&
             value.map(function (selectedOption: OptionType) {
-
+              if (user.id !== selectedOption.dataObject.id)   // not render instructor if they are the project's ownder
               return isMulti ? (
                 <ProfileItemsMultiMode
                   key={selectedOption.dataObject!.id}
