@@ -1,34 +1,12 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import useInstructor from "../hooks/useInstructor";
 import Profile from "./Profile";
 import MultiselectDropdown from "./UserAction/MultiselectDropdown";
 import { AsyncMultiselectDropdown } from ".";
 import { CgClose } from "react-icons/cg";
-
-import { Instructor } from "../hooks/useInstructor";
-import { SearchStudentDataType } from "./UserAction/AsyncMultiselectDropdown";
 import { useUser } from "../hooks";
-
-// type StudentType = {
-//   userId: number | string
-//   GPA: string;
-//   credits: number;
-//   enrolledAt: any;
-//   generation: number;
-//   user: {
-//     id: number | string;
-//     email: string;
-//     name: string;
-//     username: string
-//   };
-// }
-export interface OptionType {
-  label: string;
-  value: string;
-  dataObject: {id:string, email:string, name:string} | Instructor;
-}
 
 interface ProfileSelectorProps {
   type: "instructors" | "students";

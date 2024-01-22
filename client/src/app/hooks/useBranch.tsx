@@ -2,11 +2,6 @@
 
 import {useState, useEffect} from 'react'
 
-export interface Branch {
-  id: number,
-  name: string
-}
-
 const useBranch = () => {
   const [branches, setBranches] = useState<Branch[]>([])
 

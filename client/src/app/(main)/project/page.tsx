@@ -11,10 +11,6 @@ import { RiUpload2Fill } from "react-icons/ri";
 import { FaCheckCircle } from "react-icons/fa";
 import React, { useContext, useEffect, useState, createContext } from "react";
 import { ModalContext } from "@/app/providers/ModalProvider";
-import {
-  EnrolledProjContext,
-  EnrolledProjProvider,
-} from "@/app/providers/EnrolledProjProvider";
 import Image from "next/image";
 import useUser from "@/app/hooks/useUser";
 import hasRole from "@/app/lib/hasRole";
@@ -22,47 +18,6 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
-
-type ProjectData = {
-  code: number;
-  name: string;
-  stage: number;
-  description: string;
-  tasks: string;
-  references: string;
-  status: string;
-  semester: {
-    year: number;
-    no: number;
-    start: string;
-    end: string;
-  };
-  requirements: any[];
-  students: {
-    name: string;
-    userId: string;
-    credits: number;
-    generation: number;
-    GPA: string;
-    enrolledAt: string;
-  }[];
-  supervisors: {
-    id: number;
-    email: string;
-    username: string;
-    name: string;
-  }[];
-  majors: {
-    id: number;
-    name: string;
-  }[];
-  branches: {
-    id: number;
-    name: string;
-  }[];
-  studentsCount: number;
-  limit: number;
-};
 
 const ProjectHeader = ({projects}: {projects: any[]}) => {
   const modalContextValue = useContext(ModalContext);

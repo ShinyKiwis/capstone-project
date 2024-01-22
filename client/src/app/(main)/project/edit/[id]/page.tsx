@@ -4,9 +4,6 @@ import {
   Button,
   RichTextEditor,
   DropdownMenu,
-  SearchBox,
-  MultiselectDropdown,
-  Profile,
   ProfileSelector,
 } from "@/app/_components";
 import axios from "axios";
@@ -20,9 +17,7 @@ import {
 } from "@/app/hooks";
 import { useEffect, useState, useMemo, useContext } from "react";
 import { useSearchParams } from "next/navigation";
-import { CgClose } from "react-icons/cg";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
-import { OptionType } from "@/app/_components/ProfileSelector";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   const { branches } = useBranch();

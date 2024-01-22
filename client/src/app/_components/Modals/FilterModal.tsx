@@ -4,7 +4,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, InputBox, RadioButton, SearchBox, Typography } from "..";
 import CheckBox from "../UserAction/CheckBox";
 import ProfileSelector from "../ProfileSelector";
-import { OptionType } from "../ProfileSelector";
 import Image from "next/image";
 import { useBranch, useMajor, useUser } from "@/app/hooks";
 import hasRole from "@/app/lib/hasRole";

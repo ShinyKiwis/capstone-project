@@ -1,7 +1,5 @@
 'use client';
-import { ProjectCard, AsyncMultiselectDropdown, MultiselectDropdown } from '@/app/_components'
 import React, { useState } from 'react'
-import { ModalContext } from '@/app/providers/ModalProvider';
 
 const toggleAccordion = (accordBtn: any) => {
   let accordionContent = accordBtn.parentNode.childNodes[1];
@@ -9,13 +7,7 @@ const toggleAccordion = (accordBtn: any) => {
   accordionContent.classList.toggle('hidden');
 }
 
-type OptionType = {
-  label: string;
-  value: string;
-}
-
 const Administrate = () => {
-  const [selected, setSelected] = useState<OptionType[]>([]);
 
   return (
     <div>
@@ -54,14 +46,6 @@ const Administrate = () => {
         Expanded content
       </div>
 
-      <div>
-        Test async MultiselectDropdown:
-        <div className='w-1/2'>
-          <AsyncMultiselectDropdown name='test' value={selected} onChange={setSelected} isMulti={true} placeholder='test async' apiLink='http://localhost:3500/users/instructors'/>
-          <button className='bg-blue px-4 py-2 my-2' onClick={()=>alert(JSON.stringify(selected))} >Get selected values</button>
-          <button className='bg-red px-4 py-2 my-2 mx-4' onClick={()=>setSelected([])} >Clear selected values</button>
-        </div>
-      </div>
     </div>
   )
 }

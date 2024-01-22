@@ -1,11 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { Button, Profile, ProjectInformationTable, Typography } from "..";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { ModalContext } from "../../providers/ModalProvider";
-import axios from "axios";
 import parse from "html-react-parser";
 import { useNavigate, useUser } from "@/app/hooks";
-import { AuthContext, User } from "@/app/providers/AuthProvider";
+import { AuthContext } from "@/app/providers/AuthProvider";
 import hasRole from "@/app/lib/hasRole";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
@@ -15,41 +14,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 import DenyButton from "../UserAction/Buttons/DenyButton";
 import ProjectStatus from "./ProjectStatus";
 import ApproveButton from "../UserAction/Buttons/ApproveButton";
-
-type Student = {
-  user: User;
-  userId: number;
-  credits: number;
-  generation: number;
-  GPA: number;
-  enrolledAt: string;
-};
-
-export interface ProjectProps {
-  code: number;
-  name: string;
-  status: string;
-  description: string;
-  tasks: string;
-  references: string;
-  branches: {
-    id: number;
-    name: string;
-  }[];
-  majors: {
-    id: number;
-    name: string;
-  }[];
-  supervisors: {
-    id: number;
-    email: string;
-    username: string;
-    name: string;
-  }[];
-  studentsCount: number;
-  students: Student[];
-  limit: number;
-}
 
 interface ProjectCardProps {
   projectObject: ProjectProps;
@@ -66,6 +30,7 @@ interface ProjectCardListProps
   extends Pick<ProjectProps, "studentsCount" | "students" | "limit"> {
   className: string;
 }
+
 
 const ProjectCardMetadata = ({
   code,
@@ -249,14 +214,6 @@ const ProjectCardActions = ({
       ) : (
         <ManagementButtons viewSet={viewSet} viewTarget={viewTarget} />
       )}
-      {/* Buttons for testing other modals */}
-      {/* <div>
-        <p>Test modals</p>
-        <button className="border-2" onClick={handleAction}>Unenroll</button>
-        <button className="border-2" onClick={handleAction}>Delete</button>
-        <button className="border-2" onClick={handleAction}>Deny</button>
-        <button className="border-2" onClick={handleAction}>Invalid</button>(Check console log for err msg)
-      </div> */}
     </div>
   );
 };

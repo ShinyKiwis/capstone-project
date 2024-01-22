@@ -4,8 +4,6 @@ import {
   Button,
   RichTextEditor,
   DropdownMenu,
-  MultiselectDropdown,
-  Profile,
   ProfileSelector,
 } from "@/app/_components";
 import axios from "axios";
@@ -19,7 +17,6 @@ import {
 import { useEffect, useState, useMemo, useContext } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
-import { OptionType } from "@/app/_components/ProfileSelector";
 
 
 const CreateProject = () => {

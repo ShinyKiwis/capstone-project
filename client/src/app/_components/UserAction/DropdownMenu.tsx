@@ -1,5 +1,3 @@
-import { Branch } from "@/app/hooks/useBranch";
-import { Major } from "@/app/hooks/useMajor";
 import React, { useEffect } from "react";
 
 interface DropdownMenuProps {

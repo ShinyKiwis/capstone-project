@@ -3,7 +3,6 @@
 import "react-quill/dist/quill.snow.css";
 import "../globals.css";
 import ReactQuill from "react-quill";
-import { useEffect, useState } from "react";
 
 interface RichTextEditorProps {
   onChange: any;

@@ -1,12 +1,4 @@
 import React from "react";
-import { ProjectProps } from "./ProjectCard";
-
-type Instructor = {
-  id: number;
-  email: string;
-  username: string;
-  name: string
-}
 
 interface ProjectInformationTableProps {
   fontSize: string;
@@ -30,9 +22,6 @@ const ProjectInformationTable = ({ fontSize, branches, majors, supervisors }: Pr
   let branchesString = createString(branches, 'name');
   let majorsString = createString(majors, 'name');
   let instructorsString = createString(supervisors, 'name');
-  // let instructorsTail: Instructor[];
-  // if (instructors.length > 1) instructorsTail = instructors.slice(1)
-  // else instructorsTail = []
 
   return (
     <table className={`${fontSize}`}>

@@ -7,13 +7,6 @@ import { ModalContext } from "@/app/providers/ModalProvider";
 import { useUser } from "@/app/hooks";
 import axios from "axios";
 
-export interface ActionModalProps {
-  title: string;
-  messages?: string[];
-  buttonLabels: [string, string];
-  mainAction: () => void;
-}
-
 const RemovalModal = ({
   title,
   messages,

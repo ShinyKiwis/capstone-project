@@ -3,24 +3,10 @@
 import React, { useEffect, useState } from "react";
 import AsyncSelect from 'react-select/async';
 import axios from 'axios';
-import { OptionType } from "../ProfileSelector";
-
-export interface SearchStudentDataType{
-  // As retreived from API call: http://localhost:3500/users/students?search=
-  userId: number;
-  user: {
-    email:string;
-    name: string;
-  }
-}
 
 interface AsyncMultiselectDropdownProps {
   name: string;
   variant?: string;
-  // options: {
-  //   label: string;
-  //   value: string;
-  // }[];
   isMulti?: boolean;
   className?: string;
   placeholder?: string;
