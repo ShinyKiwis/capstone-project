@@ -266,10 +266,10 @@ const ProjectCard = ({
   detailedViewSetter,
 }: ProjectCardProps) => {
   const authContext = useContext(AuthContext);
-  console.log(
-    "Currently enrolled project ID:",
-    authContext?.user?.project?.code,
-  );
+  // console.log(
+  //   "Currently enrolled project ID:",
+  //   authContext?.user?.project?.code,
+  // );
 
   return (
     <div className="flex w-full cursor-pointer flex-col rounded-md border border-black px-4 py-4">

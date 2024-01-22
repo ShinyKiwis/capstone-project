@@ -69,11 +69,23 @@ const ProjectHeader = ({projects}: {projects: any[]}) => {
   if (!modalContextValue) {
     return null;
   }
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) return <div>Loading</div>;
+  const { setViewing, setProjects } = projectContext;
   const user = useUser()
   const [projectsPerPage, setProjectsPerPage] = useState("");
   const { toggleModal, setModalType } = modalContextValue;
   const searchParams = useSearchParams();
   const pathname = usePathname();
+
+  const [searchResults, setSearchResults] = useState([]);
+  useEffect(() => {
+    // render search results returned by SearchBox
+    if (searchResults && searchResults.length>0){
+      setProjects(searchResults)
+      setViewing(searchResults[0])
+    }
+  }, [searchResults]);
 
   const handleProjectsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -98,12 +110,13 @@ const ProjectHeader = ({projects}: {projects: any[]}) => {
       })
     }
   }
+
   return (
     <div className="sticky top-0 w-full bg-white pt-2">
       <div className="w-3/6">
         <div className="mt-4 flex gap-4">
           <div className="w-10/12">
-            <SearchBox placeholder="Search projects..." />
+            <SearchBox placeholder="Search projects..." resultSetter={setSearchResults}/>
           </div>
           <Button
             variant="normal"
@@ -197,10 +210,10 @@ const NoData = () => {
 };
 
 const Project = () => {
-  const projectContext = useContext(ProjectContext);
   const user = useUser()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const projectContext = useContext(ProjectContext);
   if (!projectContext) return <div>Loading</div>;
   const { projects, viewing, setViewing, getProjects } = projectContext;
   useEffect(()=>{
