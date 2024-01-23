@@ -5,7 +5,6 @@ import {
   RichTextEditor,
   DropdownMenu,
   ProfileSelector,
-  MultiselectDropdown,
   CheckboxMultiselect,
 } from "@/app/_components";
 import axios from "axios";
@@ -21,9 +20,22 @@ import { useSearchParams } from "next/navigation";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
 
 const CreateProject = () => {
+  // Background data initialization
   const projectContext = useContext(ProjectContext);
   if (!projectContext) return <div>Loading</div>;
   const { handleCreation } = projectContext;
+  const stageOptions:OptionType[] = [
+    {
+      label: "Specialized project",
+      value: '1',
+      dataObject: {},
+    },
+    {
+      label: "Capstone project",
+      value: '2',
+      dataObject: {},
+    },
+  ]
   const { branches } = useBranch();
   const branchOptions: OptionType[] = branches.map((branch) => {
     return {
@@ -45,7 +57,10 @@ const CreateProject = () => {
   const searchParams = useSearchParams();
   const user = useUser();
 
+
+  // Input data state hooks
   const [title, setTitle] = useState("");
+  const [stage, setStage] = useState<string>('-1');
   const [instructorList, setInstructorList] = useState<OptionType[]>([]);
   const [studentsList, setStudentsList] = useState<OptionType[]>([]);
   const [selectedBranches, setSelectedBranches] = useState<OptionType[]>([]);
@@ -65,6 +80,8 @@ const CreateProject = () => {
   }, [branches, majors]);
 
 
+  
+  // Display elements
   const InputFieldTitle = ({ title }: { title: string }) => {
     let className = "text-2xl font-bold mb-4";
     return <div className={className}>{title}</div>;
@@ -81,14 +98,6 @@ const CreateProject = () => {
   };
 
   const InputsTable = () => {
-    // const handleBranchSelectChange = (value: string) => {
-    //   setSelectedBranches(value);
-    // };
-
-    // const handleMajorSelectChange = (value: string) => {
-    //   setSelectedMajors(value);
-    // };
-
     const handleNumberOfMemberChange = (
       e: React.ChangeEvent<HTMLInputElement>,
     ) => {
@@ -109,6 +118,14 @@ const CreateProject = () => {
               <InputLabel title="Project owner:" />
             </td>
             <td className="rounded-md bg-lightgray px-2 py-2">{user.name}</td>
+          </tr>
+          <tr>
+            <td>
+              <InputLabel title="Project stage:" />
+            </td>
+            <td>
+              <DropdownMenu name="projectStage" options={stageOptions} value={stage} onChange={setStage} />
+            </td>
           </tr>
           <tr>
             <td>
@@ -259,7 +276,7 @@ const CreateProject = () => {
           onClick={() => {
             const newProject = {
               name: title,
-              stage: 1,
+              stage: parseInt(stage),
               description,
               status: "WAITING_FOR_DEPARTMENT_HEAD",
               owner: {
