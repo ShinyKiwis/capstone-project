@@ -5,6 +5,8 @@ import {
   RichTextEditor,
   DropdownMenu,
   ProfileSelector,
+  MultiselectDropdown,
+  CheckboxMultiselect,
 } from "@/app/_components";
 import axios from "axios";
 import {
@@ -18,13 +20,26 @@ import { useEffect, useState, useMemo, useContext } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
 
-
 const CreateProject = () => {
   const projectContext = useContext(ProjectContext);
   if (!projectContext) return <div>Loading</div>;
   const { handleCreation } = projectContext;
   const { branches } = useBranch();
+  const branchOptions: OptionType[] = branches.map((branch) => {
+    return {
+      label: branch.name,
+      value: branch.id.toString(),
+      dataObject: branch,
+    };
+  });
   const { majors } = useMajor();
+  const majorOptions: OptionType[] = majors.map((major) => {
+    return {
+      label: major.name,
+      value: major.id.toString(),
+      dataObject: major,
+    };
+  });
   const { instructors } = useInstructor();
   const navigate = useNavigate();
   const searchParams = useSearchParams();
@@ -33,8 +48,8 @@ const CreateProject = () => {
   const [title, setTitle] = useState("");
   const [instructorList, setInstructorList] = useState<OptionType[]>([]);
   const [studentsList, setStudentsList] = useState<OptionType[]>([]);
-  const [branch, setBranch] = useState("");
-  const [major, setMajor] = useState("");
+  const [selectedBranches, setSelectedBranches] = useState<any[]>([]);
+  const [selectedMajors, setSelectedMajors] = useState<any[]>([]);
   const [requirements, setRequirements] = useState("");
   const [description, setDescription] = useState("");
   const [tasks, setTasks] = useState("");
@@ -44,10 +59,11 @@ const CreateProject = () => {
   useEffect(() => {
     // Set values based on default options
     if (branches.length > 0 || majors.length > 0) {
-      setBranch(branches[0].name);
-      setMajor(majors[0].name);
+      setSelectedBranches([branchOptions[0]]);
+      setSelectedMajors([majorOptions[0]]);
     }
   }, [branches, majors]);
+
 
   const InputFieldTitle = ({ title }: { title: string }) => {
     let className = "text-2xl font-bold mb-4";
@@ -65,13 +81,13 @@ const CreateProject = () => {
   };
 
   const InputsTable = () => {
-    const handleBranchSelectChange = (value: string) => {
-      setBranch(value);
-    };
+    // const handleBranchSelectChange = (value: string) => {
+    //   setSelectedBranches(value);
+    // };
 
-    const handleMajorSelectChange = (value: string) => {
-      setMajor(value);
-    };
+    // const handleMajorSelectChange = (value: string) => {
+    //   setSelectedMajors(value);
+    // };
 
     const handleNumberOfMemberChange = (
       e: React.ChangeEvent<HTMLInputElement>,
@@ -100,11 +116,14 @@ const CreateProject = () => {
             </td>
             <td>
               <InputField>
-                <DropdownMenu
+                <CheckboxMultiselect
                   name="projectBranch"
-                  options={branches}
-                  onChange={handleBranchSelectChange}
-                  selected={branch}
+                  placeholder="Select project branch(es)"
+                  variant="grayscale"
+                  isClearable={false}
+                  options={branchOptions}
+                  value={selectedBranches}
+                  valueSetter={setSelectedBranches}
                 />
               </InputField>
             </td>
@@ -115,11 +134,14 @@ const CreateProject = () => {
             </td>
             <td>
               <InputField>
-                <DropdownMenu
-                  name="projectProgram"
-                  options={majors}
-                  onChange={handleMajorSelectChange}
-                  selected={major}
+                <CheckboxMultiselect
+                  name="projectMajor"
+                  placeholder="Select project major(s)"
+                  variant="grayscale"
+                  isClearable={false}
+                  options={majorOptions}
+                  value={selectedMajors}
+                  valueSetter={setSelectedMajors}
                 />
               </InputField>
             </td>
@@ -158,7 +180,6 @@ const CreateProject = () => {
         required
         onChange={(e) => setTitle(e.target.value)}
       ></textarea>
-
 
       {/* Project metadata section: */}
       <div className="mt-8 w-full">
@@ -199,11 +220,15 @@ const CreateProject = () => {
           </div>
         </div>
 
-
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3">
             <InputFieldTitle title="Members" />
-            <ProfileSelector type="students" onChange={setStudentsList} value={studentsList} isMulti={true} />
+            <ProfileSelector
+              type="students"
+              onChange={setStudentsList}
+              value={studentsList}
+              isMulti={true}
+            />
           </div>
 
           <div className="w-2/3">
@@ -213,7 +238,6 @@ const CreateProject = () => {
             </div>
           </div>
         </div>
-
 
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3"></div>
@@ -225,7 +249,6 @@ const CreateProject = () => {
           </div>
         </div>
       </div>
-
 
       {/* Action buttons: */}
       <div className="flex justify-end gap-4 pt-4">
@@ -267,18 +290,19 @@ const CreateProject = () => {
                 }),
               ],
               majors: [
-                {
-                  id: majors.find((storedMajor) => storedMajor.name === major)!
-                    .id,
-                },
+                ...selectedMajors.map((major:OptionType) => {
+                  return {
+                    id: major.value,
+                  };
+                }),
               ],
               branches: [
-                {
-                  id: branches.find(
-                    (storedBranch) => storedBranch.name === branch,
-                  )!.id,
-                },
-              ],
+                ...selectedBranches.map((branch:OptionType) => {
+                  return {
+                    id: branch.value,
+                  };
+                }),
+              ]
             };
             axios
               .post("http://localhost:3500/projects", newProject)
@@ -312,12 +336,12 @@ const CreateProject = () => {
                       newSupervisorIds.includes(instructor.id),
                     ),
                   ],
-                  
+
                   majors: majors.filter(
-                    (storedMajor: any) => storedMajor.name === major,
+                    (storedMajor: any) => storedMajor.name === selectedMajors,
                   ),
                   branches: branches.filter(
-                    (storedBranch: any) => storedBranch.name === branch,
+                    (storedBranch: any) => storedBranch.name === selectedBranches,
                   ),
                 };
                 handleCreation(parsedProject);
@@ -334,7 +358,7 @@ const CreateProject = () => {
           className="px-4 py-2 text-lg"
           onClick={() => {
             // alert(`Instructors:\n${JSON.stringify(instructorList)}\n\nStudents:\n${JSON.stringify(studentsList)}`)
-            
+
             const newProject = {
               name: title,
               stage: 1,
@@ -368,18 +392,19 @@ const CreateProject = () => {
                 }),
               ],
               majors: [
-                {
-                  id: majors.find((storedMajor) => storedMajor.name === major)!
-                    .id,
-                },
+                ...selectedMajors.map((major:OptionType) => {
+                  return {
+                    id: major.value,
+                  };
+                }),
               ],
               branches: [
-                {
-                  id: branches.find(
-                    (storedBranch) => storedBranch.name === branch,
-                  )!.id,
-                },
-              ],
+                ...selectedBranches.map((branch:OptionType) => {
+                  return {
+                    id: branch.value,
+                  };
+                }),
+              ]
             };
 
             axios
@@ -418,10 +443,10 @@ const CreateProject = () => {
                     ),
                   ],
                   majors: majors.filter(
-                    (storedMajor: any) => storedMajor.name === major,
+                    (storedMajor: any) => storedMajor.name === selectedMajors,
                   ),
                   branches: branches.filter(
-                    (storedBranch: any) => storedBranch.name === branch,
+                    (storedBranch: any) => storedBranch.name === selectedBranches,
                   ),
                 };
                 handleCreation(parsedProject);
