@@ -125,7 +125,7 @@ const MultiselectDropdown = ({
   placeholder,
   onChange,
   value,
-  renderSelected
+  renderSelected = true
 }: MultiselectDropdownProps) => {
   let innerClassnames: object;
   let customStyles: object;
@@ -150,7 +150,7 @@ const MultiselectDropdown = ({
       placeholder={placeholder}
       isClearable={isClearable || false}
       maxMenuHeight={250}
-      controlShouldRenderValue={renderSelected || true}
+      controlShouldRenderValue={renderSelected}
       onChange={onChange}
       value={value}
     />

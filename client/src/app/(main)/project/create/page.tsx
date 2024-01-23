@@ -48,8 +48,8 @@ const CreateProject = () => {
   const [title, setTitle] = useState("");
   const [instructorList, setInstructorList] = useState<OptionType[]>([]);
   const [studentsList, setStudentsList] = useState<OptionType[]>([]);
-  const [selectedBranches, setSelectedBranches] = useState<any[]>([]);
-  const [selectedMajors, setSelectedMajors] = useState<any[]>([]);
+  const [selectedBranches, setSelectedBranches] = useState<OptionType[]>([]);
+  const [selectedMajors, setSelectedMajors] = useState<OptionType[]>([]);
   const [requirements, setRequirements] = useState("");
   const [description, setDescription] = useState("");
   const [tasks, setTasks] = useState("");
