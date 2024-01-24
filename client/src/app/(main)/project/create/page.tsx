@@ -378,7 +378,7 @@ const CreateProject = () => {
 
             const newProject = {
               name: title,
-              stage: 1,
+              stage: parseInt(stage),
               description,
               tasks,
               status: "DRAFT",
