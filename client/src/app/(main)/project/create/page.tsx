@@ -216,7 +216,7 @@ const CreateProject = () => {
           </div>
         </div>
         <div className="mt-4 flex h-fit gap-4">
-          <div className="h-64 w-1/3">
+          <div className="h-fit min-h-[16rem] w-1/3">
             <InputFieldTitle title="Instructors" />
             <ProfileSelector
               type="instructors"
@@ -238,7 +238,7 @@ const CreateProject = () => {
         </div>
 
         <div className="mt-4 flex h-fit gap-4">
-          <div className="h-64 w-1/3">
+          <div className="h-fit min-h-[16rem] w-1/3">
             <InputFieldTitle title="Members" />
             <ProfileSelector
               type="students"
