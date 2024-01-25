@@ -30,4 +30,7 @@ export class GetProjectsFilterDto {
 
   @IsOptional()
   branches: number[];
+
+  @IsOptional()
+  supervisors: number[];
 }
