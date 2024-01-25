@@ -184,12 +184,12 @@ const Project = () => {
   }, [])
 
   return (
-    <div className="w-full">
+    <div className="w-full flex-1 flex flex-col">
       <ProjectHeader projects={projects}/>
-      <div className="mt-4 flex flex-auto gap-4">
+      <div className="mt-4 flex flex-1 gap-4 overflow-hidden">
         {projects.length != 0 ? (
           <>
-            <div className="flex w-1/2 flex-col gap-4">
+            <div className="flex flex-col w-1/2 min-h-[0] flex-auto flex-nowrap gap-4 overflow-y-auto">
               {projects.map(function (project) {
                 return (
                   <ProjectCard
@@ -200,7 +200,8 @@ const Project = () => {
                 );
               })}
             </div>
-            <div className="w-1/2">
+
+            <div className="w-1/2 overflow-y-auto">
               {viewing && <ProjectCardDetail projectObject={viewing} />}
             </div>
           </>
