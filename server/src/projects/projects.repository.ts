@@ -221,7 +221,7 @@ export class ProjectsRepository extends Repository<Project> {
   }
 
   async getProjects(filterDto: GetProjectsFilterDto) {
-    const { search, members, limit, page, status, owner, stage, majors, branches } =
+    const { search, members, limit, page, status, owner, stage, majors, branches, supervisors } =
       filterDto;
     const query = this.createQueryBuilder('project')
       .leftJoinAndSelect('project.semester', 'semester')
@@ -276,6 +276,18 @@ export class ProjectsRepository extends Repository<Project> {
       }
       query.andWhere('branches.id IN (:...branches)', { branches: newBranches });
       query.leftJoinAndSelect('project.branches', 'allBranches');
+    }
+
+    if (supervisors) {
+      let newSupervisors = [];
+      if(!Array.isArray(supervisors)) {
+        newSupervisors = [supervisors];
+      } else {
+        newSupervisors = supervisors;
+      }
+
+      query.andWhere('supervisors.id IN (:...supervisors)', { supervisors: newSupervisors });
+      query.leftJoinAndSelect('project.supervisors', 'allSupervisors');
     }
 
     if (members) {
