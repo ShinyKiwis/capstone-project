@@ -59,6 +59,7 @@ const FilterModal = () => {
   // const branchOptions = ["High quality", "PFIEV", "VJEP", "Regular program"];
   const { branches } = useBranch();
   const { majors } = useMajor();
+  const user = useUser()
   // const majors = [
   //   "Computer Science",
   //   "Computer Engineering",
@@ -221,7 +222,16 @@ const FilterModal = () => {
               let branchParams = selectedBranches.map(selectedBranch=>`&branches=${selectedBranch}`).join('');
               let majorParams = selectedMajors.map(selectedMajor=>`&majors=${selectedMajor}`).join('');
               let filterQuery = `http://localhost:3500/projects?${
-                membersNumber ? `members=${membersNumber}` : ''}${userIsStudent ? '' : branchParams}${majorParams}`;
+                selectedProjType == 1 ? `owner=${user.id}` : ''
+              }${
+                membersNumber ? `&members=${membersNumber}` : ''
+              }${
+                userIsStudent ? '' : branchParams
+              }${
+                majorParams
+              }${
+                instructor.length > 0 ? `&supervisors=${instructor[0].value}` : ''
+              }`;
               
               
                 console.log("Filter query:", filterQuery)
