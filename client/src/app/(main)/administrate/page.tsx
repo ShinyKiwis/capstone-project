@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { SyntheticEvent, useContext, useState } from "react";
 import { ModalContext } from "@/app/providers/ModalProvider";
 import {
   DataGrid,
@@ -10,73 +10,11 @@ import {
   GridValueGetterParams,
 } from "@mui/x-data-grid";
 import { Button, Profile, SearchBox } from "@/app/_components";
+import { Box, Modal, Typography } from "@mui/material";
+import { ClickAwayListener } from "@mui/base/ClickAwayListener";
+import style from "styled-jsx/style";
 
-const handleEditUser = (uid: number | string) => {
-  alert("Edit:" + uid);
-};
-
-const handleDeleteUser = (uid: number | string) => {
-  alert("Delete:" + uid);
-};
-
-const columns: GridColDef[] = [
-  {
-    field: "id",
-    headerName: "ID number",
-    minWidth: 90,
-    flex: 1, 
-    headerClassName: "bg-lightergray",
-  },
-  {
-    field: "user",
-    headerName: "User",
-    minWidth: 250,
-    flex: 4, 
-    valueGetter: (params: GridValueGetterParams) => {
-      return params.row.fullName;
-    },
-
-    renderCell: (params: GridRenderCellParams) => {
-      return (
-        <div className="py-2">
-          <Profile
-            type="horizontal"
-            username={params.row.fullName}
-            email={params.row.email}
-          />
-        </div>
-      );
-    },
-  },
-  { field: "roles", headerName: "Roles", minWidth: 150, flex: 3  },
-  { field: "active", headerName: "Last active", minWidth: 150, flex: 3 },
-  {
-    field: "actions",
-    headerName: "Actions",
-    minWidth: 130,
-    flex: 2, 
-    renderCell: (params: GridRenderCellParams) => {
-      return (
-        <div>
-          <button
-            className="mx-2 bg-lightgreen px-2 py-1 text-white"
-            onClick={(e) => handleEditUser(params.id)}
-          >
-            Edit
-          </button>
-          <button
-            className="mx-2 bg-red px-2 py-1 text-white"
-            onClick={(e) => handleDeleteUser(params.id)}
-          >
-            Delete
-          </button>
-        </div>
-      );
-    },
-  },
-];
-
-const rows = [
+const users = [
   {
     id: 2053101,
     fullName: "Nguyễn Văn A",
@@ -360,31 +298,158 @@ const rows = [
 ];
 
 const Administrate = () => {
+  const [rows, setRows] = useState(users);
+  const [selectedFilter, setSelectedFilter] = useState("deans");
+
+  const handleFilter = (opt: string) => {
+    if (opt === "deans") {
+      setRows(users);
+      setSelectedFilter("deans");
+    } else if (opt === "instructors") {
+      setRows([users[0]]);
+      setSelectedFilter("instructors");
+    } else {
+      setRows([]);
+      setSelectedFilter("students");
+    }
+  };
+
+  const modalContextValue = useContext(ModalContext);
+  if (!modalContextValue) {
+    console.error("Modal context initialization failed !");
+    return null;
+  }
+  const { toggleModal, setModalType, setModalProps } = modalContextValue;
+
+  const handleEditUser = (e: SyntheticEvent, row: any) => {
+    // alert("Edit:" + uid);
+    e.stopPropagation();
+    let clickedBtn = e.target as HTMLElement;
+    let clickedBtnCoords = clickedBtn.getBoundingClientRect();
+
+    setModalType("customPos_user_edit");
+    setModalProps({
+      targetUsr: row,
+      position: { x: clickedBtnCoords.x, y: clickedBtnCoords.y },
+    });
+    toggleModal(true);
+  };
+
+  const handleDeleteUser = (e: SyntheticEvent, row: any) => {
+    // alert("Delete:" + uid);
+    e.stopPropagation();
+    console.log("e object:", e);
+    setModalType('status_warning');
+    setModalProps({
+      title: "Deleting a user !",
+      messages: ["Are you sure you want to remove this user ?", "This action cannot be undone !"]
+    })
+    toggleModal(true);
+  };
+
+  const columns: GridColDef[] = [
+    {
+      field: "id",
+      headerName: "ID number",
+      minWidth: 90,
+      flex: 1,
+    },
+    {
+      field: "user",
+      headerName: "User",
+      minWidth: 250,
+      flex: 4,
+      valueGetter: (params: GridValueGetterParams) => {
+        return params.row.fullName;
+      },
+
+      renderCell: (params: GridRenderCellParams) => {
+        return (
+          <div className="py-2">
+            <Profile
+              type="horizontal"
+              username={params.row.fullName}
+              email={params.row.email}
+            />
+          </div>
+        );
+      },
+    },
+    { field: "roles", headerName: "Roles", minWidth: 150, flex: 3 },
+    { field: "active", headerName: "Last active", minWidth: 150, flex: 3 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      minWidth: 130,
+      flex: 2,
+      renderCell: (params: GridRenderCellParams) => {
+        return (
+          <div>
+            <button
+              className="mx-2 bg-lightgreen px-2 py-1 text-white"
+              onClick={(e) => handleEditUser(e, params.row)}
+            >
+              Edit
+            </button>
+            <button
+              className="mx-2 bg-red px-2 py-1 text-white"
+              onClick={(e) => handleDeleteUser(e, params.id)}
+            >
+              Delete
+            </button>
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
-    <div className="w-full h-full overflow-hidden flex flex-col">
-      <div className="w-full h-fit flex py-6">
+    <div className="flex h-full w-full flex-col overflow-hidden">
+      <div className="flex h-fit w-full py-6">
         <div className="flex gap-6">
-          <Button isPrimary={false} variant="normal" className="px-4 py-1">Deans</Button>
-          <Button isPrimary={false} variant="normal" className="px-4">Instructors</Button>
-          <Button isPrimary={false} variant="normal" className="px-4">Students</Button>
+          <Button
+            isPrimary={selectedFilter === "deans" ? true : false}
+            variant="normal"
+            className="px-4 py-1"
+            onClick={() => handleFilter("deans")}
+          >
+            Deans
+          </Button>
+          <Button
+            isPrimary={selectedFilter === "instructors" ? true : false}
+            variant="normal"
+            className="px-4"
+            onClick={() => handleFilter("instructors")}
+          >
+            Instructors
+          </Button>
+          <Button
+            isPrimary={selectedFilter === "students" ? true : false}
+            variant="normal"
+            className="px-4"
+            onClick={() => handleFilter("students")}
+          >
+            Students
+          </Button>
         </div>
-        <div className="w-96 ml-auto">
-          <SearchBox placeholder="Search user name, id..."/>
+        <div className="ml-auto w-96">
+          <SearchBox placeholder="Search user name, id..." />
         </div>
       </div>
-      <div style={{ flex: '1 1 0%', minHeight: 0, width: "100%" }}>
+
+      <div style={{ flex: "1 1 0%", minHeight: 0, width: "100%" }}>
         <DataGrid
           rows={rows}
           columns={columns}
           sx={{
-            '.MuiDataGrid-columnHeaders': {
-              background: 'rgba(153, 194, 255, 0.20)',
+            ".MuiDataGrid-columnHeaders": {
+              background: "rgba(153, 194, 255, 0.20)",
             },
-            '.MuiDataGrid-columnHeaderTitle': {
-              fontWeight: 600
+            ".MuiDataGrid-columnHeaderTitle": {
+              fontWeight: 600,
             },
           }}
-          getRowHeight={() => 'auto'}
+          getRowHeight={() => "auto"}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 10 },
