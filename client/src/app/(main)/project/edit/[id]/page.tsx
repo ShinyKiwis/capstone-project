@@ -5,6 +5,7 @@ import {
   RichTextEditor,
   DropdownMenu,
   ProfileSelector,
+  CheckboxMultiselect,
 } from "@/app/_components";
 import axios from "axios";
 import {
@@ -15,13 +16,27 @@ import {
   useUser,
   useProject,
 } from "@/app/hooks";
-import { useEffect, useState, useMemo, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   const { branches } = useBranch();
+  const branchOptions: OptionType[] = branches.map((branch) => {
+    return {
+      label: branch.name,
+      value: branch.id.toString(),
+      dataObject: branch,
+    };
+  });
   const { majors } = useMajor();
+  const majorOptions: OptionType[] = majors.map((major) => {
+    return {
+      label: major.name,
+      value: major.id.toString(),
+      dataObject: major,
+    };
+  });
   const { instructors } = useInstructor();
   const navigate = useNavigate();
   const searchParams = useSearchParams();
@@ -30,8 +45,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
 
   const [title, setTitle] = useState("");
   const [instructorList, setInstructorList] = useState<OptionType[]>([]);
-  const [selectedBranches, setSelectedBranches] = useState("");
-  const [selectedMajors, setSelectedMajors] = useState("");
+  const [selectedBranches, setSelectedBranches] = useState<OptionType[]>([]);
+  const [selectedMajors, setSelectedMajors] = useState<OptionType[]>([]);
   const [requirements, setRequirements] = useState("");
   const [description, setDescription] = useState("");
   const [tasks, setTasks] = useState("");
@@ -39,27 +54,11 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   const [studentsList, setStudentsList] = useState<OptionType[]>([]);
   const [numberOfMembers, setNumberOfMembers] = useState(1);
 
-  const instructorsOptions: OptionType[] = useMemo(() => {
-    if (instructors.length !== 0) {
-      return instructors.map((instructor) => ({
-        label: `${instructor.id} - ${instructor.name}`,
-        value: instructor.id.toString(),
-        dataObject: instructor
-      }));
-    }
-    return [];
-  }, [instructors]);
-
   const projectContext = useContext(ProjectContext);
   if (!projectContext) return <div>Loading</div>;
   const { handleUpdateProject, setViewing } = projectContext;
 
   useEffect(() => {
-    // Set default values for branches, majors variable
-    if (branches.length > 0 || majors.length > 0) {
-      setSelectedBranches(branches[0].name);
-      setSelectedMajors(majors[0].name);
-    }
     if (project) {
       // Render info of project currently open for edit
       console.log("Displaying project:",project);
@@ -67,8 +66,12 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       setDescription(project.description);
       setTasks(project.tasks);
       setRefs(project.references);
-      setSelectedBranches(project.branches[0].name);
-      setSelectedMajors(project.majors[0].name);
+      setSelectedBranches(project.branches.map((branch:Branch) => {
+        return branchOptions.find((opt:OptionType) => opt.value === branch.id.toString())
+      }));
+      setSelectedMajors(project.majors.map((major:Major) => {
+        return majorOptions.find((opt:OptionType) => opt.value === major.id.toString())
+      }));
       setNumberOfMembers(project.limit);
       setInstructorList(
         project.supervisors.map((supervisor: any) => ({
@@ -103,15 +106,6 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   };
 
   const InputsTable = () => {
-    const handleBranchSelectChange = (value: string) => {
-      // console.log("HANDLE BRANCH",value)
-      setSelectedBranches(value);
-    };
-
-    const handleMajorSelectChange = (value: string) => {
-      setSelectedMajors(value);
-    };
-
     const handleNumberOfMemberChange = (
       e: React.ChangeEvent<HTMLInputElement>,
     ) => {
@@ -141,11 +135,14 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             </td>
             <td>
               <InputField>
-                <DropdownMenu
+                <CheckboxMultiselect
                   name="projectBranch"
-                  options={branches}
-                  onChange={handleBranchSelectChange}
-                  selected={selectedBranches}
+                  placeholder="Select project branch(es)"
+                  variant="grayscale"
+                  isClearable={false}
+                  options={branchOptions}
+                  value={selectedBranches}
+                  valueSetter={setSelectedBranches}
                 />
               </InputField>
             </td>
@@ -156,11 +153,14 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             </td>
             <td>
               <InputField>
-                <DropdownMenu
-                  name="projectProgram"
-                  options={majors}
-                  onChange={handleMajorSelectChange}
-                  selected={selectedMajors}
+                <CheckboxMultiselect
+                  name="projectMajor"
+                  placeholder="Select project major(s)"
+                  variant="grayscale"
+                  isClearable={false}
+                  options={majorOptions}
+                  value={selectedMajors}
+                  valueSetter={setSelectedMajors}
                 />
               </InputField>
             </td>
@@ -304,11 +304,15 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               students: studentsList.map(selectedStu => {return parseInt(selectedStu.value)}),
               // !! currently working with singe selected majors, branch
               majors: [
-                +majors.find((storedMajor) => storedMajor.name === selectedMajors)!.id,
+                ...selectedMajors.map((major:OptionType) => {
+                  return major.value;
+                }),
               ],
               branches: [
-                +branches.find((storedBranch) => storedBranch.name === selectedBranches)!.id,
-              ],
+                ...selectedBranches.map((branch:OptionType) => {
+                  return branch.value;
+                }),
+              ]
             };
             console.log("Updated project", updateProject);
 

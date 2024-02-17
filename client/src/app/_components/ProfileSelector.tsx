@@ -149,6 +149,7 @@ const ProfileSelector = ({
           placeholder={`Search co-instructor name, id...`}
           onChange={onChange}
           value={value}
+          renderSelected={false}
         />
 
         <div

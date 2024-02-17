@@ -1,19 +1,17 @@
-'use client'
+"use client";
 
-import React, { useState } from "react";
-import Select from "react-select";
+import React, { RefCallback, useEffect, useState } from "react";
+import Select, { components, OptionProps } from 'react-select';
 
-
-interface MultiselectDropdownProps {
+interface CheckboxMultiselectProps {
   name: string;
   variant?: string;
   options: OptionType[];
-  isMulti?: boolean;
   isClearable?: boolean;
   className?: string;
   placeholder?: string;
-  onChange: any;
-  value: OptionType[];
+  valueSetter: any;
+  value?: OptionType[];
   renderSelected?: boolean;
 }
 
@@ -100,33 +98,84 @@ const variantMappings: VariantMappings = {
       multiValueLabel: (baseStyles: any, state: any) => ({
         backgroundColor: "#f8f8f2",
         color: "black",
-        borderRadius: "2px 0 0 2px",
+        borderRadius: "4px",
         padding: "0.1em 0.3em",
       }),
       multiValueRemove: (baseStyles: any, state: any) => ({
-        backgroundColor: "#777",
-        color: "white",
-        borderRadius: "0 2px 2px 0",
-        padding: "0.1em 0.2em",
-        display: "flex",
-        alignItems: "center",
+        display: 'none',
       }),
     },
   },
 };
 
-const MultiselectDropdown = ({
+const testOptions = [
+  { value: "option 1", label: "option 1", dataObject: {} },
+  { value: "option 2", label: "option 2", dataObject: {} },
+  { value: "option 3", label: "option 3", dataObject: {} },
+  { value: "option 4", label: "option 4", dataObject: {} },
+];
+
+const InputOption = ({
+  getStyles,
+  isDisabled,
+  isFocused,
+  isSelected,
+  children,
+  innerProps,
+  ...rest}: OptionProps<OptionType>) => {
+
+  const [isActive, setIsActive] = useState(false);
+  const onMouseDown = () => setIsActive(true);  
+  const onMouseUp = () => setIsActive(false);
+  const onMouseLeave = () => setIsActive(false);
+
+  // styles
+  let bg = "transparent";
+  if (isFocused) bg = "#eee";
+  if (isActive) bg = "#B2D4FF";
+
+  const style = {
+    alignItems: "center",
+    backgroundColor: bg,
+    color: "inherit",
+    display: "flex ",
+  };
+
+  // prop assignment
+  const props = {
+    ...innerProps,
+    onMouseDown,
+    onMouseUp,
+    onMouseLeave,
+    style
+  };
+
+  return (
+    <components.Option 
+      {...rest}
+      isDisabled={isDisabled}
+      isFocused={isFocused}
+      isSelected={isSelected}
+      getStyles={getStyles}
+      innerProps={props}
+    >
+      <input type="checkbox" checked={isSelected} onChange={()=>{}}/>
+      <span className="ml-2">{children}</span>
+    </components.Option>
+  );
+};
+
+const CheckboxMultiselect = ({
   name,
   variant,
   options,
-  isMulti,
   isClearable,
   className,
   placeholder,
-  onChange,
   value,
-  renderSelected = true
-}: MultiselectDropdownProps) => {
+  valueSetter,
+  renderSelected = true,
+}: CheckboxMultiselectProps) => {
   let innerClassnames: object;
   let customStyles: object;
 
@@ -138,23 +187,43 @@ const MultiselectDropdown = ({
     customStyles = variantMappings["normal"]["customStyle"];
   }
 
+  const [selectedOptions, setSelectedOptions] = useState<OptionType[]>([]);
+
+  function handleChange(e: any){
+    if (Array.isArray(e)) {
+      console.log(e)
+      setSelectedOptions(e);
+      // valueSetter(e)
+    }
+  }
+
   return (
-    <Select
-      options={options}
-      isMulti={isMulti || true}
-      name={name}
-      className={className}
-      classNames={innerClassnames}
-      styles={customStyles}
-      classNamePrefix="select"
-      placeholder={placeholder}
-      isClearable={isClearable || false}
-      maxMenuHeight={250}
-      controlShouldRenderValue={renderSelected}
-      onChange={onChange}
-      value={value}
-    />
+    <div className="App">
+      <Select
+        isMulti={true}
+        name={name}
+        className={className}
+        classNames={innerClassnames}
+        styles={customStyles}
+        classNamePrefix="select"
+        placeholder={placeholder}
+        isClearable={isClearable || false}
+        maxMenuHeight={250}
+        controlShouldRenderValue={renderSelected}
+        onChange={valueSetter}
+        value={value}
+        closeMenuOnSelect={false}
+        blurInputOnSelect={false}
+        hideSelectedOptions={false}
+        options={options}
+        // value={selectedOptions}
+        // onChange={handleChange}
+        components={{
+          Option: InputOption
+        }}
+      />
+    </div>
   );
 };
 
-export default MultiselectDropdown;
+export default CheckboxMultiselect;
