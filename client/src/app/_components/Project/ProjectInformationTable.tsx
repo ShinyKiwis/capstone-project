@@ -27,18 +27,18 @@ const ProjectInformationTable = ({ fontSize, branches, majors, supervisors }: Pr
     <table className={`${fontSize}`}>
       <tbody>
         <tr>
-          <th className="text-left">Branches</th>
-          <th className="pe-4">:</th>
+          <th className="text-left align-top">Branches</th>
+          <th className="pe-4 align-top">:</th>
           <td>{branchesString}</td>
         </tr>
         <tr>
-          <th className="text-left">Major</th>
-          <th className="pe-4">:</th>
+          <th className="text-left align-top">Major</th>
+          <th className="pe-4 align-top">:</th>
           <td>{majorsString}</td>
         </tr>
         <tr>
-          <th className="text-left">Instructor</th>
-          <th className="pe-4">:</th>
+          <th className="text-left align-top">Instructor</th>
+          <th className="pe-4 align-top">:</th>
           <td>{instructorsString}</td>
         </tr>
       </tbody>

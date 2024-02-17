@@ -3,11 +3,11 @@ import React, { useEffect } from "react";
 interface DropdownMenuProps {
   name: string,
   variant?: string,
+  options: OptionType[],
   selectClassname?: string,
   optionClassname?: string,
-  options: (Branch | Major)[],
-  onChange?: any;
-  selected: any;
+  value: string | number,
+  onChange: any;
 }
 
 interface VariantMappings {
@@ -23,7 +23,7 @@ const variantMappings: VariantMappings = {
 
 
 
-const DropdownMenu = ({ name, variant, selectClassname, optionClassname, options, onChange, selected }: DropdownMenuProps) => {
+const DropdownMenu = ({ name, variant, selectClassname, optionClassname, options, value, onChange}: DropdownMenuProps) => {
   let selectVariantClass: string;
   let optionVariantClass: string;
   if (variant && variant in variantMappings) {
@@ -40,16 +40,16 @@ const DropdownMenu = ({ name, variant, selectClassname, optionClassname, options
       name={name}
       className={`${selectClassname} ${selectVariantClass}`}
       onChange={(e) => onChange(e.target.value)}
-      value={selected}
+      value={value}
     >
       {options.map(function (option) {
         return (
           <option
-            value={option.name}
-            key={option.id}
+            value={option.value}
+            key={option.value}
             className={`${optionClassname} ${optionVariantClass}`}
           >
-            {option.name}
+            {option.label}
           </option>
         )
       })}

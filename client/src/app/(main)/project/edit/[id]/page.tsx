@@ -21,6 +21,18 @@ import { useSearchParams } from "next/navigation";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
+  const stageOptions:OptionType[] = [
+    {
+      label: "Specialized project",
+      value: '1',
+      dataObject: {},
+    },
+    {
+      label: "Capstone project",
+      value: '2',
+      dataObject: {},
+    },
+  ]
   const { branches } = useBranch();
   const branchOptions: OptionType[] = branches.map((branch) => {
     return {
@@ -44,6 +56,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   const project = useProject(params.id);
 
   const [title, setTitle] = useState("");
+  const [stage, setStage] = useState<string>('-1');
   const [instructorList, setInstructorList] = useState<OptionType[]>([]);
   const [selectedBranches, setSelectedBranches] = useState<OptionType[]>([]);
   const [selectedMajors, setSelectedMajors] = useState<OptionType[]>([]);
@@ -66,6 +79,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       setDescription(project.description);
       setTasks(project.tasks);
       setRefs(project.references);
+      setStage(project.stage.toString())
       setSelectedBranches(project.branches.map((branch:Branch) => {
         return branchOptions.find((opt:OptionType) => opt.value === branch.id.toString())
       }));
@@ -128,6 +142,14 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               <InputLabel title="Project owner:" />
             </td>
             <td className="rounded-md bg-lightgray px-2 py-2">{user.name}</td>
+          </tr>
+          <tr>
+            <td>
+              <InputLabel title="Project stage:" />
+            </td>
+            <td>
+              <DropdownMenu name="projectStage" options={stageOptions} value={stage} onChange={setStage} />
+            </td>
           </tr>
           <tr>
             <td>
@@ -291,7 +313,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               name: title,
               status: "WAITING_FOR_DEPARTMENT_HEAD",
               requirements: requirements,
-              stage: 1,
+              stage: parseInt(stage),
               description,
               tasks,
               owner: {
