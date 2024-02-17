@@ -1,13 +1,14 @@
 "use client";
 import React, { createContext, useState } from "react";
+import { UserEditModalProps } from "../_components/Modals/UserEditModal";
 
 interface ModalContextProps {
   toggleModal: (arg0: boolean) => void;
   showModal: boolean;
   modalType: string;
   setModalType: (arg0: string) => void;
-  modalProps: StatusModalProps | ActionModalProps
-  setModalProps: (arg0: StatusModalProps | ActionModalProps) => void;
+  modalProps: StatusModalProps | ActionModalProps | UserEditModalProps | any;
+  setModalProps: (arg0: StatusModalProps | ActionModalProps | UserEditModalProps | any) => void;
 }
 
 export const ModalContext = createContext<ModalContextProps | null>(null);
