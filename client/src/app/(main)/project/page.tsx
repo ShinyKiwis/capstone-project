@@ -189,7 +189,7 @@ const Project = () => {
       <div className="mt-4 flex flex-1 gap-4 overflow-hidden">
         {projects.length != 0 ? (
           <>
-            <div className="flex flex-col w-1/2 min-h-[0] flex-auto flex-nowrap gap-4 overflow-y-auto">
+            <div className="flex flex-col w-1/2 min-h-0 gap-4 overflow-y-auto">
               {projects.map(function (project) {
                 return (
                   <ProjectCard

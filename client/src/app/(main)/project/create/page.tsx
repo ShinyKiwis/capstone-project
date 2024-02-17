@@ -268,7 +268,7 @@ const CreateProject = () => {
       </div>
 
       {/* Action buttons: */}
-      <div className="flex justify-end gap-4 pt-4">
+      <div className="flex justify-end gap-4 pt-4 pb-4">
         <Button
           isPrimary={true}
           variant="success"

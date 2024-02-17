@@ -31,7 +31,7 @@ const parseUrlString = (pathString: string) => {
 
 const SideBarItem = ({ Icon, title, paths, pages }: SideBarItemProps) => {
   const pathname = usePathname();
-  let currPageBelongToPaths = paths.some((path)=>path===pathname);
+  let currPageBelongToPaths = paths.some((path)=>pathname.startsWith(path));
 
   const toggleAccordion = (accordBtn: any) => {
     let currTarget = accordBtn.parentNode.childNodes[1];
