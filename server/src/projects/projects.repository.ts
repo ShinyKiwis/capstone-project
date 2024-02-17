@@ -86,6 +86,7 @@ export class ProjectsRepository extends Repository<Project> {
       description,
       tasks,
       references,
+      stage,
       supervisors,
       students,
       majors,
@@ -149,6 +150,7 @@ export class ProjectsRepository extends Repository<Project> {
     project.description = description;
     project.tasks = tasks;
     project.references = references;
+    project.stage = stage;
     project.supervisors = supervisorsList;
     project.majors = majorsList;
     project.branches = branchesList;

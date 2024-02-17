@@ -20,6 +20,9 @@ export class UpdateProjectDto {
   @IsNotEmpty()
   references: string;
 
+  @IsNotEmpty()
+  stage: number;
+
   @IsOptional()
   requirements: CreateProjectRequirementDto[];
 
