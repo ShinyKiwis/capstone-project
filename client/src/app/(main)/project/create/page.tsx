@@ -4,9 +4,6 @@ import {
   Button,
   RichTextEditor,
   DropdownMenu,
-  SearchBox,
-  MultiselectDropdown,
-  Profile,
   ProfileSelector,
 } from "@/app/_components";
 import axios from "axios";
@@ -20,7 +17,6 @@ import {
 import { useEffect, useState, useMemo, useContext } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
-import { OptionType } from "@/app/_components/ProfileSelector";
 
 
 const CreateProject = () => {
@@ -46,6 +42,7 @@ const CreateProject = () => {
   const [numberOfMembers, setNumberOfMembers] = useState(1);
 
   useEffect(() => {
+    // Set values based on default options
     if (branches.length > 0 || majors.length > 0) {
       setBranch(branches[0].name);
       setMajor(majors[0].name);
@@ -162,6 +159,7 @@ const CreateProject = () => {
         onChange={(e) => setTitle(e.target.value)}
       ></textarea>
 
+
       {/* Project metadata section: */}
       <div className="mt-8 w-full">
         <div className="flex h-fit gap-4">
@@ -189,6 +187,7 @@ const CreateProject = () => {
               isMulti={true}
             />
           </div>
+
           <div className="w-2/3">
             <div className="flex h-full flex-col">
               <p className="mb-4 text-2xl font-bold">Description</p>
@@ -199,11 +198,14 @@ const CreateProject = () => {
             </div>
           </div>
         </div>
+
+
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3">
             <InputFieldTitle title="Members" />
             <ProfileSelector type="students" onChange={setStudentsList} value={studentsList} isMulti={true} />
           </div>
+
           <div className="w-2/3">
             <div className="flex h-full flex-col">
               <p className="mb-4 text-2xl font-bold">Tasks/Missions</p>
@@ -211,6 +213,8 @@ const CreateProject = () => {
             </div>
           </div>
         </div>
+
+
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3"></div>
           <div className="w-2/3">
@@ -221,6 +225,9 @@ const CreateProject = () => {
           </div>
         </div>
       </div>
+
+
+      {/* Action buttons: */}
       <div className="flex justify-end gap-4 pt-4">
         <Button
           isPrimary={true}

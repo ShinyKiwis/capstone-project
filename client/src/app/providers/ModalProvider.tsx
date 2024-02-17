@@ -1,7 +1,5 @@
 "use client";
 import React, { createContext, useState } from "react";
-import { StatusModalProps } from "../_components/Modals/StatusModals";
-import { ActionModalProps } from "../_components/Modals/ActionModals";
 
 interface ModalContextProps {
   toggleModal: (arg0: boolean) => void;
@@ -20,8 +18,8 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
   const [modalProps, setModalProps] = useState({title:''});
 
   const toggleModal = (value: boolean) => {
-    console.log("TOGGLE", value)
-    console.log("TOGGLE", modalType)
+    // console.log("TOGGLE", value)
+    // console.log("TOGGLE", modalType)
     setShowModal(value);
   };
   const modalContextValue: ModalContextProps = {

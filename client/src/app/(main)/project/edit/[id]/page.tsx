@@ -4,9 +4,7 @@ import {
   Button,
   RichTextEditor,
   DropdownMenu,
-  SearchBox,
-  MultiselectDropdown,
-  Profile,
+  ProfileSelector,
 } from "@/app/_components";
 import axios from "axios";
 import {
@@ -19,13 +17,7 @@ import {
 } from "@/app/hooks";
 import { useEffect, useState, useMemo, useContext } from "react";
 import { useSearchParams } from "next/navigation";
-import { CgClose } from "react-icons/cg";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
-
-type InstructorOptType = {
-  label: string;
-  value: string;
-};
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   const { branches } = useBranch();
@@ -37,20 +29,22 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   const project = useProject(params.id);
 
   const [title, setTitle] = useState("");
-  const [instructorList, setInstructorList] = useState<InstructorOptType[]>([]);
-  const [branch, setBranch] = useState("");
-  const [major, setMajor] = useState("");
+  const [instructorList, setInstructorList] = useState<OptionType[]>([]);
+  const [selectedBranches, setSelectedBranches] = useState("");
+  const [selectedMajors, setSelectedMajors] = useState("");
   const [requirements, setRequirements] = useState("");
   const [description, setDescription] = useState("");
   const [tasks, setTasks] = useState("");
   const [refs, setRefs] = useState("");
+  const [studentsList, setStudentsList] = useState<OptionType[]>([]);
   const [numberOfMembers, setNumberOfMembers] = useState(1);
-  console.log(instructors);
-  const instructorsOptions: InstructorOptType[] = useMemo(() => {
+
+  const instructorsOptions: OptionType[] = useMemo(() => {
     if (instructors.length !== 0) {
       return instructors.map((instructor) => ({
         label: `${instructor.id} - ${instructor.name}`,
         value: instructor.id.toString(),
+        dataObject: instructor
       }));
     }
     return [];
@@ -59,26 +53,35 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   const projectContext = useContext(ProjectContext);
   if (!projectContext) return <div>Loading</div>;
   const { handleUpdateProject, setViewing } = projectContext;
-  console.log(instructorList);
 
   useEffect(() => {
+    // Set default values for branches, majors variable
     if (branches.length > 0 || majors.length > 0) {
-      setBranch(branches[0].name);
-      setMajor(majors[0].name);
+      setSelectedBranches(branches[0].name);
+      setSelectedMajors(majors[0].name);
     }
     if (project) {
-      console.log(project);
+      // Render info of project currently open for edit
+      console.log("Displaying project:",project);
       setTitle(project.name);
       setDescription(project.description);
       setTasks(project.tasks);
       setRefs(project.references);
-      setBranch(project.branches[0].name);
-      setMajor(project.majors[0].name);
+      setSelectedBranches(project.branches[0].name);
+      setSelectedMajors(project.majors[0].name);
       setNumberOfMembers(project.limit);
       setInstructorList(
         project.supervisors.map((supervisor: any) => ({
           label: `${supervisor.id} - ${supervisor.name}`,
           value: supervisor.id.toString(),
+          dataObject: supervisor,
+        })),
+      );
+      setStudentsList(
+        project.students.map((student: any) => ({
+          label: `${student.user.id} - ${student.user.name}`,
+          value: student.user.id.toString(),
+          dataObject: student.user,
         })),
       );
     }
@@ -101,12 +104,12 @@ const EditProject = ({ params }: { params: { id: string } }) => {
 
   const InputsTable = () => {
     const handleBranchSelectChange = (value: string) => {
-      console.log("HANDLE BRANCH",value)
-      setBranch(value);
+      // console.log("HANDLE BRANCH",value)
+      setSelectedBranches(value);
     };
 
     const handleMajorSelectChange = (value: string) => {
-      setMajor(value);
+      setSelectedMajors(value);
     };
 
     const handleNumberOfMemberChange = (
@@ -142,7 +145,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                   name="projectBranch"
                   options={branches}
                   onChange={handleBranchSelectChange}
-                  selected={branch}
+                  selected={selectedBranches}
                 />
               </InputField>
             </td>
@@ -157,7 +160,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                   name="projectProgram"
                   options={majors}
                   onChange={handleMajorSelectChange}
-                  selected={major}
+                  selected={selectedMajors}
                 />
               </InputField>
             </td>
@@ -185,64 +188,6 @@ const EditProject = ({ params }: { params: { id: string } }) => {
     );
   };
 
-  const ProfileItems = ({
-    name,
-    id,
-    email,
-  }: {
-    name: string;
-    id: string;
-    email: string;
-  }) => {
-    return (
-      <div className="flex w-full items-center pt-4">
-        <div>
-          <Profile
-            type="horizontal"
-            username={name}
-            email={email}
-            userId={id}
-          />
-        </div>
-        <div className="right-0 ml-auto">
-          <CgClose
-            size={25}
-            className="text-lack cursor-pointer hover:text-lightgray"
-            onClick={() => {
-              const targetInstructor = instructorsOptions.find((obj) => {
-                return obj.value === id;
-              });
-              // console.log("Remove target:", targetInstructor)
-              let targetIndex = -1;
-              if (targetInstructor && instructorList.length > 0) {
-                targetIndex = instructorList.findIndex(
-                  (obj) => obj.value === id,
-                );
-              }
-              // console.log("Found index:", targetIndex)
-              if (targetIndex > -1) {
-                instructorList.splice(targetIndex, 1);
-                setInstructorList([...instructorList]);
-              }
-            }}
-          />
-        </div>
-      </div>
-    );
-  };
-
-  function handleSelectAdd(newOpt: any, targetArr: any, targetArrSetter: any) {
-    console.log(newOpt);
-    let found = targetArr.findIndex(
-      (obj: any) => obj.value === newOpt[0].value,
-    );
-    console.log(found);
-    if (found === -1) {
-      let newArr = targetArr.concat(newOpt);
-      console.log("New array", newArr);
-      targetArrSetter(newArr);
-    }
-  }
 
   return (
     <div className="w-full flex-1 bg-white">
@@ -256,6 +201,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       ></textarea>
+
 
       {/* Project metadata section: */}
       <div className="mt-8 w-full">
@@ -277,46 +223,14 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3">
             <InputFieldTitle title="Instructors" />
-            <MultiselectDropdown
-              name="supervisors"
-              isMulti={true}
-              options={instructorsOptions}
-              placeholder="Search instructor name, id"
-              value={instructorList}
+            <ProfileSelector
+              type="instructors"
               onChange={setInstructorList}
+              value={instructorList}
+              isMulti={true}
             />
-            <div className="px-3">
-              {instructorList.length > 0 &&
-                instructorList.map(function (selectedOption: {
-                  value: string;
-                  label: string;
-                }) {
-                  // Map list of selected options with list from DB
-                  console.log(instructors);
-                  console.log(selectedOption);
-                  const instructorData = instructors.find((obj) => {
-                    console.log("INSIDE", obj);
-                    console.log("INSIDE", selectedOption);
-                    return (
-                      obj.id !== user.id &&
-                      obj.id.toString() === selectedOption.value
-                    );
-                  });
-                  console.log("INSTRUCTOR DATA", instructorData);
-
-                  return (
-                    instructorData && (
-                      <ProfileItems
-                        key={instructorData!.id}
-                        name={instructorData!.name}
-                        id={instructorData!.id.toString()}
-                        email={instructorData!.email}
-                      />
-                    )
-                  );
-                })}
-            </div>
           </div>
+          
           <div className="w-2/3">
             <div className="flex h-full flex-col">
               <p className="mb-4 text-2xl font-bold">Description</p>
@@ -327,10 +241,12 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
+
+
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3">
-            <InputFieldTitle title="Members" />
-            <SearchBox placeholder="Search student..." />
+          <InputFieldTitle title="Members" />
+          <ProfileSelector type="students" onChange={setStudentsList} value={studentsList} isMulti={true} />
           </div>
           <div className="w-2/3">
             <div className="flex h-full flex-col">
@@ -339,6 +255,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             </div>
           </div>
         </div>
+
+
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3"></div>
           <div className="w-2/3">
@@ -349,6 +267,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
       </div>
+
+      {/* Action buttons: */}
       <div className="flex justify-end gap-4 pt-4">
         <Button
           isPrimary={true}
@@ -365,7 +285,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                 })
                 .filter((storedInstructor) => storedInstructor !== undefined),
             ];
-            console.log("PROJECT", project)
+
             const updateProject = {
               code: +params.id,
               name: title,
@@ -379,17 +299,20 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               },
               references: refs,
               limit: numberOfMembers,
-              studentsCount: project.studentsCount,
               supervisors: updateSupervisorIds,
+              studentsCount: project.studentsCount,
+              students: studentsList.map(selectedStu => {return parseInt(selectedStu.value)}),
+              // !! currently working with singe selected majors, branch
               majors: [
-                +majors.find((storedMajor) => storedMajor.name === major)!.id,
+                +majors.find((storedMajor) => storedMajor.name === selectedMajors)!.id,
               ],
               branches: [
-                +branches.find((storedBranch) => storedBranch.name === branch)!
-                  .id,
+                +branches.find((storedBranch) => storedBranch.name === selectedBranches)!.id,
               ],
             };
-            console.log("PROJECT", project);
+            console.log("Updated project", updateProject);
+
+            // alert(`Title: ${title}\nBranch: ${JSON.stringify(selectedBranches)}\nMajor:${JSON.stringify(selectedMajors)}\nMembers no: ${numberOfMembers} \n\nInstructors:\n${JSON.stringify(instructorList)} \n\nMembers:\n${JSON.stringify(studentsList)}`)
             axios
               .patch(
                 `http://localhost:3500/projects/${params.id}`,
@@ -398,7 +321,14 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               .then((_) => {
                 const parsedUpdateProject = {
                   ...updateProject,
-                  students: project.students,
+                  students: studentsList.map(selectedStu => {return{
+                    userId: parseInt(selectedStu.value),
+                    GPA: -1.0,
+                    credits: -1,
+                    enrolledAt: '-1',
+                    generation: -1,
+                    user: selectedStu.dataObject
+                  }}),
                   supervisors: [
                     {
                       id: user.id,
@@ -410,11 +340,12 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                       updateSupervisorIds.includes(instructor.id),
                     ),
                   ],
+                  // !! currently working with singe selected majors, branch
                   majors: majors.filter(
-                    (storedMajor: any) => storedMajor.name === major,
+                    (storedMajor: any) => storedMajor.name === selectedMajors,
                   ),
                   branches: branches.filter(
-                    (storedBranch: any) => storedBranch.name === branch,
+                    (storedBranch: any) => storedBranch.name === selectedBranches,
                   ),
                 };
                 console.log("FE UPDATE", parsedUpdateProject);
@@ -426,6 +357,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         >
          Submit for approval 
         </Button>
+
         <Button isPrimary={true} variant="normal" className="px-4 py-2 text-lg">
           Save Changes
         </Button>

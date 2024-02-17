@@ -9,11 +9,6 @@ import { AuthContext } from '@/app/providers/AuthProvider';
 import axios from 'axios';
 import { ProjectContext } from '@/app/providers/ProjectProvider';
 
-export interface UnenrollModalProps{
-  title?: string,
-  messages?: string[],
-}
-
 
 const UnenrollModal = ({title, messages}: UnenrollModalProps) => {
   const modalContextValue = useContext(ModalContext);

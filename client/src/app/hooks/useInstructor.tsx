@@ -3,13 +3,6 @@
 import { useState, useEffect } from "react";
 import { useUser } from ".";
 
-export interface Instructor {
-  id: number;
-  email: string;
-  username: string;
-  name: string;
-}
-
 const useInstructor = () => {
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const user = useUser();

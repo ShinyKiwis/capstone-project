@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
-import { Button, InputBox, SearchBox, Typography } from "..";
+import { Button, InputBox, RadioButton, SearchBox, Typography } from "..";
 import CheckBox from "../UserAction/CheckBox";
 import ProfileSelector from "../ProfileSelector";
-import { OptionType } from "../ProfileSelector";
 import Image from "next/image";
-import { useUser } from "@/app/hooks";
+import { useBranch, useMajor, useUser } from "@/app/hooks";
 import hasRole from "@/app/lib/hasRole";
 import { ModalContext } from "@/app/providers/ModalProvider";
+import axios from "axios";
+import { Project, ProjectContext } from "@/app/providers/ProjectProvider";
 
 const NoInstructor = () => {
   return (
@@ -29,7 +30,6 @@ const NoInstructor = () => {
 };
 
 const FilterModal = () => {
-  const user = useUser();
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     console.error(
@@ -39,34 +39,59 @@ const FilterModal = () => {
   }
   const {toggleModal} = modalContextValue;
 
-  const [numberOfParticipants, setNumberOfParticipants] = useState("1");
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) {
+    console.error(
+      "Filtering will not work, project context not initiated",
+    );
+    return "Modal err...";
+  }
+  const { setViewing, setProjects } = projectContext;
+
+  const [membersNumber, setMembersNumber] = useState("");
   const [instructor, setInstructor] = useState<OptionType[]>([]);
 
-  const [selectedProjType, setprojType] = useState<string[]>(['personal projects']);
-  const [selectedBranches, setSelectedBranches] = useState<string[]>(['high quality']);
-  const [selectedMajors, setSelectedMajors] = useState<string[]>(['computer science']);
+  const [selectedProjType, setSelectedProjType] = useState<number>(1);
+  const [selectedBranches, setSelectedBranches] = useState<number[]>([1]);
+  const [selectedMajors, setSelectedMajors] = useState<number[]>([1]);
 
-  const majorOptions = [
-    "Computer Science",
-    "Computer Engineering",
-    "Multidisciplinary Project",
-  ];
+  // const branchOptions = ["High quality", "PFIEV", "VJEP", "Regular program"];
+  const { branches } = useBranch();
+  const { majors } = useMajor();
+  // const majors = [
+  //   "Computer Science",
+  //   "Computer Engineering",
+  //   "Multidisciplinary Project",
+  // ];
 
-  const branchOptions = ["High quality", "PFIEV", "VJEP", "Regular program"];
+  useEffect(() => {
+    if (branches.length > 0 || majors.length > 0) {
+      // Set default values
+      setSelectedBranches([branches[0].id]);
+      setSelectedMajors([majors[0].id]);
+    }
+    console.log("Retreived branches", branches)
+    console.log("Retreived majors", majors)
+  }, [branches, majors]);
+  
 
-  const handleChangeNumberOfParticipants = (
+  const handleChangeMembersNumber = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     e.target.value = +e.target.value <= 999 ? e.target.value : "999";
-    setNumberOfParticipants(e.target.value);
+    setMembersNumber(e.target.value);
   };
 
+  const userIsStudent = hasRole("student");
+
   return (
+    branches.length>0 &&
     <div className="h-[80vh] w-[80vw]">
       <form className="flex h-full w-full flex-col">
         <div className="flex h-full w-full">
           <div className="w-1/2">
-            {hasRole("student") ? (
+            {/* options not available for student's view */}
+            {userIsStudent ? ( 
               ""
             ) : (
               <>
@@ -76,16 +101,18 @@ const FilterModal = () => {
                   className="mb-4 text-2xl font-bold mt-2"
                 />
                 <div className="flex gap-4">
-                  <CheckBox
-                    option="Personal projects"
-                    key="Personal projects"
+                  <RadioButton 
+                    label="Personal Projects"
+                    name="projType"
+                    value={1}
+                    valueSetter={setSelectedProjType}
                     defaultChecked={true}
-                    valueArray={selectedProjType}
                   />
-                  <CheckBox
-                    option="All projects"
-                    key="All projects"
-                    valueArray={selectedProjType}
+                  <RadioButton 
+                    label="All Projects"
+                    name="projType"
+                    value={2}
+                    valueSetter={setSelectedProjType}
                   />
                 </div>
 
@@ -96,16 +123,18 @@ const FilterModal = () => {
                 />
                 <div className="flex gap-4">
                   <CheckBox
-                    option={branchOptions[0]}
-                    key={branchOptions[0]}
+                    option={branches[0].name}
+                    key={branches[0].id}
                     defaultChecked={true}
+                    value={branches[0].id}
                     valueArray={selectedBranches}
                   />
-                  {branchOptions.slice(1).map((option) => {
+                  {branches.slice(1).map((option) => {
                     return (
                       <CheckBox
-                        option={option}
-                        key={option}
+                        option={option.name}
+                        key={option.id}
+                        value={option.id}
                         valueArray={selectedBranches}
                       />
                     );
@@ -113,6 +142,7 @@ const FilterModal = () => {
                 </div>
               </>
             )}
+
             <Typography
               variant="p"
               text="Major"
@@ -120,16 +150,18 @@ const FilterModal = () => {
             />
             <div className="flex gap-4">
               <CheckBox
-                option={majorOptions[0]}
-                key={majorOptions[0]}
+                option={majors[0].name}
+                key={majors[0].id}
                 defaultChecked={true}
+                value={majors[0].id}
                 valueArray={selectedMajors}
               />
-              {majorOptions.slice(1).map((option) => {
+              {majors.slice(1).map((option) => {
                 return (
                   <CheckBox
-                    option={option}
-                    key={option}
+                    option={option.name}
+                    key={option.id}
+                    value={option.id}
                     valueArray={selectedMajors}
                   />
                 );
@@ -144,11 +176,11 @@ const FilterModal = () => {
               />
               <div className="w-2/12">
                 <InputBox
-                  inputName="numberOfParticipants"
-                  placeholderText="1"
+                  inputName="MembersNumber"
+                  placeholderText="No."
                   type="text"
                   className="px-2 py-1 text-center"
-                  onChange={handleChangeNumberOfParticipants}
+                  onChange={handleChangeMembersNumber}
                 />
               </div>
             </div>
@@ -156,7 +188,7 @@ const FilterModal = () => {
           <div className="flex w-1/2 flex-col">
             <Typography
               variant="p"
-              text="Co-Instructor"
+              text="Instructor"
               className="mb-2 text-2xl font-bold"
             />
             <div className={`${instructor.length > 0 ? "h-full" : ""}`}>
@@ -179,11 +211,30 @@ const FilterModal = () => {
             className="px-8 py-1 font-bold text-white"
             onClick={(e) => {
               e.preventDefault();
-              alert(
-                `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${numberOfParticipants}\n\n${JSON.stringify(
-                  instructor,
-                )}`,
-              );
+              // alert(
+              //   `${selectedProjType}\n\n${selectedBranches}\n\n${selectedMajors}\n\n${membersNumber}\n\n${JSON.stringify(
+              //     instructor,
+              //   )}`,
+              // );
+              
+              let branchParams = selectedBranches.map(selectedBranch=>`&branches=${selectedBranch}`).join('');
+              let majorParams = selectedMajors.map(selectedMajor=>`&majors=${selectedMajor}`).join('');
+              let filterQuery = `http://localhost:3500/projects?${
+                membersNumber ? `members=${membersNumber}` : ''}${userIsStudent ? '' : branchParams}${majorParams}`;
+              
+              
+                console.log("Filter query:", filterQuery)
+
+              axios.get(filterQuery)
+              .then((response) => {
+                const data = response.data as { projects: Project[] };
+                setProjects(data.projects);
+                setViewing(data.projects[0]);
+              }, (error) => {
+                console.log(error);
+              });
+
+              toggleModal(false)
             }}
           >
             Apply

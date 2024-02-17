@@ -2,7 +2,6 @@
 
 import axios from "axios";
 import React, { createContext, useEffect, useState } from "react";
-import { User } from "./AuthProvider";
 import { useUser } from "../hooks";
 
 interface ProjectContextProps {
@@ -19,7 +18,7 @@ interface ProjectContextProps {
   handleCreation: (project: Project) => void;
 }
 
-interface Project {
+export interface Project {
   code: number;
   name: string;
   stage: number;

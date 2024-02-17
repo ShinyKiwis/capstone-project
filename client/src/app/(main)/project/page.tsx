@@ -11,10 +11,6 @@ import { RiUpload2Fill } from "react-icons/ri";
 import { FaCheckCircle } from "react-icons/fa";
 import React, { useContext, useEffect, useState, createContext } from "react";
 import { ModalContext } from "@/app/providers/ModalProvider";
-import {
-  EnrolledProjContext,
-  EnrolledProjProvider,
-} from "@/app/providers/EnrolledProjProvider";
 import Image from "next/image";
 import useUser from "@/app/hooks/useUser";
 import hasRole from "@/app/lib/hasRole";
@@ -23,57 +19,28 @@ import { usePathname, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
 
-type ProjectData = {
-  code: number;
-  name: string;
-  stage: number;
-  description: string;
-  tasks: string;
-  references: string;
-  status: string;
-  semester: {
-    year: number;
-    no: number;
-    start: string;
-    end: string;
-  };
-  requirements: any[];
-  students: {
-    name: string;
-    userId: string;
-    credits: number;
-    generation: number;
-    GPA: string;
-    enrolledAt: string;
-  }[];
-  supervisors: {
-    id: number;
-    email: string;
-    username: string;
-    name: string;
-  }[];
-  majors: {
-    id: number;
-    name: string;
-  }[];
-  branches: {
-    id: number;
-    name: string;
-  }[];
-  studentsCount: number;
-  limit: number;
-};
-
 const ProjectHeader = ({projects}: {projects: any[]}) => {
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     return null;
   }
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) return <div>Loading</div>;
+  const { setViewing, setProjects } = projectContext;
   const user = useUser()
   const [projectsPerPage, setProjectsPerPage] = useState("");
   const { toggleModal, setModalType } = modalContextValue;
   const searchParams = useSearchParams();
   const pathname = usePathname();
+
+  const [searchResults, setSearchResults] = useState([]);
+  useEffect(() => {
+    // render search results returned by SearchBox
+    if (searchResults && searchResults.length>0){
+      setProjects(searchResults)
+      setViewing(searchResults[0])
+    }
+  }, [searchResults]);
 
   const handleProjectsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -98,12 +65,13 @@ const ProjectHeader = ({projects}: {projects: any[]}) => {
       })
     }
   }
+
   return (
     <div className="sticky top-0 w-full bg-white pt-2">
       <div className="w-3/6">
         <div className="mt-4 flex gap-4">
           <div className="w-10/12">
-            <SearchBox placeholder="Search projects..." />
+            <SearchBox placeholder="Search projects..." resultSetter={setSearchResults}/>
           </div>
           <Button
             variant="normal"
@@ -197,10 +165,10 @@ const NoData = () => {
 };
 
 const Project = () => {
-  const projectContext = useContext(ProjectContext);
   const user = useUser()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const projectContext = useContext(ProjectContext);
   if (!projectContext) return <div>Loading</div>;
   const { projects, viewing, setViewing, getProjects } = projectContext;
   useEffect(()=>{

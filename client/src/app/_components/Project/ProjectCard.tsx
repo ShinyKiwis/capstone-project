@@ -1,11 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { Button, Profile, ProjectInformationTable, Typography } from "..";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { ModalContext } from "../../providers/ModalProvider";
-import axios from "axios";
 import parse from "html-react-parser";
 import { useNavigate, useUser } from "@/app/hooks";
-import { AuthContext, User } from "@/app/providers/AuthProvider";
+import { AuthContext } from "@/app/providers/AuthProvider";
 import hasRole from "@/app/lib/hasRole";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
@@ -15,41 +14,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 import DenyButton from "../UserAction/Buttons/DenyButton";
 import ProjectStatus from "./ProjectStatus";
 import ApproveButton from "../UserAction/Buttons/ApproveButton";
-
-type Student = {
-  user: User;
-  userId: number;
-  credits: number;
-  generation: number;
-  GPA: number;
-  enrolledAt: string;
-};
-
-export interface ProjectProps {
-  code: number;
-  name: string;
-  status: string;
-  description: string;
-  tasks: string;
-  references: string;
-  branches: {
-    id: number;
-    name: string;
-  }[];
-  majors: {
-    id: number;
-    name: string;
-  }[];
-  supervisors: {
-    id: number;
-    email: string;
-    username: string;
-    name: string;
-  }[];
-  studentsCount: number;
-  students: Student[];
-  limit: number;
-}
 
 interface ProjectCardProps {
   projectObject: ProjectProps;
@@ -66,6 +30,7 @@ interface ProjectCardListProps
   extends Pick<ProjectProps, "studentsCount" | "students" | "limit"> {
   className: string;
 }
+
 
 const ProjectCardMetadata = ({
   code,
@@ -113,6 +78,7 @@ export const ProjectCardList = ({
       </div>
       <div className="flex flex-col gap-2">
         {students.map(function (member: Student) {
+          // console.log(member)
           return (
             <Profile
               key={member.userId}
@@ -135,6 +101,7 @@ const StudentButtons = ({
 }) => {
   const user = useUser();
   const authContext = useContext(AuthContext);
+  // console.log("user:",user)
   return (
     <>
       <Button
@@ -247,14 +214,6 @@ const ProjectCardActions = ({
       ) : (
         <ManagementButtons viewSet={viewSet} viewTarget={viewTarget} />
       )}
-      {/* Buttons for testing other modals */}
-      {/* <div>
-        <p>Test modals</p>
-        <button className="border-2" onClick={handleAction}>Unenroll</button>
-        <button className="border-2" onClick={handleAction}>Delete</button>
-        <button className="border-2" onClick={handleAction}>Deny</button>
-        <button className="border-2" onClick={handleAction}>Invalid</button>(Check console log for err msg)
-      </div> */}
     </div>
   );
 };
@@ -264,10 +223,10 @@ const ProjectCard = ({
   detailedViewSetter,
 }: ProjectCardProps) => {
   const authContext = useContext(AuthContext);
-  console.log(
-    "Currently enrolled project ID:",
-    authContext?.user?.project?.code,
-  );
+  // console.log(
+  //   "Currently enrolled project ID:",
+  //   authContext?.user?.project?.code,
+  // );
 
   return (
     <div className="flex w-full cursor-pointer flex-col rounded-md border border-black px-4 py-4">

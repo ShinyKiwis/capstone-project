@@ -1,12 +1,10 @@
 import React, { useContext } from "react";
 import parse from "html-react-parser";
 import { Button, ProjectInformationTable, Typography } from "..";
-import { ProjectCardList, ProjectProps } from "./ProjectCard";
-import { AuthContext } from "@/app/providers/AuthProvider";
+import { ProjectCardList } from "./ProjectCard";
 import { useNavigate, useUser } from "@/app/hooks";
 import hasRole from "@/app/lib/hasRole";
 import { ModalContext } from "@/app/providers/ModalProvider";
-import axios from "axios";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
 import ActivateButton from "../UserAction/Buttons/ActivateButton";
@@ -28,8 +26,6 @@ const ProjectCardDetail = ({
     );
     return;
   }
-  const { toggleModal, setModalType, setModalProps, modalProps } =
-    modalContextValue;
 
   const StudentButtons = ({}) => {
     return (

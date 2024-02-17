@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -127,7 +127,7 @@ const SideBar = () => {
     {
       Icon: FaProjectDiagram,
       title: "Projects",
-      paths: ['/project', '/project/create'],
+      paths: ['/project', '/project/create', '/project/approve', '/project/edit'],
       pages: [
         {
           title: "Specialized Projects",

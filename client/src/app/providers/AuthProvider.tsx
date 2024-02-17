@@ -9,24 +9,6 @@ interface AuthContextProps {
   setUser: any
 }
 
-export interface User {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  roles: [{
-    id:string,
-    name:string
-  }];
-  credits: number;
-  generation: number;
-  GPA: number;
-  enrolledAt: string;
-  project: {
-    code: number,
-  }
-}
-
 export const AuthContext = createContext<AuthContextProps | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {

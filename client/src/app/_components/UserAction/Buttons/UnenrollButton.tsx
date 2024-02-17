@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import Button from "./Button";
 import { ModalContext } from "@/app/providers/ModalProvider";
-import { ProjectContext } from "@/app/providers/ProjectProvider";
 
 const UnenrollButton = ({
   className,

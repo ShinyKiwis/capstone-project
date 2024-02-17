@@ -1,5 +1,5 @@
 "use client";
-import { Button, Profile, Typography } from "@/app/_components";
+import { Profile, Typography } from "@/app/_components";
 import { usePathname, useSearchParams } from "next/navigation";
 import { FaBell } from "react-icons/fa";
 import { MdArrowDropDown } from "react-icons/md";
@@ -8,7 +8,53 @@ import { useState } from "react";
 import LogoutButton from "../UserAction/Buttons/LogoutButton";
 import { usePageTitle } from "@/app/hooks";
 
-let userRole = "supervisor";
+
+const PageHeader = () => {
+  const [toggleProfileModal, setToggleProfileModal] = useState(false);
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const pageTitle = usePageTitle(pathname+searchParams.toString())
+  const user = useUser();
+
+  return (
+    <div className="relative flex h-20 items-center gap-4 pl-8 pr-14 pt-5">
+      <div>
+        <Typography variant="h1" text={pageTitle} color="text-darkblue" />
+      </div>
+      <div
+        className="ms-auto flex gap-4"
+        onClick={() => setToggleProfileModal(!toggleProfileModal)}
+      >
+        <button className="w-fit">
+          <FaBell size={25} />
+        </button>
+        <div className="flex gap-2 items-center">
+          <Profile username={user!.name} type="horizontal" />
+          <MdArrowDropDown size={35} className="cursor-pointer" />
+        </div>
+      </div>
+      <div
+        className={`absolute right-14 top-20 z-20 rounded-md bg-white p-8 ${toggleProfileModal
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
+          }  transition-opacity duration-500 ease-in-out`}
+        style={{
+          boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+          border: "0.5px solid #D7D7D7",
+        }}
+      >
+        <Profile username={user!.name} type="vertical" email={user!.email} />
+        <div>
+          <LogoutButton />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PageHeader;
+
+
 
 // interface TitlePathMappings {
 //   [key: string]: object;
@@ -110,48 +156,3 @@ let userRole = "supervisor";
 //     else return "No defined title for current role, redirect 404 ?";
 //   } else return "No role found, not logged in ?";
 // }
-
-const PageHeader = () => {
-  const [toggleProfileModal, setToggleProfileModal] = useState(false);
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const pageTitle = usePageTitle(pathname+searchParams.toString())
-  const user = useUser();
-
-  return (
-    <div className="relative flex h-20 items-center gap-4 pl-8 pr-14 pt-5">
-      <div>
-        <Typography variant="h1" text={pageTitle} color="text-darkblue" />
-      </div>
-      <div
-        className="ms-auto flex gap-4"
-        onClick={() => setToggleProfileModal(!toggleProfileModal)}
-      >
-        <button className="w-fit">
-          <FaBell size={25} />
-        </button>
-        <div className="flex gap-2 items-center">
-          <Profile username={user!.name} type="horizontal" />
-          <MdArrowDropDown size={35} className="cursor-pointer" />
-        </div>
-      </div>
-      <div
-        className={`absolute right-14 top-20 z-20 rounded-md bg-white p-8 ${toggleProfileModal
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0"
-          }  transition-opacity duration-500 ease-in-out`}
-        style={{
-          boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-          border: "0.5px solid #D7D7D7",
-        }}
-      >
-        <Profile username={user!.name} type="vertical" email={user!.email} />
-        <div>
-          <LogoutButton />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default PageHeader;

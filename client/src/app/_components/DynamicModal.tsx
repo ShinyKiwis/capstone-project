@@ -3,23 +3,18 @@ import { CgClose } from "react-icons/cg";
 import { ModalContext } from "../providers/ModalProvider";
 import FilterModal from "./Modals/FilterModal";
 import {
-  StatusModalProps,
   SuccessModal,
   WarningModal,
 } from "./Modals/StatusModals";
 import {
-  ActionModalProps,
-  RemovalModal,
   ProjDenyModal,
 } from "./Modals/ActionModals";
 import UnenrollModal from "./Modals/UnenrollModal";
 import UploadFileModal from "./Modals/UploadFileModal";
-import axios from "axios";
 import DeleteProjectModal from "./Modals/DeleteProjectModal";
 import ActivateProjectModal from "./Modals/ActivateProjectModal";
-import { title } from "process";
 
-type definedModalProps = StatusModalProps | ActionModalProps;
+type DefinedModalProps = StatusModalProps | ActionModalProps;
 
 const DynamicModal = () => {
   const modalContextValue = useContext(ModalContext);
@@ -28,7 +23,7 @@ const DynamicModal = () => {
   }
   const { toggleModal, modalType, modalProps } = modalContextValue;
 
-  const renderModal = (modalType: string, modalProps: definedModalProps) => {
+  const renderModal = (modalType: string, modalProps: DefinedModalProps) => {
     console.log("MODAL", modalType);
     switch (modalType) {
       case "filter":

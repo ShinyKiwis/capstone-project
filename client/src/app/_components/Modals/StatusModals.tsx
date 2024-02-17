@@ -7,12 +7,6 @@ import { Typography, Button } from '..';
 import { ModalContext } from '@/app/providers/ModalProvider';
 
 
-export interface StatusModalProps{
-  title: string,
-  messages?: string[]
-}
-
-
 const WarningModal = ({title, messages}: StatusModalProps) => {
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
