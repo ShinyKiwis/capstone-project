@@ -20,7 +20,28 @@ export interface UserEditModalProps {
   };
 }
 
-const userRoles = ["teacher", "student", "ATP", "dean"]; // retreive from db ?
+const userRoles = [
+  {
+    id: 1,
+    name: "Student",
+  },
+  {
+    id: 2,
+    name: "Teacher",
+  },
+  {
+    id: 3,
+    name: "Department Head",
+  },
+  {
+    id: 4,
+    name: "Program Chair",
+  },
+  {
+    id: 5,
+    name: "Dean",
+  },
+]; // retreive from db ?
 
 const UserEditModal = ({ targetUsr }: UserEditModalProps) => {
   const [selectedRoles, setSelectedRoles] = useState([...targetUsr.roles]);
@@ -47,10 +68,21 @@ const UserEditModal = ({ targetUsr }: UserEditModalProps) => {
       <div className="text-lg font-bold text-blue">Roles</div>
       <div>
         {userRoles.map((role) => (
-          <CheckBox option={role} valueArray={selectedRoles} defaultChecked={targetUsr.roles.includes(role)} key={role}></CheckBox>
+          <CheckBox
+            option={role.name}
+            value={role.id}
+            valueArray={selectedRoles}
+            defaultChecked={targetUsr.roles.includes(role)}
+            key={role.id}
+          ></CheckBox>
         ))}
       </div>
-      <Button isPrimary={true} variant="normal" onClick={handleApply} className="px-2 py-1">
+      <Button
+        isPrimary={true}
+        variant="normal"
+        onClick={handleApply}
+        className="px-2 py-1"
+      >
         Apply options
       </Button>
     </div>
