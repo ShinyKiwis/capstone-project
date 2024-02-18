@@ -20,7 +20,9 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
       <body className={`${sintony.className} ${poppins.className} flex`}>
         <AuthProvider>
           <ProjectProvider>
-            <App children={children}/>
+            <App>
+              {children}
+            </App>
           </ProjectProvider>
         </AuthProvider>
       </body>

@@ -21,7 +21,7 @@ import { useSearchParams } from "next/navigation";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
-  const stageOptions:OptionType[] = [
+  const stageOptions: OptionType[] = [
     {
       label: "Specialized project",
       value: '1',
@@ -67,24 +67,21 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   const [studentsList, setStudentsList] = useState<OptionType[]>([]);
   const [numberOfMembers, setNumberOfMembers] = useState(1);
 
-  const projectContext = useContext(ProjectContext);
-  if (!projectContext) return <div>Loading</div>;
-  const { handleUpdateProject, setViewing } = projectContext;
 
   useEffect(() => {
     if (project) {
       // Render info of project currently open for edit
-      console.log("Displaying project:",project);
+      console.log("Displaying project:", project);
       setTitle(project.name);
       setDescription(project.description);
       setTasks(project.tasks);
       setRefs(project.references);
       setStage(project.stage.toString())
-      setSelectedBranches(project.branches.map((branch:Branch) => {
-        return branchOptions.find((opt:OptionType) => opt.value === branch.id.toString())
+      setSelectedBranches(project.branches.map((branch: Branch) => {
+        return branchOptions.find((opt: OptionType) => opt.value === branch.id.toString())
       }));
-      setSelectedMajors(project.majors.map((major:Major) => {
-        return majorOptions.find((opt:OptionType) => opt.value === major.id.toString())
+      setSelectedMajors(project.majors.map((major: Major) => {
+        return majorOptions.find((opt: OptionType) => opt.value === major.id.toString())
       }));
       setNumberOfMembers(project.limit);
       setInstructorList(
@@ -103,6 +100,9 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       );
     }
   }, [branches, majors, project]);
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) return <div>Loading</div>;
+  const { handleUpdateProject, setViewing } = projectContext;
 
   const InputFieldTitle = ({ title }: { title: string }) => {
     let className = "text-2xl font-bold mb-4";
@@ -252,7 +252,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               isMulti={true}
             />
           </div>
-          
+
           <div className="w-2/3">
             <div className="flex h-full flex-col">
               <p className="mb-4 text-2xl font-bold">Description</p>
@@ -267,8 +267,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
 
         <div className="mt-4 flex h-fit gap-4">
           <div className="h-64 w-1/3">
-          <InputFieldTitle title="Members" />
-          <ProfileSelector type="students" onChange={setStudentsList} value={studentsList} isMulti={true} />
+            <InputFieldTitle title="Members" />
+            <ProfileSelector type="students" onChange={setStudentsList} value={studentsList} isMulti={true} />
           </div>
           <div className="w-2/3">
             <div className="flex h-full flex-col">
@@ -323,15 +323,15 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               limit: numberOfMembers,
               supervisors: updateSupervisorIds,
               studentsCount: project.studentsCount,
-              students: studentsList.map(selectedStu => {return parseInt(selectedStu.value)}),
+              students: studentsList.map(selectedStu => { return parseInt(selectedStu.value) }),
               // !! currently working with singe selected majors, branch
               majors: [
-                ...selectedMajors.map((major:OptionType) => {
+                ...selectedMajors.map((major: OptionType) => {
                   return major.value;
                 }),
               ],
               branches: [
-                ...selectedBranches.map((branch:OptionType) => {
+                ...selectedBranches.map((branch: OptionType) => {
                   return branch.value;
                 }),
               ]
@@ -347,14 +347,16 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               .then((_) => {
                 const parsedUpdateProject = {
                   ...updateProject,
-                  students: studentsList.map(selectedStu => {return{
-                    userId: parseInt(selectedStu.value),
-                    GPA: -1.0,
-                    credits: -1,
-                    enrolledAt: '-1',
-                    generation: -1,
-                    user: selectedStu.dataObject
-                  }}),
+                  students: studentsList.map(selectedStu => {
+                    return {
+                      userId: parseInt(selectedStu.value),
+                      GPA: -1.0,
+                      credits: -1,
+                      enrolledAt: '-1',
+                      generation: -1,
+                      user: selectedStu.dataObject
+                    }
+                  }),
                   supervisors: [
                     {
                       id: user.id,
@@ -381,7 +383,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               });
           }}
         >
-         Submit for approval 
+          Submit for approval
         </Button>
 
         <Button isPrimary={true} variant="normal" className="px-4 py-2 text-lg">
