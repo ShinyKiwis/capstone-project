@@ -3,7 +3,7 @@ import parse from "html-react-parser";
 import { Button, ProjectInformationTable, Typography } from "..";
 import { ProjectCardList } from "./ProjectCard";
 import { useNavigate, useUser } from "@/app/hooks";
-import hasRole from "@/app/lib/hasRole";
+import useHasRole from "@/app/lib/hasRole";
 import { ModalContext } from "@/app/providers/ModalProvider";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
@@ -18,6 +18,7 @@ const ProjectCardDetail = ({
 }: {
   projectObject: ProjectProps;
 }) => {
+  const isStudent = useHasRole("student")
   const user = useUser();
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
@@ -95,7 +96,7 @@ const ProjectCardDetail = ({
 
   return (
     <div className="rounded-md border border-black px-8 py-4">
-      {!hasRole("student") && <ProjectStatus status={projectObject.status} />}
+      {!isStudent && <ProjectStatus status={projectObject.status} />}
       <Typography variant="h1" text={projectObject.code.toString()} />
       <Typography variant="h1" text={projectObject.name} />
       <div className="mb-4 flex w-full">
@@ -127,7 +128,7 @@ const ProjectCardDetail = ({
         {parse(projectObject.references)}
       </div>
       <div className="mt-4 flex justify-end gap-4">
-        {hasRole("student") ? (
+        {isStudent ? (
           <StudentButtons />
         ) : (
           <ManagementButtons viewTarget={projectObject} />

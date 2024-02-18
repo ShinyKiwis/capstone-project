@@ -125,8 +125,8 @@ const ProfileSelector = ({
     );
   };
 
+  const { instructors } = useInstructor();
   if (type === "instructors") {
-    const { instructors } = useInstructor();
     let optionsList: OptionType[] = [];
 
     // Map instructors data to options list process-able by react-select

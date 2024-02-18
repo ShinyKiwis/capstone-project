@@ -94,7 +94,7 @@ const ProjDenyModal = () => {
             className="mb-2 text-2xl"
           />
           <div className="mb-2 font-normal text-gray">
-            Send denial notification and reason to the project's supervisor.
+            Send denial notification and reason to the project&apos;s supervisor.
           </div>
         </div>
       </div>

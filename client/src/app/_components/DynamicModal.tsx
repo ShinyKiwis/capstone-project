@@ -20,6 +20,17 @@ import UserEditModal from "./Modals/UserEditModal";
 type DefinedModalProps = StatusModalProps | ActionModalProps | UserEditModalProps | any;
 
 const DynamicModal = () => {
+  const modalRef = useRef<any>(null);
+  const [dimensions, setDimensions] = useState({ width:0, height: 0 });
+  
+  useLayoutEffect(() => {
+    if (modalRef.current) {
+      setDimensions({
+        width: modalRef.current.offsetWidth,
+        height: modalRef.current.offsetHeight
+      });
+    }
+  }, []);
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     return null;
@@ -61,18 +72,6 @@ const DynamicModal = () => {
   };
 
   // Place the modal at specific coords on the screen while preventing overflowing viewport
-  const modalRef = useRef<any>(null);
-  const [dimensions, setDimensions] = useState({ width:0, height: 0 });
-
-  useLayoutEffect(() => {
-    if (modalRef.current) {
-      setDimensions({
-        width: modalRef.current.offsetWidth,
-        height: modalRef.current.offsetHeight
-      });
-    }
-  }, []);
-  
   var posY = '';
   var posX = '';
   if (modalProps.position){
@@ -85,7 +84,6 @@ const DynamicModal = () => {
     else
       posY = yCoord.toString()+'px'
   }
-  
 
   return (
     <div

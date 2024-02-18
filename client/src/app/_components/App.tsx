@@ -15,7 +15,9 @@ const App = ({ children }: { children: React.ReactNode }) => {
     mounted && (
       <ModalProvider>
         <SideBar />
-        <PageContent children={children} />
+        <PageContent>
+          {children}
+        </PageContent>
       </ModalProvider>
     )
   );
