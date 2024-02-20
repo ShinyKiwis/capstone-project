@@ -23,6 +23,9 @@ const mockFilter = {
   status: ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD,
   owner: 3,
   stage: 1,
+  majors: [1],
+  branches: [1],
+  supervisors: [1]
 };
 
 describe('ProjectsService', () => {
@@ -283,10 +286,12 @@ describe('ProjectsService', () => {
       const mockUpdateProjectDto: UpdateProjectDto = {
         name: 'Test project 2 updated',
         description: 'test test test test',
+        stage: 2,
         tasks: 'test test test test',
         references: 'test test test test updated baby',
         limit: 3,
         supervisors: [2919],
+        students: [],
         majors: [2],
         branches: [2],
         requirements: null,
