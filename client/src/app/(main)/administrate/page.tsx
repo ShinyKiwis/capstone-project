@@ -307,47 +307,44 @@ const Administrate = () => {
   const [search, setSearch] = useState("");
   const [tableIsLoading, setTableIsLoading] = useState(false);
 
-  const queryClient = useQueryClient();
-  const { data: usersData, isLoading } = useQuery({
+  const {
+    data: usersData,
+    isLoading,
+    isRefetching,
+  } = useQuery({
     queryFn: async () => {
-      let allUsers = await fetchUsers('')   // Via api
+      let allUsers = await fetchUsers(""); // Via api
       // Initialize all rows on first fetch, the other times will be retreived from cache
       setRows(allUsers);
-      return allUsers;    // returned in userData const
+      return allUsers; // returned in userData const
     },
     queryKey: ["users"],
-    staleTime: Infinity
+    staleTime: Infinity,
   });
-  const [rows, setRows] = useState<User_AdminPage[]>(usersData ? usersData : []);   // use data from cache if available
+  const [rows, setRows] = useState<User_AdminPage[]>(
+    usersData ? usersData : [],
+  ); // use data from cache if available
 
-  // const { mutateAsync: searchMutate } = useMutation({
-  //   mutationFn: fetchUsers,
-  //   onSuccess: (data, variables) => {
-  //     queryClient.invalidateQueries({ queryKey: ["users"] })
-  //     console.log("updated data:", usersData)
-  //   },
-  // });
+  const handleFilter = async (opt: string) => {
+    if (!usersData) return;
 
-  const handleFilter = async(opt: string) => {
-    if (!usersData)
-      return;
-
-    let results:User_AdminPage[] = [];
+    let results: User_AdminPage[] = [];
     setTableIsLoading(true);
 
+    // Call filter API and retrieve results
     if (opt === "deans") {
-      results = await filterUsersByRole('dean');
+      results = await filterUsersByRole("Dean");
       setSelectedFilter("deans");
     } else if (opt === "instructors") {
-      results = await filterUsersByRole('teacher');
+      results = await filterUsersByRole("Teacher");
       setSelectedFilter("instructors");
     } else {
-      results = await filterUsersByRole('student');
+      results = await filterUsersByRole("Student");
       setSelectedFilter("students");
     }
-    
-    setTableIsLoading(false)
-    setRows(results)
+
+    setTableIsLoading(false);
+    setRows(results);
   };
 
   const handleSearchUser = async (query: string) => {
@@ -356,7 +353,7 @@ const Administrate = () => {
     let results = await fetchUsers(query);
 
     setTableIsLoading(false);
-    setRows(results)
+    setRows(results);
   };
 
   const modalContextValue = useContext(ModalContext);
@@ -530,7 +527,7 @@ const Administrate = () => {
           }}
           pageSizeOptions={[10, 20, 50, 100]}
           checkboxSelection
-          loading={tableIsLoading}
+          loading={tableIsLoading || isRefetching}
         />
       </div>
     </div>
