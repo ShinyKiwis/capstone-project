@@ -28,10 +28,6 @@ export class UsersService {
     return this.usersRepository.getAllInstructors();
   }
 
-  findAll() {
-    return `This action returns all users`;
-  }
-
   async getAUser(id: number) {
     const user = await this.usersRepository.getUserById(id);
     const student = await this.studentsRepository.getStudentById(id);
@@ -76,5 +72,9 @@ export class UsersService {
 
   assignRoles(id: number, assignRolesDto: AssignRolesDto) {
     return this.usersRepository.assignRoles(id, assignRolesDto);
+  }
+
+  getAllUsers() {
+    return this.usersRepository.find({ relations: { roles: true } });
   }
 }
