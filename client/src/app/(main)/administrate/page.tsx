@@ -16,7 +16,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { User_AdminPage, fetchUsers } from "./mockAPI";
+import { User_AdminPage, fetchUsers, filterUsersByRole } from "./mockAPI";
 import { BiSearch } from "react-icons/bi";
 
 // const users = [
@@ -305,6 +305,7 @@ import { BiSearch } from "react-icons/bi";
 const Administrate = () => {
   const [selectedFilter, setSelectedFilter] = useState("deans");
   const [search, setSearch] = useState("");
+  const [tableIsLoading, setTableIsLoading] = useState(false);
 
   const queryClient = useQueryClient();
   const { data: usersData, isLoading } = useQuery({
@@ -327,23 +328,34 @@ const Administrate = () => {
   //   },
   // });
 
-  const handleFilter = (opt: string) => {
-    if (usersData)
+  const handleFilter = async(opt: string) => {
+    if (!usersData)
+      return;
+
+    let results:User_AdminPage[] = [];
+    setTableIsLoading(true);
+
     if (opt === "deans") {
-      setRows(usersData);
+      results = await filterUsersByRole('dean');
       setSelectedFilter("deans");
-    } else if (opt === "instructors" && usersData) {
-      setRows(usersData);
+    } else if (opt === "instructors") {
+      results = await filterUsersByRole('teacher');
       setSelectedFilter("instructors");
     } else {
-      setRows([]);
+      results = await filterUsersByRole('student');
       setSelectedFilter("students");
     }
+    
+    setTableIsLoading(false)
+    setRows(results)
   };
 
   const handleSearchUser = async (query: string) => {
     // Call search from api and render results seperately, result is not cached
+    setTableIsLoading(true);
     let results = await fetchUsers(query);
+
+    setTableIsLoading(false);
     setRows(results)
   };
 
@@ -518,6 +530,7 @@ const Administrate = () => {
           }}
           pageSizeOptions={[10, 20, 50, 100]}
           checkboxSelection
+          loading={tableIsLoading}
         />
       </div>
     </div>

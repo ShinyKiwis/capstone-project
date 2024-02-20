@@ -320,14 +320,21 @@ const userRoles = [
 export const fetchUsers = async (query = ""): Promise<User_AdminPage[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  console.log("fetched users with query", query);
-
+  // Search by id or full name
   const filteredusers = users.filter((user) =>
-    user.id.toString().includes(query),
+    user.id.toString().includes(query) || user.fullName.includes(query),
   );
 
-  // Uncomment the line below to trigger an error
-  // throw new Error();
+  return [...filteredusers];
+};
+
+export const filterUsersByRole = async (role:string): Promise<User_AdminPage[]> => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  // Search by id or full name
+  const filteredusers = users.filter((user) =>
+    user.roles.includes(role)
+  );
 
   return [...filteredusers];
 };
