@@ -5,7 +5,7 @@ import { ModalContext } from "../../providers/ModalProvider";
 import parse from "html-react-parser";
 import { useNavigate, useUser } from "@/app/hooks";
 import { AuthContext } from "@/app/providers/AuthProvider";
-import hasRole from "@/app/lib/hasRole";
+import useHasRole from "@/app/lib/hasRole";
 import EnrollButton from "../UserAction/Buttons/EnrollButton";
 import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
 import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
@@ -199,6 +199,7 @@ const ProjectCardActions = ({
   viewSet: any;
   viewTarget: ProjectProps;
 }) => {
+  const isStudent = useHasRole("student")
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     console.error(
@@ -209,7 +210,7 @@ const ProjectCardActions = ({
 
   return (
     <div className="ms-auto mt-4 w-1/4">
-      {hasRole("student") ? (
+      {isStudent ? (
         <StudentButtons viewSet={viewSet} viewTarget={viewTarget} />
       ) : (
         <ManagementButtons viewSet={viewSet} viewTarget={viewTarget} />
@@ -230,7 +231,7 @@ const ProjectCard = ({
 
   return (
     <div className="flex w-full cursor-pointer flex-col rounded-md border border-black px-4 py-4">
-      {!hasRole("student") && <ProjectStatus status={projectObject.status} />}
+      {!useHasRole("student") && <ProjectStatus status={projectObject.status} />}
       <div className="flex">
         <ProjectCardMetadata
           code={projectObject.code}

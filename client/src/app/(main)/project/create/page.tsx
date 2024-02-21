@@ -21,21 +21,6 @@ import { ProjectContext } from "@/app/providers/ProjectProvider";
 
 const CreateProject = () => {
   // Background data initialization
-  const projectContext = useContext(ProjectContext);
-  if (!projectContext) return <div>Loading</div>;
-  const { handleCreation } = projectContext;
-  const stageOptions:OptionType[] = [
-    {
-      label: "Specialized project",
-      value: '1',
-      dataObject: {},
-    },
-    {
-      label: "Capstone project",
-      value: '2',
-      dataObject: {},
-    },
-  ]
   const { branches } = useBranch();
   const branchOptions: OptionType[] = branches.map((branch) => {
     return {
@@ -44,6 +29,7 @@ const CreateProject = () => {
       dataObject: branch,
     };
   });
+
   const { majors } = useMajor();
   const majorOptions: OptionType[] = majors.map((major) => {
     return {
@@ -79,8 +65,26 @@ const CreateProject = () => {
     }
   }, [branches, majors]);
 
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) return <div>Loading</div>
+  const { handleCreation } = projectContext;
+  const stageOptions: OptionType[] = [
+    {
+      label: "Specialized project",
+      value: '1',
+      dataObject: {},
+    },
+    {
+      label: "Capstone project",
+      value: '2',
+      dataObject: {},
+    },
+  ]
 
-  
+
+
+
+
   // Display elements
   const InputFieldTitle = ({ title }: { title: string }) => {
     let className = "text-2xl font-bold mb-4";
@@ -307,14 +311,14 @@ const CreateProject = () => {
                 }),
               ],
               majors: [
-                ...selectedMajors.map((major:OptionType) => {
+                ...selectedMajors.map((major: OptionType) => {
                   return {
                     id: major.value,
                   };
                 }),
               ],
               branches: [
-                ...selectedBranches.map((branch:OptionType) => {
+                ...selectedBranches.map((branch: OptionType) => {
                   return {
                     id: branch.value,
                   };
@@ -363,7 +367,7 @@ const CreateProject = () => {
                 };
                 handleCreation(parsedProject);
                 navigate(`/project?project=${searchParams.get("project")}`);
-              }).catch(err => {console.log(err)});
+              }).catch(err => { console.log(err) });
           }}
         >
           Submit for approval
@@ -409,14 +413,14 @@ const CreateProject = () => {
                 }),
               ],
               majors: [
-                ...selectedMajors.map((major:OptionType) => {
+                ...selectedMajors.map((major: OptionType) => {
                   return {
                     id: major.value,
                   };
                 }),
               ],
               branches: [
-                ...selectedBranches.map((branch:OptionType) => {
+                ...selectedBranches.map((branch: OptionType) => {
                   return {
                     id: branch.value,
                   };

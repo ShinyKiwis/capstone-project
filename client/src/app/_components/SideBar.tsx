@@ -31,6 +31,8 @@ const parseUrlString = (pathString: string) => {
 
 const SideBarItem = ({ Icon, title, paths, pages }: SideBarItemProps) => {
   const pathname = usePathname();
+  const searchParam = useSearchParams();
+
   let currPageBelongToPaths = paths.some((path)=>pathname.startsWith(path));
 
   const toggleAccordion = (accordBtn: any) => {
@@ -67,7 +69,6 @@ const SideBarItem = ({ Icon, title, paths, pages }: SideBarItemProps) => {
         style={{maxHeight: currPageBelongToPaths ? '5em' : '0px', overflow:'hidden'}}
       >
         {pages.map(function(accordLink: any){     // Process each subpage
-          const searchParam = useSearchParams();
           let urlContent = parseUrlString(accordLink.href);
           let selected = false
           if (searchParam.has(urlContent.paramName) && searchParam.get(urlContent.paramName) == urlContent.paramVal)  

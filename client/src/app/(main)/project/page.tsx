@@ -13,27 +13,20 @@ import React, { useContext, useEffect, useState, createContext } from "react";
 import { ModalContext } from "@/app/providers/ModalProvider";
 import Image from "next/image";
 import useUser from "@/app/hooks/useUser";
-import hasRole from "@/app/lib/hasRole";
+import useHasRole from "@/app/lib/hasRole";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
 
-const ProjectHeader = ({projects}: {projects: any[]}) => {
-  const modalContextValue = useContext(ModalContext);
-  if (!modalContextValue) {
-    return null;
-  }
-  const projectContext = useContext(ProjectContext);
-  if (!projectContext) return <div>Loading</div>;
-  const { setViewing, setProjects } = projectContext;
+const ProjectHeader = ({ projects }: { projects: any[] }) => {
+  const isStudent = useHasRole("student")
   const user = useUser()
   const [projectsPerPage, setProjectsPerPage] = useState("");
-  const { toggleModal, setModalType } = modalContextValue;
   const searchParams = useSearchParams();
   const pathname = usePathname();
-
   const [searchResults, setSearchResults] = useState([]);
+  
   useEffect(() => {
     // render search results returned by SearchBox
     if (searchResults && searchResults.length>0){
@@ -41,7 +34,14 @@ const ProjectHeader = ({projects}: {projects: any[]}) => {
       setViewing(searchResults[0])
     }
   }, [searchResults]);
+  
+  const modalContextValue = useContext(ModalContext);
+  const projectContext = useContext(ProjectContext);
+  if (!modalContextValue) return <div>Loading</div>;
+  if (!projectContext) return <div>Loading</div>;
+  const { setViewing, setProjects } = projectContext;
 
+  const { toggleModal, setModalType } = modalContextValue;
   const handleProjectsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -57,7 +57,7 @@ const ProjectHeader = ({projects}: {projects: any[]}) => {
   };
 
   const handleApproveAll = () => {
-    if(pathname.includes("approve")){
+    if (pathname.includes("approve")) {
       const projectCodes = projects.map(project => project.code)
       axios.post('http://localhost:3500/projects/approve/all', {
         id: user.id,
@@ -71,7 +71,7 @@ const ProjectHeader = ({projects}: {projects: any[]}) => {
       <div className="w-3/6">
         <div className="mt-4 flex gap-4">
           <div className="w-10/12">
-            <SearchBox placeholder="Search projects..." resultSetter={setSearchResults}/>
+            <SearchBox placeholder="Search projects..." resultSetter={setSearchResults} />
           </div>
           <Button
             variant="normal"
@@ -83,9 +83,9 @@ const ProjectHeader = ({projects}: {projects: any[]}) => {
             <span>Filter</span>
           </Button>
         </div>
-        {!hasRole("student") && (
+        {!isStudent && (
           <div className="mt-4 flex gap-4">
-            {!hasRole("student") && (
+            {!isStudent && (
               <Button
                 isPrimary
                 variant={pathname.includes("approve") ? "success" : "normal"}
@@ -153,11 +153,10 @@ const NoData = () => {
       <Image src="/cat.png" width="150" height="150" alt="empty prompt" />
       <Typography
         variant="p"
-        text={`There is no project at the moment. ${
-          hasRole("student")
+        text={`There is no project at the moment. ${useHasRole("student")
             ? "Please come back later"
             : "Please create your project"
-        }!`}
+          }!`}
         className="text-xl text-gray"
       />
     </div>
@@ -169,23 +168,24 @@ const Project = () => {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const projectContext = useContext(ProjectContext);
+  useEffect(() => {
+    const isNotStudent = user.roles.find(role => role.name.toLowerCase() == "student")?.name.toLowerCase() !== 'student'
+    const stage = searchParams.get("project") === 'specialized' ? 1 : 2
+
+    if (isNotStudent) {
+      const status = pathname.includes("approve") ? "" : ""
+      getProjects(user.id, status, stage)
+    } else {
+      getProjects(0, "APPROVED", stage)
+    }
+  }, [projectContext])
+
   if (!projectContext) return <div>Loading</div>;
   const { projects, viewing, setViewing, getProjects } = projectContext;
-  useEffect(()=>{
-    const isNotStudent = user.roles.find(role => role.name.toLowerCase() == "student")?.name.toLowerCase() !== 'student'
-    const stage = searchParams.get("project") === 'specialized' ? 1:2  
-
-    if(isNotStudent) {
-      const status = pathname.includes("approve") ? "":""
-      getProjects(user.id,status,stage)
-    }else{
-      getProjects(0,"APPROVED",stage)
-    }
-  }, [])
 
   return (
     <div className="w-full flex-1 flex flex-col">
-      <ProjectHeader projects={projects}/>
+      <ProjectHeader projects={projects} />
       <div className="mt-4 flex flex-1 gap-4 overflow-hidden">
         {projects.length != 0 ? (
           <>

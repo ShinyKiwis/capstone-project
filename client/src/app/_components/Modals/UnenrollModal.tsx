@@ -11,15 +11,16 @@ import { ProjectContext } from '@/app/providers/ProjectProvider';
 
 
 const UnenrollModal = ({title, messages}: UnenrollModalProps) => {
+  const user = useUser()
   const modalContextValue = useContext(ModalContext);
+  const authContext = useContext(AuthContext)
+  const projectContext = useContext(ProjectContext)
+
   if (!modalContextValue) {
     return "No context set up for rejection modal";
   }
   const { toggleModal } = modalContextValue;
 
-  const user = useUser()
-  const authContext = useContext(AuthContext)
-  const projectContext = useContext(ProjectContext)
 
   if (!messages) messages = ["This action will remove your from the members list of this project."]
   if (!authContext) return <div>Loading</div>

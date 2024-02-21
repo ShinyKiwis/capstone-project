@@ -1,5 +1,5 @@
 "use client"
-import React, { SyntheticEvent, useContext, useRef, useState } from "react";
+import { SyntheticEvent, useContext, useRef, useState } from "react";
 import { ModalContext } from "../../providers/ModalProvider";
 import { Button, Typography } from "..";
 import { MdOutlineFileUpload } from "react-icons/md";
@@ -36,6 +36,10 @@ const UploadedFileItem = ({
 };
 
 const UploadFileModal = () => {
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [dragActive, setDragActive] = useState(false);
+  var fileInput = useRef<any>(null);
+
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     console.error("Modal context not initiated for upload file modal !");
@@ -43,9 +47,6 @@ const UploadFileModal = () => {
   }
   const { toggleModal } = modalContextValue;
 
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [dragActive, setDragActive] = React.useState(false);
-  var fileInput = useRef<any>(null);
 
   function handleFileUpload(files: FileList) {
     let newFilesList = uploadedFiles;
