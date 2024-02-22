@@ -29,7 +29,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
           <SideBar />
           <PageContent children={children} />
         </ModalProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     )
   );

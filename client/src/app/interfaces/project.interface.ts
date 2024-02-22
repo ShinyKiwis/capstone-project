@@ -43,6 +43,11 @@ type Major = {
   name: string
 }
 
+type Role = {
+	id: number,
+	name: string
+}
+
 // type ProjectData = {
 //   code: number;
 //   name: string;

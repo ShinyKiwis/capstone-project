@@ -21,14 +21,18 @@ type DefinedModalProps = StatusModalProps | ActionModalProps | UserEditModalProp
 
 const DynamicModal = () => {
   const modalRef = useRef<any>(null);
-  const [dimensions, setDimensions] = useState({ width:0, height: 0 });
+  const [dimensions, setDimensions] = useState({ width:370, height: 327 });
   
   useLayoutEffect(() => {
     if (modalRef.current) {
-      setDimensions({
-        width: modalRef.current.offsetWidth,
-        height: modalRef.current.offsetHeight
-      });
+      setTimeout(() => {
+        // Wait a bit for modal to load to get correct height :/
+        setDimensions({
+          width: modalRef.current.offsetWidth,
+          height: modalRef.current.offsetHeight
+        });
+    }, 100);
+      
     }
   }, []);
   const modalContextValue = useContext(ModalContext);
@@ -78,12 +82,17 @@ const DynamicModal = () => {
     posX = Math.round(modalProps.position.x-dimensions.width).toString()+'px';
 
     let yCoord = Math.round(modalProps.position.y);
+    console.log(`${yCoord} + ${dimensions.height} :: ${window.innerHeight}` )
     // Prevent modal from overflowing
-    if (yCoord + dimensions.height > window.innerHeight)
+    if (yCoord + dimensions.height > window.innerHeight){
+      console.log("overflow", yCoord + dimensions.height)
       posY = (window.innerHeight - dimensions.height - 10).toString()+'px'
+    }
+      
     else
       posY = yCoord.toString()+'px'
   }
+  console.log(`Calculated pos: ${posX}, ${posY}`)
 
   return (
     <div
