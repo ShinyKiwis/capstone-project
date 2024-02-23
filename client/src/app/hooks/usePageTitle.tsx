@@ -3,7 +3,8 @@ import useHasRole from '../lib/hasRole'
 
 const usePageTitle = (url: string) => {
   let pageTitle = ''
-  const isStudent = useHasRole("student")
+  const isStudent = useHasRole("student");
+
   if(url.includes("project")) {
     if(url.includes("create")) return "Create Project"
     const isSpecialized = url.includes("specialized")
@@ -11,7 +12,7 @@ const usePageTitle = (url: string) => {
     pageTitle = `${isSpecialized ? "Specialized": "Capstone"} Project ${isStudent ? "Enrollment": "Management"}`
   }
   else if (url.includes("administrate")){
-    if (url.includes('userManage')) return "Users management"
+    if (url.includes('userManage')) return "Users Administration"
   }
 
   return pageTitle

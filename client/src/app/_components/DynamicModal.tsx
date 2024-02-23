@@ -13,9 +13,9 @@ import UnenrollModal from "./Modals/UnenrollModal";
 import UploadFileModal from "./Modals/UploadFileModal";
 import DeleteProjectModal from "./Modals/DeleteProjectModal";
 import ActivateProjectModal from "./Modals/ActivateProjectModal";
-import { title } from "process";
-import RoleChangeModal, { UserEditModalProps } from "./Modals/UserEditModal";
+import { UserEditModalProps } from "./Modals/UserEditModal";
 import UserEditModal from "./Modals/UserEditModal";
+import DeleteUserModal from "./Modals/DeleteUserModal";
 
 type DefinedModalProps = StatusModalProps | ActionModalProps | UserEditModalProps | any;
 
@@ -31,10 +31,10 @@ const DynamicModal = () => {
           width: modalRef.current.offsetWidth,
           height: modalRef.current.offsetHeight
         });
-    }, 100);
-      
+      }, 100);
     }
   }, []);
+
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
     return null;
@@ -70,6 +70,8 @@ const DynamicModal = () => {
         return <UploadFileModal />;
       case "customPos_user_edit":
         return <UserEditModal targetUsr={modalProps.targetUsr} position={modalProps.position}/>;
+      case "user_deletion":
+        return <DeleteUserModal userId={modalProps.targetUsr.id} />
       default:
         return "Invalid modal type";
     }
@@ -82,17 +84,13 @@ const DynamicModal = () => {
     posX = Math.round(modalProps.position.x-dimensions.width).toString()+'px';
 
     let yCoord = Math.round(modalProps.position.y);
-    console.log(`${yCoord} + ${dimensions.height} :: ${window.innerHeight}` )
     // Prevent modal from overflowing
-    if (yCoord + dimensions.height > window.innerHeight){
-      console.log("overflow", yCoord + dimensions.height)
+    if (yCoord + dimensions.height > window.innerHeight)
       posY = (window.innerHeight - dimensions.height - 10).toString()+'px'
-    }
-      
     else
       posY = yCoord.toString()+'px'
   }
-  console.log(`Calculated pos: ${posX}, ${posY}`)
+  // console.log(`Calculated pos: ${posX}, ${posY}`)
 
   return (
     <div

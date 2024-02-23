@@ -32,7 +32,9 @@ const Administrate = () => {
   } = useQuery({
     queryFn: async () => {
       // let allUsers:User_AdminPage[] = await fetchUsers("");    // test using mock API
-      let allUsers:User_AdminPage[] = await (await axios.get(`http://localhost:3500/users`)).data
+      let allUsers: User_AdminPage[] = await (
+        await axios.get(`http://localhost:3500/users`)
+      ).data;
 
       // Initialize all rows on first fetch, the other times will be retreived from cache
       setRows(allUsers);
@@ -45,6 +47,13 @@ const Administrate = () => {
   const [rows, setRows] = useState<User_AdminPage[]>(
     usersData ? usersData : [],
   ); // use data from cache if available
+
+  const modalContextValue = useContext(ModalContext);
+  if (!modalContextValue) {
+    console.error("Modal context initialization failed !");
+    return null;
+  }
+  const { toggleModal, setModalType, setModalProps } = modalContextValue;
 
   const handleFilter = async (opt: string) => {
     if (!usersData) return;
@@ -77,13 +86,6 @@ const Administrate = () => {
     setRows(results);
   };
 
-  const modalContextValue = useContext(ModalContext);
-  if (!modalContextValue) {
-    console.error("Modal context initialization failed !");
-    return null;
-  }
-  const { toggleModal, setModalType, setModalProps } = modalContextValue;
-
   const handleEditUser = (e: SyntheticEvent, row: any) => {
     // alert("Edit:" + uid);
     e.stopPropagation();
@@ -102,16 +104,76 @@ const Administrate = () => {
     // alert("Delete:" + uid);
     e.stopPropagation();
     console.log("e object:", e);
-    setModalType("status_warning");
+    setModalType("user_deletion");
     setModalProps({
-      title: "Deleting a user !",
-      messages: [
-        "Are you sure you want to remove this user ?",
-        "This action cannot be undone !",
-      ],
+      targetUsr: row,
     });
     toggleModal(true);
   };
+
+
+  // Display components
+  const FilterButtons = () => {
+    return (
+      <div className="flex gap-6">
+        <Button
+          isPrimary={selectedFilter === "deans" ? true : false}
+          variant="normal"
+          className="px-4 py-1"
+          onClick={() => handleFilter("deans")}
+        >
+          Deans
+        </Button>
+        <Button
+          isPrimary={selectedFilter === "lecturers" ? true : false}
+          variant="normal"
+          className="px-4"
+          onClick={() => handleFilter("lecturers")}
+        >
+          Lecturers
+        </Button>
+        <Button
+          isPrimary={selectedFilter === "students" ? true : false}
+          variant="normal"
+          className="px-4"
+          onClick={() => handleFilter("students")}
+        >
+          Students
+        </Button>
+      </div>
+    );
+  };
+
+  const UserSearchBar = () => {
+    return(
+      <div className="ml-auto w-96">
+        <div className="group flex w-full items-center gap-2 rounded-md border-2 border-gray px-4 py-2 focus-within:border-blue">
+          <input
+            type="text"
+            placeholder="Search user name, id..."
+            className="w-full outline-none"
+            value={search}
+            onInput={(e) => setSearch(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearchUser(search);
+              }
+            }}
+          />
+          <button
+            onClick={() => {
+              handleSearchUser(search);
+            }}
+          >
+            <BiSearch
+              size={30}
+              className="text-gray group-focus-within:text-blue"
+            />
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const columns: GridColDef[] = [
     {
@@ -141,93 +203,40 @@ const Administrate = () => {
         );
       },
     },
-    { field: "roles", headerName: "Roles", minWidth: 150, flex: 3, valueGetter: (params: GridValueGetterParams) => {
-      return params.row.roles.map((role:{id:Number, name:String}) => role.name);
-    }, },
+    {
+      field: "roles",
+      headerName: "Roles",
+      minWidth: 150,
+      flex: 3,
+      valueGetter: (params: GridValueGetterParams) => {
+        return params.row.roles.map(
+          (role: { id: Number; name: String }) => role.name,
+        );
+      },
+    },
     { field: "active", headerName: "Last active", minWidth: 150, flex: 3 },
     {
       field: "actions",
       headerName: "Actions",
       minWidth: 130,
-      flex: 2,
+      flex: 3,
       renderCell: (params: GridRenderCellParams) => {
         return (
-          <div>
-            <button
-              className="mx-2 bg-lightgreen px-2 py-1 text-white"
-              onClick={(e) => handleEditUser(e, params.row)}
-            >
-              Edit
-            </button>
-            <button
-              className="mx-2 bg-red px-2 py-1 text-white"
-              onClick={(e) => handleDeleteUser(e, params.id)}
-            >
-              Delete
-            </button>
+          <div className="flex gap-2">
+            <Button isPrimary={true} variant="success" className="w-24 py-1 text-sm font-semibold" onClick={(e) => handleEditUser(e, params.row)}>Edit</Button>
+            <Button isPrimary={true} variant="danger"  className="w-24 py-1 text-sm font-semibold" onClick={(e) => handleDeleteUser(e, params.id)}>Delete</Button>
           </div>
         );
       },
     },
   ];
 
-  if (isLoading) return <div>Loading users...</div>;
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
       <div className="flex h-fit w-full py-6">
-        <div className="flex gap-6">
-          <Button
-            isPrimary={selectedFilter === "deans" ? true : false}
-            variant="normal"
-            className="px-4 py-1"
-            onClick={() => handleFilter("deans")}
-          >
-            Deans
-          </Button>
-          <Button
-            isPrimary={selectedFilter === "lecturers" ? true : false}
-            variant="normal"
-            className="px-4"
-            onClick={() => handleFilter("lecturers")}
-          >
-            Lecturers
-          </Button>
-          <Button
-            isPrimary={selectedFilter === "students" ? true : false}
-            variant="normal"
-            className="px-4"
-            onClick={() => handleFilter("students")}
-          >
-            Students
-          </Button>
-        </div>
-        <div className="ml-auto w-96">
-          <div className="group flex w-full items-center gap-2 rounded-md border-2 border-gray px-4 py-2 focus-within:border-blue">
-            <input
-              type="text"
-              placeholder="Search user name, id..."
-              className="w-full outline-none"
-              value={search}
-              onInput={(e) => setSearch(e.currentTarget.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSearchUser(search);
-                }
-              }}
-            />
-            <button
-              onClick={() => {
-                handleSearchUser(search);
-              }}
-            >
-              <BiSearch
-                size={30}
-                className="text-gray group-focus-within:text-blue"
-              />
-            </button>
-          </div>
-        </div>
+        <FilterButtons />
+        <UserSearchBar />
       </div>
 
       <div style={{ flex: "1 1 0%", minHeight: 0, width: "100%" }}>
@@ -250,7 +259,7 @@ const Administrate = () => {
           }}
           pageSizeOptions={[10, 20, 50, 100]}
           checkboxSelection
-          loading={tableIsLoading || isRefetching}
+          loading={tableIsLoading || isLoading || isRefetching}
         />
       </div>
     </div>
