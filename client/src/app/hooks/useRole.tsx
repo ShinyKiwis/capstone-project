@@ -18,11 +18,15 @@ const useRole = () => {
       },
       {
         id: 3,
-        name: "DepartmentHead",
+        name: "Department Head",
       },
       {
         id: 4,
-        name: "ProgramChair",
+        name: "Program Chair",
+      },
+      {
+        id: 5,
+        name: "Dean",
       },
     ];
 

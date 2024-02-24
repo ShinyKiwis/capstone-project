@@ -3,7 +3,7 @@ import React, { SyntheticEvent, useContext, useState } from "react";
 import { ModalContext } from "../../providers/ModalProvider";
 import { Button, Profile, Typography } from "..";
 import CheckBox from "../UserAction/CheckBox";
-import { User_AdminPage, editUser, fetchUsers } from "@/app/(main)/administrate/mockAPI";
+import { User_AdminPage, editUser, fetchUsers } from "@/app/(main)/administrate/users/mockAPI";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRole } from "@/app/hooks";
 import axios from "axios";
@@ -47,7 +47,8 @@ const UserEditModal = ({ targetUsr }: UserEditModalProps) => {
   }
 
   return (
-    <div className="h-fit w-[18rem]">
+    // Check selected roles, does not allow selecting 0
+    <div className="h-fit w-[18rem]" key={targetUsr.id}>
       <Profile
         type="horizontal"
         username={targetUsr.name}

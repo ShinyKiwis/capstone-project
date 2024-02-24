@@ -1,11 +1,11 @@
 // This file simulate api calls for users
 
 export type User_AdminPage = {
-  id: Number;
+  id: number;
   name: string;
   email: string;
   roles: {
-    id: Number;
+    id: number;
     name: string;
   }[];
   active: string;
@@ -339,7 +339,7 @@ export const fetchUsers = async (query = ""): Promise<User_AdminPage[]> => {
 /**
  * Mock function that mimics filtering users by role
  */
-export const filterUsersByRole = async (role:string): Promise<User_AdminPage[]> => {
+export const filterUsersByRole = async (role:string): Promise<User[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // Search by id or full name

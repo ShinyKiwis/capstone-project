@@ -12,7 +12,7 @@ const usePageTitle = (url: string) => {
     pageTitle = `${isSpecialized ? "Specialized": "Capstone"} Project ${isStudent ? "Enrollment": "Management"}`
   }
   else if (url.includes("administrate")){
-    if (url.includes('userManage')) return "Users Administration"
+    if (url.includes('users')) return "Users Administration";
   }
 
   return pageTitle

@@ -1,17 +1,17 @@
 interface User {
 	id: number;
 	name: string;
-	username: string;
-	email: string;
-	roles: [{
+	username?: string;
+	email?: string;
+	roles: {
 		id:string,
 		name:string
-	}];
-	credits: number;
-	generation: number;
-	GPA: number;
-	enrolledAt: string;
-	project: {
+	}[];
+	credits?: number;
+	generation?: number;
+	GPA?: number;
+	enrolledAt?: string;
+	project?: {
 		code: number,
 	}
 }
