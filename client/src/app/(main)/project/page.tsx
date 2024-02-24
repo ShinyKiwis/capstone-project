@@ -174,11 +174,12 @@ const Project = () => {
 
     if (isNotStudent) {
       const status = pathname.includes("approve") ? "" : ""
+      console.log(projectContext)
       getProjects(user.id, status, stage)
     } else {
       getProjects(0, "APPROVED", stage)
     }
-  }, [projectContext])
+  }, [])
 
   if (!projectContext) return <div>Loading</div>;
   const { projects, viewing, setViewing, getProjects } = projectContext;
