@@ -32,6 +32,11 @@ type SearchStudentDataType = {
   }
 }
 
+type Role = {
+	id: number,
+	name: string
+}
+
 // type StudentType = {
 //   userId: number | string
 //   GPA: string;
