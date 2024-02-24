@@ -145,7 +145,6 @@ const Administrate = () => {
         );
       },
     },
-    { field: "active", headerName: "Last active", minWidth: 150, flex: 3 },
     {
       field: "actions",
       headerName: "Actions",
