@@ -8,6 +8,7 @@ interface ButtonProps {
   bgColor?: string;
   className?: string;
   color?: string;
+  disabled?: boolean
 }
 
 interface VariantMappings {
@@ -35,6 +36,7 @@ const Button = ({
   isPrimary,
   variant,
   className,
+  disabled = false,
   children,
 }: ButtonProps) => {
   const variantStyle = isPrimary
@@ -44,6 +46,7 @@ const Button = ({
     <button
       onClick={onClick}
       className={`rounded-md text-center font-medium ${className} ${variantStyle}`}
+      disabled={disabled}
     >
       {children}
     </button>

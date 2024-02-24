@@ -4,18 +4,16 @@ const CheckBox = ({
   option,
   defaultChecked,
   value,
-  valueArray
+  valueArray,
+  onChange:ArraySetter
 }: {
   option: string;
   defaultChecked?: boolean;
   value: number
-  valueArray: any[]
+  valueArray: any[],
+  onChange: any
 }) => {
-  const [checked, setChecked] = useState(defaultChecked)
-  // if (defaultChecked && valueArray.length===0) {
-  //   valueArray.push(option);
-  //   defaultChecked = false;
-  // }
+  const [checked, setChecked] = useState(defaultChecked);
 
   return (
     <div className="text-lg">
@@ -30,10 +28,12 @@ const CheckBox = ({
 
           if (!checked) {
             valueArray.push(value);
+            ArraySetter([...valueArray])
           } else {
             // Uncheck option -> remove value from array
             const targetIdx = valueArray.findIndex((x) => x === value);
             valueArray.splice(targetIdx, 1);
+            ArraySetter([...valueArray])
           }
         }}
       />

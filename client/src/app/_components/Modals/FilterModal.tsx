@@ -128,6 +128,7 @@ const FilterModal = () => {
                       defaultChecked={true}
                       value={branches[0].id}
                       valueArray={selectedBranches}
+                      onChange={setSelectedBranches}
                     />
                     {branches.slice(1).map((option) => {
                       return (
@@ -136,6 +137,7 @@ const FilterModal = () => {
                           key={option.id}
                           value={option.id}
                           valueArray={selectedBranches}
+                          onChange={setSelectedBranches}
                         />
                       );
                     })}
@@ -155,6 +157,7 @@ const FilterModal = () => {
                   defaultChecked={true}
                   value={majors[0].id}
                   valueArray={selectedMajors}
+                  onChange={setSelectedMajors}
                 />
                 {majors.slice(1).map((option) => {
                   return (
@@ -163,6 +166,7 @@ const FilterModal = () => {
                       key={option.id}
                       value={option.id}
                       valueArray={selectedMajors}
+                      onChange={setSelectedMajors}
                     />
                   );
                 })}
