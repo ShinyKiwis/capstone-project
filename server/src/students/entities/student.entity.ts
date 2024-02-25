@@ -14,7 +14,7 @@ export class Student {
   @PrimaryColumn()
   userId: number;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 
@@ -27,7 +27,9 @@ export class Student {
   @Column('decimal', { precision: 6, scale: 2 })
   GPA: number;
 
-  @ManyToOne(() => Project, (project) => project.students, { onDelete: 'SET NULL'})
+  @ManyToOne(() => Project, (project) => project.students, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn()
   project: Project;
 

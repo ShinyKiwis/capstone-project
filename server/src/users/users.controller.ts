@@ -16,6 +16,7 @@ import { CreateStudentDto } from '../students/dto/create-student.dto';
 import { EnrollProjectDto } from '../students/dto/enroll-project.dto';
 import { UnenrollProjectDto } from '../students/dto/unenroll-project.dto';
 import { GetStudentsDto } from 'src/students/dto/get-students.dto';
+import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 
 @Controller('users')
 export class UsersController {
@@ -43,8 +44,8 @@ export class UsersController {
   }
 
   @Get()
-  getAllUsers() {
-    return this.usersService.getAllUsers()
+  getAllUsers(@Query() filterDto: GetUsersFilterDto) {
+    return this.usersService.getUsers(filterDto);
   }
 
   @Get('/instructors')
@@ -73,7 +74,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  delete(@Param('id') id: string) {
+    return this.usersService.deleteAUser(+id);
   }
 }
