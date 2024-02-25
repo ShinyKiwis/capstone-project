@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AssignRolesDto } from './dto/assign-role.dto';
+import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 
 @Injectable()
 export class UsersRepository extends Repository<User> {
@@ -22,7 +23,7 @@ export class UsersRepository extends Repository<User> {
       id,
       username,
       email,
-      name
+      name,
     });
 
     try {
@@ -48,16 +49,56 @@ export class UsersRepository extends Repository<User> {
 
     const foundStudent = await this.findOne({
       where: { id },
-    })
+    });
 
     if (!found) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
     let result;
-    if(foundStudent) {
-      result = {...result, ...foundStudent}
+    if (foundStudent) {
+      result = { ...result, ...foundStudent };
     }
     return found;
+  }
+
+  async getUsers(filterDto: GetUsersFilterDto) {
+    const { search, roles, limit, page } = filterDto;
+    const query = this.createQueryBuilder('user').leftJoinAndSelect(
+      'user.roles',
+      'roles',
+    );
+
+    if (search) {
+      query.andWhere(
+        '(LOWER(user.username) LIKE LOWER (:search) OR LOWER(user.name) LIKE LOWER (:search)) OR CAST(user.id AS TEXT) LIKE LOWER (:search)',
+        {
+          search: `%${search}%`,
+        },
+      );
+    }
+
+    if (roles) {
+      let newRoles = [];
+      if (!Array.isArray(roles)) {
+        newRoles = [roles];
+      } else {
+        newRoles = roles;
+      }
+      query.andWhere('roles.id IN (:...roles)', { roles: newRoles });
+      query.leftJoinAndSelect('user.roles', 'allRoles');
+    }
+
+    if (limit && page) {
+      query.skip((page - 1) * limit).take(limit);
+    }
+
+    let [users, count] = await query.getManyAndCount();
+
+    return {
+      total: Math.ceil(count / limit),
+      current: +page,
+      users,
+    };
   }
 
   async updateOrCreateAUser(createUserDto: CreateUserDto) {
@@ -74,7 +115,10 @@ export class UsersRepository extends Repository<User> {
   }
 
   async getAllInstructors() {
-    const query = this.createQueryBuilder('user').leftJoin('user.roles', 'roles').where('roles.id=:id', { id: 2 }).select(['user.id', 'user.name', 'user.email', 'user.username']);
+    const query = this.createQueryBuilder('user')
+      .leftJoin('user.roles', 'roles')
+      .where('roles.id=:id', { id: 2 })
+      .select(['user.id', 'user.name', 'user.email', 'user.username']);
     const lecturer = await query.getMany();
     return lecturer;
   }

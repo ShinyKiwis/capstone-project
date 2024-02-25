@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
@@ -8,6 +8,7 @@ import { CreateStudentDto } from '../students/dto/create-student.dto';
 import { EnrollProjectDto } from '../students/dto/enroll-project.dto';
 import { UnenrollProjectDto } from '../students/dto/unenroll-project.dto';
 import { GetStudentsDto } from 'src/students/dto/get-students.dto';
+import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 
 @Injectable()
 export class UsersService {
@@ -66,15 +67,18 @@ export class UsersService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
-
   assignRoles(id: number, assignRolesDto: AssignRolesDto) {
     return this.usersRepository.assignRoles(id, assignRolesDto);
   }
 
-  getAllUsers() {
-    return this.usersRepository.find({ relations: { roles: true } });
+  getUsers(filterDto: GetUsersFilterDto) {
+    return this.usersRepository.getUsers(filterDto);
+  }
+
+  async deleteAUser(id: number) {
+    const result = await this.usersRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Project with Code "${id}" not found`);
+    }
   }
 }
