@@ -3,6 +3,7 @@ import { IoIosWarning } from "react-icons/io";
 import { Button, Typography } from "..";
 import axios from "axios";
 import { ModalContext } from "@/app/providers/ModalProvider";
+import { useQueryClient } from "@tanstack/react-query";
 
 const DeleteUserModal = ({ userId }: { userId: number }) => {
   const modalContextValue = useContext(ModalContext);
@@ -11,10 +12,12 @@ const DeleteUserModal = ({ userId }: { userId: number }) => {
     return null;
   }
   const { toggleModal } = modalContextValue;
+  const queryClient = useQueryClient();
 
   const handleDeleteUser = () => {
-    axios.delete(`http://localhost:3500/Users/${userId}`).then((_) => {
+    axios.delete(`http://localhost:3500/users/${userId}`).then((_) => {
       toggleModal(false);
+      queryClient.invalidateQueries({ queryKey: ["users"] }); // refetch users in the cache
     })
     .catch((err) => {
       console.error("Err deleting user:", err)

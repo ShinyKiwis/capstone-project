@@ -32,13 +32,13 @@ const Administrate = () => {
   } = useQuery({
     queryFn: async () => {
       // let allUsers:User_AdminPage[] = await fetchUsers("");    // test using mock API
-      let allUsers: User[] = await (
+      let respond = await (
         await axios.get(`http://localhost:3500/users`)
       ).data;
 
       // Initialize all rows on first fetch, the other times will be retreived from cache
-      setRows(allUsers);
-      return allUsers; // returned in userData const
+      setRows(respond.users);
+      return respond.users; // returned in userData const
     },
     queryKey: ["users"],
     staleTime: Infinity,
@@ -154,7 +154,7 @@ const Administrate = () => {
         return (
           <div className="flex gap-2">
             <Button isPrimary={true} variant="success" className="w-24 py-1 text-sm font-semibold" onClick={(e) => handleEditUser(e, params.row)}>Edit</Button>
-            <Button isPrimary={true} variant="danger"  className="w-24 py-1 text-sm font-semibold" onClick={(e) => handleDeleteUser(e, params.id)}>Delete</Button>
+            <Button isPrimary={true} variant="danger"  className="w-24 py-1 text-sm font-semibold" onClick={(e) => handleDeleteUser(e, params.row)}>Delete</Button>
           </div>
         );
       },

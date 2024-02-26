@@ -64,13 +64,6 @@ const UserEditModal = ({ targetUsr }: UserEditModalProps) => {
         email={targetUsr.email}
       />
       <div className="text-lg font-bold text-blue">Roles</div>
-      {/* <div
-        className={`text-sm italic text-red ${
-          selectedRoles.length <= 0 ? "h-fit opacity-100" : "h-2 opacity-0"
-        }`}
-      >
-        *Must select one or more roles !
-      </div> */}
       <div
         className={`text-red text-sm italic ${selectedRoles.length === 0 ? "h-fit opacity-100" : "h-2 opacity-0"}`}
       >
