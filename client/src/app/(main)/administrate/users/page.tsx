@@ -53,25 +53,23 @@ const Administrate = () => {
 
   // Functional handlers
   const handleFilter = async (selectedRole: Role) => {
-    if (!usersData) return;
-
     setTableIsLoading(true);
-    // Call filter API and retrieve results
-    let results: User[] = await (
-      await axios.get(`http://localhost:3500/users`)
-    ).data; // api call
-    setSelectedFilter(selectedRole.name);
+    let respond = await axios
+      .get(`http://localhost:3500/users?role=${selectedRole.id}`)
+      .catch((err) => {
+        console.error("Err filtering users:", err);
+      });
 
+    setRows(respond ? respond.data.users : []);
     setTableIsLoading(false);
-    setRows(results);
   };
 
   const handleSearchUser = async (query: string) => {
     // Call search from api and render results seperately, result is not cached
     setTableIsLoading(true);
-    
+
     let respond = await axios
-      .get(`http://localhost:3500/users/?search=${query}`)
+      .get(`http://localhost:3500/users?search=${query}`)
       .catch((err) => {
         console.error("Err searching users:", err);
       });
