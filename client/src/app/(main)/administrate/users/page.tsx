@@ -32,9 +32,7 @@ const Administrate = () => {
   } = useQuery({
     queryFn: async () => {
       // let allUsers:User_AdminPage[] = await fetchUsers("");    // test using mock API
-      let respond = await (
-        await axios.get(`http://localhost:3500/users`)
-      ).data;
+      let respond = await (await axios.get(`http://localhost:3500/users`)).data;
 
       // Initialize all rows on first fetch, the other times will be retreived from cache
       setRows(respond.users);
@@ -44,9 +42,7 @@ const Administrate = () => {
     staleTime: Infinity,
   });
 
-  const [rows, setRows] = useState<User[]>(
-    usersData ? usersData : [],
-  ); // use data from cache if available
+  const [rows, setRows] = useState<User[]>(usersData ? usersData : []); // use data from cache if available
 
   const modalContextValue = useContext(ModalContext);
   if (!modalContextValue) {
@@ -63,8 +59,7 @@ const Administrate = () => {
     // Call filter API and retrieve results
     let results: User[] = await (
       await axios.get(`http://localhost:3500/users`)
-    ).data;
-;   // api call
+    ).data; // api call
     setSelectedFilter(selectedRole.name);
 
     setTableIsLoading(false);
@@ -74,11 +69,15 @@ const Administrate = () => {
   const handleSearchUser = async (query: string) => {
     // Call search from api and render results seperately, result is not cached
     setTableIsLoading(true);
-    let results:User[] = [];    // api call
-    console.log("searching for:", query)
+    
+    let respond = await axios
+      .get(`http://localhost:3500/users/?search=${query}`)
+      .catch((err) => {
+        console.error("Err searching users:", err);
+      });
 
+    setRows(respond ? respond.data.users : []);
     setTableIsLoading(false);
-    setRows(results);
   };
 
   const handleEditUser = (e: SyntheticEvent, row: any) => {
@@ -153,20 +152,40 @@ const Administrate = () => {
       renderCell: (params: GridRenderCellParams) => {
         return (
           <div className="flex gap-2">
-            <Button isPrimary={true} variant="success" className="w-24 py-1 text-sm font-semibold" onClick={(e) => handleEditUser(e, params.row)}>Edit</Button>
-            <Button isPrimary={true} variant="danger"  className="w-24 py-1 text-sm font-semibold" onClick={(e) => handleDeleteUser(e, params.row)}>Delete</Button>
+            <Button
+              isPrimary={true}
+              variant="success"
+              className="w-24 py-1 text-sm font-semibold"
+              onClick={(e) => handleEditUser(e, params.row)}
+            >
+              Edit
+            </Button>
+            <Button
+              isPrimary={true}
+              variant="danger"
+              className="w-24 py-1 text-sm font-semibold"
+              onClick={(e) => handleDeleteUser(e, params.row)}
+            >
+              Delete
+            </Button>
           </div>
         );
       },
     },
   ];
 
-
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
       <div className="flex h-fit w-full py-6">
-        <UserFilterButtons selectedFilter={selectedFilter} filterHandler={handleFilter}/>
-        <UsersSearchBar value={search} onChange={setSearch} searchHandler={handleSearchUser} />
+        <UserFilterButtons
+          selectedFilter={selectedFilter}
+          filterHandler={handleFilter}
+        />
+        <UsersSearchBar
+          value={search}
+          onChange={setSearch}
+          searchHandler={handleSearchUser}
+        />
       </div>
 
       <div style={{ flex: "1 1 0%", minHeight: 0, width: "100%" }}>
