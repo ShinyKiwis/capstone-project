@@ -9,12 +9,12 @@ interface UserFilterButtonsProps {
 
 function UserFilterButtons({selectedFilter, filterHandler}:UserFilterButtonsProps) {
 	const {roles} = useRole();
-  const filterOptions = [roles[4], roles[1], roles[0]]    // pick out some roles at any orders as filter options
+//   const filterOptions = [roles[4], roles[1], roles[0]]    // pick out some roles at any orders as filter options
 
     
 	return (
 		<div className="flex gap-6">
-			{roles.map(role => {
+			{roles && roles.map(role => {
 				return(
 					<Button
 						isPrimary={selectedFilter === role.name ? true : false}

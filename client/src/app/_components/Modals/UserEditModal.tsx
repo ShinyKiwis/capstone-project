@@ -70,7 +70,7 @@ const UserEditModal = ({ targetUsr }: UserEditModalProps) => {
         *Must select one or more roles !
       </div>
       <div>
-        {roles.map((role) => (
+        {roles && roles.map((role) => (
           <CheckBox
             option={role.name}
             value={role.id}
