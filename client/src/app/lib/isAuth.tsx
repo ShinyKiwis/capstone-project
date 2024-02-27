@@ -7,7 +7,7 @@ import useUser from "../hooks/useUser";
 export default function isAuth(Component: any) {
   return function IsAuth(props: any) {
     const user = useUser()
-    console.log(user)
+    console.log("Logged in as:", user)
     const auth = user.name !== "Invalid"
     // const auth = true
 
