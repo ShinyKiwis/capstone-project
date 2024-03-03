@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -12,12 +12,16 @@ import {
   FaProjectDiagram,
   FaUserGraduate,
 } from "react-icons/fa";
+import { RiExpandRightLine, RiExpandLeftLine } from "react-icons/ri";
+import { AiOutlineProject } from "react-icons/ai";
+import { PiExam } from "react-icons/pi";
 
 interface SideBarItemProps {
   Icon?: any;
   title: string;
   paths: string[];
   pages: any;
+  expanded: boolean;
 }
 
 const parseUrlString = (pathString: string) => {
@@ -26,19 +30,19 @@ const parseUrlString = (pathString: string) => {
   const paramName = param.split('=')[0];
   const paramVal = param.split('=')[1];
 
-  return({path: pathName, paramName: paramName, paramVal: paramVal})
+  return ({ path: pathName, paramName: paramName, paramVal: paramVal })
 }
 
-const SideBarItem = ({ Icon, title, paths, pages }: SideBarItemProps) => {
+const SideBarItem = ({ Icon, title, paths, pages, expanded }: SideBarItemProps) => {
   const pathname = usePathname();
   const searchParam = useSearchParams();
 
-  let currPageBelongToPaths = paths.some((path)=>pathname.startsWith(path));
+  let currPageBelongToPaths = paths.some((path) => pathname.startsWith(path));
 
   const toggleAccordion = (accordBtn: any) => {
     let currTarget = accordBtn.parentNode.childNodes[1];
-    
-    if (currTarget.style.maxHeight == '0px'){
+
+    if (currTarget.style.maxHeight == '0px') {
       currTarget.style.maxHeight = '5em';
     } else {
       currTarget.style.maxHeight = "0px";
@@ -49,51 +53,74 @@ const SideBarItem = ({ Icon, title, paths, pages }: SideBarItemProps) => {
   var selectedOption = null;
   // console.log("Current path:",pathname);
   return (
-    <div className="mb-2 w-4/5" key={title}>
-      <button className="font-medium w-full" onClick={(e)=>toggleAccordion(e.currentTarget)}>
+    <div className="mb-2 w-4/5 mx-1 relative group" key={title}>
+      <button className="font-medium w-full" onClick={(e) => toggleAccordion(e.currentTarget)}>
         {currPageBelongToPaths ? (
-          <div className="flex items-center gap-2 rounded-md bg-blue p-2 text-white ">
-            {Icon && <Icon size={25} />}
-            <span>{title}</span>
+          <div className={`flex items-center rounded-md bg-lighterblue p-2 text-blue ${expanded ? "gap-2" : "aspect-square justify-center"}`}>
+            {Icon && <Icon size={24} />}
+            <span
+              className={`overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0 grow-0"} text-left`}
+            >
+              {title}
+            </span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 px-2 py-1 text-gray hover:text-blue duration-300">
-            {Icon && <Icon size={25} />}
-            <span>{title}</span>
+          <div className={`flex items-center p-2 text-gray rounded-md hover:bg-clearblue hover:text-blue duration-300 ${expanded ? "gap-2" : "aspect-square justify-center"}`}>
+            {Icon && <Icon size={24} className="aspect-square" />}
+            <span
+              className={`overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0 h-0"} text-left`}
+            >
+              {title}
+            </span>
           </div>
         )}
       </button>
 
-      <div 
-        className= "ease-in-out duration-300 delay-150"
-        style={{maxHeight: currPageBelongToPaths ? '5em' : '0px', overflow:'hidden'}}
+      <div
+        className={` overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0 h-0"}`}
+        style={{ maxHeight: currPageBelongToPaths ? '5em' : '0px', overflow: 'hidden' }}
       >
-        {pages.map(function(accordLink: any){     // Process each subpage
+        {pages.map(function (accordLink: any) {     // Process each subpage
           let urlContent = parseUrlString(accordLink.href);
           let selected = false
-          if (searchParam.has(urlContent.paramName) && searchParam.get(urlContent.paramName) == urlContent.paramVal)  
+          if (searchParam.has(urlContent.paramName) && searchParam.get(urlContent.paramName) == urlContent.paramVal)
             selected = true
 
-          return(
+          return (
             <div key={accordLink.href}>
-              <Link href={accordLink.href} className="block ml-4">
-                {selected ? 
+              <Link href={accordLink.href} className="block ml-4 my-2">
+                {selected ?
                   <span className="text-blue font-medium hover:text-blue">{accordLink.title}</span>
-                :
+                  :
                   <span className="text-gray hover:text-blue">{accordLink.title}</span>
                 }
-                
+
               </Link>
             </div>
           )
         })
         }
       </div>
+
+      {!expanded && (
+        <div
+          className={`
+          absolute left-full rounded-md px-2 py-1 ml-6 inset-y-1.5
+          bg-clearblue text-blue text-sm
+          invisible opacity-90 -translate-x-3 transition-all
+          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
+          z-10
+      `}
+        >
+          {title}
+        </div>
+      )}
     </div>
   );
 };
 
 const SideBar = () => {
+  const [expanded, setExpanded] = useState(true);
   const sidebarItems = [
     {
       Icon: MdManageAccounts,
@@ -126,7 +153,7 @@ const SideBar = () => {
       ],
     },
     {
-      Icon: FaProjectDiagram,
+      Icon: AiOutlineProject,
       title: "Projects",
       paths: ['/project', '/project/create', '/project/approve', '/project/edit'],
       pages: [
@@ -141,7 +168,7 @@ const SideBar = () => {
       ],
     },
     {
-      Icon: FaUserGraduate,
+      Icon: PiExam,
       title: "Assessment",
       paths: ["/assessment"],
       pages: [
@@ -173,14 +200,25 @@ const SideBar = () => {
   ];
 
   return (
-    <div className="h-screen w-64 border-r border-gray">
-      <div className="flex items-center justify-center py-10">
-        <Image src="/logo.svg" width={160} height={160} alt="brand logo" />
+    <div className="h-screen border-r border-gray">
+      <div className={`w-4/5 flex items-center  py-10 mx-auto ${expanded ? "justify-between" : "justify-center"}`}>
+        <Image
+          src="/logo.svg"
+          width={48}
+          height={48}
+          alt="brand logo"
+          className={`overflow-hidden transition-all ${expanded ? "" : "w-0"}`}
+        />
+        <button
+          onClick={() => setExpanded((curr) => !curr)}
+          className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100">
+          {expanded ? <RiExpandLeftLine /> : <RiExpandRightLine />}
+        </button>
       </div>
 
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center mx-2">
         {sidebarItems.map(function (element) {
-          return <SideBarItem {...element} key={element.title}/>;
+          return <SideBarItem {...element} expanded={expanded} key={element.title} />;
         })}
       </div>
     </div>
