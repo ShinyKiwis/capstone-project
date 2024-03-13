@@ -1,24 +1,11 @@
-"use client";
-import React, { useContext } from "react";
-import { ModalContext } from "../../providers/ModalProvider";
-import { DynamicModal, PageHeader } from "..";
+import React from "react";
+import PageHeader from "./PageHeader";
 
 const PageContent = ({ children }: { children: React.ReactNode }) => {
-  const modalContextValue = useContext(ModalContext);
-  if (!modalContextValue) {
-    return null;
-  }
-  const { showModal, toggleModal } = modalContextValue;
   return (
-    <div className="flex flex-col flex-1 h-screen">
+    <div className="flex flex-1 flex-col">
       <PageHeader />
-      <div
-        className="flex flex-1 overflow-auto px-8 pb-8"
-        onClick={() => {toggleModal(false)}}
-      >
-        {children}
-      </div>
-      {showModal && <DynamicModal />}
+      <div className="flex-1 bg-white px-8 pb-4 overflow-hidden">{children}</div>
     </div>
   );
 };

@@ -1,193 +1,157 @@
-"use client"
-import { SyntheticEvent, useContext, useRef, useState } from "react";
-import { ModalContext } from "../../providers/ModalProvider";
-import { Button, Typography } from "..";
-import { MdOutlineFileUpload } from "react-icons/md";
-import { CgClose } from "react-icons/cg";
-import { FaAngleDoubleDown, FaRegFileWord } from "react-icons/fa";
+import {
+  Text,
+  Group,
+  Button,
+  rem,
+  Modal,
+  Container,
+  Badge,
+  CloseButton,
+  ScrollArea,
+} from "@mantine/core";
+import { Dropzone, FileWithPath, MIME_TYPES } from "@mantine/dropzone";
+import { useDisclosure } from "@mantine/hooks";
+import { MdUploadFile } from "react-icons/md";
+import { FiUpload } from "react-icons/fi";
+import { RxCross2 } from "react-icons/rx";
+import { FiFileText } from "react-icons/fi";
+import { useState } from "react";
+import { FaFileWord, FaFilePdf } from "react-icons/fa";
 
-const UploadedFileItem = ({
-  file,
-  removeFunction,
-}: {
-  file: File;
-  removeFunction: any;
-}) => {
-  let icon: React.ReactNode;
-  if (file.name.endsWith(".doc") || file.name.endsWith(".docx"))
-    icon = <FaRegFileWord size={35} className="text-blue" />;
-  else icon = <FaRegFileWord size={25} />;
-
-  return (
-    <div className="mt-3 flex w-full items-center gap-3 rounded-lg bg-lightergray px-3 py-2">
-      {icon}
-      <div className="text-lg font-semibold text-lightblue">{file.name}</div>
-      <div className="right-0 ml-auto">
-        <CgClose
-          size={25}
-          className="text-lack cursor-pointer hover:text-lightgray"
-          onClick={() => {
-            removeFunction(file);
-          }}
-        />
-      </div>
-    </div>
-  );
+const getFileIcon = (fileType: string) => {
+  console.log(fileType);
+  if (fileType.includes("word")) {
+    return <FaFileWord size={20} />;
+  } else if (fileType.includes("pdf")) {
+    return <FaFilePdf size={20} />;
+  }
+  return <FiFileText size={20} />;
 };
 
 const UploadFileModal = () => {
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [dragActive, setDragActive] = useState(false);
-  var fileInput = useRef<any>(null);
+  const [opened, { open, close }] = useDisclosure(false);
+  const [files, setFiles] = useState<FileWithPath[]>([]);
 
-  const modalContextValue = useContext(ModalContext);
-  if (!modalContextValue) {
-    console.error("Modal context not initiated for upload file modal !");
-    return;
-  }
-  const { toggleModal } = modalContextValue;
-
-
-  function handleFileUpload(files: FileList) {
-    let newFilesList = uploadedFiles;
-    Array.from(files).map((file) => {
-      // console.log('Added file:', file)
-      newFilesList = newFilesList.concat(file);
-    });
-    setUploadedFiles(newFilesList);
-    // console.log("File uploaded:",files)
-    fileInput.current.value = ""; // clear file input for new uploads
-  }
-
-  function handleFileRemove(target: File) {
-    const index = uploadedFiles.indexOf(target);
-    // console.log("Removing:", index)
-    if (index > -1) {
-      // only splice array when item is found
-
-      uploadedFiles.splice(0, 1);
-      setUploadedFiles([...uploadedFiles]);
-    }
-  }
-
-  function handleFileSubmit() {
-    console.log(uploadedFiles);
-  }
-
-  const handleDrag = function (e: any) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
+  const handleDeleteFile = (filename: string) => {
+    setFiles(files.filter((file) => file.name != filename));
   };
-
-  const handleDrop = function (e: any) {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      // File added by drag&drop
-      handleFileUpload(e.dataTransfer.files);
-    }
-  };
-
   return (
-    <div className="h-[80vh] w-[80vw]">
-      <Typography
-        variant="h2"
-        text="Upload file or multiple files"
-        className="mb-4"
-      />
-      <div
-        className=" flex h-1/2 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-lightblue bg-lightergray"
-        onClick={() => {
-          if (fileInput) fileInput.current!.click();
-        }}
-        onDragEnter={handleDrag}
+    <>
+      <Modal
+        size="45%"
+        opened={opened}
+        onClose={close}
+        title={
+          <Text size="lg" c="blue" fw={600}>
+            Upload File
+          </Text>
+        }
       >
-        {dragActive ? (
-          <div className="contents-center flex flex-col items-center">
-            <FaAngleDoubleDown size={50} className="text-gray" />
-            <div className="mt-4 text-xl font-bold text-gray">
-              Drop files here
-            </div>
-          </div>
-        ) : (
-          <div className="contents-center flex flex-col items-center ">
-            <div className="mt-3">
-              <MdOutlineFileUpload size={60} className="text-blue" />
-            </div>
-            <div className="text-xl font-bold">Drag and drop files here</div>
-            <div className="text-xl font-bold">or</div>
-            <Button
-              isPrimary={true}
-              variant="normal"
-              className="mb-6 mt-2 px-6 py-1"
-            >
-              Browse files
-            </Button>
-          </div>
-        )}
-        <form action="" onSubmit={(e) => e.preventDefault()}>
-          <input
-            type="file"
-            className="hidden"
-            ref={fileInput}
-            accept=".txt,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            multiple={true}
-            onChange={(e) => {
-              // Upload files via browse window
-              if (e.target.files) {
-                handleFileUpload(e.target.files);
-              }
-            }}
-          />
-        </form>
-        {dragActive && (
-          <div
-            className="absolute h-full w-full bg-transparent"
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          ></div>
-        )}
-      </div>
-
-      <div className="mt-3 h-[33%] overflow-y-auto">
-        {uploadedFiles &&
-          Array.from(uploadedFiles).map((file, index) => {
-            return (
-              <UploadedFileItem
-                file={file}
-                removeFunction={handleFileRemove}
-                key={index}
+        <Dropzone
+          onReject={(files) => console.log("rejected files", files)}
+          maxSize={5 * 1024 ** 2}
+          accept={[MIME_TYPES.pdf, MIME_TYPES.doc, MIME_TYPES.docx]}
+          onDrop={(newFiles) => {
+            setFiles((currentFiles) => [...currentFiles, ...newFiles]);
+          }}
+          className="border-2"
+        >
+          <Group
+            justify="center"
+            gap="xl"
+            mih={220}
+            style={{ pointerEvents: "none" }}
+          >
+            <Dropzone.Accept>
+              <FiUpload
+                style={{
+                  width: rem(52),
+                  height: rem(52),
+                  color: "var(--mantine-color-blue-6)",
+                }}
               />
-            );
-          })}
-      </div>
+            </Dropzone.Accept>
+            <Dropzone.Reject>
+              <RxCross2
+                style={{
+                  width: rem(52),
+                  height: rem(52),
+                  color: "var(--mantine-color-red-6)",
+                }}
+              />
+            </Dropzone.Reject>
+            <Dropzone.Idle>
+              <FiFileText
+                style={{
+                  width: rem(52),
+                  height: rem(52),
+                  color: "var(--mantine-color-dimmed)",
+                }}
+              />
+            </Dropzone.Idle>
 
-      <div className="mt-4 flex justify-end gap-3">
-        <Button
-          isPrimary={true}
-          variant={"normal"}
-          className="px-8 py-2"
-          onClick={handleFileSubmit}
-        >
-          Upload
-        </Button>
-        <Button
-          isPrimary={true}
-          variant={"cancel"}
-          onClick={() => toggleModal(false)}
-        >
-          Cancel
-        </Button>
-      </div>
-    </div>
+            <div>
+              <Text size="xl" inline>
+                Drag files here or click to select files
+              </Text>
+              <Text size="sm" c="dimmed" inline mt={7}>
+                Attach as many files as you like, each file should not exceed
+                5mb
+              </Text>
+            </div>
+          </Group>
+        </Dropzone>
+        <Container px={0} className="my-4">
+          <ScrollArea.Autosize mah={250}>
+            {files.map((file) => (
+              <Badge
+                className="flex justify-between normal-case"
+                fullWidth
+                variant="light"
+                rightSection={
+                  <CloseButton
+                    size={20}
+                    onClick={() => handleDeleteFile(file.name)}
+                    c="blue"
+                  />
+                }
+                radius="sm"
+                size="lg"
+                py={18}
+                my={8}
+              >
+                <span className="flex items-center gap-2">
+                  {getFileIcon(file.type)}
+                  {file.name}
+                </span>
+              </Badge>
+            ))}
+          </ScrollArea.Autosize>
+        </Container>
+        <Group justify="flex-end" gap="xs">
+          <Button onClick={close} variant="outline">
+            Cancel
+          </Button>
+          <Button
+            variant="filled"
+            onClick={() => {
+              console.log(files);
+              close();
+            }}
+          >
+            Upload
+          </Button>
+        </Group>
+      </Modal>
+      <Button
+        variant="filled"
+        leftSection={<MdUploadFile />}
+        onClick={open}
+        ms="md"
+      >
+        Upload File
+      </Button>
+    </>
   );
 };
 

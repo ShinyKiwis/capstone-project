@@ -1,140 +1,122 @@
-import React, { useContext } from "react";
-import parse from "html-react-parser";
-import { Button, ProjectInformationTable, Typography } from "..";
-import { ProjectCardList } from "./ProjectCard";
-import { useNavigate, useUser } from "@/app/hooks";
-import useHasRole from "@/app/lib/hasRole";
-import { ModalContext } from "@/app/providers/ModalProvider";
-import UnenrollButton from "../UserAction/Buttons/UnenrollButton";
-import EnrollButton from "../UserAction/Buttons/EnrollButton";
-import ActivateButton from "../UserAction/Buttons/ActivateButton";
-import DeleteProjectButton from "../UserAction/Buttons/DeleteProjectButton";
-import { usePathname } from "next/navigation";
-import DenyButton from "../UserAction/Buttons/DenyButton";
-import ProjectStatus from "./ProjectStatus";
+import {
+  Card,
+  Badge,
+  Title,
+  Group,
+  Text,
+  Avatar,
+  ScrollArea,
+  Button,
+} from "@mantine/core";
+import React from "react";
+import { BsFillPeopleFill } from "react-icons/bs";
+import { ApproveModal, DeactivateModal, DenyModal, EnrollModal, UnenrollModal } from "..";
 
-const ProjectCardDetail = ({
-  projectObject,
-}: {
-  projectObject: ProjectProps;
-}) => {
-  const isStudent = useHasRole("student")
-  const user = useUser();
-  const modalContextValue = useContext(ModalContext);
-  if (!modalContextValue) {
-    console.error(
-      "Action buttons will not work - model context not initiated !",
-    );
-    return;
-  }
-
-  const StudentButtons = ({}) => {
-    return (
-      <>
-        {user.project.code === projectObject.code ? (
-          <div className="mt-2 w-fit">
-            <UnenrollButton className="mt-2 w-fit px-6 py-2" />
-          </div>
-        ) : (
-          <EnrollButton
-            className="mt-2 w-fit px-6 py-2"
-            projectId={projectObject.code}
-          />
-        )}
-      </>
-    );
-  };
-
-  const ManagementButtons = ({
-    viewSet,
-    viewTarget,
-  }: {
-    viewSet?: any;
-    viewTarget: ProjectProps;
-  }) => {
-    const navigate = useNavigate();
-    const pathname = usePathname();
-    return pathname.includes("approve") ? (
-      <>
-        <Button isPrimary variant="success" className="w-fit px-6 py-2">
-          Approve
-        </Button>
-        <DenyButton projectId={viewTarget.code} className="w-fit px-6 py-2" />
-      </>
-    ) : (
-      <>
-        <Button
-          isPrimary={false}
-          variant="normal"
-          className="mt-2 w-fit px-6 py-2"
-          onClick={() => {
-            navigate(`/project/edit/${projectObject.code}`);
-          }}
-        >
-          Edit
-        </Button>
-        {viewTarget.status.includes("DEACTIVATED") ? (
-          <ActivateButton
-            className="mt-2 w-fit px-6 py-2"
-            projectId={viewTarget.code}
-            action="Activate"
-          />
-        ) : (
-          <ActivateButton
-            className="mt-2 w-fit px-6 py-2"
-            projectId={viewTarget.code}
-            action="Deactivate"
-          />
-        )}
-        <DeleteProjectButton
-          className="mt-2 w-fit px-6 py-2"
-          projectId={viewTarget.code}
-        />
-      </>
-    );
-  };
-
+const ProjectCardDetail = () => {
   return (
-    <div className="rounded-md border border-black px-8 py-4">
-      {!isStudent && <ProjectStatus status={projectObject.status} />}
-      <Typography variant="h1" text={projectObject.code.toString()} />
-      <Typography variant="h1" text={projectObject.name} />
-      <div className="mb-4 flex w-full">
-        <ProjectInformationTable
-          fontSize="text-lg"
-          branches={projectObject.branches}
-          majors={projectObject.majors}
-          supervisors={projectObject.supervisors}
-        />
-        <div className="ms-auto">
-          <ProjectCardList
-            className="w-full"
-            studentsCount={projectObject.studentsCount}
-            students={projectObject.students}
-            limit={projectObject.limit}
-          />
-        </div>
-      </div>
-      <Typography variant="h2" text="Description" />
-      <div className="text-md [&>ol]:list-inside [&>ol]:list-decimal [&>ul]:list-inside [&>ul]:list-disc">
-        {parse(projectObject.description)}
-      </div>
-      <Typography variant="h2" text="Tasks" />
-      <div className="text-md [&>ol]:list-inside [&>ol]:list-decimal [&>ul]:list-inside [&>ul]:list-disc">
-        {parse(projectObject.tasks)}
-      </div>
-      <Typography variant="h2" text="References" />
-      <div className="text-md [&>ol]:list-inside [&>ol]:list-decimal [&>ul]:list-inside [&>ul]:list-disc">
-        {parse(projectObject.references)}
-      </div>
-      <div className="mt-4 flex justify-end gap-4">
-        {isStudent ? (
-          <StudentButtons />
-        ) : (
-          <ManagementButtons viewTarget={projectObject} />
-        )}
-      </div>
-    </div>
+    <Card className="shadow" h="100%" px="xl" radius="md" withBorder>
+      <ScrollArea h="100%" scrollbars="y" scrollbarSize={4}>
+        <Card.Section inheritPadding py="md">
+          <Badge color="yellow">Waiting for Department Head</Badge>
+        </Card.Section>
+        <Card.Section inheritPadding py="xs">
+          <Title order={2}>CS-102</Title>
+          <Title order={1}>Image Segmentation</Title>
+        </Card.Section>
+        <Card.Section inheritPadding py="xs">
+          <Group justify="space-between">
+            <div className="flex flex-col gap-4">
+              <div>
+                <Text size="sm" c="dimmed">
+                  Program
+                </Text>
+                <Text size="sm" fw={500}>
+                  English Program
+                </Text>
+              </div>
+              <div>
+                <Text size="sm" c="dimmed">
+                  Major
+                </Text>
+                <Text size="sm" fw={500}>
+                  Computer Science, ComputerEngineering
+                </Text>
+              </div>
+              <div>
+                <Text size="sm" c="dimmed">
+                  Instructor
+                </Text>
+                <Text size="sm" fw={500}>
+                  Vo Thi Ngoc Chau
+                </Text>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <BsFillPeopleFill size={20} />
+                <span>3/4</span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-1">
+                  <Avatar src={null} alt="no image here" color="indigo" />
+                  <span>Ladiz Washroom</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Avatar src={null} alt="no image here" color="indigo" />
+                  <span>Emplyes Mustwashhands</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Avatar src={null} alt="no image here" color="indigo" />
+                  <span>Max Imumoccupancy120</span>
+                </div>
+              </div>
+            </div>
+          </Group>
+        </Card.Section>
+        <Card.Section inheritPadding py="xs">
+          <Title order={3}>Description</Title>
+          <div>
+            <Text size="md">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde
+              provident eos fugiat id necessitatibus magni ducimus molestias.
+              Placeat, consequatur. Quisquam, quae magnam perspiciatis excepturi
+              iste sint itaque sunt laborum. Nihil?
+            </Text>
+          </div>
+        </Card.Section>
+        <Card.Section inheritPadding py="xs">
+          <Title order={3}>Task</Title>
+          <div>
+            <Text size="md">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde
+              provident eos fugiat id necessitatibus magni ducimus molestias.
+              Placeat, consequatur. Quisquam, quae magnam perspiciatis excepturi
+              iste sint itaque sunt laborum. Nihil?
+            </Text>
+          </div>
+        </Card.Section>
+        <Card.Section inheritPadding py="xs">
+          <Title order={3}>References</Title>
+          <div>
+            <Text size="md">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde
+              provident eos fugiat id necessitatibus magni ducimus molestias.
+              Placeat, consequatur. Quisquam, quae magnam perspiciatis excepturi
+              iste sint itaque sunt laborum. Nihil?
+            </Text>
+          </div>
+        </Card.Section>
+      </ScrollArea>
+      <Card.Section inheritPadding py="xs">
+        <Group justify="flex-end">
+          <ApproveModal />
+          <EnrollModal />
+          <UnenrollModal />
+          <DenyModal />
+          <DeactivateModal />
+        </Group>
+      </Card.Section>
+    </Card>
   );
 };
 
