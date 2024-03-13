@@ -1,17 +1,26 @@
 "use client";
-import React, { createContext, useState } from "react";
-import useNavigate from "../hooks/useNavigate";
+import React, { createContext, useContext, useState } from "react";
+import axios from "axios";
 
-interface AuthContextProps {
-  login: (user: User) => void;
-  logout: () => void;
-  user: User | null;
-  setUser: any
+interface User {
+  id: number;
+  email: string;
+  name: string;
+  roles: string[];
 }
 
-export const AuthContext = createContext<AuthContextProps | null>(null);
+interface AuthContextType {
+  error: string;
+  login: (username: string, password: string) => void;
+  logout: () => void;
+  user: User | null;
+  setUser: (user: User) => void;
+}
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [error, setError] = useState<string>("");
   const [user, setUser] = useState<User | null>(() => {
     if (typeof window !== "undefined") {
       const storedUser = sessionStorage.getItem("user");
@@ -19,32 +28,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
     return null;
   });
-  const navigate = useNavigate();
 
-  const login = (user: User) => {
-    console.log("Login");
-    sessionStorage.setItem("user", JSON.stringify(user));
-    setUser(user);
-    navigate("/project?project=specialized");
+  const login = async (username: string, password: string) => {
+      setError("Invalid username or password!");
+    // const response = await axios.post(process.env.AUTH_URL!, {
+    //   username,
+    //   password,
+    // });
+    // const { authenticated, user } = response.data;
+    // if (authenticated) {
+    //   sessionStorage.setItem("user", JSON.stringify(user));
+    //   setUser(user);
+    //   setError("");
+    // } else {
+    //   setError("Invalid username or password!");
+    // }
   };
 
   const logout = () => {
-    console.log("Logout");
-    sessionStorage.removeItem("user");
     setUser(null);
-    navigate("/login");
-  };
-
-  const authContextValue: AuthContextProps = {
-    login,
-    logout,
-    user,
-    setUser
+    sessionStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={authContextValue}>
+    <AuthContext.Provider value={{ error, login, logout, user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useRoles must be used inside the RolesProvider");
+  }
+
+  return context;
+}
+
+export default AuthProvider;

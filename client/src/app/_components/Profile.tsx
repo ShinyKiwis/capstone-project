@@ -1,3 +1,4 @@
+import { Avatar } from "@mantine/core";
 import Image from "next/image";
 import React from "react";
 
@@ -6,45 +7,49 @@ interface ProfileProps {
   username: string;
   userAvatar?: string;
   userId?: string;
-  email?: string
+  email?: string;
 }
 
-const DefaultProfileImage = ({
-  username,
-  type,
-}: {
-  username: string;
-  type: string;
-}) => {
-  const shortUsername = username
+const getShortUserName = (username: string) => {
+  return username
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase())
     .slice(-2)
     .join("");
-
-  const size = type === "vertical" ? "h-20 w-20 text-2xl" : "h-12 w-12"
-  return (
-    <div className={`flex ${size} items-center justify-center rounded-full bg-blue font-semibold text-white`}>
-      <span className="text-md">{shortUsername}</span>
-    </div>
-  );
 };
 
-const Profile = ({ type, username, userAvatar, userId, email }: ProfileProps) => {
+const Profile = ({
+  type,
+  username,
+  userAvatar,
+  userId,
+  email,
+}: ProfileProps) => {
   return (
     <div
-      className={`flex items-center ${type == "horizontal" ? "gap-4" : "flex-col"
-        } w-full`}
+      className={`flex items-center ${
+        type == "horizontal" ? "gap-4" : "flex-col"
+      } w-full`}
     >
-      {userAvatar ?
-        <Image src={userAvatar} width={50} height={50} alt="user profile" /> :
-        <DefaultProfileImage username={username} type={type} />
-      }
-      <div className={`flex gap-2 ${type==="vertical" ? "flex-col items-center": "flex-col"}`}>
-        <span className="text-lg">{username}</span>
-        {email && <span>{userId ? `${userId} - `: ""}{email}</span>}
+      {userAvatar ? (
+        <Image src={userAvatar} width={40} height={40} alt="user profile" />
+      ) : (
+        <Avatar color="blue">
+          {getShortUserName(username)}
+        </Avatar>
+      )}
+      <div
+        className={`flex gap-2 ${type === "vertical" ? "flex-col items-center" : "flex-col"}`}
+      >
+        <span className="text-md">{username}</span>
+        {email && (
+          <span>
+            {userId ? `${userId} - ` : ""}
+            {email}
+          </span>
+        )}
       </div>
-    </div >
+    </div>
   );
 };
 
