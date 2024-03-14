@@ -161,7 +161,7 @@ function ProfileSelectorAsync({
     <div>
       <Combobox
         store={combobox}
-        withinPortal={false}
+        // withinPortal={false}
         onOptionSubmit={handleValueSelect}
       >
         <Combobox.DropdownTarget>
@@ -204,6 +204,7 @@ function ProfileSelectorAsync({
                 name={selectedUsr!.name}
                 id={selectedUsr!.id}
                 email={selectedUsr!.email}
+                key={selectedUsr!.id}
               />
             );
           })}

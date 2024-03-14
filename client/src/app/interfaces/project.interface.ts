@@ -1,11 +1,19 @@
-type Student = {
-	user: User;
-	userId: number;
-	credits: number;
-	generation: number;
-	GPA: number;
-	enrolledAt: string;
-};
+interface Project {
+	code: number;
+	name: string;
+	stage: number;
+	description: string;
+	tasks: string;
+	references: string;
+	status: string;
+	requirements: string;
+	students: Student[];
+	supervisors: Supervisor[];
+	majors: Program[];
+	branches: Branch[];
+	studentsCount: number;
+	limit: number;
+  }
 
 interface ProjectProps {
 	code: number;
