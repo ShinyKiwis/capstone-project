@@ -32,13 +32,3 @@ interface ProjectProps {
 	students: Student[];
 	limit: number;
 }
-
-type Branch = {
-	id: number,
-	name: string
-}
-
-type Major = {
-  id: number,
-  name: string
-}
