@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect } from "react";
 import App from "../_components/App";
 import DeadlinesProvider from "../providers/DeadlinesProvider";
@@ -14,7 +14,7 @@ export default function RootLayout({
   const { user } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
-    if (user) {
+    if (!user) {
       navigate("/login");
     }
   }, []);
