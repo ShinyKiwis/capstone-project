@@ -10,7 +10,7 @@ interface RoleCardProps {
 }
 
 const RoleCard: React.FC<RoleCardProps> = ({ role }) => {
-  const { roles, setRoles } = useRoles();
+  const { roles, setRoles, deleteRole } = useRoles();
 
   const closeModal = () =>
     openConfirmModal({
@@ -30,6 +30,7 @@ const RoleCard: React.FC<RoleCardProps> = ({ role }) => {
       confirmProps: { color: "red" },
       onCancel: () => {},
       onConfirm: () => {
+        deleteRole(role?.id);
         setRoles(
           roles.filter(
             (existingRole) => existingRole.roleName != role?.roleName,

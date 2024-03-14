@@ -15,7 +15,7 @@ export class User {
   @Column()
   name: string;
 
-  @ManyToMany(() => Role)
+  @ManyToMany(() => Role, { eager: true, onDelete: 'SET NULL'})
   @JoinTable()
   roles: Role[];
 }

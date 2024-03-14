@@ -20,8 +20,8 @@ export class RolesService {
     return `This action returns a #${id} role`;
   }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+  async update(id: number, updateRoleDto: UpdateRoleDto) {
+    return this.rolesRepository.updateRole(id, updateRoleDto);
   }
 
   async deleteARole(id: number) {

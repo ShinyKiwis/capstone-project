@@ -25,7 +25,9 @@ interface RoleModalProps {
 }
 
 const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
-  const { roles, setRoles } = useRoles();
+  const { roles, setRoles, syncRoles } = useRoles();
+
+  const prevRoleName = role?.roleName;
   const [roleName, setRoleName] = useState(role?.roleName || "");
   const [error, setError] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
@@ -68,15 +70,15 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
         "danger",
       );
     } else {
+      const resources = [managementValues, projectValues].flatMap((array) =>
+        array.filter((item) => item.checked == true).map((item) => item.key),
+      );
+      syncRoles("create", roleName, resources);
       setRoles([
         ...roles,
         {
           roleName: roleName,
-          resources: [managementValues, projectValues].flatMap((array) =>
-            array
-              .filter((item) => item.checked == true)
-              .map((item) => item.key),
-          ),
+          resources: resources,
         },
       ]);
       toggleNotification(
@@ -96,21 +98,26 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
     if (roleName.length === 0) {
       setError("Role name is required");
       return;
-    } else if (roles.some((role) => role.roleName == roleName)) {
+    } else if (
+      prevRoleName != roleName &&
+      roles.some((role) => role.roleName == roleName)
+    ) {
       toggleNotification(
         `Role ${roleName} existed`,
         `The role ${roleName} is existed. Please try another.`,
         "danger",
       );
     } else {
+      const resources = [managementValues, projectValues].flatMap((array) =>
+        array.filter((item) => item.checked == true).map((item) => item.key),
+      );
+      syncRoles("edit", roleName, resources, role?.id);
       setRoles(
         roles.map((updateRole) => {
           if (updateRole.roleName == role?.roleName) {
             return {
               roleName: roleName,
-              resources: [managementValues, projectValues].flatMap((array) =>
-                array.map((item) => item.key),
-              ),
+              resources: resources,
             };
           }
           return updateRole;

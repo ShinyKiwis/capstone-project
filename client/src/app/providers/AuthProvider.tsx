@@ -1,6 +1,7 @@
 "use client";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import useNavigate from "../hooks/useNavigate";
 
 interface User {
   id: number;
@@ -20,6 +21,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
   const [error, setError] = useState<string>("");
   const [user, setUser] = useState<User | null>(() => {
     if (typeof window !== "undefined") {
@@ -30,19 +32,26 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   const login = async (username: string, password: string) => {
+    const response = await axios.post(
+      process.env.NEXT_PUBLIC_AUTH_URL!,
+      {
+        username,
+        password,
+      },
+      {
+        withCredentials: true,
+      },
+    );
+    console.log(response);
+    const { authenticated, user } = response.data;
+    if (authenticated) {
+      sessionStorage.setItem("user", JSON.stringify(user));
+      setUser(user);
+      setError("");
+      navigate("/project?project=specialized");
+    } else {
       setError("Invalid username or password!");
-    // const response = await axios.post(process.env.AUTH_URL!, {
-    //   username,
-    //   password,
-    // });
-    // const { authenticated, user } = response.data;
-    // if (authenticated) {
-    //   sessionStorage.setItem("user", JSON.stringify(user));
-    //   setUser(user);
-    //   setError("");
-    // } else {
-    //   setError("Invalid username or password!");
-    // }
+    }
   };
 
   const logout = () => {
@@ -64,6 +73,6 @@ export const useAuth = () => {
   }
 
   return context;
-}
+};
 
 export default AuthProvider;

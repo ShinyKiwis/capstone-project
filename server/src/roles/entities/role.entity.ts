@@ -15,7 +15,7 @@ export class Role {
   @Column({ unique: true })
   name: string;
 
-  @ManyToMany(() => Resource)
+  @ManyToMany(() => Resource, { eager: true, onDelete: 'CASCADE' })
   @JoinTable()
   resources: Resource[];
 }

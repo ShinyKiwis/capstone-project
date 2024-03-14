@@ -9,15 +9,18 @@ require("dotenv").config();
 const app = express();
 const PORT = 4000;
 
-app.use(cors({
-  origin: true
-}));
+app.use(
+  cors({
+    credentials: true,
+    origin: true,
+  })
+);
 app.use(bodyParser.json());
 
 function authenticateToken(req, res, next) {
   const token = req.headers.authorization;
   if (!token) {
-    console.log("NO TOKEN")
+    console.log("NO TOKEN");
     next();
   } else {
     jwt.verify(token, process.env.secretKey, (err, _) => {
@@ -47,7 +50,7 @@ const apiRouter = express.Router();
 
 apiRouter.post("/auth/login", async (req, res) => {
   let user = req.body;
-  console.log("FE: ", user)
+  console.log("FE: ", user);
   if (!helper.authenticate(user)) {
     return res
       .status(401)
@@ -60,11 +63,15 @@ apiRouter.post("/auth/login", async (req, res) => {
       id: user.id,
       name: user.name,
       email: user.email,
-      username: user.username
+      username: user.username,
+      password: user.password,
     });
+
+    console.log(userResponse);
 
     // Return token
     const token = helper.jwt_generation(user);
+    res.cookie(userResponse.headers["set-cookie"]);
     res.json({
       token: token,
       ...userResponse.data,

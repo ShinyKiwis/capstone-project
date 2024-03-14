@@ -40,7 +40,7 @@ const Project = () => {
         <div className="h-full w-2/5">
           <ScrollArea type="hover" h="100%" scrollbars="y" scrollbarSize={4}>
             {projectData.map((project) => (
-              <ProjectCard projectObject={project} />
+              <ProjectCard projectObject={project} key={project.code} />
             ))}
           </ScrollArea>
         </div>

@@ -9,6 +9,10 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
+  Session,
+  Res,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -22,6 +26,8 @@ import { ApproveProjectDto } from './dto/approve-project.dto';
 import { RejectProjectDto } from './dto/reject-project.dto';
 import { ApproveProjectsDto } from './dto/approve-projects.dto';
 import { promises } from 'fs';
+import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
+import { Store } from 'express-session';
 
 @Controller('projects')
 export class ProjectsController {
@@ -33,13 +39,33 @@ export class ProjectsController {
     return this.projectsService.createProject(createProjectDto);
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Get()
-  async getProjects(@Query() filterDto: GetProjectsFilterDto) {
+  async getProjects(
+    @Request() req,
+    @Query() filterDto: GetProjectsFilterDto,
+    @Session() session: Record<string, any>,
+  ) {
+    console.log(session);
+    session.visits = session.visits ? session.visits + 1 : 1;
+    console.log('session store');
+    if (req.sessionStore) {
+      console.log(req.sessionStore);
+      req.sessionStore.clear((error: any) => {
+        if (error) {
+          console.error('Failed to clear sessions:', error);
+        } else {
+          console.log('All sessions cleared successfully');
+        }
+      });
+    }
     return this.projectsService.getProjects(filterDto);
   }
 
   @Get('/status')
-  async getProjectsByStatus(@Body() getProjectsByStatusDto: GetProjectsByStatusDto) {
+  async getProjectsByStatus(
+    @Body() getProjectsByStatusDto: GetProjectsByStatusDto,
+  ) {
     return this.projectsService.getProjectsByStatus(getProjectsByStatusDto);
   }
 
@@ -49,7 +75,10 @@ export class ProjectsController {
   }
 
   @Patch(':code')
-  async updateAProject(@Param('code') id: string, @Body() updateProjectDto: UpdateProjectDto) {
+  async updateAProject(
+    @Param('code') id: string,
+    @Body() updateProjectDto: UpdateProjectDto,
+  ) {
     return this.projectsService.updateAProject(+id, updateProjectDto);
   }
 
@@ -78,21 +107,22 @@ export class ProjectsController {
   }
 
   @Post('file')
-  @UseInterceptors(ProjectFilesInterceptor({
-    fieldName: 'file',
-    path: '/projects'
-  }))
+  @UseInterceptors(
+    ProjectFilesInterceptor({
+      fieldName: 'file',
+      path: '/projects',
+    }),
+  )
   async uploadFileAndCreateProject(@UploadedFile() file: Express.Multer.File) {
     const response = {
-    	originalname: file.originalname,
-    	filename: file.filename,
-      path: file.path
+      originalname: file.originalname,
+      filename: file.filename,
+      path: file.path,
     };
     const fileData = await promises.readFile(file.path);
     try {
       this.projectsService.extractProject(file.path);
     } catch (error) {
-      
     } finally {
       await promises.unlink(file.path);
     }

@@ -21,8 +21,12 @@ export class RolesController {
   }
 
   @Get()
-  getAllRoles() {
-    return this.rolesService.getAllRoles();
+  async getAllRoles() {
+    let result = await this.rolesService.getAllRoles();
+    let roles = result.map((role) => {
+      return {...role, resources : role.resources.map((resource) => resource.name)}
+    })
+    return roles;
   }
 
   @Get(':id')

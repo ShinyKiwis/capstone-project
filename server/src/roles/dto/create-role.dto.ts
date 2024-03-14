@@ -6,5 +6,5 @@ export class CreateRoleDto {
   @IsNotEmpty()
   name: string;
 
-  resources: Resource[];
+  resources: string[];
 }

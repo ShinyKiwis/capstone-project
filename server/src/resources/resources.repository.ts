@@ -21,4 +21,23 @@ export class ResourcesRepository extends Repository<Resource> {
 
     return resource;
   }
+
+  async getOrCreateResource(
+    createResourceDto: CreateResourceDto,
+  ): Promise<Resource> {
+    const { name } = createResourceDto;
+
+    const resource = await this.findOne({
+      where: {
+        name,
+      },
+    });
+    if (resource != null) return resource;
+    let result = this.create({
+      name,
+    });
+    await this.save(result);
+
+    return result;
+  }
 }

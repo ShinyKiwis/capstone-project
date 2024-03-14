@@ -10,7 +10,13 @@ import {
   Button,
 } from "@mantine/core";
 import React from "react";
-import { ApproveModal, DeactivateModal, DenyModal, EnrollModal, UnenrollModal } from "..";
+import {
+  ApproveModal,
+  DeactivateModal,
+  DenyModal,
+  EnrollModal,
+  UnenrollModal,
+} from "..";
 
 interface ProjectCardProps {
   projectObject: ProjectProps;
@@ -71,6 +77,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
       radius="md"
       my="md"
       withBorder
+      key={projectObject.code}
     >
       <Card.Section inheritPadding py="xs">
         <Badge color="yellow">{projectObject.status}</Badge>
@@ -94,7 +101,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
               Program
             </Text>
             {projectObject.branches.map((branch) => (
-              <Text size="sm" fw={500}>
+              <Text key={branch.id} size="sm" fw={500}>
                 {branch.name}
               </Text>
             ))}
@@ -104,7 +111,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
               Major
             </Text>
             {projectObject.majors.map((majors) => (
-              <Text size="sm" fw={500}>
+              <Text key={majors.id} size="sm" fw={500}>
                 {majors.name}
               </Text>
             ))}
@@ -114,7 +121,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
               Instructor
             </Text>
             {projectObject.supervisors.map((supervisor) => (
-              <Text size="sm" fw={500}>
+              <Text key={supervisor.id} size="sm" fw={500}>
                 {supervisor.name}
               </Text>
             ))}
