@@ -4,4 +4,5 @@ export { default as useMajor } from "./useMajor";
 export { default as useProject } from "./useProject";
 export { default as useNavigate } from "./useNavigate";
 export { default as useUser } from "./useUser";
+export { default as useRole } from "./useRole";
 export { default as usePageTitle } from "./usePageTitle";
