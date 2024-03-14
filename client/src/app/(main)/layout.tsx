@@ -14,7 +14,7 @@ export default function RootLayout({
   const { user } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
-    if (!user) {
+    if (user) {
       navigate("/login");
     }
   }, []);
