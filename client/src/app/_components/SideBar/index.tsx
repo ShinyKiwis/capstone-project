@@ -3,10 +3,7 @@ import Image from "next/image";
 import sidebarItems from "./items";
 import { useEffect, useState } from "react";
 import SideBarItem from "./SideBarItem";
-import {
-  TbLayoutSidebarRightCollapse,
-  TbLayoutSidebarLeftCollapse,
-} from "react-icons/tb";
+import { IconSquareChevronLeft, IconSquareChevronRight } from "@tabler/icons-react"
 
 const SideBar = () => {
   const [toggleSidebar, setToggleSidebar] = useState(true);
@@ -26,9 +23,9 @@ const SideBar = () => {
           onClick={() => setToggleSidebar(!toggleSidebar)}
         >
           {toggleSidebar ? (
-            <TbLayoutSidebarLeftCollapse size={30} />
+            <IconSquareChevronLeft size={30} />
           ) : (
-            <TbLayoutSidebarRightCollapse size={35} />
+            <IconSquareChevronRight size={35} />
           )}
         </button>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Dispatch, useEffect, useReducer } from "react";
 import { DataTable, type DataTableSortStatus } from "mantine-datatable";
 import { useState } from "react";
 import sortBy from "lodash/sortBy";
@@ -16,8 +16,11 @@ import {
   Badge,
   CloseButton,
   Button,
+  TextInput,
+  Stack,
+  Checkbox,
 } from "@mantine/core";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { IconEdit, IconTrash, IconSettings } from "@tabler/icons-react";
 import axios from "axios";
 import { modals } from "@mantine/modals";
 import { useDisclosure } from "@mantine/hooks";
@@ -37,6 +40,7 @@ interface User {
     roleName: string;
     resources: string[];
   }[];
+  [key: string]: any;
 }
 
 const deleteUserModal = (
@@ -77,21 +81,12 @@ interface EditUserModalProps {
 
 const EditUserModal = ({ user, users, setUsers }: EditUserModalProps) => {
   const { roles } = useRoles();
-  console.log(roles);
-  const [loadedRoles, setLoadedRoles] = useState<string[]>(
-    roles
-      .filter(
-        (role) =>
-          !user.roles.map((role) => role.roleName).includes(role.roleName),
-      )
-      .map((role) => role.roleName),
-  );
+
+  const [loadedRoles, setLoadedRoles] = useState<string[]>([]);
   const [opened, setOpened] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState<string[]>(
     user.roles.map((role) => role.roleName),
   );
-
-  console.log(selectedRoles);
 
   const handleSelectRoles = (values: string[]) => {
     setLoadedRoles(
@@ -137,6 +132,19 @@ const EditUserModal = ({ user, users, setUsers }: EditUserModalProps) => {
       }),
     );
   };
+
+  useEffect(() => {
+    setLoadedRoles(
+      roles
+        .filter(
+          (role) =>
+            !user.roles
+              .map((userRole) => userRole.roleName)
+              .includes(role.roleName),
+        )
+        .map((role) => role.roleName),
+    );
+  }, [roles]);
 
   return (
     <Popover
@@ -186,6 +194,7 @@ const EditUserModal = ({ user, users, setUsers }: EditUserModalProps) => {
               <Badge
                 variant="light"
                 radius="sm"
+                key={selectedRole}
                 rightSection={
                   <CloseButton
                     size={20}
@@ -221,7 +230,102 @@ const EditUserModal = ({ user, users, setUsers }: EditUserModalProps) => {
   );
 };
 
+type State = {
+  id: boolean;
+  name: boolean;
+  email: boolean;
+  roles: boolean;
+};
+
+type Action =
+  | { type: "toggleId" }
+  | { type: "toggleName" }
+  | { type: "toggleEmail" }
+  | { type: "toggleRoles" };
+
+const reducer = (state: State, action: Action) => {
+  switch (action.type) {
+    case "toggleId":
+      return {
+        ...state,
+        id: !state.id,
+      };
+    case "toggleName":
+      return {
+        ...state,
+        name: !state.name,
+      };
+    case "toggleEmail":
+      return {
+        ...state,
+        email: !state.email,
+      };
+    case "toggleRoles":
+      return {
+        ...state,
+        roles: !state.roles,
+      };
+  }
+};
+
+const SettingsModal = ({
+  hideOptions,
+  dispatch,
+}: {
+  hideOptions: State;
+  dispatch: Dispatch<Action>;
+}) => {
+  return (
+    <Popover shadow="md" position="bottom">
+      <Popover.Target>
+        <Button leftSection={<IconSettings size={16} />}>Settings</Button>
+      </Popover.Target>
+      <Popover.Dropdown>
+        <Stack>
+          <Text fw={600} c="blue">
+            Hide columns
+          </Text>
+          <Checkbox
+            label='Hide "ID" column'
+            checked={hideOptions.id}
+            onChange={() => {
+              dispatch({ type: "toggleId" });
+            }}
+          />
+          <Checkbox
+            label='Hide "Name" column'
+            checked={hideOptions.name}
+            onChange={() => {
+              dispatch({ type: "toggleName" });
+            }}
+          />
+          <Checkbox
+            label='Hide "Email" column'
+            checked={hideOptions.email}
+            onChange={() => {
+              dispatch({ type: "toggleEmail" });
+            }}
+          />
+          <Checkbox
+            label='Hide "Roles" column'
+            checked={hideOptions.roles}
+            onChange={() => {
+              dispatch({ type: "toggleRoles" });
+            }}
+          />
+        </Stack>
+      </Popover.Dropdown>
+    </Popover>
+  );
+};
+
 const Users = () => {
+  const [hideOptions, dispatch] = useReducer(reducer, {
+    id: false,
+    name: false,
+    email: false,
+    roles: false,
+  });
   const [fetching, setFetching] = useState(true);
   const [users, setUsers] = useState<User[]>([]);
   const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
@@ -232,6 +336,7 @@ const Users = () => {
     direction: "asc",
   });
   const [selectedRecords, setSelectedRecords] = useState<User[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -275,70 +380,124 @@ const Users = () => {
     const data = sortBy(records, sortStatus.columnAccessor);
     setRecords(sortStatus.direction === "desc" ? data.reverse() : data);
   }, [sortStatus]);
-  return (
-    <div className="mt-4 h-full overflow-auto pb-8">
-      <DataTable
-        withTableBorder
-        borderRadius="md"
-        striped
-        fetching={fetching}
-        highlightOnHover
-        records={records}
-        columns={[
-          { accessor: "id", title: "ID", width: "10%", sortable: true },
-          { accessor: "name", title: "Name", sortable: true },
-          { accessor: "email", title: "Email", sortable: true },
-          {
-            accessor: "roles",
-            title: "Roles",
-            width: "40%",
-            sortable: true,
-            render: (record) => {
-              return record.roles.length !== 0
-                ? record.roles.map((role) => role.roleName).join(", ")
-                : ["No role is assigned"];
-            },
-          },
-          {
-            accessor: "actions",
-            width: "5%",
-            title: <Box mr={6}>Actions</Box>,
-            render: (record) => {
-              return (
-                <Group gap={4} justify="center" wrap="nowrap">
-                  <EditUserModal
-                    user={record}
-                    users={users}
-                    setUsers={setUsers}
-                  />
-                  <ActionIcon
-                    size="sm"
-                    variant="subtle"
-                    color="red"
-                    onClick={deleteUserModal(record, users, setUsers)}
-                  >
-                    <IconTrash size={16} />
-                  </ActionIcon>
-                </Group>
-              );
-            },
-          },
-        ]}
-        loadingText="Loading"
-        paginationText={({ from, to, totalRecords }) =>
-          `Showing ${from} - ${to} of ${totalRecords}`
+
+  useEffect(() => {
+    const deepSearch = (obj: User, searchQuery: string) => {
+      for (const key in obj) {
+        const value = obj[key];
+        const stringValue = String(value); // Convert value to string
+        if (stringValue.toLowerCase().includes(searchQuery.toLowerCase())) {
+          return true;
         }
-        totalRecords={users.length}
-        recordsPerPage={pageSize}
-        page={page}
-        recordsPerPageOptions={PAGE_SIZES}
-        onRecordsPerPageChange={setPageSize}
-        onPageChange={(p) => setPage(p)}
-        sortStatus={sortStatus}
-        onSortStatusChange={setSortStatus}
-        selectedRecords={selectedRecords}
-        onSelectedRecordsChange={setSelectedRecords}
-      />
+        if (typeof value === "object" && value !== null) {
+          if (deepSearch(value, searchQuery)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+    if (searchQuery) {
+      setRecords(users.filter((user) => deepSearch(user, searchQuery)));
+    } else {
+      setRecords(users);
+    }
+  }, [searchQuery]);
+
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex items-center">
+        <div className="flex items-center gap-2">
+          <SettingsModal hideOptions={hideOptions} dispatch={dispatch} />
+        </div>
+        <TextInput
+          placeholder="Search users"
+          className="ms-auto"
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.currentTarget.value)}
+        />
+      </div>
+      <div className="mt-4 h-full overflow-auto pb-4">
+        <DataTable
+          withTableBorder
+          borderRadius="md"
+          striped
+          fetching={fetching}
+          highlightOnHover
+          records={records}
+          columns={[
+            {
+              accessor: "id",
+              title: "ID",
+              width: "10%",
+              sortable: true,
+              hidden: hideOptions.id,
+            },
+            {
+              accessor: "name",
+              title: "Name",
+              sortable: true,
+              hidden: hideOptions.name,
+            },
+            {
+              accessor: "email",
+              title: "Email",
+              sortable: true,
+              hidden: hideOptions.email,
+            },
+            {
+              accessor: "roles",
+              title: "Roles",
+              width: "40%",
+              hidden: hideOptions.roles,
+              sortable: true,
+              render: (record) => {
+                return record.roles.length !== 0
+                  ? record.roles.map((role) => role.roleName).join(", ")
+                  : ["No role is assigned"];
+              },
+            },
+            {
+              accessor: "actions",
+              width: "5%",
+              title: <Box mr={6}>Actions</Box>,
+              render: (record) => {
+                return (
+                  <Group gap={4} justify="center" wrap="nowrap">
+                    <EditUserModal
+                      user={record}
+                      users={users}
+                      setUsers={setUsers}
+                    />
+                    <ActionIcon
+                      size="sm"
+                      variant="subtle"
+                      color="red"
+                      onClick={deleteUserModal(record, users, setUsers)}
+                    >
+                      <IconTrash size={16} />
+                    </ActionIcon>
+                  </Group>
+                );
+              },
+            },
+          ]}
+          loadingText="Loading"
+          paginationText={({ from, to, totalRecords }) =>
+            `Showing ${from} - ${to} of ${totalRecords}`
+          }
+          totalRecords={users.length}
+          recordsPerPage={pageSize}
+          page={page}
+          recordsPerPageOptions={PAGE_SIZES}
+          onRecordsPerPageChange={setPageSize}
+          onPageChange={(p) => setPage(p)}
+          sortStatus={sortStatus}
+          onSortStatusChange={setSortStatus}
+          selectedRecords={selectedRecords}
+          onSelectedRecordsChange={setSelectedRecords}
+        />
+      </div>
     </div>
   );
 };
