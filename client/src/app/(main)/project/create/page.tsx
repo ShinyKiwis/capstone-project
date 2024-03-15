@@ -3,7 +3,7 @@
 import axios from "axios";
 import useProgramBranch from "@/app/hooks/useProgramBranch";
 import useInstructor from "@/app/hooks/useInstructor";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { useForm } from "@mantine/form";
 import {
   Button,
@@ -16,33 +16,16 @@ import MantineRichText from "@/app/_components/MantineRichText";
 import ProfileSelector from "@/app/_components/ProfileSelector";
 import ProfileSelectorAsync from "@/app/_components/ProfileSelectorAsync";
 import { ScrollArea } from "@mantine/core";
-import { conforms } from "lodash";
 import { useQueryClient } from "@tanstack/react-query";
-
-const stageOptions = [
-  {
-    label: "Specialized project",
-    value: "1",
-  },
-  {
-    label: "Capstone project",
-    value: "2",
-  },
-];
-
-const mockInstructors = [
-  { name: "Van Ba", id: "1234567", email: "testmai1@gmail.com" },
-  { name: "Nguyen An", id: "20112337", email: "testmai2@gmail.com" },
-  {
-    name: "Vo Thi Ngoc Truong Chau",
-    id: "22314567",
-    email: "testmai3@hcmut.edu.vn",
-  },
-];
+import { useContext } from "react";
+import { GeneralDataContext } from "@/app/providers/GeneralDataProvider";
 
 const CreateProject = () => {
   // Background data initialization
-  const { programBranches } = useProgramBranch();
+  const generalDataValues = useContext(GeneralDataContext);
+  if (!generalDataValues) return <div>Fetching general data...</div>;
+
+  const { supervisorOpts, projectStages, programBranches } = generalDataValues;
   const programOptions = programBranches.map((progbranch) => {
     return {
       label: progbranch.name,
@@ -95,11 +78,11 @@ const CreateProject = () => {
       references: "",
       requirements: "",
       status: "WAITING_FOR_DEPARTMENT_HEAD",
-      semester:{
-        "year": 2023,
-        "no": 2
+      semester: {
+        year: 2023,
+        no: 2,
       },
-      owner:{"id":3},
+      owner: { id: 3 },
     },
 
     // validate: {
@@ -113,25 +96,38 @@ const CreateProject = () => {
   async function handleFormSubmit(values: any) {
     // Map selected members as stringyfied object back to ids
     let newProjectBody = { ...values };
-    let parsedMemberIds: string[] = newProjectBody.students.map(
-      (jsonVal: string) => JSON.parse(jsonVal).id,
+    newProjectBody.majors = newProjectBody.majors.map((majorid: string) => {
+      return { id: majorid };
+    });
+    newProjectBody.branches = newProjectBody.branches.map(
+      (branchid: string) => {
+        return { id: branchid };
+      },
     );
-    newProjectBody.students = parsedMemberIds;
+    newProjectBody.supervisors = newProjectBody.supervisors.map(
+      (supervisorid: string) => {
+        return { id: supervisorid };
+      },
+    );
+    newProjectBody.students = newProjectBody.students.map((jsonVal: string) => {
+      return { userId: JSON.parse(jsonVal).id };
+    });
     newProjectBody.stage = parseInt(newProjectBody.stage);
-    delete newProjectBody.requirements;       // API currently dont work with reqs
+    delete newProjectBody.requirements; // API currently dont work with reqs
 
     console.log("Submit:", newProjectBody);
-    axios.post("http://localhost:3500/projects", newProjectBody)
-    .then(res => {
-      console.log("Project sumit successful");
-      queryClient.invalidateQueries({
-        queryKey: ["projects"],
+    axios
+      .post("http://localhost:3500/projects", newProjectBody)
+      .then((res) => {
+        console.log("Project submitted successful");
+        queryClient.invalidateQueries({
+          queryKey: ["projects"],
+        });
+        router.push(`/project?project=${newProjectBody.stage === 1 ? 'specialized' : 'capstone'}`);
+      })
+      .catch((error) => {
+        console.error("Error posting project:", error);
       });
-      router.push(`/project?project=${newProjectBody.stage === 1 ? 'specialized' : 'capstone'}`);
-    })
-    .catch(error => {
-      console.error('Error posting project:', error);
-    })
   }
 
   // Display elements
@@ -190,7 +186,12 @@ const CreateProject = () => {
                       </td>
                       <td>
                         <NativeSelect
-                          data={stageOptions}
+                          data={projectStages.map((stage) => {
+                            return {
+                              label: stage.name,
+                              value: stage.id.toString(),
+                            };
+                          })}
                           aria-placeholder="Select project stage"
                           {...form.getInputProps("stage")}
                         />
@@ -270,7 +271,7 @@ const CreateProject = () => {
                 <ProfileSelector
                   onChange={form.getInputProps("supervisors").onChange}
                   value={form.getInputProps("supervisors").value}
-                  optionsData={mockInstructors}
+                  optionsData={supervisorOpts}
                   placeholder="Select instructor(s)"
                 />
               </div>
@@ -294,7 +295,7 @@ const CreateProject = () => {
                   onChange={form.getInputProps("students").onChange}
                   value={form.getInputProps("students").value}
                   placeholder="Select member(s)"
-                  searchApi="localhost:3500"
+                  searchApi="http://localhost:3500/users/students"
                 />
               </div>
 

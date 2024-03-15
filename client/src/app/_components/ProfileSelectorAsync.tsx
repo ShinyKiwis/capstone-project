@@ -72,22 +72,18 @@ function ProfileSelectorAsync({
     }
 
     let newTimeout = setTimeout(async () => {
-      // // console.log(`Calling api: ${apiLink}${query}`)
-      // const res = await axios.get(`${searchApi}${search}`);
-      // // const data = await res.json();
-      // let newOptions = res.data.map((resData: any) => {
-      //   return {
-      //     label: `${resData.userId} - ${resData.user.name}`,
-      //     value: resData.userId.toString(),
-      //   };
-      // });
-      // // console.log("Retreived options:", newOptions);
-      // setData(newOptions);
-      // setLoading(false)
-      setData(
-        query === "" ? MOCKDATA : [{name:"seachedUser", id:"1", email:"mail@mail.com"}],
-      );
-      setLoading(false);
+      console.log(`Calling api: ${searchApi}?search=${query}`)
+      const res = await axios.get(`${searchApi}?search=${search}`);
+      let newOptions = res.data.map((user: any) => {
+        return {
+          id: user.userId,
+          name: user.user.name,
+          email: user.user.email
+        }
+      });
+      console.log("Retreived options:", newOptions);
+      setData(newOptions);
+      setLoading(false)
     }, 350);
 
     setCurrentTimeout(newTimeout);

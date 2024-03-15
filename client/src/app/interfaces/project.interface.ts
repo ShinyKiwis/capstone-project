@@ -40,3 +40,8 @@ interface ProjectProps {
 	students: Student[];
 	limit: number;
 }
+
+type ProjectStage = {
+	name: string;
+	id: number
+}
