@@ -59,7 +59,7 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
   const indeterminateProject =
     projectValues.some((value) => value.checked) && !allProjectValuesChecked;
 
-  const handleCreateRole = () => {
+  const handleCreateRole = async () => {
     if (roleName.length === 0) {
       setError("Role name is required");
       return;
@@ -74,13 +74,6 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
         array.filter((item) => item.checked == true).map((item) => item.key),
       );
       syncRoles("create", roleName, resources);
-      setRoles([
-        ...roles,
-        {
-          roleName: roleName,
-          resources: resources,
-        },
-      ]);
       toggleNotification(
         `Create role ${roleName} successfully`,
         `The role ${roleName} is created.`,
@@ -111,11 +104,13 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
       const resources = [managementValues, projectValues].flatMap((array) =>
         array.filter((item) => item.checked == true).map((item) => item.key),
       );
-      syncRoles("edit", roleName, resources, role?.id);
+      console.log(role);
+      syncRoles("update", roleName, resources, role?.id);
       setRoles(
         roles.map((updateRole) => {
           if (updateRole.roleName == role?.roleName) {
             return {
+              id: role.id,
               roleName: roleName,
               resources: resources,
             };

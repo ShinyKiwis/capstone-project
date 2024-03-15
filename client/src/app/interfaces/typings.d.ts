@@ -4,10 +4,10 @@ type OptionType = {
   dataObject: any;
 }
 
-type Role = {
-	id: number,
-	name: string
-}
+// type Role = {
+// 	id: number,
+// 	name: string
+// }
 
 type Branch = {
 	id: number,

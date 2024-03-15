@@ -10,11 +10,12 @@ import {
   Box,
   Text,
   Modal,
-  Menu,
+  Popover,
   Avatar,
   MultiSelect,
   Badge,
   CloseButton,
+  Button,
 } from "@mantine/core";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import axios from "axios";
@@ -31,7 +32,11 @@ interface User {
   name: string;
   username: string;
   email: string;
-  roles: string[];
+  roles: {
+    id?: number;
+    roleName: string;
+    resources: string[];
+  }[];
 }
 
 const deleteUserModal = (
@@ -72,14 +77,86 @@ interface EditUserModalProps {
 
 const EditUserModal = ({ user, users, setUsers }: EditUserModalProps) => {
   const { roles } = useRoles();
+  console.log(roles);
+  const [loadedRoles, setLoadedRoles] = useState<string[]>(
+    roles
+      .filter(
+        (role) =>
+          !user.roles.map((role) => role.roleName).includes(role.roleName),
+      )
+      .map((role) => role.roleName),
+  );
+  const [opened, setOpened] = useState(false);
+  const [selectedRoles, setSelectedRoles] = useState<string[]>(
+    user.roles.map((role) => role.roleName),
+  );
+
+  console.log(selectedRoles);
+
+  const handleSelectRoles = (values: string[]) => {
+    setLoadedRoles(
+      roles
+        .filter((role) => role.roleName != values[0])
+        .filter((role) => !selectedRoles.includes(role.roleName))
+        .map((role) => role.roleName),
+    );
+    setSelectedRoles([...selectedRoles, values[0]]);
+  };
+
+  const handleUnselectRole = (value: string) => {
+    setLoadedRoles([...loadedRoles, value]);
+    setSelectedRoles(selectedRoles.filter((role) => role !== value));
+  };
+
+  const handleUpdateRole = async (userId: number) => {
+    await axios.post(`${process.env.NEXT_PUBLIC_USERS_URL!}/${userId}/roles`, {
+      roles: roles
+        .filter((role) => selectedRoles.includes(role.roleName))
+        .map((role) => {
+          return { id: role.id };
+        }),
+    });
+    setOpened(false);
+    toggleNotification(
+      "Update successful",
+      `Update roles for user with id ${userId} has succeeded`,
+      "success",
+    );
+    setUsers(
+      users.map((user) => {
+        if (user.id === userId) {
+          return {
+            ...user,
+            roles: roles.filter((role) =>
+              selectedRoles.includes(role.roleName),
+            ),
+          };
+        } else {
+          return user;
+        }
+      }),
+    );
+  };
+
   return (
-    <Menu shadow="md" position="left-start" offset={20} onChange={() => {}}>
-      <Menu.Target>
-        <ActionIcon size="sm" variant="subtle" color="blue">
+    <Popover
+      opened={opened}
+      onChange={setOpened}
+      shadow="md"
+      position="left-start"
+      offset={20}
+    >
+      <Popover.Target>
+        <ActionIcon
+          size="sm"
+          variant="subtle"
+          color="blue"
+          onClick={() => setOpened(!opened)}
+        >
           <IconEdit size={16} />
         </ActionIcon>
-      </Menu.Target>
-      <Menu.Dropdown>
+      </Popover.Target>
+      <Popover.Dropdown>
         <div className="p-4">
           <div className="flex items-center gap-4">
             <Avatar variant="light" size="lg" radius="xl" color="blue">
@@ -93,16 +170,19 @@ const EditUserModal = ({ user, users, setUsers }: EditUserModalProps) => {
               <p>{user.email}</p>
             </div>
           </div>
-          <Text fw={600} size="md" c="blue" mt="md">
+          <Text fw={600} size="md" c="blue" mt="md" mb="sm">
             Roles
           </Text>
           <MultiSelect
             placeholder="Select programs"
-            data={["React", "Vue"]}
+            value={[]}
+            onChange={handleSelectRoles}
+            comboboxProps={{ withinPortal: false }}
+            data={loadedRoles}
             searchable
           />
-          {/* <div className="mt-2 flex w-1/2 flex-col gap-2">
-            {selectedPrograms.map((selectedProgram) => (
+          <div className="mt-2 flex w-1/2 flex-col gap-2">
+            {selectedRoles.map((selectedRole) => (
               <Badge
                 variant="light"
                 radius="sm"
@@ -111,20 +191,33 @@ const EditUserModal = ({ user, users, setUsers }: EditUserModalProps) => {
                     size={20}
                     variant="transparent"
                     c="blue"
-                    onClick={() => handleUnselectProgram(selectedProgram)}
+                    onClick={() => handleUnselectRole(selectedRole)}
                   />
                 }
                 fullWidth
                 size="lg"
                 className="flex justify-between normal-case"
               >
-                {selectedProgram}
+                {selectedRole}
               </Badge>
             ))}
-          </div> */}
+          </div>
         </div>
-      </Menu.Dropdown>
-    </Menu>
+        <Group justify="flex-end" gap="xs">
+          <Button onClick={() => setOpened(false)} variant="outline">
+            Cancel
+          </Button>
+          <Button
+            variant="filled"
+            onClick={() => {
+              handleUpdateRole(user.id);
+            }}
+          >
+            Update
+          </Button>
+        </Group>
+      </Popover.Dropdown>
+    </Popover>
   );
 };
 
@@ -142,12 +235,27 @@ const Users = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
+      // This transformation is caused by inconsistent name between FE and BE.
+      // Dear future programmers, please fix this.
       const response = await axios.get(process.env.NEXT_PUBLIC_USERS_URL!);
+      response.data.users = response.data.users.map((user: any) => {
+        return {
+          ...user,
+          roles: user.roles.map((role: any) => {
+            return {
+              id: role.id,
+              roleName: role.name,
+              resources: role.resources,
+            };
+          }),
+        };
+      });
       setUsers(response.data.users);
     };
     if (users.length === 0) {
       fetchUsers();
     } else {
+      console.log("USERS MANAGEMENT: ", users);
       setRecords(users);
       setFetching(false);
     }
@@ -187,7 +295,7 @@ const Users = () => {
             sortable: true,
             render: (record) => {
               return record.roles.length !== 0
-                ? record.roles
+                ? record.roles.map((role) => role.roleName).join(", ")
                 : ["No role is assigned"];
             },
           },

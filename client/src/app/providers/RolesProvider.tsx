@@ -3,7 +3,7 @@ import axios from "axios";
 import { useState, createContext, useContext, useEffect } from "react";
 
 export interface Role {
-  id?: number,
+  id?: number;
   roleName: string;
   resources: string[];
 }
@@ -11,7 +11,12 @@ export interface Role {
 interface RolesContextType {
   roles: Role[];
   setRoles: (arg: Role[]) => void;
-  syncRoles: (action: string, roleName: string, resources: string[], id?: number) => void;
+  syncRoles: (
+    action: string,
+    roleName: string,
+    resources: string[],
+    id?: number,
+  ) => void;
   deleteRole: (id?: number) => void;
 }
 
@@ -23,12 +28,16 @@ const RolesProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const fetchRoles = async () => {
       const response = await axios.get(process.env.NEXT_PUBLIC_ROLES_URL!);
-      const roles: Role[] = [];
-      console.log(response.data)
+      const parsedRoles: Role[] = [];
+      console.log("FETCHROLES: ", response.data);
       response.data.forEach((role: any) => {
-        roles.push({id:role.id, roleName: role.name, resources: role.resources });
+        parsedRoles.push({
+          id: role.id,
+          roleName: role.name,
+          resources: role.resources,
+        });
       });
-      setRoles(roles);
+      setRoles(parsedRoles);
     };
     fetchRoles();
   }, []);
@@ -37,24 +46,38 @@ const RolesProvider = ({ children }: { children: React.ReactNode }) => {
     action: string,
     roleName: string,
     resources: string[],
-    id?: number
+    id?: number,
   ) => {
     if (action == "create") {
       const response = await axios.post(process.env.NEXT_PUBLIC_ROLES_URL!, {
         name: roleName,
         resources: resources,
       });
+      setRoles([
+        ...roles,
+        {
+          id: response.data.id,
+          roleName: roleName,
+          resources: resources,
+        },
+      ]);
+      return response.data;
     } else {
-      const response = await axios.patch(`${process.env.NEXT_PUBLIC_ROLES_URL!}/${id}`, {
-        name: roleName,
-        resources: resources,
-      });
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_ROLES_URL!}/${id}`,
+        {
+          name: roleName,
+          resources: resources,
+        },
+      );
     }
   };
 
-  const deleteRole = async(id?: number) => {
-    const response = await axios.delete(`${process.env.NEXT_PUBLIC_ROLES_URL!}/${id}`)
-  }
+  const deleteRole = async (id?: number) => {
+    const response = await axios.delete(
+      `${process.env.NEXT_PUBLIC_ROLES_URL!}/${id}`,
+    );
+  };
   return (
     <RolesContext.Provider value={{ roles, setRoles, syncRoles, deleteRole }}>
       {children}
