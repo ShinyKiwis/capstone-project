@@ -1,10 +1,8 @@
 "use client";
 
 import axios from "axios";
-import { useEffect, useState, useContext } from "react";
-import { useSearchParams } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
 import useProgramBranch from "@/app/hooks/useProgramBranch";
-import useInstructor from "@/app/hooks/useInstructor";
 import { useForm } from "@mantine/form";
 import {
   Button,
@@ -14,35 +12,19 @@ import {
   NumberInput,
   ScrollArea,
 } from "@mantine/core";
-import { formatRevalidate } from "next/dist/server/lib/revalidate";
 import MantineRichText from "@/app/_components/MantineRichText";
 import ProfileSelector from "@/app/_components/ProfileSelector";
-import ProfileSelectorAsync from "@/app/_components/ProfileSelectorAsync";
-
-const stageOptions = [
-  {
-    label: "Specialized project",
-    value: "1",
-  },
-  {
-    label: "Capstone project",
-    value: "2",
-  },
-];
-
-const mockInstructors = [
-  { name: "Van Ba", id: "1234567", email: "testmai1@gmail.com" },
-  { name: "Nguyen An", id: "20112337", email: "testmai2@gmail.com" },
-  {
-    name: "Vo Thi Ngoc Truong Chau",
-    id: "22314567",
-    email: "testmai3@hcmut.edu.vn",
-  },
-];
+import StudentProfileSelector from "@/app/_components/StudentProfileSelector";
+import { GeneralDataContext } from "@/app/providers/GeneralDataProvider";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   // Background data initialization
-  const { programBranches } = useProgramBranch();
+  const generalDataValues = useContext(GeneralDataContext);
+  if (!generalDataValues) return <div>Fetching general data...</div>;
+
+  const { supervisorOpts, projectStages, programBranches } = generalDataValues;
   const programOptions = programBranches.map((progbranch) => {
     return {
       label: progbranch.name,
@@ -50,12 +32,13 @@ const EditProject = ({ params }: { params: { id: string } }) => {
     };
   });
   function getBranchOptions() {
-    let programIds: string[] = form.values.programs;
-    if (Array.isArray(programIds) && programIds.length === 0) return [];
+    let programIds: string[] | undefined = form.values.majors;
+    if (!programIds || (Array.isArray(programIds) && programIds.length === 0))
+      return [];
     if (programBranches.length === 0) return [];
 
     const programBranchesFiltered = programBranches.filter((program) =>
-      programIds.includes(program.id.toString()),
+      programIds?.includes(program.id.toString()),
     );
 
     const branchesArrays = programBranchesFiltered.map(
@@ -81,51 +64,25 @@ const EditProject = ({ params }: { params: { id: string } }) => {
     return mappedBranches;
   }
 
-  // Get project with id param
-  console.log("Displaying project:", params.id);
-  const retreivedProject = {
-    title: "Test Project",
-    stage: "1",
-    programs: ["1", "2"],
-    branches: ["2"],
-    instructorsList: [
-      { name: "Van Ba", id: "1234567", email: "testmai1@gmail.com" },
-      {
-        name: "Vo Thi Ngoc Truong Chau",
-        id: "22314567",
-        email: "testmai3@hcmut.edu.vn",
-      },
-    ],
-    membersNo: 3,
-    membersList: [
-      { name: "Nguyen An", id: "20112337", email: "testmai2@gmail.com" },
-      { name: "seachedUser", id: "1", email: "mail@mail.com" },
-    ],
-    description: "<p>Main <strong>desciotuoib</strong></p>",
-    tasks:
-      '<ul class="list-disc"><li><p>Git gud</p></li><li><p>Git done</p></li></ul>',
-    references:
-      '<ol class="list-decimal"><li><p>internet</p></li><li><p>bookds</p></li></ol>',
-    requirements: "<p>noopthing much</p>",
-  };
-
   const form = useForm({
     initialValues: {
-      title: retreivedProject.title,
-      stage: retreivedProject.stage,
-      programs: retreivedProject.programs,
-      branches: retreivedProject.branches,
-      instructorsList: retreivedProject.instructorsList.map(
-        (instructor) => instructor.id,
-      ),
-      membersNo: retreivedProject.membersNo,
-      membersList: retreivedProject.membersList.map((member) =>
-        JSON.stringify(member),
-      ),
-      description: retreivedProject.description,
-      tasks: retreivedProject.tasks,
-      references: retreivedProject.references,
-      requirements: retreivedProject.requirements,
+      name: "",
+      stage: "1",
+      majors: [],
+      branches: [],
+      supervisors: [],
+      limit: 1,
+      students: [],
+      description: "",
+      tasks: "",
+      references: "",
+      requirements: "",
+      status: "WAITING_FOR_DEPARTMENT_HEAD",
+      semester: {
+        year: 2023,
+        no: 2,
+      },
+      owner: { id: 3 },
     },
 
     // validate: {
@@ -133,14 +90,83 @@ const EditProject = ({ params }: { params: { id: string } }) => {
     // },
   });
 
-  function handleFormSubmit(values: any) {
+  useEffect(() => {
+    // Get project with id param
+    console.log("Displaying project:", params.id);
+    axios
+      .get(`http://localhost:3500/projects/${params.id}`)
+      .then((response) => {
+        // console.log(response.data);
+        form.setValues({
+          name: response.data.name,
+          stage: response.data.stage,
+          majors: response.data.majors.map((major:Program) => major.id.toString()),
+          branches: response.data.branches.map((branch:Branch) =>
+            branch.id.toString(),
+          ),
+          supervisors: response.data.supervisors.map((instructor:Supervisor) =>
+            instructor.id.toString(),
+          ),
+          limit: response.data.limit,
+          students: response.data.students.map((member:Student) =>
+            JSON.stringify(member),
+          ),
+          description: response.data.description,
+          tasks: response.data.tasks,
+          references: response.data.references,
+          requirements: response.data.requirements,
+          status: "WAITING_FOR_DEPARTMENT_HEAD",
+          semester: {
+            year: 2023,
+            no: 2,
+          },
+          owner: { id: 3 },
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching project:", error);
+      });
+  }, []);
+
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  async function handleFormSubmit(values: any) {
     // Map selected members as stringyfied object back to ids
     let newProjectBody = { ...values };
-    let parsedMemberIds: string[] = newProjectBody.membersList.map(
-      (jsonVal: string) => JSON.parse(jsonVal).id,
+    newProjectBody.majors = newProjectBody.majors.map((majorid: string) => {
+      return { id: majorid };
+    });
+    newProjectBody.branches = newProjectBody.branches.map(
+      (branchid: string) => {
+        return { id: branchid };
+      },
     );
-    newProjectBody.membersList = parsedMemberIds;
+    newProjectBody.supervisors = newProjectBody.supervisors.map(
+      (supervisorid: string) => {
+        return { id: supervisorid };
+      },
+    );
+    newProjectBody.students = newProjectBody.students.map((jsonVal: string) => {
+      return { userId: JSON.parse(jsonVal).id };
+    });
+    newProjectBody.stage = parseInt(newProjectBody.stage);
+    delete newProjectBody.requirements; // API currently dont work with reqs
+
     console.log("Submit:", newProjectBody);
+    axios
+      .post("http://localhost:3500/projects", newProjectBody)
+      .then((res) => {
+        console.log("Project submitted successful");
+        queryClient.invalidateQueries({
+          queryKey: ["projects"],
+        });
+        router.push(
+          `/project?project=${newProjectBody.stage === 1 ? "specialized" : "capstone"}`,
+        );
+      })
+      .catch((error) => {
+        console.error("Error posting project:", error);
+      });
   }
 
   // Display elements
@@ -155,6 +181,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   };
 
   // Main return
+  if (form.values.name === "") return <div>Fetching project...</div>;
+  console.log("Initialized form:", form.values);
   return (
     <div className="h-full w-full bg-white">
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
@@ -163,7 +191,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
           <input
             placeholder="Input project title"
             className="border-gray max-h-[5em] w-full border-b-2 py-2 pb-4 pt-8 text-center text-3xl font-semibold focus:outline-none"
-            {...form.getInputProps("title")}
+            {...form.getInputProps("name")}
           />
 
           <div className="mt-8 w-full">
@@ -195,7 +223,12 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                       </td>
                       <td>
                         <NativeSelect
-                          data={stageOptions}
+                          data={projectStages.map((stage) => {
+                            return {
+                              label: stage.name,
+                              value: stage.id.toString(),
+                            };
+                          })}
                           aria-placeholder="Select project stage"
                           {...form.getInputProps("stage")}
                         />
@@ -210,9 +243,9 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                           <MultiSelect
                             placeholder="Pick project program"
                             data={programOptions}
-                            {...form.getInputProps("programs")}
+                            {...form.getInputProps("majors")}
                             onChange={(val) => {
-                              form.getInputProps("programs").onChange(val);
+                              form.getInputProps("majors").onChange(val);
                               form.setValues({ branches: [] });
                             }}
                           />
@@ -227,7 +260,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                         <div className="w-full">
                           <MultiSelect
                             placeholder={
-                              form.values.programs.length < 1
+                              form.values.majors &&
+                              form.values.majors.length < 1
                                 ? "Select program(s) first"
                                 : "Select available branches"
                             }
@@ -249,7 +283,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                             max={20}
                             clampBehavior="strict"
                             required
-                            {...form.getInputProps("membersNo")}
+                            {...form.getInputProps("limit")}
                           />
                         </div>
                       </td>
@@ -273,10 +307,10 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               <div className="h-fit min-h-[16rem] w-1/3">
                 <InputFieldTitle title="Instructors" />
                 <ProfileSelector
-                  onChange={form.getInputProps("instructorsList").onChange}
-                  value={form.getInputProps("instructorsList").value}
-                  optionsData={mockInstructors}
-                  placeholder="Select instructor(s)"
+                  onChange={form.getInputProps("supervisors").onChange}
+                  value={form.getInputProps("supervisors").value}
+                  optionsData={supervisorOpts}
+                  placeholder="Search instructor name, id"
                 />
               </div>
 
@@ -295,11 +329,11 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             <div className="mt-4 flex h-fit gap-4">
               <div className="h-fit min-h-[16rem] w-1/3">
                 <InputFieldTitle title="Members" />
-                <ProfileSelectorAsync
-                  onChange={form.getInputProps("membersList").onChange}
-                  value={form.getInputProps("membersList").value}
-                  placeholder="Select member(s)"
-                  searchApi="localhost:3500"
+                <StudentProfileSelector
+                  onChange={form.getInputProps("students").onChange}
+                  value={form.getInputProps("students").value}
+                  placeholder="Search student name, id"
+                  searchApi="http://localhost:3500/users/students"
                 />
               </div>
 

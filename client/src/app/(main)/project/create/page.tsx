@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import MantineRichText from "@/app/_components/MantineRichText";
 import ProfileSelector from "@/app/_components/ProfileSelector";
-import ProfileSelectorAsync from "@/app/_components/ProfileSelectorAsync";
+import StudentProfileSelector from "@/app/_components/StudentProfileSelector";
 import { ScrollArea } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
@@ -110,7 +110,7 @@ const CreateProject = () => {
       },
     );
     newProjectBody.students = newProjectBody.students.map((jsonVal: string) => {
-      return { userId: JSON.parse(jsonVal).id };
+      return { userId: JSON.parse(jsonVal).userId };
     });
     newProjectBody.stage = parseInt(newProjectBody.stage);
     delete newProjectBody.requirements; // API currently dont work with reqs
@@ -123,7 +123,7 @@ const CreateProject = () => {
         queryClient.invalidateQueries({
           queryKey: ["projects"],
         });
-        router.push(`/project?project=${newProjectBody.stage === 1 ? 'specialized' : 'capstone'}`);
+        // router.push(`/project?project=${newProjectBody.stage === 1 ? 'specialized' : 'capstone'}`);
       })
       .catch((error) => {
         console.error("Error posting project:", error);
@@ -272,7 +272,7 @@ const CreateProject = () => {
                   onChange={form.getInputProps("supervisors").onChange}
                   value={form.getInputProps("supervisors").value}
                   optionsData={supervisorOpts}
-                  placeholder="Select instructor(s)"
+                  placeholder="Search instructor name, id"
                 />
               </div>
 
@@ -291,10 +291,10 @@ const CreateProject = () => {
             <div className="mt-4 flex h-fit gap-4">
               <div className="h-fit min-h-[16rem] w-1/3">
                 <InputFieldTitle title="Members" />
-                <ProfileSelectorAsync
+                <StudentProfileSelector
                   onChange={form.getInputProps("students").onChange}
                   value={form.getInputProps("students").value}
-                  placeholder="Select member(s)"
+                  placeholder="Search student name, id"
                   searchApi="http://localhost:3500/users/students"
                 />
               </div>

@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction } from "react";
 import Profile from "./Profile";
 import { CgClose } from "react-icons/cg";
 import { MultiSelect } from "@mantine/core";
+import { convertLegacyOperators } from "@mui/x-data-grid/internals";
 
 interface ProfileSelectorProps {
   onChange: Dispatch<SetStateAction<string[]>>;
@@ -89,11 +90,13 @@ const ProfileSelector = ({
             let selectedInstructor = optionsData.find(
               (opt) => opt.id === selectedVal,
             );
+            if (!selectedInstructor) return;
             return (
               <ProfileItemsMultiMode
-                name={selectedInstructor!.name}
-                id={selectedInstructor!.id}
-                email={selectedInstructor!.email}
+                name={selectedInstructor.name}
+                id={selectedInstructor.id}
+                email={selectedInstructor.email}
+                key={selectedInstructor.id}
               />
             );
           })}

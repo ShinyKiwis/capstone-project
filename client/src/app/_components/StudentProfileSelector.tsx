@@ -2,64 +2,59 @@ import { Dispatch, SetStateAction, useState } from "react";
 import {
   CheckIcon,
   Combobox,
-  ComboboxOptionProps,
   Group,
-  Input,
   InputBase,
   Loader,
-  OptionsDropdownProps,
-  Pill,
-  PillsInput,
   useCombobox,
 } from "@mantine/core";
 import axios from "axios";
 import Profile from "./Profile";
 import { CgClose } from "react-icons/cg";
+import { json } from "stream/consumers";
+import { conforms } from "lodash";
 
-interface ProfileSelectorAsyncProps {
+interface StudentProfileSelectorProps {
   onChange: Dispatch<SetStateAction<string[]>>;
-  value: string[];
+  value: string[]; // stringyfied Student[]
   placeholder?: string;
   searchApi: string;
 }
 
-const MOCKDATA:UserOptType[] = [
-  { name: "Van Ba", id: "1234567", email: "testmai1@gmail.com" },
-  { name: "Nguyen An", id: "20112337", email: "testmai2@gmail.com" },
-  {
-    name: "Vo Thi Ngoc Truong Chau",
-    id: "22314567",
-    email: "testmai3@hcmut.edu.vn",
-  },
-];
-
-function getAsyncData() {
-  return new Promise<UserOptType[]>((resolve) => {
-    setTimeout(() => resolve(MOCKDATA), 1000);
-  });
-}
-
-function ProfileSelectorAsync({
+function StudentProfileSelector({
   value,
   onChange,
   placeholder,
   searchApi,
-}: ProfileSelectorAsyncProps) {
+}: StudentProfileSelectorProps) {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<UserOptType[]>([]);
+  const [data, setData] = useState<Student[]>([]); // Retreived Student objects from search API
   const [currentTimeout, setCurrentTimeout] = useState<NodeJS.Timeout>();
+
+  const parsedValues:Student[] = value.map((valueString) => JSON.parse(valueString));
+  function valueIsSelected(newVal:string): number {
+    // Return index of value if it is already selected, else -1
+    let parsedNewValue:Student = JSON.parse(newVal)
+    return parsedValues.findIndex((selectedValue:Student) => selectedValue.userId === parsedNewValue.userId)
+  }
 
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
     onDropdownOpen: () => {
       if (data.length === 0 && !loading) {
         setLoading(true);
-        getAsyncData().then((response) => {
-          setData(response);
-          setLoading(false);
-          combobox.resetSelectedOption();
-        });
+        axios
+          .get("http://localhost:3500/users/students?search=1")
+          .then((res) => {
+            setData(res.data);
+            setLoading(false);
+            combobox.resetSelectedOption();
+          })
+          .catch((err) =>
+            console.error("Error getting initial students:", err),
+          );
+        console.log("Selected values:", value)
+        console.log("Available options:", data)
       }
     },
   });
@@ -72,43 +67,30 @@ function ProfileSelectorAsync({
     }
 
     let newTimeout = setTimeout(async () => {
-      console.log(`Calling api: ${searchApi}?search=${query}`)
-      const res = await axios.get(`${searchApi}?search=${search}`);
-      let newOptions = res.data.map((user: any) => {
-        return {
-          id: user.userId,
-          name: user.user.name,
-          email: user.user.email
-        }
-      });
-      console.log("Retreived options:", newOptions);
-      setData(newOptions);
-      setLoading(false)
+      // console.log(`Calling api: ${searchApi}?search=${query}`);
+      const res = await axios.get(`${searchApi}?search=${query}`);
+      // console.log("Response:", res.data);
+      setData(res.data);
+      setLoading(false);
     }, 350);
 
     setCurrentTimeout(newTimeout);
   };
 
-  const handleValueSelect = (val: string) =>{    
-    onChange((current) =>
-      current.includes(val)
-        ? current.filter((v) => v !== val)
-        : [...current, val],
-    );
-  }
+  const handleValueSelect = (newVal: string) => {
+    let availableIndex = valueIsSelected(newVal);
+    onChange((current) =>{  // current: currently selected values
+      return availableIndex !== -1
+        ? [...current.splice(availableIndex, 1)]   // click on already selected val remove that value from selected list
+        : [...current, newVal]
+    });
+  };
 
-  const handleValueRemove = (val: string) =>{
-    onChange((current) => current.filter((v) => v !== val));
-  }
-
-  const options = data.map((item) => (
-    <Combobox.Option value={JSON.stringify(item)} key={item.id}>
-      <Group gap="sm">
-        {value.includes(JSON.stringify(item)) ? <CheckIcon size={12} /> : null}
-        <span>{`${item.id} - ${item.name}`}</span>
-      </Group>
-    </Combobox.Option>
-  ));
+  const handleValueRemove = (newVal: string) => {
+    let availableIndex = valueIsSelected(newVal);
+    if (availableIndex != -1)
+      onChange((current) => [...current.splice(availableIndex, 1)]);
+  };
 
   const ProfileItemsMultiMode = ({
     name,
@@ -137,8 +119,9 @@ function ProfileSelectorAsync({
             onClick={() => {
               let targetIndex = -1;
               if (value.length > 0) {
+                // value is string[] of stringyfied selected Student objects
                 targetIndex = value.findIndex(
-                  (selectedOpt) => JSON.parse(selectedOpt).id === id,
+                  (selectedOpt) => JSON.parse(selectedOpt).userId.toString() === id,
                 );
               }
               // console.log("Found index:", targetIndex)
@@ -152,6 +135,15 @@ function ProfileSelectorAsync({
       </div>
     );
   };
+
+  const options = data.map((item:Student) => (
+    <Combobox.Option value={JSON.stringify(item)} key={item.userId}>
+      <Group gap="sm">
+        {valueIsSelected(JSON.stringify(item)) !== -1 ? <CheckIcon size={12} /> : null}
+        <span>{`${item.userId} - ${item.user.name}`}</span>
+      </Group>
+    </Combobox.Option>
+  ));
 
   return (
     <div>
@@ -186,7 +178,13 @@ function ProfileSelectorAsync({
         </Combobox.DropdownTarget>
         <Combobox.Dropdown>
           <Combobox.Options>
-            {loading ? <Combobox.Empty>Loading....</Combobox.Empty> : options}
+            {loading ? (
+              <Combobox.Empty>Loading....</Combobox.Empty>
+            ) : data.length === 0 ? (
+              <Combobox.Empty>No options</Combobox.Empty>
+            ) : (
+              options
+            )}
           </Combobox.Options>
         </Combobox.Dropdown>
       </Combobox>
@@ -194,13 +192,13 @@ function ProfileSelectorAsync({
       <div className="flex flex-1 flex-col items-center justify-center px-3">
         {value.length > 0 &&
           value.map((selectedVal) => {
-            let selectedUsr = JSON.parse(selectedVal)
+            let selectedUsr: Student = JSON.parse(selectedVal);
             return (
               <ProfileItemsMultiMode
-                name={selectedUsr!.name}
-                id={selectedUsr!.id}
-                email={selectedUsr!.email}
-                key={selectedUsr!.id}
+                name={selectedUsr.user.name}
+                id={selectedUsr.userId.toString()}
+                email={selectedUsr.user.email}
+                key={selectedUsr.userId}
               />
             );
           })}
@@ -209,4 +207,4 @@ function ProfileSelectorAsync({
   );
 }
 
-export default ProfileSelectorAsync;
+export default StudentProfileSelector;
