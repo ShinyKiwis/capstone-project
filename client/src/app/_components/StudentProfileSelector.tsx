@@ -53,8 +53,6 @@ function StudentProfileSelector({
           .catch((err) =>
             console.error("Error getting initial students:", err),
           );
-        console.log("Selected values:", value)
-        console.log("Available options:", data)
       }
     },
   });

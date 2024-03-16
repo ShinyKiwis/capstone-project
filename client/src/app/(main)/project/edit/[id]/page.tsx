@@ -100,15 +100,17 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         form.setValues({
           name: response.data.name,
           stage: response.data.stage,
-          majors: response.data.majors.map((major:Program) => major.id.toString()),
-          branches: response.data.branches.map((branch:Branch) =>
+          majors: response.data.majors.map((major: Program) =>
+            major.id.toString(),
+          ),
+          branches: response.data.branches.map((branch: Branch) =>
             branch.id.toString(),
           ),
-          supervisors: response.data.supervisors.map((instructor:Supervisor) =>
+          supervisors: response.data.supervisors.map((instructor: Supervisor) =>
             instructor.id.toString(),
           ),
           limit: response.data.limit,
-          students: response.data.students.map((member:Student) =>
+          students: response.data.students.map((member: Student) =>
             JSON.stringify(member),
           ),
           description: response.data.description,
@@ -148,7 +150,9 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         queryClient.invalidateQueries({
           queryKey: ["projects"],
         });
-        router.push(`/project?project=${updatedProject.stage === 1 ? 'specialized' : 'capstone'}`);
+        router.push(
+          `/project?project=${updatedProject.stage === 1 ? "specialized" : "capstone"}`,
+        );
       })
       .catch((error) => {
         console.error("Error updating project:", error);
@@ -172,7 +176,11 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   return (
     <div className="h-full w-full bg-white">
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
-        <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           {/* title section */}
           <input
             placeholder="Input project title"
@@ -353,7 +361,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               type="submit"
               color="lime"
               onClick={() => {
-                console.log("set to submit");
+                form.values.status = "WAITING_FOR_DEPARTMENT_HEAD";
+                handleFormSubmit(form.values);
               }}
             >
               Submit for approval
@@ -361,7 +370,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             <Button
               type="submit"
               onClick={() => {
-                console.log("set to save");
+                form.values.status = "DRAFT";
+                handleFormSubmit(form.values);
               }}
             >
               Save Changes

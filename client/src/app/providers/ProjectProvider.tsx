@@ -42,6 +42,7 @@ export const ProjectProvider = ({
       let response = await (
         await axios.get(`http://localhost:3500/projects?stage=1`)
       ).data;
+      console.log("refetch specialized projects")
 			setProjects(response.projects);
       setViewing(response.projects[0]);
       return response.projects;
@@ -55,6 +56,7 @@ export const ProjectProvider = ({
       let response = await (
         await axios.get(`http://localhost:3500/projects?stage=2`)
       ).data;
+      console.log("refetch capstone projects")
 			setProjects(response.projects);
       setViewing(response.projects[0]);
       return response.projects;

@@ -123,7 +123,9 @@ const CreateProject = () => {
         queryClient.invalidateQueries({
           queryKey: ["projects"],
         });
-        router.push(`/project?project=${newProjectBody.stage === 1 ? 'specialized' : 'capstone'}`);
+        router.push(
+          `/project?project=${newProjectBody.stage === 1 ? "specialized" : "capstone"}`,
+        );
       })
       .catch((error) => {
         console.error("Error posting project:", error);
@@ -145,11 +147,7 @@ const CreateProject = () => {
   return (
     <div className="h-full w-full bg-white">
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
-        <form
-          onSubmit={form.onSubmit((values) => {
-            handleFormSubmit(values);
-          })}
-        >
+        <form onSubmit={(e) => e.preventDefault()}>
           {/* title section */}
           <input
             placeholder="Input project title"
@@ -329,7 +327,8 @@ const CreateProject = () => {
               type="submit"
               color="lime"
               onClick={() => {
-                console.log("clicked submit");
+                form.values.status = "WAITING_FOR_DEPARTMENT_HEAD";
+                handleFormSubmit(form.values);
               }}
             >
               Submit for approval
@@ -337,7 +336,8 @@ const CreateProject = () => {
             <Button
               type="submit"
               onClick={() => {
-                console.log("clicked save");
+                form.values.status = "DRAFT";
+                handleFormSubmit(form.values);
               }}
             >
               Save Changes
