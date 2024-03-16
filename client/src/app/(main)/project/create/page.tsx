@@ -123,7 +123,7 @@ const CreateProject = () => {
         queryClient.invalidateQueries({
           queryKey: ["projects"],
         });
-        // router.push(`/project?project=${newProjectBody.stage === 1 ? 'specialized' : 'capstone'}`);
+        router.push(`/project?project=${newProjectBody.stage === 1 ? 'specialized' : 'capstone'}`);
       })
       .catch((error) => {
         console.error("Error posting project:", error);

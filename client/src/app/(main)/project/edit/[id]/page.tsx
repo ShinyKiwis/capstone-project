@@ -92,7 +92,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
 
   useEffect(() => {
     // Get project with id param
-    console.log("Displaying project:", params.id);
+    // console.log("Displaying project:", params.id);
     axios
       .get(`http://localhost:3500/projects/${params.id}`)
       .then((response) => {
@@ -130,42 +130,28 @@ const EditProject = ({ params }: { params: { id: string } }) => {
 
   const queryClient = useQueryClient();
   const router = useRouter();
+
   async function handleFormSubmit(values: any) {
     // Map selected members as stringyfied object back to ids
-    let newProjectBody = { ...values };
-    newProjectBody.majors = newProjectBody.majors.map((majorid: string) => {
-      return { id: majorid };
+    let updatedProject = { ...values };
+    updatedProject.students = updatedProject.students.map((jsonVal: string) => {
+      return JSON.parse(jsonVal).userId;
     });
-    newProjectBody.branches = newProjectBody.branches.map(
-      (branchid: string) => {
-        return { id: branchid };
-      },
-    );
-    newProjectBody.supervisors = newProjectBody.supervisors.map(
-      (supervisorid: string) => {
-        return { id: supervisorid };
-      },
-    );
-    newProjectBody.students = newProjectBody.students.map((jsonVal: string) => {
-      return { userId: JSON.parse(jsonVal).id };
-    });
-    newProjectBody.stage = parseInt(newProjectBody.stage);
-    delete newProjectBody.requirements; // API currently dont work with reqs
+    updatedProject.stage = parseInt(updatedProject.stage);
+    delete updatedProject.requirements; // API currently dont work with reqs
 
-    console.log("Submit:", newProjectBody);
+    console.log("Submit:", updatedProject);
     axios
-      .post("http://localhost:3500/projects", newProjectBody)
+      .patch(`http://localhost:3500/projects/${params.id}`, updatedProject)
       .then((res) => {
-        console.log("Project submitted successful");
+        console.log("Project update successful");
         queryClient.invalidateQueries({
           queryKey: ["projects"],
         });
-        router.push(
-          `/project?project=${newProjectBody.stage === 1 ? "specialized" : "capstone"}`,
-        );
+        router.push(`/project?project=${updatedProject.stage === 1 ? 'specialized' : 'capstone'}`);
       })
       .catch((error) => {
-        console.error("Error posting project:", error);
+        console.error("Error updating project:", error);
       });
   }
 
@@ -182,7 +168,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
 
   // Main return
   if (form.values.name === "") return <div>Fetching project...</div>;
-  console.log("Initialized form:", form.values);
+  // console.log("Initialized form:", form.values);
   return (
     <div className="h-full w-full bg-white">
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
