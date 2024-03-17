@@ -24,7 +24,7 @@ export const toggleNotification = (
     autoClose: 5000,
     icon: typeMapping[type].icon,
     title: (
-      <Text fw={500} c={typeMapping[type].color} size="md">
+      <Text fw={600} c={typeMapping[type].color} size="md">
         {title}
       </Text>
     ),
