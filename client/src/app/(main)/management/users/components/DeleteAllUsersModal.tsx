@@ -42,7 +42,7 @@ const DeleteAllUsersModal = ({
       ),
       labels: { confirm: "Delete", cancel: "Cancel" },
       confirmProps: { color: "red" },
-      onCancel: () => console.log("Cancel"),
+      onCancel: () => {},
       onConfirm: () => deleteUsers(),
     });
   return (

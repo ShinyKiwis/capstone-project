@@ -15,7 +15,7 @@ interface AuthContextType {
   login: (username: string, password: string) => void;
   logout: () => void;
   user: User | null;
-  setUser: (user: User) => void;
+  setUser: (user: User | null) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
