@@ -102,7 +102,7 @@ const Users = () => {
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <SettingsModal hideOptions={hideOptions} dispatch={dispatch} />
           <DeleteAllUsersModal users={users} setUsers={setUsers} selectedRecords={selectedRecords} />
         </div>

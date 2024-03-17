@@ -1,6 +1,7 @@
 import { Avatar } from "@mantine/core";
 import Image from "next/image";
 import React from "react";
+import { getShortUserName } from "../lib/getShortName";
 
 interface ProfileProps {
   type: string;
@@ -10,14 +11,6 @@ interface ProfileProps {
   email?: string;
 }
 
-const getShortUserName = (username: string) => {
-  return username
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase())
-    .slice(-2)
-    .join("");
-};
-
 const Profile = ({
   type,
   username,
@@ -25,7 +18,7 @@ const Profile = ({
   userId,
   email,
 }: ProfileProps) => {
-  return (
+  return username ? (
     <div
       className={`flex items-center ${
         type == "horizontal" ? "gap-4" : "flex-col"
@@ -50,7 +43,7 @@ const Profile = ({
         )}
       </div>
     </div>
-  );
+  ) : <></>;
 };
 
 export default Profile;

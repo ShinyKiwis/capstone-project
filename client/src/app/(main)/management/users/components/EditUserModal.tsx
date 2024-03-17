@@ -4,6 +4,7 @@ import { ActionIcon, Avatar, Badge, Button, CloseButton, Group, MultiSelect, Pop
 import { IconEdit } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import axios from "axios"
+import {User} from "../interface/User.interface"
 
 interface EditUserModalProps {
   user: User;

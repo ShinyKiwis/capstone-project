@@ -27,8 +27,8 @@ export default function RootLayout({
     if (!user) {
       navigate("/login");
     }
-  }, []);
-  return (
+  }, [user]);
+  return user ? (
     <QueryClientProvider client={queryClient}>
       <DeadlinesProvider>
         <RolesProvider>
@@ -39,5 +39,5 @@ export default function RootLayout({
       </DeadlinesProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  );
+  ): <></>;
 }
