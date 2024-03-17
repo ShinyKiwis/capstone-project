@@ -1,8 +1,13 @@
-import { Text, Button } from "@mantine/core";
+import { Text, Button, Textarea, TextInput } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import React, { useRef, useState } from "react";
 
-const DenyModal = () => {
+const DenyModal = ({ targetProject }: { targetProject: Project }) => {
+  const queryClient = useQueryClient();
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
   const openDeleteModal = () =>
     modals.openConfirmModal({
       title: (
@@ -12,12 +17,40 @@ const DenyModal = () => {
       ),
       centered: true,
       children: (
-        <Text size="sm">Are you sure you want to deny this project?</Text>
+        <div>
+          <Text size="sm" pb="1rem">
+            Are you sure you want to deny this project?
+          </Text>
+          <Textarea
+            label="Deny reason"
+            description="Denial reason will be sent to the project owner"
+            placeholder="Input denial reason"
+            autosize
+            minRows={4}
+            maxRows={8}
+            ref={inputRef}
+          />
+        </div>
       ),
-      labels: { confirm: "Unenroll", cancel: "Cancel" },
+      labels: { confirm: "Deny", cancel: "Cancel" },
       confirmProps: { color: "red" },
-      onCancel: () => console.log("Cancel"),
-      onConfirm: () => console.log("Confirmed"),
+      onCancel: () => {},
+      onConfirm: async () => {
+        axios
+          .patch(
+            `http://localhost:3500/projects/${targetProject.code}/status`,
+            { status: "REJECTED" },
+          )
+          .then((res) => {
+            queryClient.invalidateQueries({
+              queryKey: ["projects"],
+            });
+            console.log(
+              `Rejected project ${targetProject.code} with reason:${inputRef.current?.value}`,
+            );
+          })
+          .catch((err) => console.error("Error denying project:", err));
+      },
     });
 
   return (
