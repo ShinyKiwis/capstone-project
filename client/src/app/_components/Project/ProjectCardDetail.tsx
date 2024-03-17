@@ -119,7 +119,7 @@ const ProjectCardDetail = () => {
           <EnrollModal />
           <UnenrollModal />
           <DenyModal targetProject={viewing}/>
-          <DeactivateModal />
+          <DeactivateModal targetProject={viewing}/>
         </Group>
       </Card.Section>
     </Card>

@@ -123,7 +123,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
           <EnrollModal />
           <UnenrollModal />
           <DenyModal targetProject={projectObject}/>
-          <DeactivateModal />
+          <DeactivateModal targetProject={projectObject}/>
         </Group>
       </Card.Section>
     </Card>

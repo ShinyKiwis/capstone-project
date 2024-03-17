@@ -11,7 +11,6 @@ import {
   FilterModal,
   ApproveAllModal,
 } from "@/app/_components";
-import { projectData } from "./projectData";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
 import { useSearchParams } from "next/navigation";
 
@@ -23,8 +22,9 @@ const Project = () => {
 
   useEffect(() => {
     // Change rendered projects on page switch
+    // console.log("Called get projects")
     getProjects(searchParams.get('project') as string)
-  }, [searchParams.get('project')]);
+  }, [searchParams.get('project'), projects]);
   
 
 
