@@ -14,12 +14,12 @@ import { ApproveModal, DeactivateModal, DenyModal, EnrollModal, UnenrollModal } 
 import parse from "html-react-parser";
 
 interface ProjectCardProps {
-  projectObject: ProjectProps;
+  projectObject: Project;
   // detailedViewSetter: any;
 }
 
 interface ProjectCardStudentListProps
-  extends Pick<ProjectProps, "studentsCount" | "students" | "limit"> {}
+  extends Pick<Project, "studentsCount" | "students" | "limit"> {}
 
 const ProjectCardStudentList = ({
   studentsCount,
@@ -119,7 +119,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
       </Card.Section>
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
-          <ApproveModal />
+          <ApproveModal targetProject = {projectObject}/>
           <EnrollModal />
           <UnenrollModal />
           <DenyModal />

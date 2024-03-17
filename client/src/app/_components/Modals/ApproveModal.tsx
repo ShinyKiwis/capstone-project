@@ -1,8 +1,12 @@
 import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
+import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import React from "react";
 
-const ApproveModal = () => {
+const ApproveModal = ({targetProject}:{targetProject: Project}) => {
+  const queryClient = useQueryClient();
+
   const openModal = () =>
     modals.openConfirmModal({
       title: (
@@ -18,8 +22,18 @@ const ApproveModal = () => {
       ),
       labels: { confirm: "Confirm", cancel: "Cancel" },
       confirmProps: { color: "green" },
-      onCancel: () => console.log("Cancel"),
-      onConfirm: () => console.log("Confirmed"),
+      onCancel: () => {},
+      onConfirm: async () => {
+        let nextStatus = targetProject.status === "WAITING_FOR_DEPARTMENT_HEAD" ? "WAITING_FOR_PROGRAM_CHAIR" : "APPROVED";
+        axios.patch(`http://localhost:3500/projects/${targetProject.code}/status`, {status: nextStatus})
+        .then((res) =>{
+          queryClient.invalidateQueries({
+            queryKey: ["projects"],
+          });
+          console.log(`Approved project ${targetProject.code} to: ${nextStatus}`)
+        })
+        .catch((err) => console.error("Error approving project:", err))
+      },
     });
 
   return (

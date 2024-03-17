@@ -115,7 +115,7 @@ const ProjectCardDetail = () => {
       </ScrollArea>
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
-          <ApproveModal />
+          <ApproveModal targetProject={viewing}/>
           <EnrollModal />
           <UnenrollModal />
           <DenyModal />
