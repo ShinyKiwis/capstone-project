@@ -2,8 +2,12 @@ import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import React from "react";
+import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ApproveAllModal = () => {
+  const queryClient = useQueryClient();
+
   const openModal = () =>
     modals.openConfirmModal({
       title: (
@@ -18,8 +22,17 @@ const ApproveAllModal = () => {
         </Text>
       ),
       labels: { confirm: "Confirm", cancel: "Cancel" },
-      onCancel: () => console.log("Cancel"),
-      onConfirm: () => console.log("Confirmed"),
+      onCancel: () => {},
+      onConfirm: async () => {
+        axios.post(`http://localhost:3500/approve/all`)
+        .then((res) =>{
+          queryClient.invalidateQueries({
+            queryKey: ["projects"],
+          });
+          console.log(`Approved all projects`, res)
+        })
+        .catch((err) => console.error("Error approving all projects:", err))
+      },
     });
 
   return (

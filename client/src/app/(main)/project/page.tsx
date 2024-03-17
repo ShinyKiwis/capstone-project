@@ -14,6 +14,7 @@ import {
 import { ProjectContext, useProjects } from "@/app/providers/ProjectProvider";
 import { useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
+import { FaRegCircleCheck } from "react-icons/fa6";
 
 const Project = () => {
   const projectContextValues = useProjects();
@@ -47,7 +48,8 @@ const Project = () => {
             Create project
           </Button>
           <UploadFileModal />
-          <ApproveAllModal />
+          <Button leftSection={<FaRegCircleCheck />} ms="md" onClick={()=>navigate(`/project?project=${searchParams.get("project")}&action=approve`)}>Approve All</Button>
+          {/* <ApproveAllModal /> */}
         </div>
       </div>
       <div className="mt-4 flex w-full overflow-auto">
