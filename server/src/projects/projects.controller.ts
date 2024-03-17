@@ -39,7 +39,7 @@ export class ProjectsController {
     return this.projectsService.createProject(createProjectDto);
   }
 
-  @UseGuards(AuthenticatedGuard)
+  // @UseGuards(AuthenticatedGuard)
   @Get()
   async getProjects(
     @Request() req,

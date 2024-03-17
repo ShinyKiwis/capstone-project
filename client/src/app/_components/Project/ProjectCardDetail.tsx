@@ -16,7 +16,7 @@ import { ProjectContext } from "@/app/providers/ProjectProvider";
 
 const ProjectCardDetail = () => {
   const projectContext = useContext(ProjectContext);
-  if (!projectContext) return <div>Loading</div>;
+  if (!projectContext) return <div>Loading project context</div>;
   const { viewing } = projectContext;
 
   if (!viewing) return <div>Loading</div>;
