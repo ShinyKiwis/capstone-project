@@ -1,7 +1,7 @@
 "use client";
 import { Badge, Button, Card, ScrollArea, TextInput, Box } from "@mantine/core";
 import { PiSliders } from "react-icons/pi";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { IoCreate } from "react-icons/io5";
 import { MdFileUpload } from "react-icons/md";
 import {
@@ -12,8 +12,22 @@ import {
   ApproveAllModal,
 } from "@/app/_components";
 import { projectData } from "./projectData";
+import { ProjectContext } from "@/app/providers/ProjectProvider";
+import { useSearchParams } from "next/navigation";
 
 const Project = () => {
+  const projectContext = useContext(ProjectContext);
+  const searchParams = useSearchParams();
+  if (!projectContext) return <div>Loading Projects</div>;
+  const { projects, viewing, setViewing, getProjects } = projectContext;
+
+  useEffect(() => {
+    // Change rendered projects on page switch
+    getProjects(searchParams.get('project') as string)
+  }, [searchParams.get('project')]);
+  
+
+
   return (
     <div className="flex h-full flex-col">
       <div className="w-2/5">
@@ -22,7 +36,7 @@ const Project = () => {
           <FilterModal />
         </div>
         <div className="mt-4">
-          <Button variant="filled" leftSection={<IoCreate size={20} />}>
+          <Button variant="filled" leftSection={<IoCreate size={20} /> }>
             Create project
           </Button>
           {/* <Button
@@ -39,7 +53,7 @@ const Project = () => {
       <div className="mt-4 flex w-full overflow-auto">
         <div className="h-full w-2/5">
           <ScrollArea type="hover" h="100%" scrollbars="y" scrollbarSize={4}>
-            {projectData.map((project) => (
+            {projects.map((project:Project) => (
               <ProjectCard projectObject={project} key={project.code} />
             ))}
           </ScrollArea>

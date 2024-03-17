@@ -10,13 +10,8 @@ import {
   Button,
 } from "@mantine/core";
 import React from "react";
-import {
-  ApproveModal,
-  DeactivateModal,
-  DenyModal,
-  EnrollModal,
-  UnenrollModal,
-} from "..";
+import { ApproveModal, DeactivateModal, DenyModal, EnrollModal, UnenrollModal } from "..";
+import parse from "html-react-parser";
 
 interface ProjectCardProps {
   projectObject: ProjectProps;
@@ -41,8 +36,8 @@ const ProjectCardStudentList = ({
       </div>
       <Tooltip.Group openDelay={300} closeDelay={100}>
         <Avatar.Group spacing="sm">
-          {students.map((student, index) => (
-            <Tooltip key={index} label={student.user.name} withArrow>
+          {students.map((student) => (
+            <Tooltip key={student.userId} label={student.user.name} withArrow>
               <Avatar
                 src="https://bizweb.dktcdn.net/100/438/408/files/gigachad-meme-yodyvn.jpg"
                 radius="xl"
@@ -50,19 +45,6 @@ const ProjectCardStudentList = ({
               />
             </Tooltip>
           ))}
-          <Tooltip
-            withArrow
-            label={
-              <>
-                <div>John Outcast</div>
-                <div>Levi Capitan</div>
-              </>
-            }
-          >
-            <Avatar radius="xl" size="sm">
-              +2
-            </Avatar>
-          </Tooltip>
         </Avatar.Group>
       </Tooltip.Group>
     </Group>
@@ -131,7 +113,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
       <Card.Section inheritPadding mt="md">
         <Container fluid p={0}>
           <Text size="sm" c="dimmed" lineClamp={3}>
-            {projectObject.description}
+            {parse(projectObject.description)}
           </Text>
         </Container>
       </Card.Section>
