@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import MantineRichText from "@/app/_components/MantineRichText";
 import ProfileSelector from "@/app/_components/ProfileSelector";
-import StudentProfileSelector from "@/app/_components/StudentProfileSelector";
+import { StudentProfileSelector } from "@/app/_components";
 import { GeneralDataContext } from "@/app/providers/GeneralDataProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";

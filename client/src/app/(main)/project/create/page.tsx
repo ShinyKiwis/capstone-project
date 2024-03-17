@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import MantineRichText from "@/app/_components/MantineRichText";
 import ProfileSelector from "@/app/_components/ProfileSelector";
-import StudentProfileSelector from "@/app/_components/StudentProfileSelector";
+import { StudentProfileSelector } from "@/app/_components";
 import { ScrollArea } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { useContext, useState } from "react";
