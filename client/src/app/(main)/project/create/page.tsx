@@ -92,8 +92,7 @@ const CreateProject = () => {
         value.length < 1 ? "Must select at least 1 Branch" : null,
       description: (value) =>
         value.length < 1 ? "Description can not be empty" : null,
-      tasks: (value) =>
-        value.length < 1 ? "Tasks can not be empty" : null,
+      tasks: (value) => (value.length < 1 ? "Tasks can not be empty" : null),
       references: (value) =>
         value.length < 1 ? "References can not be empty" : null,
       supervisors: (value) =>
@@ -106,13 +105,13 @@ const CreateProject = () => {
 
   async function handleFormSubmit(values: any) {
     // Check fields
-    if (form.validate().hasErrors){
+    if (form.validate().hasErrors) {
       console.error("Form validation failed");
       return;
     }
 
     // Transform data according to api's requirements
-    let newProjectBody = {...values};
+    let newProjectBody = { ...values };
     newProjectBody.majors = values.majors.map((majorid: string) => {
       return { id: majorid };
     });
@@ -154,7 +153,11 @@ const CreateProject = () => {
   return (
     <div className="h-full w-full bg-white">
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
-        <form onSubmit={e => {e.preventDefault()}}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           {/* title section */}
           <TextInput
             variant="unstyled"
@@ -240,7 +243,7 @@ const CreateProject = () => {
             {/* instructors and desc section */}
             <div className="mt-4 flex h-fit gap-4">
               <div className="h-fit min-h-[16rem] w-1/3">
-                <InputFieldTitle title="Instructors" required/>
+                <InputFieldTitle title="Instructors" required />
                 <ProfileSelector
                   onChange={form.getInputProps("supervisors").onChange}
                   value={form.getInputProps("supervisors").value}

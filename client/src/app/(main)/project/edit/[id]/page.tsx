@@ -1,16 +1,15 @@
 "use client";
 
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
-import useProgramBranch from "@/app/hooks/useProgramBranch";
+import { useContext, useEffect } from "react";
 import { useForm } from "@mantine/form";
 import {
   Button,
-  Input,
   MultiSelect,
   NativeSelect,
   NumberInput,
   ScrollArea,
+  TextInput,
 } from "@mantine/core";
 import MantineRichText from "@/app/_components/MantineRichText";
 import ProfileSelector from "@/app/_components/ProfileSelector";
@@ -18,7 +17,7 @@ import StudentProfileSelector from "@/app/_components/StudentProfileSelector";
 import { GeneralDataContext } from "@/app/providers/GeneralDataProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { InputLabel, InputFieldTitle } from "../../ProjCEComponents";
+import { InputFieldTitle } from "../../ProjCEComponents";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   // Background data initialization
@@ -72,7 +71,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       majors: [],
       branches: [],
       supervisors: [],
-      limit: 1,
+      limit: 0,
       students: [],
       description: "",
       tasks: "",
@@ -86,9 +85,20 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       owner: { id: 3 },
     },
 
-    // validate: {
-    //   email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-    // },
+    validate: {
+      name: (value) => (value.length < 1 ? "Project title is required" : null),
+      majors: (value) =>
+        value.length < 1 ? "Must select at least 1 Program" : null,
+      branches: (value) =>
+        value.length < 1 ? "Must select at least 1 Branch" : null,
+      description: (value) =>
+        value.length < 1 ? "Description can not be empty" : null,
+      tasks: (value) => (value.length < 1 ? "Tasks can not be empty" : null),
+      references: (value) =>
+        value.length < 1 ? "References can not be empty" : null,
+      supervisors: (value) =>
+        value.length < 1 ? "Must select at least 1 Instructor" : null,
+    },
   });
 
   useEffect(() => {
@@ -98,7 +108,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       .get(`http://localhost:3500/projects/${params.id}`)
       .then((response) => {
         // console.log(response.data);
-        form.setValues({
+        let fetchedFormData = {
           name: response.data.name,
           stage: response.data.stage,
           majors: response.data.majors.map((major: Program) =>
@@ -124,7 +134,9 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             no: 2,
           },
           owner: { id: 3 },
-        });
+        };
+        form.setValues(fetchedFormData);
+        // console.log("Initialized form:", fetchedFormData);
       })
       .catch((error) => {
         console.error("Error fetching project:", error);
@@ -135,7 +147,13 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
 
   async function handleFormSubmit(values: any) {
-    // Map selected members as stringyfied object back to ids
+    // Check fields
+    if (form.validate().hasErrors) {
+      console.error("Form validation failed");
+      return;
+    }
+
+    // Transform data according to api's requirements
     let updatedProject = { ...values };
     updatedProject.students = updatedProject.students.map((jsonVal: string) => {
       return JSON.parse(jsonVal).userId;
@@ -160,10 +178,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       });
   }
 
-
   // Main return
-  if (form.values.name === "") return <div>Fetching project...</div>;
-  // console.log("Initialized form:", form.values);
+  if (form.values.limit === 0) return <div>Fetching project...</div>;
   return (
     <div className="h-full w-full bg-white">
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
@@ -173,115 +189,82 @@ const EditProject = ({ params }: { params: { id: string } }) => {
           }}
         >
           {/* title section */}
-          <input
+          <TextInput
+            variant="unstyled"
             placeholder="Input project title"
-            className="border-gray max-h-[5em] w-full border-b-2 py-2 pb-4 pt-8 text-center text-3xl font-semibold focus:outline-none"
+            classNames={{
+              input: "max-h-[5em] text-center text-3xl font-semibold",
+              wrapper: "border-b-2 py-2 pb-4 pt-8 focus:outline-none",
+            }}
             {...form.getInputProps("name")}
           />
 
           <div className="mt-8 w-full">
             {/* metadata table & req section */}
             <div className="flex h-fit gap-4">
-              <div className="w-1/3">
+              <div className="flex w-1/3 flex-col gap-4">
                 <InputFieldTitle title="Project's information" />
-                <table className="border-separate border-spacing-3">
-                  <tbody>
-                    <tr>
-                      <td>
-                        <InputLabel title="Project ID:" />
-                      </td>
-                      <td className="bg-lightgray rounded-md px-2 py-2">
-                        Draft
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <InputLabel title="Project owner:" />
-                      </td>
-                      <td className="bg-lightgray rounded-md px-2 py-2">
-                        {"current user's name"}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <InputLabel title="Project stage:" />
-                      </td>
-                      <td>
-                        <NativeSelect
-                          data={projectStages.map((stage) => {
-                            return {
-                              label: stage.name,
-                              value: stage.id.toString(),
-                            };
-                          })}
-                          aria-placeholder="Select project stage"
-                          {...form.getInputProps("stage")}
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <InputLabel title="Program:" />
-                      </td>
-                      <td>
-                        <div className="w-full">
-                          <MultiSelect
-                            placeholder="Pick project program"
-                            data={programOptions}
-                            {...form.getInputProps("majors")}
-                            onChange={(val) => {
-                              form.getInputProps("majors").onChange(val);
-                              form.setValues({ branches: [] });
-                            }}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <InputLabel title="Branch:" />
-                      </td>
-                      <td>
-                        <div className="w-full">
-                          <MultiSelect
-                            placeholder={
-                              form.values.majors &&
-                              form.values.majors.length < 1
-                                ? "Select program(s) first"
-                                : "Select available branches"
-                            }
-                            data={getBranchOptions()}
-                            {...form.getInputProps("branches")}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <InputLabel title="Number of members:" />
-                      </td>
-                      <td>
-                        <div className="w-full">
-                          <NumberInput
-                            defaultValue={1}
-                            min={1}
-                            max={20}
-                            clampBehavior="strict"
-                            required
-                            {...form.getInputProps("limit")}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <TextInput
+                  label="Project ID"
+                  disabled
+                  value={"System generated"}
+                />
+                <TextInput
+                  label="Project owner"
+                  disabled
+                  value={"current user's name"}
+                />
+                <NativeSelect
+                  label="Project Stage"
+                  data={projectStages.map((stage) => {
+                    return {
+                      label: stage.name,
+                      value: stage.id.toString(),
+                    };
+                  })}
+                  aria-placeholder="Select project stage"
+                  required
+                  {...form.getInputProps("stage")}
+                />
+                <MultiSelect
+                  label="Program"
+                  placeholder="Pick project program"
+                  data={programOptions}
+                  required
+                  {...form.getInputProps("majors")}
+                  onChange={(val) => {
+                    form.getInputProps("majors").onChange(val);
+                    form.setValues({ branches: [] });
+                  }}
+                />
+                <MultiSelect
+                  label="Branch"
+                  placeholder={
+                    form.values.majors.length < 1
+                      ? "Select program(s) first"
+                      : "Select available branches"
+                  }
+                  data={getBranchOptions()}
+                  required
+                  {...form.getInputProps("branches")}
+                />
+                <NumberInput
+                  label="Number of members"
+                  defaultValue={1}
+                  min={1}
+                  max={20}
+                  clampBehavior="strict"
+                  required
+                  {...form.getInputProps("limit")}
+                />
               </div>
               <div className="w-2/3">
                 <div className="flex h-full flex-col">
-                  <p className="mb-4 text-2xl font-bold">Requirements</p>
+                  <InputFieldTitle title="Requirements" />
                   <MantineRichText
                     content={form.getInputProps("requirements").value}
                     onChange={form.getInputProps("requirements").onChange}
+                    error={form.getInputProps("requirements").error}
                   />
                 </div>
               </div>
@@ -290,10 +273,11 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             {/* instructors and desc section */}
             <div className="mt-4 flex h-fit gap-4">
               <div className="h-fit min-h-[16rem] w-1/3">
-                <InputFieldTitle title="Instructors" />
+                <InputFieldTitle title="Instructors" required />
                 <ProfileSelector
                   onChange={form.getInputProps("supervisors").onChange}
                   value={form.getInputProps("supervisors").value}
+                  error={form.getInputProps("supervisors").error}
                   optionsData={supervisorOpts}
                   placeholder="Search instructor name, id"
                 />
@@ -301,10 +285,11 @@ const EditProject = ({ params }: { params: { id: string } }) => {
 
               <div className="w-2/3">
                 <div className="flex h-full flex-col">
-                  <p className="mb-4 text-2xl font-bold">Description</p>
+                  <InputFieldTitle title="Description" required />
                   <MantineRichText
                     content={form.getInputProps("description").value}
                     onChange={form.getInputProps("description").onChange}
+                    error={form.getInputProps("description").error}
                   />
                 </div>
               </div>
@@ -324,10 +309,11 @@ const EditProject = ({ params }: { params: { id: string } }) => {
 
               <div className="w-2/3">
                 <div className="flex h-full flex-col">
-                  <p className="mb-4 text-2xl font-bold">Tasks/Missions</p>
+                  <InputFieldTitle title="Tasks/Missions" required />
                   <MantineRichText
                     content={form.getInputProps("tasks").value}
                     onChange={form.getInputProps("tasks").onChange}
+                    error={form.getInputProps("tasks").error}
                   />
                 </div>
               </div>
@@ -337,10 +323,11 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               <div className="h-64 w-1/3"></div>
               <div className="w-2/3">
                 <div className="flex h-full flex-col">
-                  <p className="mb-4 text-2xl font-bold">References</p>
+                  <InputFieldTitle title="References" required />
                   <MantineRichText
                     content={form.getInputProps("references").value}
                     onChange={form.getInputProps("references").onChange}
+                    error={form.getInputProps("references").error}
                   />
                 </div>
               </div>
