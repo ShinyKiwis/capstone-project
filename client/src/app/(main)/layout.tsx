@@ -27,7 +27,7 @@ export default function RootLayout({
     if (!user) {
       navigate("/login");
     }
-  }, []);
+  }, [user]);
   return user ? (
     <QueryClientProvider client={queryClient}>
       <DeadlinesProvider>

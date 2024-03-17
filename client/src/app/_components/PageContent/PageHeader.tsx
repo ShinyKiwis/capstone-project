@@ -10,10 +10,11 @@ import { useAuth } from "@/app/providers/AuthProvider";
 import { getShortUserName } from "@/app/lib/getShortName";
 import { IconLogout } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
+import useNavigate from "@/app/hooks/useNavigate";
 
 const PageHeader = () => {
   const { pageTitle } = usePageTitleContext();
-  const { user, setUser} = useAuth();
+  const { user, setUser } = useAuth();
   const openModal = () =>
     modals.openConfirmModal({
       title: <Text fw={600}>Are you sure you want to logout ?</Text>,
@@ -23,8 +24,8 @@ const PageHeader = () => {
       confirmProps: { color: "red" },
       onCancel: () => {},
       onConfirm: () => {
-        setUser(null)
-        sessionStorage.removeItem("user")
+        setUser(null);
+        sessionStorage.removeItem("user");
       },
     });
 
