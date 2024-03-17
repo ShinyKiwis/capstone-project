@@ -9,9 +9,17 @@ import {
   Container,
   Button,
 } from "@mantine/core";
-import React from "react";
-import { ApproveModal, DeactivateModal, DenyModal, EnrollModal, UnenrollModal } from "..";
+import React, { useContext } from "react";
+import {
+  ApproveModal,
+  DeactivateModal,
+  DenyModal,
+  EnrollModal,
+  UnenrollModal,
+} from "..";
 import parse from "html-react-parser";
+import { ProjectContext, useProjects } from "@/app/providers/ProjectProvider";
+import useNavigate from "@/app/hooks/useNavigate";
 
 interface ProjectCardProps {
   projectObject: Project;
@@ -52,6 +60,10 @@ const ProjectCardStudentList = ({
 };
 
 const ProjectCard = ({ projectObject }: ProjectCardProps) => {
+  const projectContextValues = useProjects();
+  const navigate = useNavigate();
+  const { setViewing } = projectContextValues;
+
   return (
     <Card
       className="cursor-pointer shadow transition-all hover:-translate-y-0.5 hover:shadow-lg"
@@ -119,11 +131,13 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
       </Card.Section>
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
-          <ApproveModal targetProject = {projectObject}/>
+          <ApproveModal targetProject={projectObject} />
           <EnrollModal />
           <UnenrollModal />
-          <DenyModal targetProject={projectObject}/>
-          <DeactivateModal targetProject={projectObject}/>
+          <DenyModal targetProject={projectObject} />
+          <DeactivateModal targetProject={projectObject} />
+          <Button onClick={() => setViewing(projectObject)}>View</Button>
+          <Button onClick={() => navigate(`project/edit/${projectObject.code}`)}>Edit</Button>
         </Group>
       </Card.Section>
     </Card>

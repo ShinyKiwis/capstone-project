@@ -6,11 +6,24 @@
   @tailwind base;
 }
 
+@layer base {
+  ol,
+  ul {
+    list-style: revert;
+    margin: revert;
+    padding: revert;
+  }
+}
+
 body {
   background-color: white;
 }
 
+ul {
+  list-style-type: inherit !important;
+}
+
 /* Fix mantine datatable page size selector active background */
-.mantine-datatable-page-size-selector-active  {
-  background-color: #1C7ED6;
+.mantine-datatable-page-size-selector-active {
+  background-color: #1c7ed6;
 }

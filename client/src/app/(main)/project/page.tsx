@@ -11,22 +11,21 @@ import {
   FilterModal,
   ApproveAllModal,
 } from "@/app/_components";
-import { ProjectContext } from "@/app/providers/ProjectProvider";
+import { ProjectContext, useProjects } from "@/app/providers/ProjectProvider";
 import { useSearchParams } from "next/navigation";
+import useNavigate from "@/app/hooks/useNavigate";
 
 const Project = () => {
-  const projectContext = useContext(ProjectContext);
+  const projectContextValues = useProjects();
   const searchParams = useSearchParams();
-  if (!projectContext) return <div>Loading Projects</div>;
-  const { projects, viewing, setViewing, getProjects } = projectContext;
+  const navigate = useNavigate();
+  const { projects, viewing, setViewing, getProjects } = projectContextValues;
 
   useEffect(() => {
     // Change rendered projects on page switch
     // console.log("Called get projects")
-    getProjects(searchParams.get('project') as string)
-  }, [searchParams.get('project'), projects]);
-  
-
+    getProjects(searchParams.get("project") as string);
+  }, [searchParams.get("project"), projects]);
 
   return (
     <div className="flex h-full flex-col">
@@ -36,16 +35,17 @@ const Project = () => {
           <FilterModal />
         </div>
         <div className="mt-4">
-          <Button variant="filled" leftSection={<IoCreate size={20} /> }>
+          <Button
+            variant="filled"
+            leftSection={
+              <IoCreate
+                size={20}
+              />
+            }
+            onClick={()=>navigate('/project/create')}
+          >
             Create project
           </Button>
-          {/* <Button
-            variant="filled"
-            leftSection={<MdFileUpload size={20} />}
-            className="ms-4"
-          >
-            Upload project
-          </Button> */}
           <UploadFileModal />
           <ApproveAllModal />
         </div>
@@ -53,7 +53,7 @@ const Project = () => {
       <div className="mt-4 flex w-full overflow-auto">
         <div className="h-full w-2/5">
           <ScrollArea type="hover" h="100%" scrollbars="y" scrollbarSize={4}>
-            {projects.map((project:Project) => (
+            {projects.map((project: Project) => (
               <ProjectCard projectObject={project} key={project.code} />
             ))}
           </ScrollArea>

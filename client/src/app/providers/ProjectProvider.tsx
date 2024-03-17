@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   useQuery,
   useMutation,
@@ -21,8 +21,6 @@ interface ProjectContextProps {
   //   handleEnrollment: (projectId: number) => void;
   //   handleUnenrollment: (projectId: number) => void;
   handleDeletion: (projectId: number) => void;
-  handleUpdateProject: (projectId: number, project: Project) => void;
-  handleChangeProjectStatus: (projectId: number, status: string) => void;
 }
 
 export const ProjectContext = createContext<ProjectContextProps | null>(null);
@@ -90,67 +88,6 @@ export const ProjectProvider = ({
     }
   }
 
-  //   const handleEnrollment = (projectId: number) => {
-  //     const newStudent = {
-  //       user: user,
-  //       userId: user.id,
-  //       credits: user.credits,
-  //       generation: user.generation,
-  //       GPA: user.GPA,
-  //       enrolledAt: user.enrolledAt,
-  //     }
-  //     setProjects((projects) =>
-  //       projects.map((project) => {
-  //         if (project.code === projectId) {
-  //           return {
-  //             ...project,
-  //             students: [...project.students, newStudent],
-  //             studentsCount: project.studentsCount + 1,
-  //           };
-  //         }
-  //         return project;
-  //       }),
-  //     );
-  //     if (viewing) {
-  //       setViewing({
-  //         ...viewing,
-  //         students: [...viewing.students, newStudent],
-  //         studentsCount: viewing!.studentsCount + 1,
-  //       });
-  //     }
-  //   };
-
-  const handleUpdateProject = (projectId: number, project: Project) => {
-    queryClient.invalidateQueries({
-      queryKey: ["projects", { stage: project.stage }],
-    });
-    // setProjects((projects) =>
-    //   projects.map((prevProject) =>
-    //     prevProject.code == projectId ? project : prevProject,
-    //   ),
-    // );
-  };
-
-  const handleChangeProjectStatus = (projectId: number, status: string) => {
-    setProjects((projects) => {
-      return projects.map((prevProject) => {
-        if (prevProject.code == projectId) {
-          return {
-            ...prevProject,
-            status: status,
-          };
-        } else {
-          return prevProject;
-        }
-      });
-    });
-    if (viewing?.code == projectId) {
-      setViewing({
-        ...viewing,
-        status: status,
-      });
-    }
-  };
 
   //   const handleUnenrollment = (projectId: number) => {
   //     setProjects((projects) =>
@@ -191,9 +128,7 @@ export const ProjectProvider = ({
     getProjects,
     // handleEnrollment,
     // handleUnenrollment,
-    handleDeletion,
-    handleUpdateProject,
-    handleChangeProjectStatus,
+    handleDeletion
   };
   return (
     <ProjectContext.Provider value={projectContextValue}>
@@ -201,3 +136,13 @@ export const ProjectProvider = ({
     </ProjectContext.Provider>
   );
 };
+
+
+export const useProjects = () => {
+  const context = useContext(ProjectContext);
+  if (!context) {
+    throw new Error("Project context not initialized !");
+  }
+
+  return context;
+}

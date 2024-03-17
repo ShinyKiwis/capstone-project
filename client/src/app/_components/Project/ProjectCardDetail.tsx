@@ -91,7 +91,7 @@ const ProjectCardDetail = () => {
         <Card.Section inheritPadding py="xs">
           <Title order={3}>Description</Title>
           <div>
-            <Text size="md">
+            <Text size="md" className="">
               {parse(viewing.description as string)}
             </Text>
           </div>
