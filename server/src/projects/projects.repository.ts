@@ -85,6 +85,7 @@ export class ProjectsRepository extends Repository<Project> {
       name,
       description,
       tasks,
+      status,
       references,
       stage,
       supervisors,
@@ -149,6 +150,7 @@ export class ProjectsRepository extends Repository<Project> {
     project.name = name;
     project.description = description;
     project.tasks = tasks;
+    project.status = status;
     project.references = references;
     project.stage = stage;
     project.supervisors = supervisorsList;
@@ -223,8 +225,18 @@ export class ProjectsRepository extends Repository<Project> {
   }
 
   async getProjects(filterDto: GetProjectsFilterDto) {
-    const { search, members, limit, page, status, owner, stage, majors, branches, supervisors } =
-      filterDto;
+    const {
+      search,
+      members,
+      limit,
+      page,
+      status,
+      owner,
+      stage,
+      majors,
+      branches,
+      supervisors,
+    } = filterDto;
     const query = this.createQueryBuilder('project')
       .leftJoinAndSelect('project.semester', 'semester')
       .leftJoinAndSelect('project.requirements', 'requirements')
@@ -276,19 +288,23 @@ export class ProjectsRepository extends Repository<Project> {
       } else {
         newBranches = branches;
       }
-      query.andWhere('branches.id IN (:...branches)', { branches: newBranches });
+      query.andWhere('branches.id IN (:...branches)', {
+        branches: newBranches,
+      });
       query.leftJoinAndSelect('project.branches', 'allBranches');
     }
 
     if (supervisors) {
       let newSupervisors = [];
-      if(!Array.isArray(supervisors)) {
+      if (!Array.isArray(supervisors)) {
         newSupervisors = [supervisors];
       } else {
         newSupervisors = supervisors;
       }
 
-      query.andWhere('supervisors.id IN (:...supervisors)', { supervisors: newSupervisors });
+      query.andWhere('supervisors.id IN (:...supervisors)', {
+        supervisors: newSupervisors,
+      });
       query.leftJoinAndSelect('project.supervisors', 'allSupervisors');
     }
 
@@ -304,7 +320,7 @@ export class ProjectsRepository extends Repository<Project> {
       //     .getQuery();
       //   return 'project.code IN ' + subQuery;
       // });
-      query.andWhere('project.limit = :members', { members })
+      query.andWhere('project.limit = :members', { members });
       // const subQuery = this.createQueryBuilder('project').select('project.code').leftJoin('project.students', 'student').groupBy('project.code').having("COUNT(student.userId) = :members", {members});
       // console.log(subQuery.getSql());
       // const result = await subQuery.getMany();

@@ -41,7 +41,7 @@ export class Project {
   @ManyToOne(() => Semester)
   semester: Semester;
 
-  @OneToMany(() => Requirement, (requirement) => requirement.project)
+  @OneToMany(() => Requirement, (requirement) => requirement.project, { onUpdate: 'CASCADE', onDelete: 'SET NULL'})
   requirements: Requirement[];
 
   @ManyToMany(() => User, { eager: true, onUpdate: 'CASCADE' })
@@ -51,34 +51,33 @@ export class Project {
   @OneToMany(() => Student, (student) => student.project, {
     eager: true,
     onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
   })
   students: Student[];
 
-  @ManyToMany(() => Major, { eager: true, onUpdate: 'CASCADE' })
+  @ManyToMany(() => Major, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   @JoinTable()
   majors: Major[];
 
-  @ManyToMany(() => Branch, { eager: true, onUpdate: 'CASCADE' })
+  @ManyToMany(() => Branch, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   @JoinTable()
   branches: Branch[];
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'SET NULL', onUpdate: 'CASCADE' })
   owner: User;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'SET NULL', onUpdate: 'CASCADE' })
   programChair: User;
 
   @Column({ nullable: true })
   programChairApprovedAt: Date;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'SET NULL', onUpdate: 'CASCADE' })
   departmentHead: User;
 
   @Column({ nullable: true })
   departmentHeadApprovedAt: Date;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'SET NULL', onUpdate: 'CASCADE' })
   rejectedBy: User;
 
   @Column({ nullable: true })
