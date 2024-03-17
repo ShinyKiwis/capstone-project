@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useForm } from "@mantine/form";
 import {
   Button,
-  Input,
   MultiSelect,
   NativeSelect,
   NumberInput,
@@ -16,15 +15,12 @@ import ProfileSelector from "@/app/_components/ProfileSelector";
 import { StudentProfileSelector } from "@/app/_components";
 import { ScrollArea } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
-import { useContext, useState } from "react";
-import { GeneralDataContext } from "@/app/providers/GeneralDataProvider";
-import { InputLabel, InputFieldTitle } from "../ProjCEComponents";
+import { useGeneralData } from "@/app/providers/GeneralDataProvider";
+import { InputFieldTitle, getBranchOptions } from "../ProjCEComponents";
 
 const CreateProject = () => {
   // Background data initialization
-  const generalDataValues = useContext(GeneralDataContext);
-  if (!generalDataValues) return <div>Fetching general data...</div>;
-
+  const generalDataValues = useGeneralData()
   const { supervisorOpts, projectStages, programBranches } = generalDataValues;
   const programOptions = programBranches.map((progbranch) => {
     return {
@@ -32,37 +28,6 @@ const CreateProject = () => {
       value: progbranch.id.toString(),
     };
   });
-  function getBranchOptions() {
-    let programIds: string[] = form.values.majors;
-    if (Array.isArray(programIds) && programIds.length === 0) return [];
-    if (programBranches.length === 0) return [];
-
-    const programBranchesFiltered = programBranches.filter((program) =>
-      programIds.includes(program.id.toString()),
-    );
-
-    const branchesArrays = programBranchesFiltered.map(
-      (program) => program.branches,
-    );
-
-    // Find common branches
-    const commonBranches = branchesArrays.reduce(
-      (accumulator, currentBranches) => {
-        return accumulator.filter((branch) =>
-          currentBranches.some(
-            (currentBranch) => currentBranch.id === branch.id,
-          ),
-        );
-      },
-    );
-
-    const mappedBranches = commonBranches.map((branch) => ({
-      label: branch.name,
-      value: branch.id.toString(),
-    }));
-
-    return mappedBranches;
-  }
 
   const form = useForm<ProjectFormProps>({
     initialValues: {
@@ -214,7 +179,7 @@ const CreateProject = () => {
                       ? "Select program(s) first"
                       : "Select available branches"
                   }
-                  data={getBranchOptions()}
+                  data={getBranchOptions(form.values.majors, programBranches)}
                   required
                   {...form.getInputProps("branches")}
                 />

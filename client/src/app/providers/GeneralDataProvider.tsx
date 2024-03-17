@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   useQuery,
   useMutation,
@@ -102,3 +102,12 @@ export const GeneralDataProvider = ({
     </GeneralDataContext.Provider>
   );
 };
+
+export const useGeneralData = () => {
+  const context = useContext(GeneralDataContext);
+  if (!context) {
+    throw new Error("General data context not initialized !");
+  }
+
+  return context;
+}

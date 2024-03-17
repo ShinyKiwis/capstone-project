@@ -14,42 +14,30 @@ import {
 } from "@mantine/core";
 import { PiSliders } from "react-icons/pi";
 import { useDisclosure } from "@mantine/hooks";
+import { getBranchOptions } from "@/app/(main)/project/ProjCEComponents";
+import { useGeneralData } from "@/app/providers/GeneralDataProvider";
+import ProfileSelector from "../ProfileSelector";
+import axios from "axios";
+import { useProjects } from "@/app/providers/ProjectProvider";
 
 const FilterModal = () => {
   const [opened, { open, close }] = useDisclosure(false);
+  const generalDataValues = useGeneralData();
+  const { supervisorOpts, programBranches } = generalDataValues;
+  const programOptions = programBranches.map((progbranch) => {
+    return {
+      label: progbranch.name,
+      value: progbranch.id.toString(),
+    };
+  });
+  const projectContextValues = useProjects();
+  const {setProjects, setViewing} = projectContextValues;
+
   const [projectType, setProjectType] = useState("all");
-  const [programs, setPrograms] = useState<string[]>([
-    "Computer Science",
-    "Computer Engineering",
-  ]);
-  const [branches, setBranches] = useState<string[]>([
-    "High quality",
-    "Standard program",
-  ]);
   const [selectedPrograms, setSelectedPrograms] = useState<string[]>([]);
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
-
-  const handleSelectPrograms = (values: string[]) => {
-    setPrograms(programs.filter((program) => program != values[0]));
-    setSelectedPrograms([...selectedPrograms, values[0]]);
-  };
-
-  const handleUnselectProgram = (value: string) => {
-    setPrograms([...programs, value]);
-    setSelectedPrograms(
-      selectedPrograms.filter((program) => program !== value),
-    );
-  };
-
-  const handleSelectBranches = (values: string[]) => {
-    setBranches(branches.filter((branch) => branch != values[0]));
-    setSelectedBranches([...selectedBranches, values[0]]);
-  };
-
-  const handleUnselectBranch = (value: string) => {
-    setBranches([...branches, value]);
-    setSelectedBranches(selectedBranches.filter((branch) => branch !== value));
-  };
+  const [membersNo, setMembersNo] = useState(1);
+  const [selectedInstructors, setSelectedInstructors] = useState<string[]>([]);
 
   return (
     <>
@@ -72,92 +60,101 @@ const FilterModal = () => {
             <Radio value="all" label="All projects of your faculty" />
           </Stack>
         </Radio.Group>
-        <Text size="md" fw={600} className="mb-2">
-          Program
-        </Text>
+
         <MultiSelect
-          placeholder="Select programs"
-          value={[]}
-          onChange={handleSelectPrograms}
-          data={programs}
-          searchable
+          my="1rem"
+          label="Program"
+          placeholder="Select program(s)"
+          data={programOptions}
+          value={selectedPrograms}
+          onChange={(val) => {
+            setSelectedPrograms(val);
+            setSelectedBranches([]);
+          }}
         />
-        <div className="mt-2 flex w-1/2 flex-col gap-2">
-          {selectedPrograms.map((selectedProgram) => (
-            <Badge
-              variant="light"
-              radius="sm"
-              rightSection={
-                <CloseButton
-                  size={20}
-                  variant="transparent"
-                  c="blue"
-                  onClick={() => handleUnselectProgram(selectedProgram)}
-                />
-              }
-              fullWidth
-              size="lg"
-              className="flex justify-between normal-case"
-            >
-              {selectedProgram}
-            </Badge>
-          ))}
-        </div>
-        <Text size="md" fw={600} className="my-2">
-          Branch
-        </Text>
         <MultiSelect
-          placeholder="Select branches"
-          value={[]}
-          onChange={handleSelectBranches}
-          data={branches}
-          searchable
+          my="1rem"
+          label="Branch"
+          placeholder={
+            selectedPrograms.length < 1
+              ? "Select program(s) first"
+              : "Select available branches"
+          }
+          data={getBranchOptions(selectedPrograms, programBranches)}
+          value={selectedBranches}
+          onChange={(value) => setSelectedBranches(value)}
         />
-        <div className="mt-2 flex w-1/2 flex-col gap-2">
-          {selectedBranches.map((selectedBranch) => (
-            <Badge
-              variant="light"
-              radius="sm"
-              rightSection={
-                <CloseButton
-                  size={20}
-                  variant="transparent"
-                  c="blue"
-                  onClick={() => handleUnselectBranch(selectedBranch)}
-                />
-              }
-              fullWidth
-              size="lg"
-              className="flex justify-between normal-case"
-            >
-              {selectedBranch}
-            </Badge>
-          ))}
-        </div>
-        <div className="my-2 flex items-center gap-4">
-          <Text size="md" fw={600}>
+
+        <div className="my-4">
+          <Text size="sm" fw={600}>
             Number of members
           </Text>
           <div className="w-[12%]">
             <NumberInput
-              placeholder="1"
               min={1}
               max={999}
               clampBehavior="strict"
               hideControls
+              value={membersNo}
+              onChange={(value) =>
+                setMembersNo(
+                  typeof value === "string" ? parseInt(value) || 0 : value,
+                )
+              }
             />
           </div>
         </div>
-        <Text size="md" fw={600}>
-          Instructors
-        </Text>
-        <Group justify="flex-end" gap="xs">
+
+        <div className="my-4">
+          <Text size="sm" fw={600}>
+            Instructors
+          </Text>
+          <ProfileSelector
+            onChange={(value) => setSelectedInstructors(value)}
+            value={selectedInstructors}
+            optionsData={supervisorOpts}
+            placeholder="Search instructor name, id"
+          />
+        </div>
+
+        <Group justify="flex-end" gap="xs" mt="1em">
           <Button onClick={close} variant="outline">
             Cancel
           </Button>
           <Button
             variant="filled"
-            onClick={() => {
+            onClick={async () => {
+              let isStudent = false;
+              let programParams = selectedPrograms
+                .map((selectedProgram) => `&majors=${selectedProgram}`)
+                .join("");
+              let branchParams = selectedBranches
+                .map((selectedBranch) => `&branches=${selectedBranch}`)
+                .join("");
+              let instructorParams = selectedInstructors
+                .map(
+                  (selectedInstructor) => `&supervisors=${selectedInstructor}`,
+                )
+                .join("");
+              let filterQuery = `http://localhost:3500/projects?${
+                projectType !== "all" ? `owner=${3}` : ""
+              }${membersNo ? `&members=${membersNo}` : ""}${
+                isStudent ? "" : branchParams
+              }${programParams}${instructorParams}`;
+
+              console.log(`Filter Query:`, filterQuery);
+              
+              await axios.get(filterQuery).then(
+                (response) => {
+                  const data = response.data as { projects: Project[] };
+                  // console.log("Filtered result:", data.projects)
+                  setProjects(data.projects);
+                  setViewing(data.projects[0]);
+                },
+                (error) => {
+                  console.log(error);
+                },
+              );
               close();
             }}
           >
@@ -165,6 +162,7 @@ const FilterModal = () => {
           </Button>
         </Group>
       </Modal>
+
       <Button
         leftSection={<PiSliders size={20} />}
         variant="outline"

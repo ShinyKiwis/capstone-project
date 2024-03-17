@@ -11,7 +11,7 @@ import {
   FilterModal,
   ApproveAllModal,
 } from "@/app/_components";
-import { ProjectContext, useProjects } from "@/app/providers/ProjectProvider";
+import { useProjects } from "@/app/providers/ProjectProvider";
 import { useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 import { FaRegCircleCheck } from "react-icons/fa6";
@@ -20,13 +20,13 @@ const Project = () => {
   const projectContextValues = useProjects();
   const searchParams = useSearchParams();
   const navigate = useNavigate();
-  const { projects, viewing, setViewing, getProjects } = projectContextValues;
+  const { projects, getProjects } = projectContextValues;
 
   useEffect(() => {
     // Change rendered projects on page switch
-    // console.log("Called get projects")
+    console.log("Called get projects")
     getProjects(searchParams.get("project") as string);
-  }, [searchParams.get("project"), projects]);
+  }, [searchParams.get("project")]);
 
   return (
     <div className="flex h-full flex-col">

@@ -14,16 +14,14 @@ import {
 import MantineRichText from "@/app/_components/MantineRichText";
 import ProfileSelector from "@/app/_components/ProfileSelector";
 import { StudentProfileSelector } from "@/app/_components";
-import { GeneralDataContext } from "@/app/providers/GeneralDataProvider";
+import { GeneralDataContext, useGeneralData } from "@/app/providers/GeneralDataProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { InputFieldTitle } from "../../ProjCEComponents";
+import { InputFieldTitle, getBranchOptions } from "../../ProjCEComponents";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   // Background data initialization
-  const generalDataValues = useContext(GeneralDataContext);
-  if (!generalDataValues) return <div>Fetching general data...</div>;
-
+  const generalDataValues = useGeneralData()
   const { supervisorOpts, projectStages, programBranches } = generalDataValues;
   const programOptions = programBranches.map((progbranch) => {
     return {
@@ -31,38 +29,6 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       value: progbranch.id.toString(),
     };
   });
-  function getBranchOptions() {
-    let programIds: string[] | undefined = form.values.majors;
-    if (!programIds || (Array.isArray(programIds) && programIds.length === 0))
-      return [];
-    if (programBranches.length === 0) return [];
-
-    const programBranchesFiltered = programBranches.filter((program) =>
-      programIds?.includes(program.id.toString()),
-    );
-
-    const branchesArrays = programBranchesFiltered.map(
-      (program) => program.branches,
-    );
-
-    // Find common branches
-    const commonBranches = branchesArrays.reduce(
-      (accumulator, currentBranches) => {
-        return accumulator.filter((branch) =>
-          currentBranches.some(
-            (currentBranch) => currentBranch.id === branch.id,
-          ),
-        );
-      },
-    );
-
-    const mappedBranches = commonBranches.map((branch) => ({
-      label: branch.name,
-      value: branch.id.toString(),
-    }));
-
-    return mappedBranches;
-  }
 
   const form = useForm({
     initialValues: {
@@ -244,7 +210,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                       ? "Select program(s) first"
                       : "Select available branches"
                   }
-                  data={getBranchOptions()}
+                  data={getBranchOptions(form.values.majors, programBranches)}
                   required
                   {...form.getInputProps("branches")}
                 />
