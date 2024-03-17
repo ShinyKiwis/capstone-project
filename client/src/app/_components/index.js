@@ -6,7 +6,7 @@ export { default as ProjectCardDetail } from "./Project/ProjectCardDetail";
 export { default as RoleCard } from "./RoleCard";
 export { default as MantineRichText } from "./MantineRichText";
 export { default as ProfileSelector } from "./ProfileSelector";
-export { default as ProfileSelectorAsync } from "./ProfileSelectorAsync";
+export { default as ProfileSelectorAsync } from "./StudentProfileSelector";
 
 // Modals
 export { default as RemoveModal } from "./Modals/RemoveModal";

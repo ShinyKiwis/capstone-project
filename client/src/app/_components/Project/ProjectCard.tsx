@@ -10,13 +10,8 @@ import {
   Button,
 } from "@mantine/core";
 import React from "react";
-import {
-  ApproveModal,
-  DeactivateModal,
-  DenyModal,
-  EnrollModal,
-  UnenrollModal,
-} from "..";
+import { ApproveModal, DeactivateModal, DenyModal, EnrollModal, UnenrollModal } from "..";
+import parse from "html-react-parser";
 
 interface ProjectCardProps {
   projectObject: ProjectProps;
@@ -131,7 +126,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
       <Card.Section inheritPadding mt="md">
         <Container fluid p={0}>
           <Text size="sm" c="dimmed" lineClamp={3}>
-            {projectObject.description}
+            {parse(projectObject.description)}
           </Text>
         </Container>
       </Card.Section>

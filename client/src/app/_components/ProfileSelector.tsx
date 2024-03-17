@@ -3,11 +3,15 @@
 import { Dispatch, SetStateAction } from "react";
 import Profile from "./Profile";
 import { CgClose } from "react-icons/cg";
-import { MultiSelect } from "@mantine/core";
+import { MultiSelect, Input } from "@mantine/core";
+import { convertLegacyOperators } from "@mui/x-data-grid/internals";
 
 interface ProfileSelectorProps {
   onChange: Dispatch<SetStateAction<string[]>>;
   value: string[];
+  label?: string
+  description?: string;
+  error?: string;
   placeholder?: string;
   optionsData: UserOptType[];
 }
@@ -16,6 +20,9 @@ const ProfileSelector = ({
   onChange,
   value,
   optionsData,
+  label,
+  description,
+  error,
   placeholder
 }: ProfileSelectorProps) => {
   // const user = useUser();
@@ -72,6 +79,12 @@ const ProfileSelector = ({
 
   return (
     <div className="flex h-full flex-col">
+      <Input.Wrapper
+      withAsterisk
+      label={label}
+      description={description}
+      error={error}
+    >
       <MultiSelect
         placeholder={placeholder}
         data={options}
@@ -83,17 +96,20 @@ const ProfileSelector = ({
         searchable
         nothingFoundMessage="No results"
       />
+      </Input.Wrapper>
       <div className="flex flex-1 flex-col items-center justify-center px-3">
         {value.length > 0 &&
           value.map((selectedVal) => {
             let selectedInstructor = optionsData.find(
               (opt) => opt.id === selectedVal,
             );
+            if (!selectedInstructor) return;
             return (
               <ProfileItemsMultiMode
-                name={selectedInstructor!.name}
-                id={selectedInstructor!.id}
-                email={selectedInstructor!.email}
+                name={selectedInstructor.name}
+                id={selectedInstructor.id}
+                email={selectedInstructor.email}
+                key={selectedInstructor.id}
               />
             );
           })}
