@@ -18,6 +18,7 @@ import StudentProfileSelector from "@/app/_components/StudentProfileSelector";
 import { GeneralDataContext } from "@/app/providers/GeneralDataProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { InputLabel, InputFieldTitle } from "../../ProjCEComponents";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   // Background data initialization
@@ -159,16 +160,6 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       });
   }
 
-  // Display elements
-  const InputFieldTitle = ({ title }: { title: string }) => {
-    let className = "text-2xl font-bold mb-4";
-    return <div className={className}>{title}</div>;
-  };
-
-  const InputLabel = ({ title }: { title: string }) => {
-    let className = "w-44 text-lg font-semibold";
-    return <div className={className}>{title}</div>;
-  };
 
   // Main return
   if (form.values.name === "") return <div>Fetching project...</div>;
