@@ -1,5 +1,15 @@
 "use client";
-import { Badge, Button, Card, ScrollArea, TextInput, Box } from "@mantine/core";
+import {
+  Badge,
+  Button,
+  Card,
+  ScrollArea,
+  TextInput,
+  Box,
+  Pagination,
+  NativeSelect,
+  Text,
+} from "@mantine/core";
 import { PiSliders } from "react-icons/pi";
 import React, { useContext, useEffect, useState } from "react";
 import { IoCreate } from "react-icons/io5";
@@ -23,16 +33,22 @@ const Project = () => {
   const projectContextValues = useProjects();
   const searchParams = useSearchParams();
   const navigate = useNavigate();
-  const { projects, setProjects, getProjects } = projectContextValues;
+  const { projects, getProjects, setProjects, setViewing } =
+    projectContextValues;
 
   const [search, setSearch] = useState("");
+  const [activePage, setActivePage] = useState(1);
+  const [pageSize, setPageSize] = useState("10");
+  const [maxPages, setMaxPages] = useState(1);
 
   useEffect(() => {
     // Change rendered projects on page switch
     console.log("Called get projects");
     getProjects(searchParams.get("project") as string);
-    // Reset search box on page change
+    // Reset search box, pagination on page change
     setSearch("");
+    setActivePage(1);
+    handlePageSizeChange('10')
   }, [searchParams.get("project")]);
 
   async function handleSearchSubmit() {
@@ -42,8 +58,33 @@ const Project = () => {
       )
       .then((res) => {
         setProjects(res.data.projects);
+        setViewing(res.data.projects[0]);
       })
       .catch((err) => console.error("Error searching project:", err));
+  }
+
+  async function handlePageSizeChange(newPageSize: string) {
+    axios
+      .get(`http://localhost:3500/projects?page=1&limit=${newPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`)
+      .then((res) => {
+        setPageSize(newPageSize);
+        setMaxPages(res.data.total)
+        setProjects(res.data.projects);
+        setViewing(res.data.projects[0]);
+      })
+      .catch((err) => console.error("Error changing projects page size:", err));
+  }
+
+  async function handlePageChange(newPage: number, currentPageSize:string) {
+    axios
+      .get(
+        `http://localhost:3500/projects?page=${newPage}&limit=${currentPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
+      )
+      .then((res) => {
+        setProjects(res.data.projects);
+        // setViewing(res.data.projects[0]);
+      })
+      .catch((err) => console.error("Error changing projects page size:", err));
   }
 
   const NoData = () => {
@@ -77,6 +118,7 @@ const Project = () => {
           />
           <FilterModal />
         </div>
+
         <div className="mt-4">
           <Button
             variant="filled"
@@ -99,7 +141,32 @@ const Project = () => {
           </Button>
           {/* <ApproveAllModal /> */}
         </div>
+
+        <div className="mt-4 flex gap-4">
+          <div className="flex w-1/2 items-center gap-2">
+            <NativeSelect
+              value={pageSize}
+              onChange={(event) => {
+                setPageSize(event.currentTarget.value);
+                handlePageSizeChange(event.currentTarget.value);
+              }}
+              data={["5","10", "20", "50"]}
+            />
+            <Text size="md" c="gray">
+              Projects per page
+            </Text>
+          </div>
+          <Pagination
+            value={activePage}
+            onChange={(value) => {
+              setActivePage(value);
+              handlePageChange(value, pageSize);
+            }}
+            total={maxPages}
+          />
+        </div>
       </div>
+
       {projects.length < 1 ? (
         <NoData />
       ) : (
