@@ -1,7 +1,7 @@
 "use client";
 
 import { Dispatch, SetStateAction } from "react";
-import Profile from "./Profile";
+import Profile from "../Profile";
 import { CgClose } from "react-icons/cg";
 import { MultiSelect, Input } from "@mantine/core";
 import { convertLegacyOperators } from "@mui/x-data-grid/internals";

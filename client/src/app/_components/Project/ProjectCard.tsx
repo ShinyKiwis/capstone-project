@@ -92,21 +92,21 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
         <Group gap="xl" align="flex-start">
           <div>
             <Text size="sm" c="dimmed">
-              Program
+              Programs
             </Text>
-            {projectObject.branches.map((branch) => (
-              <Text key={branch.id} size="sm" fw={500}>
-                {branch.name}
+            {projectObject.majors.map((majors) => (
+              <Text key={majors.id} size="sm" fw={500}>
+                {majors.name}
               </Text>
             ))}
           </div>
           <div>
             <Text size="sm" c="dimmed">
-              Major
+              Branches
             </Text>
-            {projectObject.majors.map((majors) => (
-              <Text key={majors.id} size="sm" fw={500}>
-                {majors.name}
+            {projectObject.branches.map((branch) => (
+              <Text key={branch.id} size="sm" fw={500}>
+                {branch.name}
               </Text>
             ))}
           </div>
@@ -137,7 +137,11 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
           <DenyModal targetProject={projectObject} />
           <DeactivateModal targetProject={projectObject} />
           <Button onClick={() => setViewing(projectObject)}>View</Button>
-          <Button onClick={() => navigate(`project/edit/${projectObject.code}`)}>Edit</Button>
+          <Button
+            onClick={() => navigate(`project/edit/${projectObject.code}`)}
+          >
+            Edit
+          </Button>
         </Group>
       </Card.Section>
     </Card>

@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useForm } from "@mantine/form";
 import {
   Button,
@@ -11,10 +11,10 @@ import {
   ScrollArea,
   TextInput,
 } from "@mantine/core";
-import MantineRichText from "@/app/_components/MantineRichText";
-import ProfileSelector from "@/app/_components/ProfileSelector";
+import MantineRichText from "@/app/_components/UserAction/MantineRichText";
+import ProfileSelector from "@/app/_components/UserAction/ProfileSelector";
 import { StudentProfileSelector } from "@/app/_components";
-import { GeneralDataContext, useGeneralData } from "@/app/providers/GeneralDataProvider";
+import { useGeneralData } from "@/app/providers/GeneralDataProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { InputFieldTitle, getBranchOptions } from "../../ProjCEComponents";

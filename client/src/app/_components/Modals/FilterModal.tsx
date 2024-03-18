@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Modal,
   Button,
@@ -6,9 +6,6 @@ import {
   Radio,
   Stack,
   MultiSelect,
-  Badge,
-  CloseButton,
-  Input,
   NumberInput,
   Group,
 } from "@mantine/core";
@@ -16,9 +13,10 @@ import { PiSliders } from "react-icons/pi";
 import { useDisclosure } from "@mantine/hooks";
 import { getBranchOptions } from "@/app/(main)/project/ProjCEComponents";
 import { useGeneralData } from "@/app/providers/GeneralDataProvider";
-import ProfileSelector from "../ProfileSelector";
+import ProfileSelector from "../UserAction/ProfileSelector";
 import axios from "axios";
 import { useProjects } from "@/app/providers/ProjectProvider";
+import { useSearchParams } from "next/navigation";
 
 const FilterModal = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -31,13 +29,23 @@ const FilterModal = () => {
     };
   });
   const projectContextValues = useProjects();
-  const {setProjects, setViewing} = projectContextValues;
+  const { setProjects, setViewing } = projectContextValues;
+  const searchParams = useSearchParams();
 
   const [projectType, setProjectType] = useState("all");
   const [selectedPrograms, setSelectedPrograms] = useState<string[]>([]);
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [membersNo, setMembersNo] = useState(1);
   const [selectedInstructors, setSelectedInstructors] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Reset filter when change page
+    setProjectType("all");
+    setSelectedPrograms([]);
+    setSelectedBranches([]);
+    setMembersNo(1);
+    setSelectedInstructors([]);
+  }, [searchParams.get("project")]);
 
   return (
     <>
@@ -140,10 +148,10 @@ const FilterModal = () => {
                 projectType !== "all" ? `owner=${3}` : ""
               }${membersNo ? `&members=${membersNo}` : ""}${
                 isStudent ? "" : branchParams
-              }${programParams}${instructorParams}`;
+              }${programParams}${instructorParams}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`;
 
               console.log(`Filter Query:`, filterQuery);
-              
+
               await axios.get(filterQuery).then(
                 (response) => {
                   const data = response.data as { projects: Project[] };

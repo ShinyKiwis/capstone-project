@@ -4,9 +4,9 @@ export { default as Profile } from "./Profile";
 export { default as ProjectCard } from "./Project/ProjectCard";
 export { default as ProjectCardDetail } from "./Project/ProjectCardDetail";
 export { default as RoleCard } from "./RoleCard";
-export { default as MantineRichText } from "./MantineRichText";
-export { default as ProfileSelector } from "./ProfileSelector";
-export { default as StudentProfileSelector } from "./StudentProfileSelector";
+export { default as MantineRichText } from "./UserAction/MantineRichText";
+export { default as ProfileSelector } from "./UserAction/ProfileSelector";
+export { default as StudentProfileSelector } from "./UserAction/StudentProfileSelector";
 
 // Modals
 export { default as RemoveModal } from "./Modals/RemoveModal";

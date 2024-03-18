@@ -8,7 +8,7 @@ import {
   useCombobox,
 } from "@mantine/core";
 import axios from "axios";
-import Profile from "./Profile";
+import Profile from "../Profile";
 import { CgClose } from "react-icons/cg";
 import { json } from "stream/consumers";
 import { conforms } from "lodash";

@@ -10,8 +10,8 @@ import {
   NumberInput,
   TextInput,
 } from "@mantine/core";
-import MantineRichText from "@/app/_components/MantineRichText";
-import ProfileSelector from "@/app/_components/ProfileSelector";
+import MantineRichText from "@/app/_components/UserAction/MantineRichText";
+import ProfileSelector from "@/app/_components/UserAction/ProfileSelector";
 import { StudentProfileSelector } from "@/app/_components";
 import { ScrollArea } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
