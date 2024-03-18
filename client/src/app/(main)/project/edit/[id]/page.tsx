@@ -17,7 +17,8 @@ import { StudentProfileSelector } from "@/app/_components";
 import { useGeneralData } from "@/app/providers/GeneralDataProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { InputFieldTitle, getBranchOptions } from "../../ProjCEComponents";
+import { InputFieldTitle } from "../../ProjCEComponents";
+import { getBranchOptions } from "@/app/lib/getBranchOptions";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   // Background data initialization

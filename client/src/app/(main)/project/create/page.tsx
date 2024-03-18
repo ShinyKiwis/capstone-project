@@ -16,7 +16,8 @@ import { StudentProfileSelector } from "@/app/_components";
 import { ScrollArea } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGeneralData } from "@/app/providers/GeneralDataProvider";
-import { InputFieldTitle, getBranchOptions } from "../ProjCEComponents";
+import { InputFieldTitle } from "../ProjCEComponents";
+import { getBranchOptions } from "@/app/lib/getBranchOptions";
 
 const CreateProject = () => {
   // Background data initialization

@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { PiSliders } from "react-icons/pi";
 import { useDisclosure } from "@mantine/hooks";
-import { getBranchOptions } from "@/app/(main)/project/ProjCEComponents";
+import { getBranchOptions } from "@/app/lib/getBranchOptions";
 import { useGeneralData } from "@/app/providers/GeneralDataProvider";
 import ProfileSelector from "../UserAction/ProfileSelector";
 import axios from "axios";
