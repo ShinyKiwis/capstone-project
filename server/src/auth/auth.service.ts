@@ -13,9 +13,7 @@ export class AuthService {
     private majorsRepository: MajorsRepository,
     private studentsRepository: StudentsRepository,
   ) {}
-  async getAuthSession(
-    session: Record<string, any>,
-  ) {
+  async getAuthSession(session: Record<string, any>) {
     const branches = await this.branchesRepository.getAllBranches();
     const majors = await this.majorsRepository.getAllMajors();
     const lecturer = await this.usersRepository.getAllInstructors();
@@ -31,6 +29,17 @@ export class AuthService {
     const student = await this.studentsRepository.getStudentById(user.id);
     if (student) {
       user = { ...user, ...student };
+    }
+    return user;
+  }
+
+  async getUserById(id: number) {
+    let user = await this.usersRepository.findOneBy({ id });
+    if (user) {
+      const student = await this.studentsRepository.getStudentById(user.id);
+      if (student) {
+        user = { ...user, ...student };
+      }
     }
     return user;
   }
