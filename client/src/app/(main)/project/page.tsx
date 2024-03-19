@@ -142,7 +142,7 @@ const Project = () => {
           {/* <ApproveAllModal /> */}
         </div>
 
-        <div className="mt-4 flex gap-4">
+        <div className={`mt-4 flex gap-4 ${projects.length<1 ? 'hidden' : ''}`} >
           <div className="flex w-1/2 items-center gap-2">
             <NativeSelect
               value={pageSize}
