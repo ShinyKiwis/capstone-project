@@ -43,7 +43,7 @@ const Project = () => {
 
   useEffect(() => {
     // Change rendered projects on page switch
-    console.log("Called get projects");
+    // console.log("Called get projects");
     getProjects(searchParams.get("project") as string);
     // Reset search box, pagination on page change
     setSearch("");

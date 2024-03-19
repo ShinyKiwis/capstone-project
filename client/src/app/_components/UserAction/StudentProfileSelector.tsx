@@ -10,14 +10,13 @@ import {
 import axios from "axios";
 import Profile from "../Profile";
 import { CgClose } from "react-icons/cg";
-import { json } from "stream/consumers";
-import { conforms } from "lodash";
 
 interface StudentProfileSelectorProps {
   onChange: Dispatch<SetStateAction<string[]>>;
   value: string[]; // stringyfied Student[]
   placeholder?: string;
   searchApi: string;
+  limit?:number
 }
 
 function StudentProfileSelector({
@@ -25,6 +24,7 @@ function StudentProfileSelector({
   onChange,
   placeholder,
   searchApi,
+  limit
 }: StudentProfileSelectorProps) {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -85,7 +85,7 @@ function StudentProfileSelector({
     });
   };
 
-  const handleValueRemove = (newVal: string) => {
+  const handleRemove = (newVal: string) => {
     let availableIndex = valueIsSelected(newVal);
     if (availableIndex != -1)
       onChange((current) => [...current.splice(availableIndex, 1)]);
@@ -135,14 +135,19 @@ function StudentProfileSelector({
     );
   };
 
-  const options = data.map((item:Student) => (
-    <Combobox.Option value={JSON.stringify(item)} key={item.userId}>
+  const SelectOptions = () => {
+    let renderedOptions = data;
+    if (limit && data.length > limit) renderedOptions = data.toSpliced(limit);
+
+    return renderedOptions.map((item:Student) => (
+      <Combobox.Option value={JSON.stringify(item)} key={item.userId}>
       <Group gap="sm">
         {valueIsSelected(JSON.stringify(item)) !== -1 ? <CheckIcon size={12} /> : null}
         <span>{`${item.userId} - ${item.user.name}`}</span>
       </Group>
     </Combobox.Option>
-  ));
+    ));
+  }
 
   return (
     <div>
@@ -182,7 +187,7 @@ function StudentProfileSelector({
             ) : data.length === 0 ? (
               <Combobox.Empty>No options</Combobox.Empty>
             ) : (
-              options
+              <SelectOptions/>
             )}
           </Combobox.Options>
         </Combobox.Dropdown>

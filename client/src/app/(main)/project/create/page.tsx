@@ -216,6 +216,7 @@ const CreateProject = () => {
                   error={form.getInputProps("supervisors").error}
                   optionsData={supervisorOpts}
                   placeholder="Search instructor name, id"
+                  limit={7}
                 />
               </div>
 
@@ -240,6 +241,7 @@ const CreateProject = () => {
                   value={form.getInputProps("students").value}
                   placeholder="Search student name, id"
                   searchApi="http://localhost:3500/users/students"
+                  limit={7}
                 />
               </div>
 
