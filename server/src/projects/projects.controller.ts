@@ -120,8 +120,9 @@ export class ProjectsController {
       path: file.path,
     };
     const fileData = await promises.readFile(file.path);
+    console.log(fileData);
     try {
-      this.projectsService.extractProject(file.path);
+      await this.projectsService.extractProject(file.path);
     } catch (error) {
     } finally {
       await promises.unlink(file.path);

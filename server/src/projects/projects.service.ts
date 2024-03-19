@@ -4,7 +4,7 @@ import { Project } from './entities/project.entity';
 import { ProjectsRepository } from './projects.repository';
 import { ProjectStatus } from './project-status.enum';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
-import mammoth from 'mammoth';
+var mammoth = require('mammoth');
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
 import { ApproveProjectDto } from './dto/approve-project.dto';
@@ -15,7 +15,7 @@ import { createWriteStream, unlink } from 'fs';
 
 @Injectable()
 export class ProjectsService {
-  constructor(private readonly projectsRepository: ProjectsRepository) { }
+  constructor(private readonly projectsRepository: ProjectsRepository) {}
 
   async createProject(createProjectDto: CreateProjectDto) {
     return this.projectsRepository.createProject(createProjectDto);
@@ -79,16 +79,17 @@ export class ProjectsService {
   }
 
   extractProjectTitle(inputText: string) {
-    const startString = "Tên đề tài:";
-    const endString = "CBHD1";
+    console.log(inputText);
+    const startString = 'Tên đề tài:';
+    const endString = 'CBHD1';
     const regexPattern = new RegExp(`${startString}([\\s\\S]*?)${endString}`);
     const match = inputText.match(regexPattern);
     let extractedText = match && match[1] ? match[1].trim() : null;
     extractedText = extractedText
-      .replace("\n", "")
-      .replace("Tiếng Việt:", "")
-      .replace("Tiếng Anh", "");
-    let resultExtractedText = extractedText.split(":").map((text) => {
+      .replace('\n', '')
+      .replace('Tiếng Việt:', '')
+      .replace('Tiếng Anh', '');
+    let resultExtractedText = extractedText.split(':').map((text) => {
       return text.trim();
     });
 
@@ -101,23 +102,23 @@ export class ProjectsService {
   }
 
   extractProjectInstructors(text: string) {
-    const emailStartDelimiter = "Email1: ";
-    const cbhdStartDelimiter = "CBHD1: ";
+    const emailStartDelimiter = 'Email1: ';
+    const cbhdStartDelimiter = 'CBHD1: ';
 
     const emailStartIndex = text.indexOf(emailStartDelimiter);
     const cbhdStartIndex = text.indexOf(cbhdStartDelimiter);
 
     let emailEndIndex = text.indexOf(
-      "\n",
-      emailStartIndex + emailStartDelimiter.length
+      '\n',
+      emailStartIndex + emailStartDelimiter.length,
     );
     if (emailEndIndex === -1) {
       emailEndIndex = text.length;
     }
 
     let cbhdEndIndex = text.indexOf(
-      "\n",
-      cbhdStartIndex + cbhdStartDelimiter.length
+      '\n',
+      cbhdStartIndex + cbhdStartDelimiter.length,
     );
     if (cbhdEndIndex === -1) {
       cbhdEndIndex = text.length;
@@ -132,16 +133,16 @@ export class ProjectsService {
 
     // Log the extracted content
     let resultArray = cbhdContent
-      .replace(/(CBHD\d*)/g, "")
-      .split(":")
+      .replace(/(CBHD\d*)/g, '')
+      .split(':')
       .map((item) => item.trim());
     const instructors = {};
     for (let i = 0; i < resultArray.length; i++) {
       instructors[`CBHD${i + 1}:`] = resultArray[i];
     }
     resultArray = emailContent
-      .replace(/(Email\d*)/g, "")
-      .split(":")
+      .replace(/(Email\d*)/g, '')
+      .split(':')
       .map((item) => item.trim());
     const emails = {};
     for (let i = 0; i < resultArray.length; i++) {
@@ -161,7 +162,10 @@ export class ProjectsService {
     let extractedText = match ? match[0].trim() : null;
     // Match the strings after ✔ and before ☐ or endline character
     regexPattern = /✔\s*([^☐\n]+)/g;
-    extractedText = extractedText.match(regexPattern)[0].replace("✔", "").trim();
+    extractedText = extractedText
+      .match(regexPattern)[0]
+      .replace('✔', '')
+      .trim();
 
     // console.log(extractedText);
     return {
@@ -175,7 +179,10 @@ export class ProjectsService {
     let extractedText = match ? match[0].trim() : null;
     // Match the strings after ✔ and before ☐ or endline character
     regexPattern = /✔\s*([^☐\n]+)/g;
-    extractedText = extractedText.match(regexPattern)[0].replace("✔", "").trim();
+    extractedText = extractedText
+      .match(regexPattern)[0]
+      .replace('✔', '')
+      .trim();
 
     // console.log(extractedText);
     return {
@@ -222,42 +229,84 @@ export class ProjectsService {
   }
 
   extractRefs(inputText) {
-    const startString = "References:";
+    const startString = 'References:';
     const regexPattern = new RegExp(`${startString}([\\s\\S]*)`);
     const match = inputText.match(regexPattern);
     const extractedText = match && match[1] ? match[1].trim() : null;
 
     return {
-      references: extractedText
-    }
+      references: extractedText,
+    };
   }
 
-  extractProject(filepath) {
-    let path = "../../";
+  async extractProject(filepath) {
+    let path = './../../';
     console.log(path + filepath);
-    mammoth
-      .extractRawText({ path: path + filepath })
-      .then((result) => {
-        let text = result.value;
-        let startTime = this.currentTime();
-        let project = {};
-        project = { ...project, ...this.extractProjectTitle(text) };
-        project = { ...project, ...this.extractProjectInstructors(text) };
-        project = { ...project, ...this.extractMajor(text) };
-        project = { ...project, ...this.extractBranch(text) };
-        project = { ...project, ...this.extractNumberOfParticipants(text) };
-        project = { ...project, ...this.extractParticipants(text) };
-        project = { ...project, ...this.extractInfo(text, "description", "Description:", "Task/Mission") };
-        project = { ...project, ...this.extractInfo(text, "task", "Task/Mission", "References") };
-        project = { ...project, ...this.extractRefs(text) };
-        console.log(this.currentTime() - startTime);
-        console.log(project)
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    // mammoth
+    //   .extractRawText({ path: path + filepath })
+    //   .then((result) => {
+    //     let text = result.value;
+    //     let startTime = this.currentTime();
+    //     let project = {};
+    //     project = { ...project, ...this.extractProjectTitle(text) };
+    //     project = { ...project, ...this.extractProjectInstructors(text) };
+    //     project = { ...project, ...this.extractMajor(text) };
+    //     project = { ...project, ...this.extractBranch(text) };
+    //     project = { ...project, ...this.extractNumberOfParticipants(text) };
+    //     project = { ...project, ...this.extractParticipants(text) };
+    //     project = {
+    //       ...project,
+    //       ...this.extractInfo(
+    //         text,
+    //         'description',
+    //         'Description:',
+    //         'Task/Mission',
+    //       ),
+    //     };
+    //     project = {
+    //       ...project,
+    //       ...this.extractInfo(text, 'task', 'Task/Mission', 'References'),
+    //     };
+    //     project = { ...project, ...this.extractRefs(text) };
+    //     console.log(this.currentTime() - startTime);
+    //     console.log(project);
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //   });
+    try {
+      let result = await mammoth.extractRawText({ path: filepath });
+      let text = result.value;
+      let startTime = this.currentTime();
+      let project = {};
+      project = { ...project, ...this.extractProjectTitle(text) };
+      project = { ...project, ...this.extractProjectInstructors(text) };
+      project = { ...project, ...this.extractMajor(text) };
+      project = { ...project, ...this.extractBranch(text) };
+      project = { ...project, ...this.extractNumberOfParticipants(text) };
+      project = { ...project, ...this.extractParticipants(text) };
+      project = {
+        ...project,
+        ...this.extractInfo(
+          text,
+          'description',
+          'Description:',
+          'Task/Mission',
+        ),
+      };
+      project = {
+        ...project,
+        ...this.extractInfo(text, 'task', 'Task/Mission', 'References'),
+      };
+      project = { ...project, ...this.extractRefs(text) };
+      console.log(this.currentTime() - startTime);
+      console.log(project);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+    // console.log('hahahhihihih')
   }
-
   // async processProjectFile(file: Express.Multer.File) {
   //   const uploadFileName = file.filename;
   //   const uploadDir = '../../uploads/';

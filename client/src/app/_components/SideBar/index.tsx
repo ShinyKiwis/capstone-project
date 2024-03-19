@@ -3,10 +3,15 @@ import Image from "next/image";
 import sidebarItems from "./items";
 import { useEffect, useState } from "react";
 import SideBarItem from "./SideBarItem";
-import { IconSquareChevronLeft, IconSquareChevronRight } from "@tabler/icons-react"
+import {
+  IconSquareChevronLeft,
+  IconSquareChevronRight,
+} from "@tabler/icons-react";
+import { useAuth } from "@/app/providers/AuthProvider";
 
 const SideBar = () => {
   const [toggleSidebar, setToggleSidebar] = useState(true);
+  const { user } = useAuth();
 
   return (
     <div
@@ -30,7 +35,9 @@ const SideBar = () => {
         </button>
       </div>
       {sidebarItems.map((item) => {
-        return (
+        return user?.resources.some((resource) =>
+          resource.includes(item.resource),
+        ) ? (
           <SideBarItem
             expand={toggleSidebar}
             Icon={item.Icon}
@@ -38,7 +45,7 @@ const SideBar = () => {
             pages={item.pages}
             key={item.title}
           />
-        );
+        ) : null;
       })}
     </div>
   );

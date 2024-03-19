@@ -2,7 +2,7 @@ import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import React from "react";
 
-const EnrollModal = () => {
+const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
   const openModal = () =>
     modals.openConfirmModal({
       title: (

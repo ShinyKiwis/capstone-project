@@ -7,6 +7,7 @@ interface User {
   id: number;
   email: string;
   name: string;
+  resources: string[]
   roles: string[];
 }
 

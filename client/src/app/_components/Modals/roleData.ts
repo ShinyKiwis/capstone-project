@@ -28,6 +28,11 @@ export const projectInitialValues = [
     key: "view_projects"
   },
   {
+    label: "Enroll projects",
+    checked: false,
+    key: "enroll_projects"
+  },
+  {
     label: "Modify projects",
     checked: false,
     key: "modify_projects"

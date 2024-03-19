@@ -28,11 +28,14 @@ import { useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import axios from "axios";
+import { useAuth } from "@/app/providers/AuthProvider";
 
 const Project = () => {
   const projectContextValues = useProjects();
   const searchParams = useSearchParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  console.log(user);
   const { projects, getProjects, setProjects, setViewing } =
     projectContextValues;
 
@@ -48,7 +51,7 @@ const Project = () => {
     // Reset search box, pagination on page change
     setSearch("");
     setActivePage(1);
-    handlePageSizeChange('10')
+    handlePageSizeChange("10");
   }, [searchParams.get("project")]);
 
   async function handleSearchSubmit() {
@@ -65,17 +68,19 @@ const Project = () => {
 
   async function handlePageSizeChange(newPageSize: string) {
     axios
-      .get(`http://localhost:3500/projects?page=1&limit=${newPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`)
+      .get(
+        `http://localhost:3500/projects?page=1&limit=${newPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
+      )
       .then((res) => {
         setPageSize(newPageSize);
-        setMaxPages(res.data.total)
+        setMaxPages(res.data.total);
         setProjects(res.data.projects);
         setViewing(res.data.projects[0]);
       })
       .catch((err) => console.error("Error changing projects page size:", err));
   }
 
-  async function handlePageChange(newPage: number, currentPageSize:string) {
+  async function handlePageChange(newPage: number, currentPageSize: string) {
     axios
       .get(
         `http://localhost:3500/projects?page=${newPage}&limit=${currentPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
@@ -96,95 +101,103 @@ const Project = () => {
     );
   };
 
-  return (
-    <div className="flex h-full flex-col">
-      <div className="w-2/5">
-        <div className="flex w-full gap-4">
-          <TextInput
-            placeholder="Search projects id, name, description"
-            rightSection={
-              <BiSearch
-                size={20}
-                className="group-focus-within:text-blue text-gray cursor-pointer"
-                onClick={handleSearchSubmit}
-              />
-            }
-            className="flex-1"
-            value={search}
-            onInput={(e) => setSearch(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSearchSubmit();
-            }}
-          />
-          <FilterModal />
-        </div>
-
-        <div className="mt-4">
-          <Button
-            variant="filled"
-            leftSection={<IoCreate size={20} />}
-            onClick={() => navigate("/project/create")}
-          >
-            Create project
-          </Button>
-          <UploadFileModal />
-          <Button
-            leftSection={<FaRegCircleCheck />}
-            ms="md"
-            onClick={() =>
-              navigate(
-                `/project?project=${searchParams.get("project")}&action=approve`,
-              )
-            }
-          >
-            Approve All
-          </Button>
-          {/* <ApproveAllModal /> */}
-        </div>
-
-        <div className="mt-4 flex gap-4">
-          <div className="flex w-1/2 items-center gap-2">
-            <NativeSelect
-              value={pageSize}
-              onChange={(event) => {
-                setPageSize(event.currentTarget.value);
-                handlePageSizeChange(event.currentTarget.value);
+  if (user?.resources.includes("view_projects")) {
+    return (
+      <div className="flex h-full flex-col">
+        <div className="w-2/5">
+          <div className="flex w-full gap-4">
+            <TextInput
+              placeholder="Search projects id, name, description"
+              rightSection={
+                <BiSearch
+                  size={20}
+                  className="group-focus-within:text-blue text-gray cursor-pointer"
+                  onClick={handleSearchSubmit}
+                />
+              }
+              className="flex-1"
+              value={search}
+              onInput={(e) => setSearch(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearchSubmit();
               }}
-              data={["5","10", "20", "50"]}
             />
-            <Text size="md" c="gray">
-              Projects per page
-            </Text>
+            <FilterModal />
           </div>
-          <Pagination
-            value={activePage}
-            onChange={(value) => {
-              setActivePage(value);
-              handlePageChange(value, pageSize);
-            }}
-            total={maxPages}
-          />
-        </div>
-      </div>
 
-      {projects.length < 1 ? (
-        <NoData />
-      ) : (
-        <div className="mt-4 flex w-full overflow-auto">
-          <div className="h-full w-2/5">
-            <ScrollArea type="hover" h="100%" scrollbars="y" scrollbarSize={4}>
-              {projects.map((project: Project) => (
-                <ProjectCard projectObject={project} key={project.code} />
-              ))}
-            </ScrollArea>
+          <div className="mt-4">
+            <Button
+              variant="filled"
+              leftSection={<IoCreate size={20} />}
+              onClick={() => navigate("/project/create")}
+            >
+              Create project
+            </Button>
+            <UploadFileModal />
+            <Button
+              leftSection={<FaRegCircleCheck />}
+              ms="md"
+              onClick={() =>
+                navigate(
+                  `/project?project=${searchParams.get("project")}&action=approve`,
+                )
+              }
+            >
+              Approve All
+            </Button>
+            {/* <ApproveAllModal /> */}
           </div>
-          <div className="h-full flex-1 px-4 pt-4">
-            <ProjectCardDetail />
+
+          <div className="mt-4 flex gap-4">
+            <div className="flex w-1/2 items-center gap-2">
+              <NativeSelect
+                value={pageSize}
+                onChange={(event) => {
+                  setPageSize(event.currentTarget.value);
+                  handlePageSizeChange(event.currentTarget.value);
+                }}
+                data={["5", "10", "20", "50"]}
+              />
+              <Text size="md" c="gray">
+                Projects per page
+              </Text>
+            </div>
+            <Pagination
+              value={activePage}
+              onChange={(value) => {
+                setActivePage(value);
+                handlePageChange(value, pageSize);
+              }}
+              total={maxPages}
+            />
           </div>
         </div>
-      )}
-    </div>
-  );
+
+        {projects.length < 1 ? (
+          <NoData />
+        ) : (
+          <div className="mt-4 flex w-full overflow-auto">
+            <div className="h-full w-2/5">
+              <ScrollArea
+                type="hover"
+                h="100%"
+                scrollbars="y"
+                scrollbarSize={4}
+              >
+                {projects.map((project: Project) => (
+                  <ProjectCard projectObject={project} key={project.code} />
+                ))}
+              </ScrollArea>
+            </div>
+            <div className="h-full flex-1 px-4 pt-4">
+              <ProjectCardDetail />
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+  return <></>;
 };
 
 export default Project;

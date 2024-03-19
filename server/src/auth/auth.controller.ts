@@ -11,6 +11,9 @@ import {
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LocalAuthGuard } from './local.auth.guard';
+import { resourceLimits } from 'worker_threads';
+import { Resource } from 'src/resources/entities/resource.entity';
+import { Role } from 'src/roles/entities/role.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -29,6 +32,10 @@ export class AuthController {
     let userSession = await this.authService.getAuthSession(session);
     userSession.user = req.user;
     console.log(userSession);
+    let userResources = userSession.user.roles.map((role: Role) =>
+      role.resources.map((resource: Resource) => resource.name),
+    );
+    userSession.user.resources = [...new Set(userResources.flat())];
     return userSession;
     // session.authenticated = true;
     // return session;
