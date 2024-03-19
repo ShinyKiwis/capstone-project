@@ -38,6 +38,11 @@ function MantineRichText({ description, label, content, onChange, error }: Manti
       Highlight,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
+    editorProps: {
+      attributes: {
+        class: 'min-h-40',
+      },
+    },
     content,
     onUpdate(props) {
       const newContent = props.editor.getHTML();
