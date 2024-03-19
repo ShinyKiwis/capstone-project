@@ -79,13 +79,10 @@ const ProfileSelector = ({
 
   return (
     <div className="flex h-full flex-col">
-      <Input.Wrapper
-      withAsterisk
-      label={label}
-      description={description}
-      error={error}
-    >
       <MultiSelect
+        label = {label}
+        description={description}
+        error={error}
         placeholder={placeholder}
         data={options}
         limit={15}
@@ -96,7 +93,7 @@ const ProfileSelector = ({
         searchable
         nothingFoundMessage="No results"
       />
-      </Input.Wrapper>
+
       <div className="flex flex-1 flex-col items-center justify-center px-3">
         {value.length > 0 &&
           value.map((selectedVal) => {

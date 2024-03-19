@@ -195,7 +195,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                 />
                 <MultiSelect
                   label="Program"
-                  placeholder="Pick project program"
+                  placeholder="Select project programs"
                   data={programOptions}
                   required
                   {...form.getInputProps("majors")}

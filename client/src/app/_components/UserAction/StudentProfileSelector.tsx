@@ -76,6 +76,7 @@ function StudentProfileSelector({
   };
 
   const handleValueSelect = (newVal: string) => {
+    setSearch('');
     let availableIndex = valueIsSelected(newVal);
     onChange((current) =>{  // current: currently selected values
       return availableIndex !== -1
@@ -165,12 +166,12 @@ function StudentProfileSelector({
                 setSearch(event.currentTarget.value);
                 handleSearch(event.currentTarget.value);
               }}
-              onKeyDown={(event) => {
-                if (event.key === "Backspace" && search.length === 0) {
-                  event.preventDefault();
-                  handleValueRemove(value[value.length - 1]);
-                }
-              }}
+              // onKeyDown={(event) => {
+              //   if (event.key === "Backspace" && search.length === 0 && value.length>0) {
+              //     event.preventDefault();
+              //     handleValueRemove(value[value.length - 1]);
+              //   }
+              // }}
             />
           </Combobox.EventsTarget>
         </Combobox.DropdownTarget>
