@@ -11,13 +11,25 @@ import {
 } from "@mantine/core";
 import React, { useContext } from "react";
 import { BsFillPeopleFill } from "react-icons/bs";
-import { ApproveModal, DeactivateModal, DenyModal, EnrollModal, UnenrollModal } from "..";
+import {
+  ApproveModal,
+  DeactivateModal,
+  DenyModal,
+  EnrollModal,
+  UnenrollModal,
+} from "..";
 import { ProjectContext } from "@/app/providers/ProjectProvider";
+import { useAuth } from "@/app/providers/AuthProvider";
+import { useSearchParams } from "next/navigation";
+import useNavigate from "@/app/hooks/useNavigate";
 
 const ProjectCardDetail = () => {
   const projectContext = useContext(ProjectContext);
+  const searchParams = useSearchParams();
+  const { user } = useAuth();
   if (!projectContext) return <div>Loading project context</div>;
   const { viewing } = projectContext;
+  const navigate = useNavigate();
 
   if (!viewing) return <div>Loading</div>;
   return (
@@ -38,7 +50,7 @@ const ProjectCardDetail = () => {
                   Program
                 </Text>
                 <Text size="sm" fw={500}>
-                  {viewing.majors.map(major => major.name).join(', ')}
+                  {viewing.majors.map((major) => major.name).join(", ")}
                 </Text>
               </div>
               <div>
@@ -46,7 +58,7 @@ const ProjectCardDetail = () => {
                   Branches
                 </Text>
                 <Text size="sm" fw={500}>
-                {viewing.branches.map(branch => branch.name).join(', ')}
+                  {viewing.branches.map((branch) => branch.name).join(", ")}
                 </Text>
               </div>
               <div>
@@ -54,24 +66,28 @@ const ProjectCardDetail = () => {
                   Instructor
                 </Text>
                 <Text size="sm" fw={500}>
-                {viewing.supervisors.map(supervisor => supervisor.name).join(', ')}
+                  {viewing.supervisors
+                    .map((supervisor) => supervisor.name)
+                    .join(", ")}
                 </Text>
               </div>
             </div>
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
                 <BsFillPeopleFill size={20} />
-                <span>{viewing.students.length}/{viewing.limit}</span>
+                <span>
+                  {viewing.students.length}/{viewing.limit}
+                </span>
               </div>
               <div className="flex flex-col gap-1">
-                {viewing.students.map((student => {
-                  return(
+                {viewing.students.map((student) => {
+                  return (
                     <div className="flex items-center gap-1">
-                  <Avatar src={null} alt="no image here" color="indigo" />
-                  <span>{student.user.name}</span>
-                </div>
-                  )
-                }))}
+                      <Avatar src={null} alt="no image here" color="indigo" />
+                      <span>{student.user.name}</span>
+                    </div>
+                  );
+                })}
                 {/* <div className="flex items-center gap-1">
                   <Avatar src={null} alt="no image here" color="indigo" />
                   <span>Ladiz Washroom</span>
@@ -99,27 +115,38 @@ const ProjectCardDetail = () => {
         <Card.Section inheritPadding py="xs">
           <Title order={3}>Task</Title>
           <div>
-            <Text size="md">
-            {parse(viewing.tasks)}
-            </Text>
+            <Text size="md">{parse(viewing.tasks)}</Text>
           </div>
         </Card.Section>
         <Card.Section inheritPadding py="xs">
           <Title order={3}>References</Title>
           <div>
-            <Text size="md">
-            {parse(viewing.references)}
-            </Text>
+            <Text size="md">{parse(viewing.references)}</Text>
           </div>
         </Card.Section>
       </ScrollArea>
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
-          <ApproveModal targetProject={viewing}/>
-          <EnrollModal />
-          <UnenrollModal />
-          <DenyModal targetProject={viewing}/>
-          <DeactivateModal targetProject={viewing}/>
+          {user?.resources.includes("approve_projects") &&
+          searchParams.get("action") === "approve" ? (
+            <>
+              <ApproveModal targetProject={viewing} />
+              <DenyModal targetProject={viewing} />
+            </>
+          ) : null}
+          {user?.resources.includes("enroll_projects") ? (
+            <EnrollModal targetProject={viewing} />
+          ) : null}
+
+          {/* <UnenrollModal /> */}
+          {user?.resources.includes("modify_projects") ? (
+            <>
+              <DeactivateModal targetProject={viewing} />
+              <Button onClick={() => navigate(`project/edit/${viewing.code}`)}>
+                Edit
+              </Button>
+            </>
+          ) : null}
         </Group>
       </Card.Section>
     </Card>

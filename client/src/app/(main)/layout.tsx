@@ -13,7 +13,9 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { usePathname, useSearchParams } from "next/navigation";
+import isValid from "../lib/isValid";
 
 export default function RootLayout({
   children,
@@ -22,13 +24,17 @@ export default function RootLayout({
 }) {
   const queryClient = new QueryClient();
   const { user } = useAuth();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const navigate = useNavigate();
+  console.log();
   useEffect(() => {
     if (!user) {
       navigate("/login");
     }
   }, [user]);
-  return user ? (
+
+  return isValid(pathname, searchParams, user) ? (
     <QueryClientProvider client={queryClient}>
       <DeadlinesProvider>
         <RolesProvider>
@@ -39,5 +45,7 @@ export default function RootLayout({
       </DeadlinesProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  ): <></>;
+  ) : (
+    navigate("/forbidden")
+  );
 }

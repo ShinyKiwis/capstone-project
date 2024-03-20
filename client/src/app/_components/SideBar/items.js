@@ -18,17 +18,17 @@ const sidebarItems = [
       {
         title: "Users Management",
         href: "/management/users",
-        resource: "manage_users"
+        resource: "manage_users",
       },
       {
         title: "Roles Management",
         href: "/management/roles",
-        resource: "manage_roles"
+        resource: "manage_roles",
       },
       {
         title: "Deadline Management",
         href: "/management/deadline",
-        resource: "manage_deadline"
+        resource: "manage_deadline",
       },
     ],
   },
@@ -41,7 +41,7 @@ const sidebarItems = [
       {
         title: "Programs Management",
         href: "/programs",
-        resource: ""
+        resource: "",
       },
     ],
   },
@@ -53,12 +53,12 @@ const sidebarItems = [
       {
         title: "Specialized Projects",
         href: "/project?project=specialized",
-        resource: ""
+        resource: "view_projects",
       },
       {
         title: "Capstone Projects",
         href: "/project?project=capstone",
-        resource: ""
+        resource: "view_projects",
       },
     ],
   },
@@ -70,12 +70,12 @@ const sidebarItems = [
       {
         title: "Assessment schemes",
         href: "/assessment/schemes",
-        resource: ""
+        resource: "",
       },
       {
         title: "Assessment records",
         href: "/assessment/records",
-        resource: ""
+        resource: "",
       },
     ],
   },
@@ -87,12 +87,12 @@ const sidebarItems = [
       {
         title: "Evaluation Setup",
         href: "",
-        resource: ""
+        resource: "",
       },
       {
         title: "Feedback Management",
         href: "",
-        resource: ""
+        resource: "",
       },
     ],
   },

@@ -100,6 +100,12 @@ const Project = () => {
       </div>
     );
   };
+  if (
+    !user?.resources.includes("approve_projects") &&
+    searchParams.get("action") === "approve"
+  ) {
+    return navigate("/forbidden");
+  }
 
   if (user?.resources.includes("view_projects")) {
     return (
@@ -126,25 +132,33 @@ const Project = () => {
           </div>
 
           <div className="mt-4">
-            <Button
-              variant="filled"
-              leftSection={<IoCreate size={20} />}
-              onClick={() => navigate("/project/create")}
-            >
-              Create project
-            </Button>
-            <UploadFileModal />
-            <Button
-              leftSection={<FaRegCircleCheck />}
-              ms="md"
-              onClick={() =>
-                navigate(
-                  `/project?project=${searchParams.get("project")}&action=approve`,
-                )
-              }
-            >
-              Approve All
-            </Button>
+            {user.resources.includes("create_projects") ? (
+              <>
+                <Button
+                  variant="filled"
+                  leftSection={<IoCreate size={20} />}
+                  onClick={() => navigate("/project/create")}
+                >
+                  Create project
+                </Button>
+                <UploadFileModal />
+              </>
+            ) : null}
+
+            {user.resources.includes("approve_projects") ? (
+              <Button
+                leftSection={<FaRegCircleCheck />}
+                ms="md"
+                onClick={() =>
+                  navigate(
+                    `/project?project=${searchParams.get("project")}&action=approve`,
+                  )
+                }
+              >
+                Approve projects
+              </Button>
+            ) : null}
+
             {/* <ApproveAllModal /> */}
           </div>
 
@@ -158,84 +172,48 @@ const Project = () => {
                   setPageSize(event.currentTarget.value);
                   handlePageSizeChange(event.currentTarget.value);
                 }}
+                data={["5", "10", "20", "50"]}
               />
-              <FilterModal />
+              <Text size="md" c="gray">
+                Projects per page
+              </Text>
             </div>
+            <Pagination
+              value={activePage}
+              onChange={(value) => {
+                setActivePage(value);
+                handlePageChange(value, pageSize);
+              }}
+              total={maxPages}
+            />
+          </div>
+        </div>
 
-            <div className="mt-4">
-              <Button
-                variant="filled"
-                leftSection={<IoCreate size={20} />}
-                onClick={() => navigate("/project/create")}
+        {projects.length < 1 ? (
+          <NoData />
+        ) : (
+          <div className="mt-4 flex w-full overflow-auto">
+            <div className="h-full w-2/5">
+              <ScrollArea
+                type="hover"
+                h="100%"
+                scrollbars="y"
+                scrollbarSize={4}
               >
-                Create project
-              </Button>
-              <UploadFileModal />
-              <Button
-                leftSection={<FaRegCircleCheck />}
-                ms="md"
-                onClick={() =>
-                  navigate(
-                    `/project?project=${searchParams.get("project")}&action=approve`,
-                  )
-                }
-              >
-                Approve All
-              </Button>
-              {/* <ApproveAllModal /> */}
+                {projects.map((project: Project) => (
+                  <ProjectCard projectObject={project} key={project.code} />
+                ))}
+              </ScrollArea>
             </div>
-
-            <div className="mt-4 flex gap-4">
-              <div className="flex w-1/2 items-center gap-2">
-                <NativeSelect
-                  value={pageSize}
-                  onChange={(event) => {
-                    setPageSize(event.currentTarget.value);
-                    handlePageSizeChange(event.currentTarget.value);
-                  }}
-                  data={["5", "10", "20", "50"]}
-                />
-                <Text size="md" c="gray">
-                  Projects per page
-                </Text>
-              </div>
-              <Pagination
-                value={activePage}
-                onChange={(value) => {
-                  setActivePage(value);
-                  handlePageChange(value, pageSize);
-                }}
-                total={maxPages}
-              />
+            <div className="h-full flex-1 px-4 pt-4">
+              <ProjectCardDetail />
             </div>
           </div>
-
-          {projects.length < 1 ? (
-            <NoData />
-          ) : (
-            <div className="mt-4 flex w-full overflow-auto">
-              <div className="h-full w-2/5">
-                <ScrollArea
-                  type="hover"
-                  h="100%"
-                  scrollbars="y"
-                  scrollbarSize={4}
-                >
-                  {projects.map((project: Project) => (
-                    <ProjectCard projectObject={project} key={project.code} />
-                  ))}
-                </ScrollArea>
-              </div>
-              <div className="h-full flex-1 px-4 pt-4">
-                <ProjectCardDetail />
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </div>
     );
   }
-  return <></>;
+  return navigate("/forbidden");
 };
 
 export default Project;

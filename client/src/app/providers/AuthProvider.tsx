@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import useNavigate from "../hooks/useNavigate";
 
-interface User {
+export interface User {
   id: number;
   email: string;
   name: string;
@@ -23,6 +23,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
+
   const [error, setError] = useState<string>("");
   const [user, setUser] = useState<User | null>(() => {
     if (typeof window !== "undefined") {

@@ -21,6 +21,7 @@ import parse from "html-react-parser";
 import { ProjectContext, useProjects } from "@/app/providers/ProjectProvider";
 import useNavigate from "@/app/hooks/useNavigate";
 import { useAuth } from "@/app/providers/AuthProvider";
+import { useSearchParams } from "next/navigation";
 
 interface ProjectCardProps {
   projectObject: Project;
@@ -47,7 +48,11 @@ const ProjectCardStudentList = ({
         <Avatar.Group spacing="sm">
           {students.map((student) => (
             <Tooltip key={student.userId} label={student.user.name} withArrow>
-              <Avatar color="blue" radius="xl">{student.user.name.split(" ").map((word) => word[0].toUpperCase())}</Avatar>
+              <Avatar color="blue" radius="xl">
+                {student.user.name
+                  .split(" ")
+                  .map((word) => word[0].toUpperCase())}
+              </Avatar>
             </Tooltip>
           ))}
         </Avatar.Group>
@@ -59,6 +64,7 @@ const ProjectCardStudentList = ({
 const ProjectCard = ({ projectObject }: ProjectCardProps) => {
   const projectContextValues = useProjects();
   const { user } = useAuth();
+  const searchParams = useSearchParams();
   // console.log("here's the user");
   // console.log(user);
   const navigate = useNavigate();
@@ -132,7 +138,8 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
       </Card.Section>
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
-          {user?.resources.includes("approve_projects") ? (
+          {user?.resources.includes("approve_projects") &&
+          searchParams.get("action") === "approve" ? (
             <>
               <ApproveModal targetProject={projectObject} />
               <DenyModal targetProject={projectObject} />
