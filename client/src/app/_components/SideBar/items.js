@@ -13,71 +13,102 @@ const sidebarItems = [
   {
     Icon: MdManageAccounts,
     title: "Management",
+    resource: "manage",
     pages: [
       {
         title: "Users Management",
         href: "/management/users",
+        resource: "manage_users",
+        display: true
       },
       {
         title: "Roles Management",
-        href: "/management/roles"
+        href: "/management/roles",
+        resource: "manage_roles",
+        display: true
       },
       {
         title: "Deadline Management",
         href: "/management/deadline",
+        resource: "manage_deadline",
+        display: true
       },
     ],
   },
   {
     Icon: FaChalkboardTeacher,
     title: "Program",
+    resource: "",
     paths: ["/program"],
     pages: [
       {
         title: "Programs Management",
         href: "/programs",
+        resource: "",
+        display: true
       },
     ],
   },
   {
     Icon: AiOutlineProject,
     title: "Projects",
+    resource: "projects",
     pages: [
       {
         title: "Specialized Projects",
         href: "/project?project=specialized",
+        resource: "view_projects",
+        display: true
       },
       {
         title: "Capstone Projects",
         href: "/project?project=capstone",
+        resource: "view_projects",
+        display: true
+      },
+      {
+        title: "Create project",
+        href: "/project/create",
+        resource: "create_projects",
+        display: false
       },
     ],
   },
   {
     Icon: PiExam,
     title: "Assessment",
+    resource: "",
     pages: [
       {
         title: "Assessment schemes",
         href: "/assessment/schemes",
+        resource: "",
+        display: true
       },
       {
         title: "Assessment records",
         href: "/assessment/records",
+        resource: "",
+        display: true
       },
     ],
   },
   {
     Icon: VscGraph,
     title: "Evaluation",
+    resource: "",
     pages: [
       {
         title: "Evaluation Setup",
         href: "",
+        resource: "",
+        display: true
       },
       {
         title: "Feedback Management",
         href: "",
+        resource: "",
+        display: true
       },
     ],
   },

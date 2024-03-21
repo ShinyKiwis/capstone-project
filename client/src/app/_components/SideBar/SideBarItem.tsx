@@ -6,10 +6,13 @@ import sidebarItems from "./items";
 import { usePathname, useSearchParams } from "next/navigation";
 import { usePageTitleContext } from "@/app/providers/PageTitleProvider";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/providers/AuthProvider";
 
 interface Page {
   title: string;
   href: string;
+  resource: string;
+  display: boolean
 }
 
 interface SideBarItemProps {
@@ -43,6 +46,7 @@ const isActivePath = (pathname: string, currentPathname: string) => {
 const SideBarItem = ({ Icon, title, pages, expand }: SideBarItemProps) => {
   const searchParams = useSearchParams().toString();
   const pathname = usePathname();
+  const { user } = useAuth();
   const fullpath = pathname + (searchParams ? `?${searchParams}` : "");
   const [activeTitle, setIsActiveTitle] = useState(
     isActivePath(title, fullpath),
@@ -72,7 +76,7 @@ const SideBarItem = ({ Icon, title, pages, expand }: SideBarItemProps) => {
           </Accordion.Control>
           <Accordion.Panel>
             {pages.map((page) => {
-              return (
+              return user?.resources.includes(page.resource) && page.display? (
                 <NavLink
                   label={page.title}
                   href={page.href}
@@ -86,7 +90,7 @@ const SideBarItem = ({ Icon, title, pages, expand }: SideBarItemProps) => {
                     router.push(page.href);
                   }}
                 />
-              );
+              ) : null;
             })}
           </Accordion.Panel>
         </Accordion.Item>

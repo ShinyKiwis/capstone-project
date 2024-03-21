@@ -18,10 +18,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useGeneralData } from "@/app/providers/GeneralDataProvider";
 import { InputFieldTitle } from "../ProjCEComponents";
 import { getBranchOptions } from "@/app/lib/getBranchOptions";
+import { useAuth } from "@/app/providers/AuthProvider";
+import useNavigate from "@/app/hooks/useNavigate";
 
 const CreateProject = () => {
   // Background data initialization
-  const generalDataValues = useGeneralData()
+  const navigate = useNavigate();
+  const generalDataValues = useGeneralData();
+  const { user } = useAuth();
   const { supervisorOpts, projectStages, programBranches } = generalDataValues;
   const programOptions = programBranches.map((progbranch) => {
     return {
@@ -116,7 +120,7 @@ const CreateProject = () => {
   }
 
   // Main return
-  return (
+  return user?.resources.includes("create_projects") ? (
     <div className="h-full w-full bg-white">
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
         <form
@@ -296,6 +300,8 @@ const CreateProject = () => {
         </form>
       </ScrollArea>
     </div>
+  ) : (
+    <></>
   );
 };
 

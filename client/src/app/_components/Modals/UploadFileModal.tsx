@@ -17,6 +17,7 @@ import { RxCross2 } from "react-icons/rx";
 import { FiFileText } from "react-icons/fi";
 import { useState } from "react";
 import { FaFileWord, FaFilePdf } from "react-icons/fa";
+import axios from "axios"
 
 const getFileIcon = (fileType: string) => {
   console.log(fileType);
@@ -35,6 +36,13 @@ const UploadFileModal = () => {
   const handleDeleteFile = (filename: string) => {
     setFiles(files.filter((file) => file.name != filename));
   };
+
+  const handleUploadFiles = async () => {
+    await axios.post(process.env.NEXT_PUBLIC_UPLOAD_FILES_URL!, {
+      files: files
+    })
+  };
+
   return (
     <>
       <Modal
@@ -132,13 +140,7 @@ const UploadFileModal = () => {
           <Button onClick={close} variant="outline">
             Cancel
           </Button>
-          <Button
-            variant="filled"
-            onClick={() => {
-              console.log(files);
-              close();
-            }}
-          >
+          <Button variant="filled" onClick={handleUploadFiles}>
             Upload
           </Button>
         </Group>

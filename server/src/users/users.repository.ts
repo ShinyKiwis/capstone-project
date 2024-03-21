@@ -102,6 +102,7 @@ export class UsersRepository extends Repository<User> {
   }
 
   async updateOrCreateAUser(createUserDto: CreateUserDto) {
+    // console.log('upsert user')
     await this.upsert(createUserDto, ['id']);
     const user = await this.getUserById(createUserDto.id);
     return user;
