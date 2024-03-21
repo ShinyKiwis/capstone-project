@@ -29,7 +29,7 @@ import useNavigate from "@/app/hooks/useNavigate";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import axios from "axios";
 
-const Project = () => {
+const ApproveProject = () => {
   const projectContextValues = useProjects();
   const searchParams = useSearchParams();
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ const Project = () => {
     setSearch("");
     setActivePage(1);
     handlePageSizeChange('10')
-  }, [searchParams.get("project")]);
+  }, );
 
   async function handleSearchSubmit() {
     axios
@@ -127,18 +127,7 @@ const Project = () => {
           >
             Create project
           </Button>
-          <UploadFileModal />
-          <Button
-            leftSection={<FaRegCircleCheck />}
-            ms="md"
-            onClick={() =>
-              navigate(
-                `/project/approve?project=${searchParams.get("project")}`,
-              )
-            }
-          >
-            Approve Projects
-          </Button>
+          <ApproveAllModal />
         </div>
 
         <div className={`mt-4 flex gap-4 ${projects.length<1 ? 'hidden' : ''}`} >
@@ -186,4 +175,4 @@ const Project = () => {
   );
 };
 
-export default Project;
+export default ApproveProject;
