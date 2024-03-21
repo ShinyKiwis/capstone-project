@@ -12,6 +12,7 @@ interface Page {
   title: string;
   href: string;
   resource: string;
+  display: boolean
 }
 
 interface SideBarItemProps {
@@ -75,7 +76,7 @@ const SideBarItem = ({ Icon, title, pages, expand }: SideBarItemProps) => {
           </Accordion.Control>
           <Accordion.Panel>
             {pages.map((page) => {
-              return user?.resources.includes(page.resource) ? (
+              return user?.resources.includes(page.resource) && page.display? (
                 <NavLink
                   label={page.title}
                   href={page.href}
