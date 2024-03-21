@@ -7,7 +7,7 @@ export interface User {
   id: number;
   email: string;
   name: string;
-  resources: string[]
+  resources: string[];
   roles: string[];
 }
 
@@ -32,6 +32,22 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
     return null;
   });
+
+  useEffect(() => {
+    const syncUser = async () => {
+      const response = await axios.get(process.env.NEXT_PUBLIC_SYNC_USER_URL!, {
+        withCredentials: true,
+      });
+      const { user } = response.data;
+      if (user) {
+        sessionStorage.setItem("user", JSON.stringify(user));
+        setUser(user);
+      }
+    };
+    if (user) {
+      syncUser();
+    }
+  }, []);
 
   const login = async (username: string, password: string) => {
     const response = await axios.post(

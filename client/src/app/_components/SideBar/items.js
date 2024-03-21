@@ -72,6 +72,18 @@ const sidebarItems = [
         resource: "create_projects",
         display: false
       },
+      {
+        title: "Approve Specialized Projects",
+        href: "/project/approve?project=specialized",
+        resource: "approve_projects",
+        display: false
+      },
+      {
+        title: "Approve Capstone Projects",
+        href: "/project/approve?project=capstone",
+        resource: "approve_projects",
+        display: false
+      }
     ],
   },
   {

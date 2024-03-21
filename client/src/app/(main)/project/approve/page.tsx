@@ -28,8 +28,10 @@ import { useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import axios from "axios";
+import { useAuth } from "@/app/providers/AuthProvider";
 
 const ApproveProject = () => {
+  const { user } = useAuth();
   const projectContextValues = useProjects();
   const searchParams = useSearchParams();
   const navigate = useNavigate();
@@ -48,8 +50,8 @@ const ApproveProject = () => {
     // Reset search box, pagination on page change
     setSearch("");
     setActivePage(1);
-    handlePageSizeChange('10')
-  }, );
+    handlePageSizeChange("10");
+  });
 
   async function handleSearchSubmit() {
     axios
@@ -65,17 +67,19 @@ const ApproveProject = () => {
 
   async function handlePageSizeChange(newPageSize: string) {
     axios
-      .get(`http://localhost:3500/projects?page=1&limit=${newPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`)
+      .get(
+        `http://localhost:3500/projects?page=1&limit=${newPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
+      )
       .then((res) => {
         setPageSize(newPageSize);
-        setMaxPages(res.data.total)
+        setMaxPages(res.data.total);
         setProjects(res.data.projects);
         setViewing(res.data.projects[0]);
       })
       .catch((err) => console.error("Error changing projects page size:", err));
   }
 
-  async function handlePageChange(newPage: number, currentPageSize:string) {
+  async function handlePageChange(newPage: number, currentPageSize: string) {
     axios
       .get(
         `http://localhost:3500/projects?page=${newPage}&limit=${currentPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
@@ -120,17 +124,24 @@ const ApproveProject = () => {
         </div>
 
         <div className="mt-4">
-          <Button
-            variant="filled"
-            leftSection={<IoCreate size={20} />}
-            onClick={() => navigate("/project/create")}
-          >
-            Create project
-          </Button>
+          {user?.resources.includes("create_projects") ? (
+            <>
+              <Button
+                variant="filled"
+                leftSection={<IoCreate size={20} />}
+                onClick={() => navigate("/project/create")}
+              >
+                Create project
+              </Button>
+              <UploadFileModal />
+            </>
+          ) : null}
           <ApproveAllModal />
         </div>
 
-        <div className={`mt-4 flex gap-4 ${projects.length<1 ? 'hidden' : ''}`} >
+        <div
+          className={`mt-4 flex gap-4 ${projects.length < 1 ? "hidden" : ""}`}
+        >
           <div className="flex w-1/2 items-center gap-2">
             <NativeSelect
               value={pageSize}
@@ -138,7 +149,7 @@ const ApproveProject = () => {
                 setPageSize(event.currentTarget.value);
                 handlePageSizeChange(event.currentTarget.value);
               }}
-              data={["5","10", "20", "50"]}
+              data={["5", "10", "20", "50"]}
             />
             <Text size="md" c="gray">
               Projects per page

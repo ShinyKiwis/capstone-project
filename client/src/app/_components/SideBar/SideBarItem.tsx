@@ -12,7 +12,7 @@ interface Page {
   title: string;
   href: string;
   resource: string;
-  display: boolean
+  display: boolean;
 }
 
 interface SideBarItemProps {
@@ -36,9 +36,6 @@ const isActivePath = (pathname: string, currentPathname: string) => {
       }
     }
   }
-
-  // console.log(titles);
-  // console.log(pathname);
 
   return titles.includes(pathname);
 };
@@ -76,7 +73,7 @@ const SideBarItem = ({ Icon, title, pages, expand }: SideBarItemProps) => {
           </Accordion.Control>
           <Accordion.Panel>
             {pages.map((page) => {
-              return user?.resources.includes(page.resource) && page.display? (
+              return user?.resources.includes(page.resource) && page.display ? (
                 <NavLink
                   label={page.title}
                   href={page.href}
@@ -110,7 +107,7 @@ const SideBarItem = ({ Icon, title, pages, expand }: SideBarItemProps) => {
           </Menu.Target>
           <Menu.Dropdown className="shadow-lg">
             {pages.map((page) => {
-              return (
+              return page.display ? (
                 <Menu.Item key={page.title}>
                   <NavLink
                     label={page.title}
@@ -126,7 +123,7 @@ const SideBarItem = ({ Icon, title, pages, expand }: SideBarItemProps) => {
                     }}
                   />
                 </Menu.Item>
-              );
+              ) : null;
             })}
           </Menu.Dropdown>
         </Menu>

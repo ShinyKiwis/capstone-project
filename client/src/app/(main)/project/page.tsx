@@ -153,7 +153,7 @@ const Project = () => {
                 ms="md"
                 onClick={() =>
                   navigate(
-                    `/project/aprove?project=${searchParams.get("project")}`,
+                    `/project/approve?project=${searchParams.get("project")}`,
                   )
                 }
               >
