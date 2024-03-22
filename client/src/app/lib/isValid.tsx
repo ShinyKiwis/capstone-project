@@ -13,6 +13,8 @@ const isValid = (
     for(const page of item.pages) {
       if (user?.resources.includes(page.resource) && parsedPathname === page.href) {
         return true
+      }else if(user?.resources.includes(page.resource) && parsedPathname.includes(page.href)) {
+        return true
       }
     }
   }

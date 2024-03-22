@@ -51,7 +51,7 @@ const ApproveProject = () => {
     setSearch("");
     setActivePage(1);
     handlePageSizeChange("10");
-  });
+  }, []);
 
   async function handleSearchSubmit() {
     axios

@@ -24,7 +24,7 @@ const DenyModal = ({ targetProject }: { targetProject: Project }) => {
           <Textarea
             label="Deny reason"
             description="Denial reason will be sent to the project owner"
-            placeholder="Input denial reason"
+            placeholder="Input deny reason"
             autosize
             minRows={4}
             maxRows={8}

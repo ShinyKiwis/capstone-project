@@ -21,7 +21,7 @@ import parse from "html-react-parser";
 import { ProjectContext, useProjects } from "@/app/providers/ProjectProvider";
 import useNavigate from "@/app/hooks/useNavigate";
 import { useAuth } from "@/app/providers/AuthProvider";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 interface ProjectCardProps {
   projectObject: Project;
@@ -65,6 +65,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
   const projectContextValues = useProjects();
   const { user } = useAuth();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   // console.log("here's the user");
   // console.log(user);
   const navigate = useNavigate();
@@ -139,19 +140,21 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
           {user?.resources.includes("approve_projects") &&
-          searchParams.get("action") === "approve" ? (
+          pathname.includes("approve") ? (
             <>
               <ApproveModal targetProject={projectObject} />
               <DenyModal targetProject={projectObject} />
             </>
           ) : null}
-          {user?.resources.includes("enroll_projects") ? (
+          {!pathname.includes("approve") &&
+          user?.resources.includes("enroll_projects") ? (
             <>
               <EnrollModal targetProject={projectObject} />
               <UnenrollModal />
             </>
           ) : null}
-          {user?.resources.includes("modify_projects") ? (
+          {!pathname.includes("approve") &&
+          user?.resources.includes("modify_projects") ? (
             <>
               <DeactivateModal targetProject={projectObject} />
               <Button

@@ -83,6 +83,12 @@ const sidebarItems = [
         href: "/project/approve?project=capstone",
         resource: "approve_projects",
         display: false
+      },
+      {
+        title: "Edit Projects",
+        href: "/project/edit",
+        resource: "modify_projects",
+        display: false
       }
     ],
   },

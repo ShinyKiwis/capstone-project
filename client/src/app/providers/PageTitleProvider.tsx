@@ -8,6 +8,7 @@ const pageTitleMappings: PageTitleMappings = {
   "/management/deadline": "Deadline Management",
   "/management/roles": "Roles Management",
   "/project?project=specialized": "Specialized Projects",
+  "/project?project=capstone": "Capstone Projects",
   "/project/create": "New Project"
 }
 
@@ -26,7 +27,13 @@ export const PageTitleContext = createContext<PageTitleContextType | null>(
 const PageTitleProvider = ({ children }: { children: React.ReactNode }) => {
   const searchParams = useSearchParams().toString()
   const pathname = usePathname()
-  const [pageTitle, setPageTitle] = useState(pageTitleMappings[pathname + (searchParams ? `?${searchParams}` : "")]);
+  const [pageTitle, setPageTitle] = useState(() => {
+    if(pathname.includes("edit")){
+      return "Edit Project"
+    }
+    return pageTitleMappings[pathname + (searchParams ? `?${searchParams}` : "")]
+  }
+  );
   return (
     <PageTitleContext.Provider value={{ pageTitle, setPageTitle }}>
       {children}
