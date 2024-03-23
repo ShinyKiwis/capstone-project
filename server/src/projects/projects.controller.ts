@@ -13,6 +13,7 @@ import {
   Res,
   UseGuards,
   Request,
+  UploadedFiles,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -28,6 +29,7 @@ import { ApproveProjectsDto } from './dto/approve-projects.dto';
 import { promises } from 'fs';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { Store } from 'express-session';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('projects')
 export class ProjectsController {
@@ -109,23 +111,30 @@ export class ProjectsController {
   @Post('file')
   @UseInterceptors(
     ProjectFilesInterceptor({
-      fieldName: 'file',
+      fieldName: 'files',
       path: '/projects',
     }),
   )
-  async uploadFileAndCreateProject(@UploadedFile() file: Express.Multer.File) {
-    const response = {
-      originalname: file.originalname,
-      filename: file.filename,
-      path: file.path,
-    };
-    const fileData = await promises.readFile(file.path);
-    console.log(fileData);
-    try {
-      await this.projectsService.extractProject(file.path);
-    } catch (error) {
-    } finally {
-      await promises.unlink(file.path);
+  async uploadFileAndCreateProject(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    console.log(files);
+    let response = [];
+    for (let file of files) {
+      console.log(file);
+      response.push({
+        originalname: file.originalname,
+        filename: file.filename,
+        path: file.path,
+      });
+      const fileData = await promises.readFile(file.path);
+      console.log(fileData);
+      try {
+        await this.projectsService.extractProject(file.path);
+      } catch (error) {
+      } finally {
+        await promises.unlink(file.path);
+      }
     }
     return response;
   }

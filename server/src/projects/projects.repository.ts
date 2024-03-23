@@ -20,6 +20,7 @@ import { ApproveProjectDto } from './dto/approve-project.dto';
 import { RejectProjectDto } from './dto/reject-project.dto';
 import { ApproveProjectsDto } from './dto/approve-projects.dto';
 import { StudentsRepository } from 'src/students/students.repository';
+import { CreateProjectFromFileDto } from './dto/create-project-from-file.dto';
 
 @Injectable()
 export class ProjectsRepository extends Repository<Project> {
@@ -33,6 +34,76 @@ export class ProjectsRepository extends Repository<Project> {
     private studentsRepository: StudentsRepository,
   ) {
     super(Project, dataSource.createEntityManager());
+  }
+
+  async createProjectFromFile(
+    createProjectFromFileDto: CreateProjectFromFileDto,
+  ): Promise<Project> {
+    const {
+      name,
+      branch,
+      description,
+      emails,
+      instructors,
+      limit,
+      program,
+      references,
+      students,
+      tasks,
+    } = createProjectFromFileDto;
+
+    let retrieveBranch = await this.branchesRepository.findOneBy({
+      name: branch,
+    });
+    if (!retrieveBranch) {
+      await this.branchesRepository.createABranch({ name: branch });
+    }
+
+    let retrieveProgram = await this.majorsRepository.findOneBy({
+      name: program,
+    });
+    if (!retrieveProgram) {
+      await this.majorsRepository.createAMajor({ name: program });
+    }
+
+    let retrieveInstructors = [];
+    for (let email in emails) {
+      if (emails[email] !== '') {
+        let retrieveInstructor = await this.usersRepository.findOneBy({
+          email: emails[email],
+        });
+        if (retrieveInstructor) retrieveInstructors.push(retrieveInstructor);
+      }
+    }
+
+    let retrieveStudents = [];
+    for (let student of students) {
+      let retrieveStudent = await this.usersRepository.findOneBy({
+        id: +student.studentID,
+      });
+      if (retrieveStudent) retrieveStudents.push(retrieveStudent);
+    }
+    console.log(retrieveInstructors);
+
+    return this.createProject({
+      name,
+      stage: 1,
+      description,
+      tasks,
+      references,
+      semester: {
+        year: 2023,
+        no: 1,
+      },
+      students: retrieveStudents,
+      supervisors: retrieveInstructors,
+      majors: [retrieveProgram],
+      owner: retrieveInstructors[0],
+      branches: [retrieveBranch],
+      limit,
+      status: ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD,
+      requirements: null
+    });
   }
 
   async createProject(createProjectDto: CreateProjectDto): Promise<Project> {
