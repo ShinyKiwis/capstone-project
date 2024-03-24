@@ -43,6 +43,7 @@ const Project = () => {
   const [activePage, setActivePage] = useState(1);
   const [pageSize, setPageSize] = useState("10");
   const [maxPages, setMaxPages] = useState(1);
+  const [fileUploaded, setFileUploaded] = useState(false)
 
   useEffect(() => {
     // Change rendered projects on page switch
@@ -53,6 +54,15 @@ const Project = () => {
     setActivePage(1);
     handlePageSizeChange("10");
   }, [searchParams.get("project")]);
+
+  useEffect(() => {
+    console.log(fileUploaded)
+    if(fileUploaded){
+      console.log(searchParams.get("project"))
+      getProjects(searchParams.get("project") as string)
+      setFileUploaded(false)
+    }
+  }, [fileUploaded])
 
   async function handleSearchSubmit() {
     axios
@@ -143,7 +153,7 @@ const Project = () => {
                 >
                   Create project
                 </Button>
-                <UploadFileModal />
+                <UploadFileModal setFileUploaded={setFileUploaded}/>
               </>
             ) : null}
 

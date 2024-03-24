@@ -11,16 +11,16 @@ import {
 } from "@mantine/core";
 import { Dropzone, FileWithPath, MIME_TYPES } from "@mantine/dropzone";
 import { useDisclosure } from "@mantine/hooks";
-import { MdUploadFile } from "react-icons/md";
+import { MdFileDownload, MdUploadFile } from "react-icons/md";
 import { FiUpload } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
 import { FiFileText } from "react-icons/fi";
 import { useState } from "react";
 import { FaFileWord, FaFilePdf } from "react-icons/fa";
 import axios from "axios";
+import { toggleNotification } from "@/app/lib/notification";
 
 const getFileIcon = (fileType: string) => {
-  console.log(fileType);
   if (fileType.includes("word")) {
     return <FaFileWord size={20} />;
   } else if (fileType.includes("pdf")) {
@@ -29,7 +29,7 @@ const getFileIcon = (fileType: string) => {
   return <FiFileText size={20} />;
 };
 
-const UploadFileModal = () => {
+const UploadFileModal = ({setFileUploaded}:{setFileUploaded: (arg:boolean) => void}) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [files, setFiles] = useState<FileWithPath[]>([]);
 
@@ -42,11 +42,44 @@ const UploadFileModal = () => {
     files.forEach((file) => {
       formData.append("files", file);
     });
-    const response = await axios.post(process.env.NEXT_PUBLIC_UPLOAD_FILES_URL!, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    const response = await axios.post(
+      process.env.NEXT_PUBLIC_UPLOAD_FILES_URL!,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
-    });
+    );
+    const { success, failure } = response.data;
+    if (failure) {
+      toggleNotification(
+        `${failure} files uploaded unsucessfully`,
+        "Try to contact admin or check the template format",
+        "danger",
+      );
+    }
+    if (success) {
+      toggleNotification(
+        `${success} files uploaded sucessfully`,
+        `${success} files are uploaded and created successfully`,
+        "success",
+      );
+    }
+    setFileUploaded(true)
+    close();
+  };
+
+  const handleDownloadTemplateFile = async () => {
+    const response = await fetch("ProjectTemplate.docx");
+    const blob = await response.blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "Project Template.docx";
+    link.click();
+    window.URL.revokeObjectURL(url);
   };
 
   return (
@@ -61,7 +94,13 @@ const UploadFileModal = () => {
           </Text>
         }
       >
-        <Button mb={12}>Download project template</Button>
+        <Button
+          mb={12}
+          leftSection={<MdFileDownload size={20} />}
+          onClick={handleDownloadTemplateFile}
+        >
+          Download project template
+        </Button>
         <Dropzone
           onReject={(files) => console.log("rejected files", files)}
           maxSize={5 * 1024 ** 2}
@@ -154,7 +193,7 @@ const UploadFileModal = () => {
       </Modal>
       <Button
         variant="filled"
-        leftSection={<MdUploadFile size={20}/>}
+        leftSection={<MdUploadFile size={20} />}
         onClick={open}
         ms="md"
       >
