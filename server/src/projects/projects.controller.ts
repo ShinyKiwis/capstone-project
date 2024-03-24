@@ -120,6 +120,8 @@ export class ProjectsController {
   ) {
     console.log(files);
     let response = [];
+    let success = 0;
+    let failure = 0;
     for (let file of files) {
       console.log(file);
       response.push({
@@ -131,12 +133,18 @@ export class ProjectsController {
       console.log(fileData);
       try {
         await this.projectsService.extractProject(file.path);
+        success++;
       } catch (error) {
+        console.log(error);
+        failure++;
       } finally {
         await promises.unlink(file.path);
       }
     }
-    return response;
+    return {
+      success,
+      failure,
+    };
   }
 
   @Delete(':code')

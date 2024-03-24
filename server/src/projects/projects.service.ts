@@ -250,39 +250,6 @@ export class ProjectsService {
 
   async extractProject(filepath) {
     let path = './../../';
-    console.log(path + filepath);
-    // mammoth
-    //   .extractRawText({ path: path + filepath })
-    //   .then((result) => {
-    //     let text = result.value;
-    //     let startTime = this.currentTime();
-    //     let project = {};
-    //     project = { ...project, ...this.extractProjectTitle(text) };
-    //     project = { ...project, ...this.extractProjectInstructors(text) };
-    //     project = { ...project, ...this.extractMajor(text) };
-    //     project = { ...project, ...this.extractBranch(text) };
-    //     project = { ...project, ...this.extractNumberOfParticipants(text) };
-    //     project = { ...project, ...this.extractParticipants(text) };
-    //     project = {
-    //       ...project,
-    //       ...this.extractInfo(
-    //         text,
-    //         'description',
-    //         'Description:',
-    //         'Task/Mission',
-    //       ),
-    //     };
-    //     project = {
-    //       ...project,
-    //       ...this.extractInfo(text, 'task', 'Task/Mission', 'References'),
-    //     };
-    //     project = { ...project, ...this.extractRefs(text) };
-    //     console.log(this.currentTime() - startTime);
-    //     console.log(project);
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
     try {
       let result = await mammoth.extractRawText({ path: filepath });
       let text = result.value;
@@ -337,7 +304,8 @@ export class ProjectsService {
       // })
       this.projectsRepository.createProjectFromFile(project);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
+      throw error;
     }
     // console.log('hahahhihihih')
   }
