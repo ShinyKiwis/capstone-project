@@ -55,6 +55,7 @@ export class ProjectsRepository extends Repository<Project> {
     let retrieveBranch = await this.branchesRepository.findOneBy({
       name: branch,
     });
+
     if (!retrieveBranch) {
       await this.branchesRepository.createABranch({ name: branch });
     }

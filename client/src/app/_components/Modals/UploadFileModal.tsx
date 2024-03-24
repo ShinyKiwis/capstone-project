@@ -17,7 +17,7 @@ import { RxCross2 } from "react-icons/rx";
 import { FiFileText } from "react-icons/fi";
 import { useState } from "react";
 import { FaFileWord, FaFilePdf } from "react-icons/fa";
-import axios from "axios"
+import axios from "axios";
 
 const getFileIcon = (fileType: string) => {
   console.log(fileType);
@@ -38,9 +38,15 @@ const UploadFileModal = () => {
   };
 
   const handleUploadFiles = async () => {
-    await axios.post(process.env.NEXT_PUBLIC_UPLOAD_FILES_URL!, {
-      files: files
-    })
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+    const response = await axios.post(process.env.NEXT_PUBLIC_UPLOAD_FILES_URL!, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   };
 
   return (
@@ -55,6 +61,7 @@ const UploadFileModal = () => {
           </Text>
         }
       >
+        <Button mb={12}>Download project template</Button>
         <Dropzone
           onReject={(files) => console.log("rejected files", files)}
           maxSize={5 * 1024 ** 2}
@@ -147,7 +154,7 @@ const UploadFileModal = () => {
       </Modal>
       <Button
         variant="filled"
-        leftSection={<MdUploadFile />}
+        leftSection={<MdUploadFile size={20}/>}
         onClick={open}
         ms="md"
       >

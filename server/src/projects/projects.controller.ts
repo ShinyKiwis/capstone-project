@@ -108,7 +108,7 @@ export class ProjectsController {
     return this.projectsService.updateProjectStatus(+id, status);
   }
 
-  @Post('file')
+  @Post('files')
   @UseInterceptors(
     ProjectFilesInterceptor({
       fieldName: 'files',
