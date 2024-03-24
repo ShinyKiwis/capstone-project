@@ -1,8 +1,15 @@
+import { projectData } from "@/app/(main)/project/projectData";
+import { useAuth } from "@/app/providers/AuthProvider";
 import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
+import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import React from "react";
 
 const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
   const openModal = () =>
     modals.openConfirmModal({
       title: (
@@ -17,8 +24,20 @@ const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
         </Text>
       ),
       labels: { confirm: "Confirm", cancel: "Cancel" },
-      onCancel: () => console.log("Cancel"),
-      onConfirm: () => console.log("Confirmed"),
+      onCancel: () => {},
+      onConfirm: async () => {
+        axios.post("http://localhost:3500/users/student/enroll", {
+          studentId: user?.id,
+          projectCode: targetProject.code,
+        })
+        .then((res) =>{
+          queryClient.invalidateQueries({
+            queryKey: ["projects"],
+          });
+          console.log(`Enrolled into project ${targetProject.code}`)
+        })
+        .catch((err) => console.error("Error enrolling project:", err))
+      },
     });
 
   return <Button onClick={openModal}>Enroll</Button>;

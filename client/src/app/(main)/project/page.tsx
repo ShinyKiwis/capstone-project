@@ -170,6 +170,7 @@ const Project = () => {
                 value={pageSize}
                 onChange={(event) => {
                   setPageSize(event.currentTarget.value);
+                  setActivePage(1);
                   handlePageSizeChange(event.currentTarget.value);
                 }}
                 data={["5", "10", "20", "50"]}

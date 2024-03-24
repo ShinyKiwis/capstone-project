@@ -137,9 +137,8 @@ const ProjectCardDetail = () => {
           {user?.resources.includes("enroll_projects") ? (
             <EnrollModal targetProject={viewing} />
           ) : null}
-
           {/* <UnenrollModal /> */}
-          {user?.resources.includes("modify_projects") ? (
+          {user?.resources.includes("modify_projects") && user?.id === viewing.owner.id ? (
             <>
               <DeactivateModal targetProject={viewing} />
               <Button onClick={() => navigate(`project/edit/${viewing.code}`)}>

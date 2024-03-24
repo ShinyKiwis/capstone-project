@@ -154,7 +154,8 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
             </>
           ) : null}
           {!pathname.includes("approve") &&
-          user?.resources.includes("modify_projects") ? (
+          user?.resources.includes("modify_projects") &&
+          projectObject.owner.id === user?.id ? (
             <>
               <DeactivateModal targetProject={projectObject} />
               <Button

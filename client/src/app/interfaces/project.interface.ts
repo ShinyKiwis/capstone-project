@@ -1,6 +1,7 @@
 interface Project{
   code: number;
   name: string;
+  stage: number;
   status: string;
   description: string;
   tasks: string;
@@ -11,6 +12,7 @@ interface Project{
   studentsCount: number;
   students: Student[];
   limit: number;
+  owner: Supervisor;
 }
 
 interface ProjectFormProps {
