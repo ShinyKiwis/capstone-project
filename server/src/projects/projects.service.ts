@@ -12,6 +12,7 @@ import { RejectProjectDto } from './dto/reject-project.dto';
 import { ApproveProjectsDto } from './dto/approve-projects.dto';
 import { join } from 'path';
 import { createWriteStream, unlink } from 'fs';
+import { CreateProjectFromFileDto } from './dto/create-project-from-file.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -78,35 +79,29 @@ export class ProjectsService {
     return Date.now() / 1000;
   }
 
-  extractProjectTitle(inputText: string) {
+  extractProjectName(inputText: string) {
     console.log(inputText);
-    const startString = 'Tên đề tài:';
-    const endString = 'CBHD1';
+    const startString = 'Project name:';
+    const endString = 'Instructor1';
     const regexPattern = new RegExp(`${startString}([\\s\\S]*?)${endString}`);
     const match = inputText.match(regexPattern);
     let extractedText = match && match[1] ? match[1].trim() : null;
-    extractedText = extractedText
-      .replace('\n', '')
-      .replace('Tiếng Việt:', '')
-      .replace('Tiếng Anh', '');
-    let resultExtractedText = extractedText.split(':').map((text) => {
-      return text.trim();
-    });
+    extractedText = extractedText.replace('\n', '');
+    // let resultExtractedText = extractedText.split(':').map((text) => {
+    //   return text.trim();
+    // });
 
-    let result = {
-      vietnameseTitle: resultExtractedText[0],
-      englishTitle: resultExtractedText[1],
-    };
+    let result = { name: extractedText.trim() };
     // console.log(result);
     return result;
   }
 
   extractProjectInstructors(text: string) {
     const emailStartDelimiter = 'Email1: ';
-    const cbhdStartDelimiter = 'CBHD1: ';
+    const instructorStartDelimiter = 'Instructor1: ';
 
     const emailStartIndex = text.indexOf(emailStartDelimiter);
-    const cbhdStartIndex = text.indexOf(cbhdStartDelimiter);
+    const instructorStartIndex = text.indexOf(instructorStartDelimiter);
 
     let emailEndIndex = text.indexOf(
       '\n',
@@ -116,29 +111,32 @@ export class ProjectsService {
       emailEndIndex = text.length;
     }
 
-    let cbhdEndIndex = text.indexOf(
+    let instructorEndIndex = text.indexOf(
       '\n',
-      cbhdStartIndex + cbhdStartDelimiter.length,
+      instructorStartIndex + instructorStartDelimiter.length,
     );
-    if (cbhdEndIndex === -1) {
-      cbhdEndIndex = text.length;
+    if (instructorEndIndex === -1) {
+      instructorEndIndex = text.length;
     }
 
     const emailContent = text
       .substring(emailStartIndex + emailStartDelimiter.length, emailEndIndex)
       .trim();
-    const cbhdContent = text
-      .substring(cbhdStartIndex + cbhdStartDelimiter.length, cbhdEndIndex)
+    const instructorContent = text
+      .substring(
+        instructorStartIndex + instructorStartDelimiter.length,
+        instructorEndIndex,
+      )
       .trim();
 
     // Log the extracted content
-    let resultArray = cbhdContent
-      .replace(/(CBHD\d*)/g, '')
+    let resultArray = instructorContent
+      .replace(/(Instructor\d*)/g, '')
       .split(':')
       .map((item) => item.trim());
     const instructors = {};
     for (let i = 0; i < resultArray.length; i++) {
-      instructors[`CBHD${i + 1}:`] = resultArray[i];
+      instructors[`Instructor${i + 1}:`] = resultArray[i];
     }
     resultArray = emailContent
       .replace(/(Email\d*)/g, '')
@@ -156,8 +154,8 @@ export class ProjectsService {
     };
   }
 
-  extractMajor(inputText: string) {
-    let regexPattern = /Ngành:[^\n]*/;
+  extractProgram(inputText: string) {
+    let regexPattern = /Program:[^\n]*/;
     let match = inputText.match(regexPattern);
     let extractedText = match ? match[0].trim() : null;
     // Match the strings after ✔ and before ☐ or endline character
@@ -169,12 +167,12 @@ export class ProjectsService {
 
     // console.log(extractedText);
     return {
-      major: extractedText,
+      program: extractedText,
     };
   }
 
   extractBranch(inputText: string) {
-    let regexPattern = /Chương trình đào tạo:[^\n]*/;
+    let regexPattern = /Branch:[^\n]*/;
     let match = inputText.match(regexPattern);
     let extractedText = match ? match[0].trim() : null;
     // Match the strings after ✔ and before ☐ or endline character
@@ -190,19 +188,19 @@ export class ProjectsService {
     };
   }
 
-  extractNumberOfParticipants(inputText: string) {
-    const regexPattern = /Số lượng sinh viên thực hiện:\s*(\d+)/;
+  extractNumberOfStudents(inputText: string) {
+    const regexPattern = /Number of students:\s*(\d+)/;
     const match = inputText.match(regexPattern);
 
     // Extract the matched number
-    const numberOfParticipants = match ? parseInt(match[1], 10) : null;
+    const numberOfStudents = match ? parseInt(match[1], 10) : null;
     // console.log(numberOfParticipants);
     return {
-      numberOfParticipants: numberOfParticipants,
+      numberOfStudents: numberOfStudents,
     };
   }
 
-  extractParticipants(inputText: string) {
+  extractStudents(inputText: string) {
     const regexPattern = /([^\n]+)\s*-\s*(\d+)(?=[\s\S]*Description)/g;
     const matches = [...inputText.matchAll(regexPattern)];
 
@@ -213,18 +211,29 @@ export class ProjectsService {
 
     // console.log(studentInfo);
     return {
-      pariticipants: studentInfo,
+      students: studentInfo,
     };
   }
 
-  extractInfo(inputText, type, startString, endString) {
-    const regexPattern = new RegExp(`${startString}([\\s\\S]*?)${endString}`);
+  extractDescription(inputText) {
+    const regexPattern = new RegExp(`Description:([\\s\\S]*?)Task/Mission`);
     const match = inputText.match(regexPattern);
     const extractedText = match && match[1] ? match[1].trim() : null;
 
     // console.log(extractedText);
     return {
-      [type]: extractedText,
+      description: extractedText,
+    };
+  }
+
+  extractTask(inputText) {
+    const regexPattern = new RegExp(`Task/Mission([\\s\\S]*?)References`);
+    const match = inputText.match(regexPattern);
+    const extractedText = match && match[1] ? match[1].trim() : null;
+
+    // console.log(extractedText);
+    return {
+      task: extractedText,
     };
   }
 
@@ -241,69 +250,62 @@ export class ProjectsService {
 
   async extractProject(filepath) {
     let path = './../../';
-    console.log(path + filepath);
-    // mammoth
-    //   .extractRawText({ path: path + filepath })
-    //   .then((result) => {
-    //     let text = result.value;
-    //     let startTime = this.currentTime();
-    //     let project = {};
-    //     project = { ...project, ...this.extractProjectTitle(text) };
-    //     project = { ...project, ...this.extractProjectInstructors(text) };
-    //     project = { ...project, ...this.extractMajor(text) };
-    //     project = { ...project, ...this.extractBranch(text) };
-    //     project = { ...project, ...this.extractNumberOfParticipants(text) };
-    //     project = { ...project, ...this.extractParticipants(text) };
-    //     project = {
-    //       ...project,
-    //       ...this.extractInfo(
-    //         text,
-    //         'description',
-    //         'Description:',
-    //         'Task/Mission',
-    //       ),
-    //     };
-    //     project = {
-    //       ...project,
-    //       ...this.extractInfo(text, 'task', 'Task/Mission', 'References'),
-    //     };
-    //     project = { ...project, ...this.extractRefs(text) };
-    //     console.log(this.currentTime() - startTime);
-    //     console.log(project);
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
     try {
       let result = await mammoth.extractRawText({ path: filepath });
       let text = result.value;
       let startTime = this.currentTime();
-      let project = {};
-      project = { ...project, ...this.extractProjectTitle(text) };
-      project = { ...project, ...this.extractProjectInstructors(text) };
-      project = { ...project, ...this.extractMajor(text) };
-      project = { ...project, ...this.extractBranch(text) };
-      project = { ...project, ...this.extractNumberOfParticipants(text) };
-      project = { ...project, ...this.extractParticipants(text) };
-      project = {
-        ...project,
-        ...this.extractInfo(
-          text,
-          'description',
-          'Description:',
-          'Task/Mission',
-        ),
+
+      let extractedName = this.extractProjectName(text);
+      let extractedInstructors = this.extractProjectInstructors(text);
+      let extractedProgram = this.extractProgram(text);
+      let extractedBranch = this.extractBranch(text);
+      let extractedNumberOfStudents = this.extractNumberOfStudents(text);
+      let extractedStudents = this.extractStudents(text);
+      let extractedDescription = this.extractDescription(text);
+      let extractedTask = this.extractTask(text);
+      let extractedReferences = this.extractRefs(text);
+
+      let project: CreateProjectFromFileDto = {
+        name: extractedName.name,
+        instructors: extractedInstructors.instructors,
+        emails: extractedInstructors.emails,
+        program: extractedProgram.program,
+        branch: extractedBranch.branch,
+        limit: extractedNumberOfStudents.numberOfStudents,
+        students: extractedStudents.students,
+        description: extractedDescription.description,
+        tasks: extractedTask.task,
+        references: extractedReferences.references,
       };
-      project = {
-        ...project,
-        ...this.extractInfo(text, 'task', 'Task/Mission', 'References'),
-      };
-      project = { ...project, ...this.extractRefs(text) };
-      console.log(this.currentTime() - startTime);
+      // project = { ...project, ...this.extractProjectName(text) };
+      // project = { ...project, ...this.extractProjectInstructors(text) };
+      // project = { ...project, ...this.extractProgram(text) };
+      // project = { ...project, ...this.extractBranch(text) };
+      // project = { ...project, ...this.extractNumberOfStudents(text) };
+      // project = { ...project, ...this.extractStudents(text) };
+      // project = {
+      //   ...project,
+      //   ...this.extractInfo(
+      //     text,
+      //     'description',
+      //     'Description:',
+      //     'Task/Mission',
+      //   ),
+      // };
+      // project = {
+      //   ...project,
+      //   ...this.extractInfo(text, 'task', 'Task/Mission', 'References'),
+      // };
+      // project = { ...project, ...this.extractRefs(text) };
       console.log(project);
-      console.log(result);
+      // this.projectsRepository.createProject({
+      //   name: project.title,
+      //   description: project.description,
+      // })
+      this.projectsRepository.createProjectFromFile(project);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
+      throw error;
     }
     // console.log('hahahhihihih')
   }
