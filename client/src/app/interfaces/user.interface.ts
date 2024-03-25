@@ -7,6 +7,7 @@ interface User {
   project?: {
     code: number;
   };
+  resources: string[];
 }
 
 type UserOptType = {

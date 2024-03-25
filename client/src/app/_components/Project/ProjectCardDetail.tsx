@@ -82,7 +82,7 @@ const ProjectCardDetail = () => {
               <div className="flex flex-col gap-1">
                 {viewing.students.map((student) => {
                   return (
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1" key={student.userId}>
                       <Avatar src={null} alt="no image here" color="indigo" />
                       <span>{student.user.name}</span>
                     </div>
@@ -135,9 +135,14 @@ const ProjectCardDetail = () => {
             </>
           ) : null}
           {user?.resources.includes("enroll_projects") ? (
-            <EnrollModal targetProject={viewing} />
+            <>
+            {user?.project?.code === viewing.code ? (
+              <UnenrollModal />
+            ) : (
+              <EnrollModal targetProject={viewing} />
+            )}
+          </>
           ) : null}
-          {/* <UnenrollModal /> */}
           {user?.resources.includes("modify_projects") && user?.id === viewing.owner.id ? (
             <>
               <DeactivateModal targetProject={viewing} />

@@ -3,20 +3,13 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import useNavigate from "../hooks/useNavigate";
 
-export interface User {
-  id: number;
-  email: string;
-  name: string;
-  resources: string[];
-  roles: string[];
-}
-
 interface AuthContextType {
   error: string;
   login: (username: string, password: string) => void;
   logout: () => void;
   user: User | null;
   setUser: (user: User | null) => void;
+  handleProjectEnroll: (projectId: number) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -38,10 +31,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await axios.get(process.env.NEXT_PUBLIC_SYNC_USER_URL!, {
         withCredentials: true,
       });
+      console.log('Res:', response)
       const { user } = response.data;
       if (user) {
         sessionStorage.setItem("user", JSON.stringify(user));
         setUser(user);
+        console.log("User synced")
       }
     };
     if (user) {
@@ -77,8 +72,24 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     sessionStorage.removeItem("user");
   };
 
+  const handleProjectEnroll = (projectId: number) => {
+    if (!user) return;
+    const updatedUser = {
+      ...user,
+      project: {
+        code: projectId,
+      },
+    };
+
+    sessionStorage.setItem(
+      "user",
+      JSON.stringify(updatedUser),
+    );
+    setUser(updatedUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ error, login, logout, user, setUser }}>
+    <AuthContext.Provider value={{ error, login, logout, user, setUser, handleProjectEnroll }}>
       {children}
     </AuthContext.Provider>
   );

@@ -149,8 +149,11 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
           {!pathname.includes("approve") &&
           user?.resources.includes("enroll_projects") ? (
             <>
-              <EnrollModal targetProject={projectObject} />
-              <UnenrollModal />
+              {user?.project?.code === projectObject.code ? (
+                <UnenrollModal />
+              ) : (
+                <EnrollModal targetProject={projectObject} />
+              )}
             </>
           ) : null}
           {!pathname.includes("approve") &&

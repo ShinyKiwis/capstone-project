@@ -8,7 +8,7 @@ import React from "react";
 
 const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, handleProjectEnroll } = useAuth();
 
   const openModal = () =>
     modals.openConfirmModal({
@@ -31,6 +31,7 @@ const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
           projectCode: targetProject.code,
         })
         .then((res) =>{
+          handleProjectEnroll(targetProject.code)
           queryClient.invalidateQueries({
             queryKey: ["projects"],
           });

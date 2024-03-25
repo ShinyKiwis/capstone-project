@@ -35,7 +35,6 @@ const Project = () => {
   const searchParams = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  console.log(user);
   const { projects, getProjects, setProjects, setViewing } =
     projectContextValues;
 
