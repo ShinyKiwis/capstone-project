@@ -29,7 +29,7 @@ const RolesProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchRoles = async () => {
       const response = await axios.get(process.env.NEXT_PUBLIC_ROLES_URL!);
       const parsedRoles: Role[] = [];
-      console.log("FETCHROLES: ", response.data);
+      // console.log("FETCHROLES: ", response.data);
       response.data.forEach((role: any) => {
         parsedRoles.push({
           id: role.id,

@@ -23,29 +23,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const queryClient = new QueryClient();
-  const { user } = useAuth();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const navigate = useNavigate();
-  console.log();
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
-  }, [user]);
+  console.log("new query client")
+  // const { user } = useAuth();
+  // const pathname = usePathname();
+  // const searchParams = useSearchParams();
+  // const navigate = useNavigate();
+  // console.log();
+  // useEffect(() => {
+  //   if (!user) {
+  //     navigate("/login");
+  //   }
+  // }, [user]);
 
-  return isValid(pathname, searchParams, user) ? (
+  // if (!isValid(pathname, searchParams, user))
+  //   navigate("/forbidden")
+
+  return (
     <QueryClientProvider client={queryClient}>
-      <DeadlinesProvider>
-        <RolesProvider>
-          <ProjectProvider>
-            <App>{children}</App>
-          </ProjectProvider>
-        </RolesProvider>
-      </DeadlinesProvider>
+      {
+        <DeadlinesProvider>
+          <RolesProvider>
+            <ProjectProvider>
+              <App>{children}</App>
+            </ProjectProvider>
+          </RolesProvider>
+        </DeadlinesProvider>
+      }
       <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  ) : (
-    navigate("/forbidden")
-  );
+    </QueryClientProvider> 
+  )
 }
+

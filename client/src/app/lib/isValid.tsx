@@ -1,5 +1,4 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
-import { User } from "../providers/AuthProvider";
 import sidebarItems from "../_components/SideBar/items";
 
 const isValid = (
@@ -8,7 +7,7 @@ const isValid = (
   user: User | null,
 ) => {
   const parsedPathname = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname
-  console.log(searchParams.toString())
+  // console.log(searchParams.toString())
   for(const item of sidebarItems) {
     for(const page of item.pages) {
       if (user?.resources.includes(page.resource) && parsedPathname === page.href) {

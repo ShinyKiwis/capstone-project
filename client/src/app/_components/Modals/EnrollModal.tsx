@@ -1,5 +1,6 @@
 import { projectData } from "@/app/(main)/project/projectData";
 import { useAuth } from "@/app/providers/AuthProvider";
+import { useProjects } from "@/app/providers/ProjectProvider";
 import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,7 +9,8 @@ import React from "react";
 
 const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
   const queryClient = useQueryClient();
-  const { user, handleProjectEnroll } = useAuth();
+  const { user, handleUserEnrollProject } = useAuth();
+  const {getProjects} = useProjects();
 
   const openModal = () =>
     modals.openConfirmModal({
@@ -30,11 +32,13 @@ const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
           studentId: user?.id,
           projectCode: targetProject.code,
         })
-        .then((res) =>{
-          handleProjectEnroll(targetProject.code)
-          queryClient.invalidateQueries({
-            queryKey: ["projects"],
+        .then(async (res) =>{
+          await queryClient.invalidateQueries({
+            queryKey: ["projects", {stage: targetProject.stage}],
+            refetchType: 'all'
           });
+          // getProjects('specialized')
+          handleUserEnrollProject(targetProject.code)
           console.log(`Enrolled into project ${targetProject.code}`)
         })
         .catch((err) => console.error("Error enrolling project:", err))

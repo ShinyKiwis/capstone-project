@@ -7,7 +7,7 @@ import React from "react";
 
 const UnenrollModal = () => {
   const queryClient = useQueryClient();
-  const { user, handleProjectEnroll } = useAuth();
+  const { user, handleUserEnrollProject } = useAuth();
 
   const openDeleteModal = () =>
     modals.openConfirmModal({
@@ -30,9 +30,10 @@ const UnenrollModal = () => {
           studentId: user?.id
         })
         .then((res) =>{
-          handleProjectEnroll(-1)
+          handleUserEnrollProject(-1)
           queryClient.invalidateQueries({
             queryKey: ["projects"],
+            refetchType: 'all'
           });
           console.log(`Unenrolled`)
         })

@@ -1,7 +1,13 @@
 "use client";
 
 import axios from "axios";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   useQuery,
   useMutation,
@@ -13,14 +19,17 @@ import {
 
 interface ProjectContextProps {
   projects: Project[];
+  specializedProjects: Project[];
+  capstoneProjects: Project[];
+  projectsAreFetching: boolean;
   setProjects: (projects: Project[]) => void;
   viewing?: Project;
   setViewing: (viewing: Project) => void;
-  getProjects: (stage: string) => void;
+  getProjects: (stage: string | null) => void;
   //   getProjects: (ownerId?: number, status?: string, stage?: number) => void;
   //   handleEnrollment: (projectId: number) => void;
   //   handleUnenrollment: (projectId: number) => void;
-  handleDeletion: (projectId: number) => void;
+  // handleDeletion: (projectId: number) => void;
 }
 
 export const ProjectContext = createContext<ProjectContextProps | null>(null);
@@ -30,113 +39,106 @@ export const ProjectProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  // const [specializedProjects, setSpecializedProjects] = useState<Project[]>([]);
+  // const [capstoneProjects, setCapstoneProjects] = useState<Project[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [viewing, setViewing] = useState<Project | undefined>();
   //   const user= useUser()
 
   const queryClient = useQueryClient();
-  const specializedProjects = useQuery({
+  const {data:specializedProjects, isLoading:specializedProjectsIsLoading} = useQuery({
     queryFn: async () => {
+      
       let response = await (
         await axios.get(`http://localhost:3500/projects?stage=1`)
       ).data;
-      console.log("refetch specialized projects")
-			setProjects(response.projects);
-      setViewing(response.projects[0]);
+      console.log("refetched specialized projects");
+      // setSpecializedProjects(response.projects);
       return response.projects;
     },
     queryKey: ["projects", { stage: 1 }],
+    enabled: true,
     staleTime: Infinity,
   });
 
-  const capstoneProjects = useQuery({
+
+  const {data:capstoneProjects, isFetching:CapstoneProjectsIsLoading} = useQuery({
     queryFn: async () => {
       let response = await (
         await axios.get(`http://localhost:3500/projects?stage=2`)
       ).data;
-      console.log("refetch capstone projects")
-			setProjects(response.projects);
-      setViewing(response.projects[0]);
+      console.log("refetch capstone projects");
+      // setCapstoneProjects(response.projects);
       return response.projects;
     },
     queryKey: ["projects", { stage: 2 }],
+    enabled: true,
     staleTime: Infinity,
   });
 
-  //   function getProjects (ownerId?: number, status?: string, stage?: number) {
-  //     const apiURL = `http://localhost:3500/projects?${
-  //       ownerId ? `owner=${ownerId}` : ""
-  //     }${status ? `&status=${status}` : ""}${stage ? `&stage=${stage}` : ""}`;
+  var projectsAreFetching =
+    specializedProjectsIsLoading || CapstoneProjectsIsLoading;
 
-  //     axios.get(apiURL).then((response) => {
-  //       const data = response.data as { projects: Project[] };
-  //       setProjects(data.projects);
-  //       setViewing(data.projects[0]);
-  //     });
-  //   };
+  function getProjects(stage: string | null, viewingId?: number) {
+    if (!stage) return;
+    if (!projectsAreFetching)
+      if (stage === "specialized") {
+        setProjects(specializedProjects);
+        setViewing(specializedProjects[0]);
+      } else {
+        setProjects(capstoneProjects);
+        setViewing(capstoneProjects[0]);
+      }
 
-  function getProjects(stage: string | null) {
-		if (!stage) return
-    if (stage === "specialized" && !specializedProjects.isLoading) {
-      setProjects(specializedProjects.data);
-      setViewing(specializedProjects.data[0]);
-    } else {
-			if (!capstoneProjects.isLoading){
-				setProjects(capstoneProjects.data);
-      	setViewing(capstoneProjects.data[0]);
-			}
-    }
+    // var retry = 5;
+    // // Retry setting projects list (wait for query to finish fetching)
+    // const interval = setInterval(() => {
+    //   // console.log("Waiting...", retry);
+    //   console.log("Tracking:",specializedProjectsIsLoading)
+    //   retry -= 1;
+
+    //   if (!specializedProjectsIsLoading ) {
+    //     // If the flag is true, resolve the promise and stop the interval
+    //     if (stage === "specialized") {
+    //       setProjects(specializedProjects || []);
+    //       // setViewing(specializedProjects[0]);
+    //     } else {
+    //       setProjects(CapstoneProjectsData || []);
+    //       // setViewing(capstoneProjects[0]);
+    //     }
+    //     console.log("Loaded", specializedProjects);
+    //     clearInterval(interval);
+    //   }
+    // }, 500);
   }
 
-
-  //   const handleUnenrollment = (projectId: number) => {
-  //     setProjects((projects) =>
-  //       projects.map((project) => {
-  //         if (project.code === projectId) {
-  //           return {
-  //             ...project,
-  //             students: project.students.filter(student => +student.userId !== user.id),
-  //             studentsCount: project.studentsCount - 1,
-  //           };
-  //         }
-  //         return project;
-  //       }),
-  //     );
-  //     if (viewing?.code == projectId) {
-  //       setViewing({
-  //         ...viewing,
-  //         students: viewing.students.filter(student => +student.userId !== user.id),
-  //         studentsCount: viewing!.studentsCount - 1,
-  //       });
-  //     }
-  //   };
-
-  const handleDeletion = (projectId: number) => {
-    setProjects((projects) =>
-      projects.filter((project) => project.code != projectId),
-    );
-    if (viewing?.code === projectId) {
-      setViewing(undefined);
-    }
-  };
+  // const handleDeletion = (projectId: number) => {
+  //   setProjects((projects) =>
+  //     projects.filter((project) => project.code != projectId),
+  //   );
+  //   if (viewing?.code === projectId) {
+  //     setViewing(undefined);
+  //   }
+  // };
 
   const projectContextValue: ProjectContextProps = {
     projects,
+    specializedProjects,
+    capstoneProjects,
+    projectsAreFetching,
     setProjects,
     viewing,
     setViewing,
     getProjects,
-    // handleEnrollment,
-    // handleUnenrollment,
-    handleDeletion
+    // handleDeletion
   };
+
   return (
     <ProjectContext.Provider value={projectContextValue}>
       {children}
     </ProjectContext.Provider>
   );
 };
-
 
 export const useProjects = () => {
   const context = useContext(ProjectContext);
@@ -145,4 +147,4 @@ export const useProjects = () => {
   }
 
   return context;
-}
+};

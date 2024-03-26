@@ -35,9 +35,10 @@ const Project = () => {
   const searchParams = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { projects, getProjects, setProjects, setViewing } =
+  const { projects, projectsAreFetching, specializedProjects, capstoneProjects, getProjects, setProjects, setViewing } =
     projectContextValues;
 
+  const [projectsList, setprojectsList] = useState<Project[]>([]);
   const [search, setSearch] = useState("");
   const [activePage, setActivePage] = useState(1);
   const [pageSize, setPageSize] = useState("10");
@@ -45,20 +46,29 @@ const Project = () => {
   const [fileUploaded, setFileUploaded] = useState(false)
 
   useEffect(() => {
-    // Change rendered projects on page switch
-    // console.log("Called get projects");
-    getProjects(searchParams.get("project") as string);
+    // Initial render of project lists
+    if (projects.length <=0)
+      getProjects(searchParams.get("project"))
+  }, [projectsAreFetching]);
+
+  useEffect(() => {
+    // Switch project type
+    getProjects(searchParams.get("project"))
     // Reset search box, pagination on page change
     setSearch("");
     setActivePage(1);
     handlePageSizeChange("10");
   }, [searchParams.get("project")]);
 
+  // if (searchParams.get("project") === 'specialized')
+  //   projectsList = specializedProjects;
+  // else
+  //   projectsList = capstoneProjects;
+
   useEffect(() => {
-    console.log(fileUploaded)
+    // console.log(fileUploaded)
     if(fileUploaded){
-      console.log(searchParams.get("project"))
-      getProjects(searchParams.get("project") as string)
+      // getProjects(searchParams.get("project") as string)
       setFileUploaded(false)
     }
   }, [fileUploaded])
@@ -69,8 +79,8 @@ const Project = () => {
         `http://localhost:3500/projects?search=${search}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
       )
       .then((res) => {
-        setProjects(res.data.projects);
-        setViewing(res.data.projects[0]);
+        // setProjects(res.data.projects);
+        // setViewing(res.data.projects[0]);
       })
       .catch((err) => console.error("Error searching project:", err));
   }
@@ -83,8 +93,8 @@ const Project = () => {
       .then((res) => {
         setPageSize(newPageSize);
         setMaxPages(res.data.total);
-        setProjects(res.data.projects);
-        setViewing(res.data.projects[0]);
+        // setProjects(res.data.projects);
+        // setViewing(res.data.projects[0]);
       })
       .catch((err) => console.error("Error changing projects page size:", err));
   }
@@ -95,7 +105,7 @@ const Project = () => {
         `http://localhost:3500/projects?page=${newPage}&limit=${currentPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
       )
       .then((res) => {
-        setProjects(res.data.projects);
+        // setProjects(res.data.projects);
         // setViewing(res.data.projects[0]);
       })
       .catch((err) => console.error("Error changing projects page size:", err));
@@ -172,7 +182,7 @@ const Project = () => {
           </div>
 
           <div
-            className={`mt-4 flex gap-4 ${projects.length < 1 ? "hidden" : ""}`}
+            className={`mt-4 flex gap-4 ${projectsList.length < 1 ? "hidden" : ""}`}
           >
             <div className="flex w-1/2 items-center gap-2">
               <NativeSelect
