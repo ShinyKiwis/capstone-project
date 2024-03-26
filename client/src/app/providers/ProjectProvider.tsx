@@ -14,6 +14,7 @@ import {
   useQueryClient,
   QueryClient,
   QueryClientProvider,
+  QueryKey,
 } from "@tanstack/react-query";
 // import { useUser } from "../hooks";
 
@@ -25,7 +26,9 @@ interface ProjectContextProps {
   setProjects: (projects: Project[]) => void;
   viewing?: Project;
   setViewing: (viewing: Project) => void;
+  setRenderingProjectsKey: (newkey: QueryKey) => void;
   getProjects: (stage: string | null) => void;
+  refreshProjects: () => void;
   //   getProjects: (ownerId?: number, status?: string, stage?: number) => void;
   //   handleEnrollment: (projectId: number) => void;
   //   handleUnenrollment: (projectId: number) => void;
@@ -41,6 +44,7 @@ export const ProjectProvider = ({
 }) => {
   // const [specializedProjects, setSpecializedProjects] = useState<Project[]>([]);
   // const [capstoneProjects, setCapstoneProjects] = useState<Project[]>([]);
+  const [renderingProjectsKey, setRenderingProjectsKey] = useState<QueryKey>();
   const [projects, setProjects] = useState<Project[]>([]);
   const [viewing, setViewing] = useState<Project | undefined>();
   //   const user= useUser()
@@ -56,7 +60,7 @@ export const ProjectProvider = ({
       // setSpecializedProjects(response.projects);
       return response.projects;
     },
-    queryKey: ["projects", { stage: 1 }],
+    queryKey: ["projects", "specialized"],
     enabled: true,
     staleTime: Infinity,
   });
@@ -71,7 +75,7 @@ export const ProjectProvider = ({
       // setCapstoneProjects(response.projects);
       return response.projects;
     },
-    queryKey: ["projects", { stage: 2 }],
+    queryKey: ["projects", "capstone"],
     enabled: true,
     staleTime: Infinity,
   });
@@ -112,6 +116,15 @@ export const ProjectProvider = ({
     // }, 500);
   }
 
+  const refreshProjects = () => {
+    // console.log("Current key:", renderingProjectsKey);
+    var refreshedProjects:Project[] = queryClient.getQueryData(renderingProjectsKey || []) || projects
+    setProjects(refreshedProjects)
+    let prevViewingId = viewing?.code;
+    var refreshedViewing = refreshedProjects.find(project => project.code === prevViewingId)
+    setViewing(refreshedViewing || viewing)
+  }
+
   // const handleDeletion = (projectId: number) => {
   //   setProjects((projects) =>
   //     projects.filter((project) => project.code != projectId),
@@ -130,6 +143,8 @@ export const ProjectProvider = ({
     viewing,
     setViewing,
     getProjects,
+    setRenderingProjectsKey,
+    refreshProjects,
     // handleDeletion
   };
 

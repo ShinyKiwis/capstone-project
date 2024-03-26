@@ -35,7 +35,7 @@ const Project = () => {
   const searchParams = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { projects, projectsAreFetching, specializedProjects, capstoneProjects, getProjects, setProjects, setViewing } =
+  const { projects, projectsAreFetching, specializedProjects, capstoneProjects, setRenderingProjectsKey, getProjects, setProjects, setViewing } =
     projectContextValues;
 
   const [projectsList, setprojectsList] = useState<Project[]>([]);
@@ -46,13 +46,14 @@ const Project = () => {
   const [fileUploaded, setFileUploaded] = useState(false)
 
   useEffect(() => {
-    // Initial render of project lists
+    // Initial render of projects list
     if (projects.length <=0)
       getProjects(searchParams.get("project"))
   }, [projectsAreFetching]);
 
   useEffect(() => {
     // Switch project type
+    setRenderingProjectsKey(['projects',searchParams.get("project")])
     getProjects(searchParams.get("project"))
     // Reset search box, pagination on page change
     setSearch("");

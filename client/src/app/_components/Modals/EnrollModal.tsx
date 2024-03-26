@@ -5,12 +5,14 @@ import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 
 const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
   const { user, handleUserEnrollProject } = useAuth();
-  const {getProjects} = useProjects();
+  const {getProjects, refreshProjects, setRenderingProjectsKey} = useProjects();
 
   const openModal = () =>
     modals.openConfirmModal({
@@ -34,10 +36,10 @@ const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
         })
         .then(async (res) =>{
           await queryClient.invalidateQueries({
-            queryKey: ["projects", {stage: targetProject.stage}],
+            queryKey: ["projects"],
             refetchType: 'all'
           });
-          // getProjects('specialized')
+          refreshProjects()
           handleUserEnrollProject(targetProject.code)
           console.log(`Enrolled into project ${targetProject.code}`)
         })
