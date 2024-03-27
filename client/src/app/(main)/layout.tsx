@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import App from "../_components/App";
 import DeadlinesProvider from "../providers/DeadlinesProvider";
 import RolesProvider from "../providers/RolesProvider";
@@ -22,23 +22,24 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const queryClient = new QueryClient();
-  console.log("new query client")
-  // const { user } = useAuth();
-  // const pathname = usePathname();
-  // const searchParams = useSearchParams();
-  // const navigate = useNavigate();
-  // console.log();
-  // useEffect(() => {
-  //   if (!user) {
-  //     navigate("/login");
-  //   }
-  // }, [user]);
+  const [queryClient] =  useState(() => new QueryClient());
 
-  // if (!isValid(pathname, searchParams, user))
-  //   navigate("/forbidden")
+  const { user } = useAuth();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const navigate = useNavigate();
+  console.log();
+  useEffect(() => {
+    console.log("In app:",user)
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user]);
 
-  return (
+  if (!isValid(pathname, searchParams, user))
+    navigate("/forbidden")
+
+  return user ? (
     <QueryClientProvider client={queryClient}>
       {
         <DeadlinesProvider>
@@ -51,6 +52,7 @@ export default function RootLayout({
       }
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider> 
-  )
+  ):
+  navigate('/login')
 }
 

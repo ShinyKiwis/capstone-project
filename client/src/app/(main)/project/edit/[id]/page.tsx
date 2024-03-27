@@ -96,10 +96,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
           references: response.data.references,
           requirements: response.data.requirements,
           status: "WAITING_FOR_DEPARTMENT_HEAD",
-          semester: {
-            year: 2023,
-            no: 2,
-          },
+          semester: response.data.semester,
           owner: { id: 3 },
         };
         form.setValues(fetchedFormData);
@@ -193,6 +190,22 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                   required
                   {...form.getInputProps("stage")}
                 />
+                <NumberInput
+                  label="Year"
+                  defaultValue={2024}
+                  min={1957}
+                  max={9999}
+                  clampBehavior="strict"
+                  placeholder="Year"
+                  {...form.getInputProps("semester.year")}
+                />
+                <NativeSelect
+                  label="Semester"
+                  data={["1","2","3"]}
+                  aria-placeholder="Semester"
+                  {...form.getInputProps("semester.no")}
+                /> 
+
                 <MultiSelect
                   label="Program"
                   placeholder="Select project programs"

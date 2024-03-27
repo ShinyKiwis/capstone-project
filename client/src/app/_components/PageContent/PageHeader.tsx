@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Profile } from "..";
 import { FaBell } from "react-icons/fa";
 import { MdArrowDropDown } from "react-icons/md";
@@ -15,6 +15,8 @@ import useNavigate from "@/app/hooks/useNavigate";
 const PageHeader = () => {
   const { pageTitle } = usePageTitleContext();
   const { user, setUser } = useAuth();
+  const navigate = useNavigate();
+
   const openModal = () =>
     modals.openConfirmModal({
       title: <Text fw={600}>Are you sure you want to logout ?</Text>,
@@ -28,7 +30,7 @@ const PageHeader = () => {
         sessionStorage.removeItem("user");
       },
     });
-
+  
   return (
     <div className="relative flex h-20 items-center gap-4 px-8 pt-5">
       <Text size="xl" fw={700} c="blue">

@@ -174,6 +174,22 @@ const CreateProject = () => {
                   required
                   {...form.getInputProps("stage")}
                 />
+                <NumberInput
+                  label="Year"
+                  defaultValue={2024}
+                  min={1957}
+                  max={9999}
+                  clampBehavior="strict"
+                  placeholder="Year"
+                  {...form.getInputProps("semester.year")}
+                />
+                <NativeSelect
+                  label="Semester"
+                  data={["1","2","3"]}
+                  aria-placeholder="Semester"
+                  {...form.getInputProps("semester.no")}
+                />
+
                 <MultiSelect
                   label="Program"
                   placeholder="Select project programs"
@@ -309,7 +325,7 @@ const CreateProject = () => {
       </ScrollArea>
     </div>
   ) : (
-    <></>
+    <div className="text-red-600 text-xl font-bold font mt-10">You dont have permissions for creating new projects</div>
   );
 };
 
