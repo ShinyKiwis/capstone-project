@@ -7,7 +7,7 @@ import React, { SyntheticEvent, useRef, useState } from "react";
 
 const DenyModal = ({ targetProject }: { targetProject: Project }) => {
   const queryClient = useQueryClient();
-  const {refreshProjects} = useProjects();
+  const {invalidateAndRefresh} = useProjects();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const openDeleteModal = (e:SyntheticEvent) =>{
@@ -48,11 +48,7 @@ const DenyModal = ({ targetProject }: { targetProject: Project }) => {
             { status: "REJECTED" },
           )
           .then(async (res) => {
-            await queryClient.invalidateQueries({
-              queryKey: ["projects"],
-              refetchType: 'all'
-            });
-            refreshProjects()
+            invalidateAndRefresh();
           })
           .catch((err) => console.error("Error denying project:", err));
       },

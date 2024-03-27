@@ -9,10 +9,8 @@ import { useSearchParams } from "next/navigation";
 import React, { SyntheticEvent } from "react";
 
 const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
-  const queryClient = useQueryClient();
-  const searchParams = useSearchParams();
   const { user, handleUserEnrollProject } = useAuth();
-  const {getProjects, refreshProjects, setRenderingProjectsKey} = useProjects();
+  const { invalidateAndRefresh} = useProjects();
 
   const openModal = (e:SyntheticEvent) =>{
     e.stopPropagation();
@@ -36,13 +34,9 @@ const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
           projectCode: targetProject.code,
         })
         .then(async (res) =>{
-          await queryClient.invalidateQueries({
-            queryKey: ["projects"],
-            refetchType: 'all'
-          });
-          handleUserEnrollProject(targetProject.code)
-          refreshProjects()
-          console.log(`Enrolled into project ${targetProject.code}`)
+          invalidateAndRefresh();
+          handleUserEnrollProject(targetProject.code);
+          // console.log(`Enrolled into project ${targetProject.code}`)
         })
         .catch((err) => console.error("Error enrolling project:", err))
       },

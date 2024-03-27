@@ -30,7 +30,7 @@ const ProjectCardDetail = () => {
   const navigate = useNavigate();
   const pathname = usePathname();
 
-  if (!viewing) return <div>Loading</div>;
+  if (!viewing) return <Card className="shadow" h="100%" px="xl" radius="md" withBorder>Click on a project card to view details</Card>;
   return (
     <Card className="shadow" h="100%" px="xl" radius="md" withBorder>
       <ScrollArea h="100%" scrollbars="y" scrollbarSize={4}>

@@ -7,8 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useProjects } from "@/app/providers/ProjectProvider";
 
 const ApproveAllModal = () => {
-  const queryClient = useQueryClient();
-  const {refreshProjects} = useProjects();
+  const {invalidateAndRefresh} = useProjects();
 
   const openModal = () =>
     modals.openConfirmModal({
@@ -28,11 +27,7 @@ const ApproveAllModal = () => {
       onConfirm: async () => {
         axios.post(`http://localhost:3500/approve/all`)
         .then(async (res) =>{
-          await queryClient.invalidateQueries({
-            queryKey: ["projects"],
-            refetchType: 'all'
-          });
-          refreshProjects()
+          invalidateAndRefresh();
           console.log(`Approved all projects`, res)
         })
         .catch((err) => console.error("Error approving all projects:", err))

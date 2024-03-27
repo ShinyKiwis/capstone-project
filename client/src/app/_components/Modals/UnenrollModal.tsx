@@ -7,9 +7,8 @@ import axios from "axios";
 import React, { SyntheticEvent } from "react";
 
 const UnenrollModal = () => {
-  const queryClient = useQueryClient();
   const { user, handleUserEnrollProject } = useAuth();
-  const {refreshProjects} = useProjects();
+  const {invalidateAndRefresh} = useProjects();
 
   const openDeleteModal = (e:SyntheticEvent) =>{
     e.stopPropagation();
@@ -33,12 +32,8 @@ const UnenrollModal = () => {
           studentId: user?.id
         })
         .then(async (res) =>{
-          handleUserEnrollProject(-1)
-          await queryClient.invalidateQueries({
-            queryKey: ["projects"],
-            refetchType: 'all'
-          });
-          refreshProjects()
+          handleUserEnrollProject(-1);
+          invalidateAndRefresh();
           console.log(`Unenrolled`)
         })
         .catch((err) => console.error("Error unenrolling project:", err))

@@ -7,7 +7,7 @@ import React, { SyntheticEvent } from "react";
 
 const DeactivateModal = ({targetProject}:{targetProject: Project}) => {
   const queryClient = useQueryClient();
-  const {refreshProjects} = useProjects();
+  const {invalidateAndRefresh} = useProjects();
 
   const openModal = (e:SyntheticEvent) =>{
     e.stopPropagation();
@@ -29,11 +29,7 @@ const DeactivateModal = ({targetProject}:{targetProject: Project}) => {
       onConfirm: async () => {
         axios.patch(`http://localhost:3500/projects/${targetProject.code}/status`, {status: "DEACTIVATED"})
         .then(async (res) =>{
-          await queryClient.invalidateQueries({
-            queryKey: ["projects"],
-            refetchType: 'all'
-          });
-          refreshProjects()
+          invalidateAndRefresh();
           console.log(`Deactivated project ${targetProject.code}`)
         })
         .catch((err) => console.error("Error deactivating project:", err))

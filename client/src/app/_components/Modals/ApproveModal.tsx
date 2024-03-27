@@ -7,7 +7,7 @@ import React, { SyntheticEvent } from "react";
 
 const ApproveModal = ({targetProject}:{targetProject: Project}) => {
   const queryClient = useQueryClient();
-  const {refreshProjects} = useProjects();
+  const {invalidateAndRefresh} = useProjects();
 
   const openModal = (e:SyntheticEvent) =>{
     e.stopPropagation();
@@ -30,11 +30,7 @@ const ApproveModal = ({targetProject}:{targetProject: Project}) => {
         let nextStatus = targetProject.status === "WAITING_FOR_DEPARTMENT_HEAD" ? "WAITING_FOR_PROGRAM_CHAIR" : "APPROVED";
         axios.patch(`http://localhost:3500/projects/${targetProject.code}/status`, {status: nextStatus})
         .then(async (res) =>{
-          await queryClient.invalidateQueries({
-            queryKey: ["projects"],
-            refetchType: 'all'
-          });
-          refreshProjects()
+          invalidateAndRefresh();
           console.log(`Approved project ${targetProject.code} to: ${nextStatus}`)
         })
         .catch((err) => console.error("Error approving project:", err))
