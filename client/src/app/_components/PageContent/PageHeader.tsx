@@ -59,7 +59,7 @@ const PageHeader = () => {
                 leftSection={<IconLogout size={16} />}
                 onClick={openModal}
               >
-                Log out
+                Logout
               </Button>
             </Stack>
           </Popover.Dropdown>
