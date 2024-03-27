@@ -161,6 +161,7 @@ const Project = () => {
                 value={paginationSize}
                 onChange={(event) => {
                   setPaginationSize(event.currentTarget.value);
+                  setCurrentPage(1);
                 }}
                 data={["1", "5", "10", "20", "50"]}
               />

@@ -194,8 +194,8 @@ export const ProjectProvider = ({
       refreshProjects();
     };
 
-    console.log("New size:", paginationSize);
-    console.log("Invalidating:", renderingProjectsKey);
+    // console.log("New size:", paginationSize);
+    // console.log("Invalidating:", renderingProjectsKey);
     waitAndRefresh();
   }, [paginationSize]);
 
