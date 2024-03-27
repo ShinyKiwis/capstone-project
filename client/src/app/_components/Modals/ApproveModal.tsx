@@ -3,13 +3,14 @@ import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import React from "react";
+import React, { SyntheticEvent } from "react";
 
 const ApproveModal = ({targetProject}:{targetProject: Project}) => {
   const queryClient = useQueryClient();
   const {refreshProjects} = useProjects();
 
-  const openModal = () =>
+  const openModal = (e:SyntheticEvent) =>{
+    e.stopPropagation();
     modals.openConfirmModal({
       title: (
         <Text size="lg" c="green" fw={600}>
@@ -39,6 +40,8 @@ const ApproveModal = ({targetProject}:{targetProject: Project}) => {
         .catch((err) => console.error("Error approving project:", err))
       },
     });
+  }
+    
 
   return (
     <Button color="green" onClick={openModal}>

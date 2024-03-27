@@ -36,7 +36,7 @@ const ProjectCardDetail = () => {
     <Card className="shadow" h="100%" px="xl" radius="md" withBorder>
       <ScrollArea h="100%" scrollbars="y" scrollbarSize={4}>
         <Card.Section inheritPadding py="md">
-          <Badge color="yellow">Waiting for Department Head</Badge>
+          <Badge color="yellow">{viewing.status}</Badge>
         </Card.Section>
         <Card.Section inheritPadding py="xs">
           <Title order={2}>{viewing.code}</Title>

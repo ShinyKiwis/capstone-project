@@ -4,14 +4,15 @@ import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import React from "react";
+import React, { SyntheticEvent } from "react";
 
 const UnenrollModal = () => {
   const queryClient = useQueryClient();
   const { user, handleUserEnrollProject } = useAuth();
   const {refreshProjects} = useProjects();
 
-  const openDeleteModal = () =>
+  const openDeleteModal = (e:SyntheticEvent) =>{
+    e.stopPropagation();
     modals.openConfirmModal({
       title: (
         <Text size="lg" c="red" fw={600}>
@@ -43,6 +44,7 @@ const UnenrollModal = () => {
         .catch((err) => console.error("Error unenrolling project:", err))
       },
     });
+  }
 
   return (
     <Button onClick={openDeleteModal} color="red">

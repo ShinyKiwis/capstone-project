@@ -3,14 +3,15 @@ import { Text, Button, Textarea, TextInput } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import React, { useRef, useState } from "react";
+import React, { SyntheticEvent, useRef, useState } from "react";
 
 const DenyModal = ({ targetProject }: { targetProject: Project }) => {
   const queryClient = useQueryClient();
   const {refreshProjects} = useProjects();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const openDeleteModal = () =>
+  const openDeleteModal = (e:SyntheticEvent) =>{
+    e.stopPropagation();
     modals.openConfirmModal({
       title: (
         <Text size="lg" c="red" fw={600}>
@@ -56,6 +57,7 @@ const DenyModal = ({ targetProject }: { targetProject: Project }) => {
           .catch((err) => console.error("Error denying project:", err));
       },
     });
+  }
 
   return (
     <Button onClick={openDeleteModal} color="red">

@@ -117,7 +117,7 @@ export const ProjectProvider = ({
   }
 
   const refreshProjects = () => {
-    // console.log("Current key:", renderingProjectsKey);
+    console.log("Current refresh key:", renderingProjectsKey);
     var refreshedProjects:Project[] = queryClient.getQueryData(renderingProjectsKey || []) || projects
     setProjects(refreshedProjects)
     let prevViewingId = viewing?.code;

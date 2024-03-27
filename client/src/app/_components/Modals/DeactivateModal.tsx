@@ -3,13 +3,14 @@ import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import React from "react";
+import React, { SyntheticEvent } from "react";
 
 const DeactivateModal = ({targetProject}:{targetProject: Project}) => {
   const queryClient = useQueryClient();
   const {refreshProjects} = useProjects();
 
-  const openModal = () =>
+  const openModal = (e:SyntheticEvent) =>{
+    e.stopPropagation();
     modals.openConfirmModal({
       title: (
         <Text size="lg" c="gray" fw={600}>
@@ -38,6 +39,7 @@ const DeactivateModal = ({targetProject}:{targetProject: Project}) => {
         .catch((err) => console.error("Error deactivating project:", err))
       },
     });
+  }
 
   return (
     <Button color="gray" onClick={openModal}>

@@ -6,7 +6,7 @@ import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import React, { SyntheticEvent } from "react";
 
 const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
   const queryClient = useQueryClient();
@@ -14,7 +14,8 @@ const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
   const { user, handleUserEnrollProject } = useAuth();
   const {getProjects, refreshProjects, setRenderingProjectsKey} = useProjects();
 
-  const openModal = () =>
+  const openModal = (e:SyntheticEvent) =>{
+    e.stopPropagation();
     modals.openConfirmModal({
       title: (
         <Text size="lg" c="blue" fw={600}>
@@ -46,6 +47,7 @@ const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
         .catch((err) => console.error("Error enrolling project:", err))
       },
     });
+  }
 
   return <Button onClick={openModal}>Enroll</Button>;
 };
