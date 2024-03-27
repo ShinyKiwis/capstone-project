@@ -28,8 +28,7 @@ const FilterModal = () => {
       value: progbranch.id.toString(),
     };
   });
-  const projectContextValues = useProjects();
-  const { setProjects, setViewing } = projectContextValues;
+  const { handleSearchProjects } = useProjects();
   const searchParams = useSearchParams();
 
   const [projectType, setProjectType] = useState("all");
@@ -126,9 +125,6 @@ const FilterModal = () => {
         </div>
 
         <Group justify="flex-end" gap="xs" mt="1em">
-          <Button onClick={close} variant="outline">
-            Cancel
-          </Button>
           <Button
             variant="filled"
             onClick={async () => {
@@ -144,29 +140,23 @@ const FilterModal = () => {
                   (selectedInstructor) => `&supervisors=${selectedInstructor}`,
                 )
                 .join("");
-              let filterQuery = `http://localhost:3500/projects?${
+
+              let filterQuery = `${
                 projectType !== "all" ? `owner=${3}` : ""
               }${membersNo ? `&members=${membersNo}` : ""}${
                 isStudent ? "" : branchParams
-              }${programParams}${instructorParams}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`;
+              }${programParams}${instructorParams}`;
 
               console.log(`Filter Query:`, filterQuery);
 
-              await axios.get(filterQuery).then(
-                (response) => {
-                  const data = response.data as { projects: Project[] };
-                  // console.log("Filtered result:", data.projects)
-                  setProjects(data.projects);
-                  setViewing(data.projects[0]);
-                },
-                (error) => {
-                  console.log(error);
-                },
-              );
+              handleSearchProjects(filterQuery, searchParams.get("project")||'')
               close();
             }}
           >
             Filter
+          </Button>
+          <Button onClick={close} variant="outline">
+            Cancel
           </Button>
         </Group>
       </Modal>

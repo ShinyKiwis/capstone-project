@@ -106,12 +106,11 @@ export const ProjectProvider = ({
     const { data: searchedProjects, isFetching: searchedProjectsIsLoading } =
     useQuery({
       queryFn: async () => {
+        let searchURL = `http://localhost:3500/projects?stage=${renderingProjectsKey[1] === 'specialized' ? 1 : 2}&page=${currentPage}&limit=${paginationSize}&search=${savedSearch}`;
         let response = await (
-          await axios.get(
-            `http://localhost:3500/projects?stage=${renderingProjectsKey[1] === 'specialized' ? 1 : 2}&page=${currentPage}&limit=${paginationSize}&search=${savedSearch}`,
-          )
+          await axios.get(searchURL)
         ).data;
-        console.log("refetch searched projects");
+        console.log("refetch searched projects", searchURL);
         if (renderingProjectsKey.includes('searched'))
           setCurrMaxPages(response.total)
         // setSearchedPages(response.total);
@@ -193,14 +192,14 @@ export const ProjectProvider = ({
         
       setsavedSearch(searchkw || '')
     }
-      
   };
-  // Handle search
+  // Handle search, filter when new search params is detected
   useEffect(() => {
     const waitAndRefresh = async () => {
       await queryClient.invalidateQueries({ queryKey: renderingProjectsKey, exact:true });
       refreshProjects();
     };
+
     if (renderingProjectsKey.includes('searched'))
       waitAndRefresh();
   }, [savedSearch]);
@@ -211,6 +210,7 @@ export const ProjectProvider = ({
       await queryClient.invalidateQueries({ queryKey: renderingProjectsKey, exact:true });
       refreshProjects();
     };
+
     waitAndRefresh();
   }, [currentPage, paginationSize]);
 
