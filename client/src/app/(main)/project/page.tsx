@@ -23,7 +23,7 @@ import {
 } from "@/app/_components";
 import Image from "next/image";
 import { useProjects } from "@/app/providers/ProjectProvider";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { useAuth } from "@/app/providers/AuthProvider";
@@ -31,6 +31,7 @@ import { useAuth } from "@/app/providers/AuthProvider";
 const Project = () => {
   const projectContextValues = useProjects();
   const searchParams = useSearchParams();
+  const pathName = usePathname()
   const navigate = useNavigate();
   const { user } = useAuth();
   const {
@@ -64,7 +65,7 @@ const Project = () => {
     setSearch("");
     setCurrentPage(1);
     setPaginationSize("10");
-  }, [searchParams.get("project")]);
+  }, [searchParams.get("project"), pathName]);
 
   useEffect(() => {
     // console.log(fileUploaded)

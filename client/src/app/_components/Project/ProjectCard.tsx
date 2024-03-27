@@ -13,6 +13,7 @@ import React, { useContext } from "react";
 import {
   ApproveModal,
   DeactivateModal,
+  DeleteProjectModal,
   DenyModal,
   EnrollModal,
   UnenrollModal,
@@ -166,6 +167,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
               >
                 Edit
               </Button>
+              <DeleteProjectModal targetProject={projectObject} />
             </>
           ) : null}
         </Group>

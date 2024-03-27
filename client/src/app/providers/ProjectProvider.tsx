@@ -129,10 +129,10 @@ export const ProjectProvider = ({
     if (!projectsAreFetching)
       if (stage === "specialized") {
         setProjects(specializedProjects);
-        if (viewingId)
+        if (viewing?.code)
           setViewing(
             specializedProjects.find(
-              (project: Project) => project.code === viewingId,
+              (project: Project) => project.code === viewing.code,
             ) || specializedProjects[0],
           );
         else setViewing(specializedProjects[0]);
@@ -141,10 +141,10 @@ export const ProjectProvider = ({
       } 
       else {
         setProjects(capstoneProjects);
-        if (viewingId)
+        if (viewing?.code)
           setViewing(
             capstoneProjects.find(
-              (project: Project) => project.code === viewingId,
+              (project: Project) => project.code === viewing.code,
             ) || capstoneProjects[0],
           );
         else setViewing(capstoneProjects[0]);
@@ -166,7 +166,7 @@ export const ProjectProvider = ({
     var refreshedViewing = refreshedProjects.find(
       (project) => project.code === prevViewingId,
     );
-    setViewing(refreshedViewing || viewing);
+    setViewing(refreshedViewing || refreshedProjects[0]);
 
     // if (renderingProjectsKey.includes('searched'))
     //   setCurrMaxPages(searchedPages)

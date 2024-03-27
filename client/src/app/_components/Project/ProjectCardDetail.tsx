@@ -14,6 +14,7 @@ import { BsFillPeopleFill } from "react-icons/bs";
 import {
   ApproveModal,
   DeactivateModal,
+  DeleteProjectModal,
   DenyModal,
   EnrollModal,
   UnenrollModal,
@@ -153,6 +154,7 @@ const ProjectCardDetail = () => {
               >
                 Edit
               </Button>
+              <DeleteProjectModal targetProject={viewing} />
             </>
           ) : null}
         </Group>
