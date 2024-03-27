@@ -18,18 +18,17 @@ import {
   EnrollModal,
   UnenrollModal,
 } from "..";
-import { ProjectContext } from "@/app/providers/ProjectProvider";
+import { useProjects } from "@/app/providers/ProjectProvider";
 import { useAuth } from "@/app/providers/AuthProvider";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 
 const ProjectCardDetail = () => {
-  const projectContext = useContext(ProjectContext);
-  const searchParams = useSearchParams();
+  const projectContextValues = useProjects();
   const { user } = useAuth();
-  if (!projectContext) return <div>Loading project context</div>;
-  const { viewing } = projectContext;
+  const { viewing } = projectContextValues;
   const navigate = useNavigate();
+  const pathname = usePathname();
 
   if (!viewing) return <div>Loading</div>;
   return (
@@ -128,25 +127,30 @@ const ProjectCardDetail = () => {
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
           {user?.resources.includes("approve_projects") &&
-          searchParams.get("action") === "approve" ? (
+          pathname.includes("approve") ? (
             <>
               <ApproveModal targetProject={viewing} />
               <DenyModal targetProject={viewing} />
             </>
           ) : null}
-          {user?.resources.includes("enroll_projects") ? (
+          {!pathname.includes("approve") &&
+          user?.resources.includes("enroll_projects") ? (
             <>
-            {user?.project?.code === viewing.code ? (
-              <UnenrollModal />
-            ) : (
-              <EnrollModal targetProject={viewing} />
-            )}
-          </>
+              {user?.project?.code === viewing.code ? (
+                <UnenrollModal />
+              ) : (
+                <EnrollModal targetProject={viewing} />
+              )}
+            </>
           ) : null}
-          {user?.resources.includes("modify_projects") && user?.id === viewing.owner.id ? (
+          {!pathname.includes("approve") &&
+          user?.resources.includes("modify_projects") &&
+          viewing.owner.id === user?.id ? (
             <>
               <DeactivateModal targetProject={viewing} />
-              <Button onClick={() => navigate(`project/edit/${viewing.code}`)}>
+              <Button
+                onClick={() => navigate(`project/edit/${viewing.code}`)}
+              >
                 Edit
               </Button>
             </>
