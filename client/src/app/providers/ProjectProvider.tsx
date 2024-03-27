@@ -29,6 +29,7 @@ interface ProjectContextProps {
   setRenderingProjectsKey: (newkey: QueryKey) => void;
   getProjects: (stage: string | null) => void;
   refreshProjects: () => void;
+  handleSearchProjects: (search: string, stage: string) => void;
   //   getProjects: (ownerId?: number, status?: string, stage?: number) => void;
   //   handleEnrollment: (projectId: number) => void;
   //   handleUnenrollment: (projectId: number) => void;
@@ -42,43 +43,46 @@ export const ProjectProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  // const [specializedProjects, setSpecializedProjects] = useState<Project[]>([]);
-  // const [capstoneProjects, setCapstoneProjects] = useState<Project[]>([]);
-  const [renderingProjectsKey, setRenderingProjectsKey] = useState<QueryKey>(["projects","specialized"]);
+  const [renderingProjectsKey, setRenderingProjectsKey] = useState<QueryKey>([
+    "projects",
+    "specialized",
+  ]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [viewing, setViewing] = useState<Project | undefined>();
+  const [savedSearch, setsavedSearch] = useState("");
+  const [paginationSize, setPaginationSize] = useState("10");
   //   const user= useUser()
 
   const queryClient = useQueryClient();
-  const {data:specializedProjects, isLoading:specializedProjectsIsLoading} = useQuery({
-    queryFn: async () => {
-      
-      let response = await (
-        await axios.get(`http://localhost:3500/projects?stage=1`)
-      ).data;
-      console.log("refetched specialized projects");
-      // setSpecializedProjects(response.projects);
-      return response.projects;
-    },
-    queryKey: ["projects", "specialized"],
-    enabled: true,
-    staleTime: Infinity,
-  });
+  const { data: specializedProjects, isLoading: specializedProjectsIsLoading } =
+    useQuery({
+      queryFn: async () => {
+        let response = await (
+          await axios.get(`http://localhost:3500/projects?stage=1`)
+        ).data;
+        console.log("refetched specialized projects");
+        // setSpecializedProjects(response.projects);
+        return response.projects;
+      },
+      queryKey: ["projects", "specialized"],
+      enabled: true,
+      staleTime: Infinity,
+    });
 
-
-  const {data:capstoneProjects, isFetching:CapstoneProjectsIsLoading} = useQuery({
-    queryFn: async () => {
-      let response = await (
-        await axios.get(`http://localhost:3500/projects?stage=2`)
-      ).data;
-      console.log("refetch capstone projects");
-      // setCapstoneProjects(response.projects);
-      return response.projects;
-    },
-    queryKey: ["projects", "capstone"],
-    enabled: true,
-    staleTime: Infinity,
-  });
+  const { data: capstoneProjects, isFetching: CapstoneProjectsIsLoading } =
+    useQuery({
+      queryFn: async () => {
+        let response = await (
+          await axios.get(`http://localhost:3500/projects?stage=2`)
+        ).data;
+        console.log("refetch capstone projects");
+        // setCapstoneProjects(response.projects);
+        return response.projects;
+      },
+      queryKey: ["projects", "capstone"],
+      enabled: true,
+      staleTime: Infinity,
+    });
 
   var projectsAreFetching =
     specializedProjectsIsLoading || CapstoneProjectsIsLoading;
@@ -93,37 +97,50 @@ export const ProjectProvider = ({
         setProjects(capstoneProjects);
         setViewing(capstoneProjects[0]);
       }
-
-    // var retry = 5;
-    // // Retry setting projects list (wait for query to finish fetching)
-    // const interval = setInterval(() => {
-    //   // console.log("Waiting...", retry);
-    //   console.log("Tracking:",specializedProjectsIsLoading)
-    //   retry -= 1;
-
-    //   if (!specializedProjectsIsLoading ) {
-    //     // If the flag is true, resolve the promise and stop the interval
-    //     if (stage === "specialized") {
-    //       setProjects(specializedProjects || []);
-    //       // setViewing(specializedProjects[0]);
-    //     } else {
-    //       setProjects(CapstoneProjectsData || []);
-    //       // setViewing(capstoneProjects[0]);
-    //     }
-    //     console.log("Loaded", specializedProjects);
-    //     clearInterval(interval);
-    //   }
-    // }, 500);
   }
 
   const refreshProjects = () => {
     console.log("Current refresh key:", renderingProjectsKey);
-    var refreshedProjects:Project[] = queryClient.getQueryData(renderingProjectsKey || []) || projects
-    setProjects(refreshedProjects)
+    // Refresh searched/filtered projects
+    if (renderingProjectsKey.includes("search")) {
+      console.log("Refresing searched projects...");
+      handleSearchProjects(null, null);
+      return;
+    }
+
+    // Refresh all projects list
+    var refreshedProjects: Project[] =
+      queryClient.getQueryData(renderingProjectsKey || []) || projects;
+    setProjects(refreshedProjects);
     let prevViewingId = viewing?.code;
-    var refreshedViewing = refreshedProjects.find(project => project.code === prevViewingId)
-    setViewing(refreshedViewing || viewing)
-  }
+    var refreshedViewing = refreshedProjects.find(
+      (project) => project.code === prevViewingId,
+    );
+    setViewing(refreshedViewing || viewing);
+  };
+
+  const handleSearchProjects = async (
+    searchkw: string | null,
+    stage: string | null,
+  ) => {
+    let searchURL = "";
+    if (searchkw === null && stage === null) {
+      searchURL = savedSearch;
+    } else {
+      searchURL = `http://localhost:3500/projects?search=${searchkw}&stage=${stage === "specialized" ? "1" : "2"}&page=1&limit=${paginationSize}`;
+      setsavedSearch(searchURL);
+    }
+
+    axios
+      .get(searchURL)
+      .then((res) => {
+        setRenderingProjectsKey(["projects", "search"]);
+        setProjects(res.data.projects);
+        let lastViewing = res.data.projects.find((project: Project) => project.code === viewing?.code,)
+        setViewing(lastViewing || res.data.projects[0]);
+      })
+      .catch((err) => console.error("Error searching project:", err));
+  };
 
   // const handleDeletion = (projectId: number) => {
   //   setProjects((projects) =>
@@ -145,6 +162,7 @@ export const ProjectProvider = ({
     getProjects,
     setRenderingProjectsKey,
     refreshProjects,
+    handleSearchProjects,
     // handleDeletion
   };
 

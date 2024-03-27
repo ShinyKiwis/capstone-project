@@ -35,7 +35,7 @@ const Project = () => {
   const searchParams = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { projects, projectsAreFetching, specializedProjects, capstoneProjects, setRenderingProjectsKey, getProjects, setProjects, setViewing } =
+  const { projects, projectsAreFetching, setRenderingProjectsKey, getProjects, handleSearchProjects } =
     projectContextValues;
 
   const [projectsList, setprojectsList] = useState<Project[]>([]);
@@ -61,11 +61,6 @@ const Project = () => {
     handlePageSizeChange("10");
   }, [searchParams.get("project")]);
 
-  // if (searchParams.get("project") === 'specialized')
-  //   projectsList = specializedProjects;
-  // else
-  //   projectsList = capstoneProjects;
-
   useEffect(() => {
     // console.log(fileUploaded)
     if(fileUploaded){
@@ -74,17 +69,17 @@ const Project = () => {
     }
   }, [fileUploaded])
 
-  async function handleSearchSubmit() {
-    axios
-      .get(
-        `http://localhost:3500/projects?search=${search}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
-      )
-      .then((res) => {
-        // setProjects(res.data.projects);
-        // setViewing(res.data.projects[0]);
-      })
-      .catch((err) => console.error("Error searching project:", err));
-  }
+  // async function handleSearchSubmit() {
+  //   axios
+  //     .get(
+  //       `http://localhost:3500/projects?search=${search}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
+  //     )
+  //     .then((res) => {
+  //       // setProjects(res.data.projects);
+  //       // setViewing(res.data.projects[0]);
+  //     })
+  //     .catch((err) => console.error("Error searching project:", err));
+  // }
 
   async function handlePageSizeChange(newPageSize: string) {
     axios
@@ -140,14 +135,14 @@ const Project = () => {
                 <BiSearch
                   size={20}
                   className="group-focus-within:text-blue text-gray cursor-pointer"
-                  onClick={handleSearchSubmit}
+                  onClick={(e) => {handleSearchProjects(search, searchParams.get("project") || '')}}
                 />
               }
               className="flex-1"
               value={search}
               onInput={(e) => setSearch(e.currentTarget.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleSearchSubmit();
+                if (e.key === "Enter") handleSearchProjects(search, searchParams.get("project") || '');
               }}
             />
             <FilterModal />
