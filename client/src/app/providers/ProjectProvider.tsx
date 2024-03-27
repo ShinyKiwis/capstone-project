@@ -30,9 +30,12 @@ interface ProjectContextProps {
   getProjects: (stage: string | null) => void;
   refreshProjects: () => void;
   handleSearchProjects: (search: string, stage: string) => void;
-  //   getProjects: (ownerId?: number, status?: string, stage?: number) => void;
-  //   handleEnrollment: (projectId: number) => void;
-  //   handleUnenrollment: (projectId: number) => void;
+  paginationSize: string;
+  setPaginationSize: (newSize: string) => void;
+  currentPage: number;
+  setCurrentPage: (newPage: number) => void;
+  currMaxPages: number;
+  setCurrMaxPages: (newMaxPages: number) => void;
   // handleDeletion: (projectId: number) => void;
 }
 
@@ -46,22 +49,27 @@ export const ProjectProvider = ({
   const [renderingProjectsKey, setRenderingProjectsKey] = useState<QueryKey>([
     "projects",
     "specialized",
+    { page: 1, pageSize: "10" },
   ]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [viewing, setViewing] = useState<Project | undefined>();
   const [savedSearch, setsavedSearch] = useState("");
   const [paginationSize, setPaginationSize] = useState("10");
-  //   const user= useUser()
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currMaxPages, setCurrMaxPages] = useState(1);
 
   const queryClient = useQueryClient();
   const { data: specializedProjects, isLoading: specializedProjectsIsLoading } =
     useQuery({
       queryFn: async () => {
         let response = await (
-          await axios.get(`http://localhost:3500/projects?stage=1`)
+          await axios.get(
+            `http://localhost:3500/projects?stage=1&page=${currentPage}&limit=${paginationSize}`,
+          )
         ).data;
         console.log("refetched specialized projects");
-        // setSpecializedProjects(response.projects);
+        if (renderingProjectsKey.includes("specialized"))
+          setCurrMaxPages(response.total);
         return response.projects;
       },
       queryKey: ["projects", "specialized"],
@@ -73,10 +81,14 @@ export const ProjectProvider = ({
     useQuery({
       queryFn: async () => {
         let response = await (
-          await axios.get(`http://localhost:3500/projects?stage=2`)
+          await axios.get(
+            `http://localhost:3500/projects?stage=2&page=${currentPage}&limit=${paginationSize}`,
+          )
         ).data;
         console.log("refetch capstone projects");
         // setCapstoneProjects(response.projects);
+        if (renderingProjectsKey.includes("capstone"))
+          setCurrMaxPages(response.total);
         return response.projects;
       },
       queryKey: ["projects", "capstone"],
@@ -92,14 +104,26 @@ export const ProjectProvider = ({
     if (!projectsAreFetching)
       if (stage === "specialized") {
         setProjects(specializedProjects);
-        setViewing(specializedProjects[0]);
+        if (viewingId)
+          setViewing(
+            specializedProjects.find(
+              (project: Project) => project.code === viewingId,
+            ) || specializedProjects[0],
+          );
+        else setViewing(specializedProjects[0]);
       } else {
         setProjects(capstoneProjects);
-        setViewing(capstoneProjects[0]);
+        if (viewingId)
+          setViewing(
+            capstoneProjects.find(
+              (project: Project) => project.code === viewingId,
+            ) || capstoneProjects[0],
+          );
+        else setViewing(capstoneProjects[0]);
       }
   }
 
-  const refreshProjects = () => {
+  const refreshProjects = async () => {
     console.log("Current refresh key:", renderingProjectsKey);
     // Refresh searched/filtered projects
     if (renderingProjectsKey.includes("search")) {
@@ -108,9 +132,10 @@ export const ProjectProvider = ({
       return;
     }
 
-    // Refresh all projects list
+    // Refresh rendering project page
     var refreshedProjects: Project[] =
       queryClient.getQueryData(renderingProjectsKey || []) || projects;
+    console.log("New data:", refreshedProjects);
     setProjects(refreshedProjects);
     let prevViewingId = viewing?.code;
     var refreshedViewing = refreshedProjects.find(
@@ -127,7 +152,7 @@ export const ProjectProvider = ({
     if (searchkw === null && stage === null) {
       searchURL = savedSearch;
     } else {
-      searchURL = `http://localhost:3500/projects?search=${searchkw}&stage=${stage === "specialized" ? "1" : "2"}&page=1&limit=${paginationSize}`;
+      searchURL = `http://localhost:3500/projects?search=${searchkw}&stage=${stage === "specialized" ? "1" : "2"}&page=${currentPage}&limit=${paginationSize}`;
       setsavedSearch(searchURL);
     }
 
@@ -136,11 +161,43 @@ export const ProjectProvider = ({
       .then((res) => {
         setRenderingProjectsKey(["projects", "search"]);
         setProjects(res.data.projects);
-        let lastViewing = res.data.projects.find((project: Project) => project.code === viewing?.code,)
+        let lastViewing = res.data.projects.find(
+          (project: Project) => project.code === viewing?.code,
+        );
         setViewing(lastViewing || res.data.projects[0]);
       })
       .catch((err) => console.error("Error searching project:", err));
   };
+
+  // Handle page switching
+  useEffect(() => {
+    const waitAndRefresh = async () => {
+      await queryClient.invalidateQueries({ queryKey: renderingProjectsKey });
+      refreshProjects();
+    };
+
+    // console.log("Switching to page:", currentPage);
+    // console.log("Invalidating:", renderingProjectsKey);
+    waitAndRefresh();
+  }, [currentPage]);
+
+  async function changeProjectsPageSize(newPageSize: string) {
+    setPaginationSize(newPageSize);
+    // setRenderingProjectsKey([renderingProjectsKey[0], renderingProjectsKey[1], {page:currentPage, pageSize: newPageSize}])
+    // refreshProjects();
+  }
+
+  // Handle changing pagination size
+  useEffect(() => {
+    const waitAndRefresh = async () => {
+      await queryClient.invalidateQueries({ queryKey: renderingProjectsKey });
+      refreshProjects();
+    };
+
+    console.log("New size:", paginationSize);
+    console.log("Invalidating:", renderingProjectsKey);
+    waitAndRefresh();
+  }, [paginationSize]);
 
   // const handleDeletion = (projectId: number) => {
   //   setProjects((projects) =>
@@ -163,6 +220,12 @@ export const ProjectProvider = ({
     setRenderingProjectsKey,
     refreshProjects,
     handleSearchProjects,
+    paginationSize,
+    setPaginationSize,
+    currentPage,
+    setCurrentPage,
+    currMaxPages,
+    setCurrMaxPages,
     // handleDeletion
   };
 

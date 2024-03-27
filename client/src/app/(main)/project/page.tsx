@@ -20,14 +20,12 @@ import {
   ProjectCardDetail,
   UploadFileModal,
   FilterModal,
-  ApproveAllModal,
 } from "@/app/_components";
 import Image from "next/image";
 import { useProjects } from "@/app/providers/ProjectProvider";
 import { useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 import { FaRegCircleCheck } from "react-icons/fa6";
-import axios from "axios";
 import { useAuth } from "@/app/providers/AuthProvider";
 
 const Project = () => {
@@ -35,77 +33,46 @@ const Project = () => {
   const searchParams = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { projects, projectsAreFetching, setRenderingProjectsKey, getProjects, handleSearchProjects } =
-    projectContextValues;
+  const {
+    projects,
+    projectsAreFetching,
+    setRenderingProjectsKey,
+    getProjects,
+    refreshProjects,
+    handleSearchProjects,
+    paginationSize,
+    setPaginationSize,
+    currentPage,
+    setCurrentPage,
+    currMaxPages,
+  } = projectContextValues;
 
-  const [projectsList, setprojectsList] = useState<Project[]>([]);
   const [search, setSearch] = useState("");
-  const [activePage, setActivePage] = useState(1);
-  const [pageSize, setPageSize] = useState("10");
-  const [maxPages, setMaxPages] = useState(1);
-  const [fileUploaded, setFileUploaded] = useState(false)
+  const [fileUploaded, setFileUploaded] = useState(false);
 
   useEffect(() => {
     // Initial render of projects list
-    if (projects.length <=0)
-      getProjects(searchParams.get("project"))
+    if (projects.length <= 0) getProjects(searchParams.get("project"));
   }, [projectsAreFetching]);
 
   useEffect(() => {
     // Switch project type
-    setRenderingProjectsKey(['projects',searchParams.get("project")])
-    getProjects(searchParams.get("project"))
-    // Reset search box, pagination on page change
+    setRenderingProjectsKey(["projects", searchParams.get("project")]);
+    getProjects(searchParams.get("project"));
+
+    // Reset search box, pagination on project type page switching
     setSearch("");
-    setActivePage(1);
-    handlePageSizeChange("10");
+    setCurrentPage(1);
+    setPaginationSize("10");
   }, [searchParams.get("project")]);
 
   useEffect(() => {
     // console.log(fileUploaded)
-    if(fileUploaded){
+    if (fileUploaded) {
       // getProjects(searchParams.get("project") as string)
-      setFileUploaded(false)
+      setFileUploaded(false);
     }
-  }, [fileUploaded])
-
-  // async function handleSearchSubmit() {
-  //   axios
-  //     .get(
-  //       `http://localhost:3500/projects?search=${search}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
-  //     )
-  //     .then((res) => {
-  //       // setProjects(res.data.projects);
-  //       // setViewing(res.data.projects[0]);
-  //     })
-  //     .catch((err) => console.error("Error searching project:", err));
-  // }
-
-  async function handlePageSizeChange(newPageSize: string) {
-    axios
-      .get(
-        `http://localhost:3500/projects?page=1&limit=${newPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
-      )
-      .then((res) => {
-        setPageSize(newPageSize);
-        setMaxPages(res.data.total);
-        // setProjects(res.data.projects);
-        // setViewing(res.data.projects[0]);
-      })
-      .catch((err) => console.error("Error changing projects page size:", err));
-  }
-
-  async function handlePageChange(newPage: number, currentPageSize: string) {
-    axios
-      .get(
-        `http://localhost:3500/projects?page=${newPage}&limit=${currentPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
-      )
-      .then((res) => {
-        // setProjects(res.data.projects);
-        // setViewing(res.data.projects[0]);
-      })
-      .catch((err) => console.error("Error changing projects page size:", err));
-  }
+  }, [fileUploaded]);
 
   const NoData = () => {
     return (
@@ -115,7 +82,7 @@ const Project = () => {
       </div>
     );
   };
-  
+
   if (
     !user?.resources.includes("approve_projects") &&
     searchParams.get("action") === "approve"
@@ -135,14 +102,23 @@ const Project = () => {
                 <BiSearch
                   size={20}
                   className="group-focus-within:text-blue text-gray cursor-pointer"
-                  onClick={(e) => {handleSearchProjects(search, searchParams.get("project") || '')}}
+                  onClick={(e) => {
+                    handleSearchProjects(
+                      search,
+                      searchParams.get("project") || "",
+                    );
+                  }}
                 />
               }
               className="flex-1"
               value={search}
               onInput={(e) => setSearch(e.currentTarget.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleSearchProjects(search, searchParams.get("project") || '');
+                if (e.key === "Enter")
+                  handleSearchProjects(
+                    search,
+                    searchParams.get("project") || "",
+                  );
               }}
             />
             <FilterModal />
@@ -158,7 +134,7 @@ const Project = () => {
                 >
                   Create project
                 </Button>
-                <UploadFileModal setFileUploaded={setFileUploaded}/>
+                <UploadFileModal setFileUploaded={setFileUploaded} />
               </>
             ) : null}
 
@@ -178,29 +154,26 @@ const Project = () => {
           </div>
 
           <div
-            className={`mt-4 flex gap-4 ${projectsList.length < 1 ? "hidden" : ""}`}
+            className={`mt-4 flex gap-4 ${projects.length < 1 ? "hidden" : ""}`}
           >
             <div className="flex w-1/2 items-center gap-2">
               <NativeSelect
-                value={pageSize}
+                value={paginationSize}
                 onChange={(event) => {
-                  setPageSize(event.currentTarget.value);
-                  setActivePage(1);
-                  handlePageSizeChange(event.currentTarget.value);
+                  setPaginationSize(event.currentTarget.value);
                 }}
-                data={["5", "10", "20", "50"]}
+                data={["1", "5", "10", "20", "50"]}
               />
               <Text size="md" c="gray">
                 Projects per page
               </Text>
             </div>
             <Pagination
-              value={activePage}
+              value={currentPage}
               onChange={(value) => {
-                setActivePage(value);
-                handlePageChange(value, pageSize);
+                setCurrentPage(value);
               }}
-              total={maxPages}
+              total={currMaxPages}
             />
           </div>
         </div>
