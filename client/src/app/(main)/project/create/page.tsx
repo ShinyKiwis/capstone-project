@@ -20,6 +20,7 @@ import { InputFieldTitle } from "../ProjCEComponents";
 import { getBranchOptions } from "@/app/lib/getBranchOptions";
 import { useAuth } from "@/app/providers/AuthProvider";
 import useNavigate from "@/app/hooks/useNavigate";
+import { useEffect } from "react";
 
 const CreateProject = () => {
   // Background data initialization
@@ -69,6 +70,13 @@ const CreateProject = () => {
         value.length < 1 ? "Must select at least 1 Instructor" : null,
     },
   });
+
+  useEffect(() => {
+    if (user && user.resources.includes('create_projects')){
+      form.setFieldValue('supervisors', [user.id.toString()]);
+      form.setFieldValue('owner.id', user.id);
+    }
+  }, []);
 
   const queryClient = useQueryClient();
   const router = useRouter();

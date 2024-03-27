@@ -110,7 +110,7 @@ export const ProjectProvider = ({
         let response = await (
           await axios.get(searchURL)
         ).data;
-        console.log("refetch searched projects", searchURL);
+        console.log("refetch searched projects");
         if (renderingProjectsKey.includes('searched'))
           setCurrMaxPages(response.total)
         // setSearchedPages(response.total);
