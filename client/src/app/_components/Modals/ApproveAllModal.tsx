@@ -4,9 +4,11 @@ import { FaRegCircleCheck } from "react-icons/fa6";
 import React from "react";
 import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { useProjects } from "@/app/providers/ProjectProvider";
 
 const ApproveAllModal = () => {
   const queryClient = useQueryClient();
+  const {refreshProjects} = useProjects();
 
   const openModal = () =>
     modals.openConfirmModal({
@@ -25,10 +27,12 @@ const ApproveAllModal = () => {
       onCancel: () => {},
       onConfirm: async () => {
         axios.post(`http://localhost:3500/approve/all`)
-        .then((res) =>{
-          queryClient.invalidateQueries({
+        .then(async (res) =>{
+          await queryClient.invalidateQueries({
             queryKey: ["projects"],
+            refetchType: 'all'
           });
+          refreshProjects()
           console.log(`Approved all projects`, res)
         })
         .catch((err) => console.error("Error approving all projects:", err))

@@ -1,3 +1,4 @@
+import { useProjects } from "@/app/providers/ProjectProvider";
 import { Text, Button, Textarea, TextInput } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
@@ -6,6 +7,7 @@ import React, { useRef, useState } from "react";
 
 const DenyModal = ({ targetProject }: { targetProject: Project }) => {
   const queryClient = useQueryClient();
+  const {refreshProjects} = useProjects();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const openDeleteModal = () =>
@@ -36,18 +38,20 @@ const DenyModal = ({ targetProject }: { targetProject: Project }) => {
       confirmProps: { color: "red" },
       onCancel: () => {},
       onConfirm: async () => {
+        console.log(
+          `Rejected project ${targetProject.code} with reason:${inputRef.current?.value}`,
+        );
         axios
           .patch(
             `http://localhost:3500/projects/${targetProject.code}/status`,
             { status: "REJECTED" },
           )
-          .then((res) => {
-            queryClient.invalidateQueries({
+          .then(async (res) => {
+            await queryClient.invalidateQueries({
               queryKey: ["projects"],
+              refetchType: 'all'
             });
-            console.log(
-              `Rejected project ${targetProject.code} with reason:${inputRef.current?.value}`,
-            );
+            refreshProjects()
           })
           .catch((err) => console.error("Error denying project:", err));
       },

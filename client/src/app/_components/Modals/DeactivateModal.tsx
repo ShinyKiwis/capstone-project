@@ -1,3 +1,4 @@
+import { useProjects } from "@/app/providers/ProjectProvider";
 import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
@@ -6,6 +7,7 @@ import React from "react";
 
 const DeactivateModal = ({targetProject}:{targetProject: Project}) => {
   const queryClient = useQueryClient();
+  const {refreshProjects} = useProjects();
 
   const openModal = () =>
     modals.openConfirmModal({
@@ -25,10 +27,12 @@ const DeactivateModal = ({targetProject}:{targetProject: Project}) => {
       onCancel: () => {},
       onConfirm: async () => {
         axios.patch(`http://localhost:3500/projects/${targetProject.code}/status`, {status: "DEACTIVATED"})
-        .then((res) =>{
-          queryClient.invalidateQueries({
+        .then(async (res) =>{
+          await queryClient.invalidateQueries({
             queryKey: ["projects"],
+            refetchType: 'all'
           });
+          refreshProjects()
           console.log(`Deactivated project ${targetProject.code}`)
         })
         .catch((err) => console.error("Error deactivating project:", err))

@@ -20,7 +20,7 @@ const PageHeader = () => {
       title: <Text fw={600}>Are you sure you want to logout ?</Text>,
       centered: true,
       children: <Text size="sm">You will be logged out of this user.</Text>,
-      labels: { confirm: "Loutout", cancel: "Cancel" },
+      labels: { confirm: "Logout", cancel: "Cancel" },
       confirmProps: { color: "red" },
       onCancel: () => {},
       onConfirm: () => {
