@@ -1,4 +1,5 @@
 import { useAuth } from "@/app/providers/AuthProvider";
+import { useProjects } from "@/app/providers/ProjectProvider";
 import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,6 +9,7 @@ import React from "react";
 const UnenrollModal = () => {
   const queryClient = useQueryClient();
   const { user, handleUserEnrollProject } = useAuth();
+  const {refreshProjects} = useProjects();
 
   const openDeleteModal = () =>
     modals.openConfirmModal({
@@ -29,12 +31,13 @@ const UnenrollModal = () => {
         axios.post("http://localhost:3500/users/student/unenroll", {
           studentId: user?.id
         })
-        .then((res) =>{
+        .then(async (res) =>{
           handleUserEnrollProject(-1)
-          queryClient.invalidateQueries({
+          await queryClient.invalidateQueries({
             queryKey: ["projects"],
             refetchType: 'all'
           });
+          refreshProjects()
           console.log(`Unenrolled`)
         })
         .catch((err) => console.error("Error unenrolling project:", err))

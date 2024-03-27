@@ -39,8 +39,8 @@ const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
             queryKey: ["projects"],
             refetchType: 'all'
           });
-          refreshProjects()
           handleUserEnrollProject(targetProject.code)
+          refreshProjects()
           console.log(`Enrolled into project ${targetProject.code}`)
         })
         .catch((err) => console.error("Error enrolling project:", err))
