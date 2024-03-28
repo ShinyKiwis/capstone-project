@@ -30,7 +30,6 @@ export default function RootLayout({
   const navigate = useNavigate();
   console.log();
   useEffect(() => {
-    console.log("In app:",user)
     if (!user) {
       navigate("/login");
     }

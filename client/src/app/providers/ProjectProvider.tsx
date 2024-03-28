@@ -65,7 +65,7 @@ export const ProjectProvider = ({
   // const [searchedPages, setSearchedPages] = useState(1);
   const queryClient = useQueryClient();
 
-  const { data: specializedProjects, isLoading: specializedProjectsIsLoading } =
+  const { data: specializedProjects = [], isLoading: specializedProjectsIsLoading } =
     useQuery({
       queryFn: async () => {
         let response = await (
@@ -84,7 +84,7 @@ export const ProjectProvider = ({
       staleTime: Infinity,
     });
 
-  const { data: capstoneProjects, isFetching: CapstoneProjectsIsLoading } =
+  const { data: capstoneProjects = [], isFetching: CapstoneProjectsIsLoading } =
     useQuery({
       queryFn: async () => {
         let response = await (
@@ -103,7 +103,7 @@ export const ProjectProvider = ({
       staleTime: Infinity,
     });
 
-    const { data: searchedProjects, isFetching: searchedProjectsIsLoading } =
+    const { data: searchedProjects = [], isFetching: searchedProjectsIsLoading } =
     useQuery({
       queryFn: async () => {
         let searchURL = `http://localhost:3500/projects?stage=${renderingProjectsKey[1] === 'specialized' ? 1 : 2}&page=${currentPage}&limit=${paginationSize}&search=${savedSearch}`;
@@ -135,9 +135,10 @@ export const ProjectProvider = ({
               (project: Project) => project.code === viewing.code,
             ) || specializedProjects[0],
           );
-        else setViewing(specializedProjects[0]);
+        else setViewing(specializedProjects.length > 0 ? specializedProjects[0] : null);
         
         // setCurrMaxPages(specializedPages);
+        setRenderingProjectsKey(["projects","specialized"])
       } 
       else {
         setProjects(capstoneProjects);
@@ -147,9 +148,10 @@ export const ProjectProvider = ({
               (project: Project) => project.code === viewing.code,
             ) || capstoneProjects[0],
           );
-        else setViewing(capstoneProjects[0]);
+        else setViewing(capstoneProjects.length>0 ? capstoneProjects[0] : null);
         
         // setCurrMaxPages(capstonePages)
+        setRenderingProjectsKey(["projects","capstone"])
       }
   }
 

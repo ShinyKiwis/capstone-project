@@ -29,7 +29,6 @@ import { FaRegCircleCheck } from "react-icons/fa6";
 import { useAuth } from "@/app/providers/AuthProvider";
 
 const Project = () => {
-  const projectContextValues = useProjects();
   const searchParams = useSearchParams();
   const pathName = usePathname()
   const navigate = useNavigate();
@@ -40,13 +39,14 @@ const Project = () => {
     setRenderingProjectsKey,
     getProjects,
     refreshProjects,
+    invalidateAndRefresh,
     handleSearchProjects,
     paginationSize,
     setPaginationSize,
     currentPage,
     setCurrentPage,
     currMaxPages,
-  } = projectContextValues;
+  } = useProjects();
 
   const [search, setSearch] = useState("");
   const [fileUploaded, setFileUploaded] = useState(false);
@@ -68,9 +68,9 @@ const Project = () => {
   }, [searchParams.get("project"), pathName]);
 
   useEffect(() => {
-    // console.log(fileUploaded)
+    console.log("fileuploaded:",fileUploaded)
     if (fileUploaded) {
-      // getProjects(searchParams.get("project") as string)
+      invalidateAndRefresh();
       setFileUploaded(false);
     }
   }, [fileUploaded]);
