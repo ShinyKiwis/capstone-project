@@ -21,6 +21,7 @@ import { getBranchOptions } from "@/app/lib/getBranchOptions";
 import { useAuth } from "@/app/providers/AuthProvider";
 import useNavigate from "@/app/hooks/useNavigate";
 import { useEffect } from "react";
+import { toggleNotification } from "@/app/lib/notification";
 
 const CreateProject = () => {
   // Background data initialization
@@ -81,10 +82,11 @@ const CreateProject = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  async function handleFormSubmit(values: any) {
+  async function handleFormSubmit(values: any, type: 'submit'|'save') {
     // Check fields
     if (form.validate().hasErrors) {
-      console.error("Form validation failed");
+      // console.error("Form validation failed");
+      toggleNotification("Error","Please fill out the required fields.","danger")
       return;
     }
 
@@ -108,22 +110,25 @@ const CreateProject = () => {
     });
     newProjectBody.stage = parseInt(newProjectBody.stage);
     newProjectBody.limit = parseInt(newProjectBody.limit);
+    newProjectBody.status = (type==='submit') ? "WAITING_FOR_DEPARTMENT_HEAD" : "DRAFT";
     delete newProjectBody.requirements; // API currently dont work with reqs
 
     console.log("Submit:", newProjectBody);
     axios
       .post("http://localhost:3500/projects", newProjectBody)
       .then((res) => {
-        console.log("Project submitted successful");
+        // console.log("Project submitted successful");
         queryClient.invalidateQueries({
           queryKey: ["projects"],
         });
         router.push(
           `/project?project=${newProjectBody.stage === 1 ? "specialized" : "capstone"}`,
         );
+        toggleNotification("Success",`Your project is ${type==='submit' ? "submitted" : "saved"} !`,"success")
       })
       .catch((error) => {
         console.error("Error posting project:", error.response);
+        toggleNotification("Error",`Can not ${type} your project !`,"danger")
       });
   }
 
@@ -305,8 +310,7 @@ const CreateProject = () => {
               type="submit"
               color="lime"
               onClick={() => {
-                form.values.status = "WAITING_FOR_DEPARTMENT_HEAD";
-                handleFormSubmit(form.values);
+                handleFormSubmit(form.values, 'submit');
               }}
             >
               Submit for approval
@@ -314,8 +318,7 @@ const CreateProject = () => {
             <Button
               type="submit"
               onClick={() => {
-                form.values.status = "DRAFT";
-                handleFormSubmit(form.values);
+                handleFormSubmit(form.values, 'save');
               }}
             >
               Save Changes

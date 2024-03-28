@@ -1,9 +1,10 @@
 "use client";
 
 import axios from "axios";
-import { useEffect } from "react";
+import { SyntheticEvent, useEffect } from "react";
 import { useForm } from "@mantine/form";
 import {
+  Text,
   Button,
   MultiSelect,
   NativeSelect,
@@ -11,6 +12,7 @@ import {
   ScrollArea,
   TextInput,
 } from "@mantine/core";
+import { modals } from "@mantine/modals";
 import MantineRichText from "@/app/_components/UserAction/MantineRichText";
 import ProfileSelector from "@/app/_components/UserAction/ProfileSelector";
 import { StudentProfileSelector } from "@/app/_components";
@@ -19,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { InputFieldTitle } from "../../ProjCEComponents";
 import { getBranchOptions } from "@/app/lib/getBranchOptions";
+import { toggleNotification } from "@/app/lib/notification";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   // Background data initialization
@@ -97,7 +100,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
           requirements: response.data.requirements,
           status: "WAITING_FOR_DEPARTMENT_HEAD",
           semester: response.data.semester,
-          owner: { id: 3 },
+          owner: response.data.owner,
         };
         form.setValues(fetchedFormData);
         // console.log("Initialized form:", fetchedFormData);
@@ -110,22 +113,17 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  async function handleFormSubmit(values: any) {
-    // Check fields
-    if (form.validate().hasErrors) {
-      console.error("Form validation failed");
-      return;
-    }
-
+  async function handleFormSubmit(values: any, type: 'submit'|'save') {
     // Transform data according to api's requirements
     let updatedProject = { ...values };
     updatedProject.students = updatedProject.students.map((jsonVal: string) => {
       return JSON.parse(jsonVal).userId;
     });
     updatedProject.stage = parseInt(updatedProject.stage);
+    updatedProject.status = (type==='submit') ? "WAITING_FOR_DEPARTMENT_HEAD" : "DRAFT";
     delete updatedProject.requirements; // API currently dont work with reqs
 
-    console.log("Submit:", updatedProject);
+    console.log("Updated:", updatedProject);
     axios
       .patch(`http://localhost:3500/projects/${params.id}`, updatedProject)
       .then((res) => {
@@ -136,10 +134,41 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         router.push(
           `/project?project=${updatedProject.stage === 1 ? "specialized" : "capstone"}`,
         );
+        toggleNotification("Success",`Your project is ${type==='submit' ? "submitted" : "saved"} !`,"success");
       })
       .catch((error) => {
         console.error("Error updating project:", error);
+        toggleNotification("Error",`Can not ${type} your project !`,"danger");
       });
+  }
+
+  function handleActionButton(e:SyntheticEvent, type: 'submit'|'save'){
+    e.stopPropagation();
+    // Check form fields
+    if (form.validate().hasErrors) {
+      // console.error("Form validation failed");
+      toggleNotification("Error","Please fill out the required fields.","danger");
+      return;
+    }
+    
+    modals.openConfirmModal({
+      title: (
+        <Text size="lg" c="green" fw={600}>
+          {type==='submit'? "Submit modified":"Save your"} project ?
+        </Text>
+      ),
+      children: (
+        <Text size="sm">
+          {type==='submit'? "Your project will need to be approved again." : "Your project will be saved as a draft and needed to be submitted, approved again."}
+        </Text>
+      ),
+      labels: { confirm: "Confirm", cancel: "Cancel" },
+      confirmProps: { color: "green" },
+      onCancel: () => {},
+      onConfirm: () => {
+        handleFormSubmit(form.values, type)
+      },
+    });
   }
 
   // Main return
@@ -320,18 +349,16 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             <Button
               type="submit"
               color="lime"
-              onClick={() => {
-                form.values.status = "WAITING_FOR_DEPARTMENT_HEAD";
-                handleFormSubmit(form.values);
+              onClick={(e) => {
+                handleActionButton(e, 'submit');
               }}
             >
               Submit for approval
             </Button>
             <Button
               type="submit"
-              onClick={() => {
-                form.values.status = "DRAFT";
-                handleFormSubmit(form.values);
+              onClick={(e) => {
+                handleActionButton(e, 'save');
               }}
             >
               Save Changes
