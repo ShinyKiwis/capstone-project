@@ -49,7 +49,7 @@ export default function RootLayout({
           </RolesProvider>
         </DeadlinesProvider>
       }
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider> 
   ):
   navigate('/login')
