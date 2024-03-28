@@ -229,9 +229,7 @@ export class ProjectsRepository extends Repository<Project> {
     project.majors = majorsList;
     project.branches = branchesList;
     project.limit = limit;
-    project.status = ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD;
     project.students = studentsList;
-
     await this.save(project);
 
     // const project = await this.findOneBy({code: id});
