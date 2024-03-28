@@ -1,19 +1,14 @@
 "use client";
 import {
-  Badge,
   Button,
-  Card,
   ScrollArea,
   TextInput,
-  Box,
   Pagination,
   NativeSelect,
   Text,
 } from "@mantine/core";
-import { PiSliders } from "react-icons/pi";
 import React, { useContext, useEffect, useState } from "react";
 import { IoCreate } from "react-icons/io5";
-import { MdFileUpload } from "react-icons/md";
 import { BiSearch } from "react-icons/bi";
 import {
   ProjectCard,
@@ -45,6 +40,7 @@ const Project = () => {
     setPaginationSize,
     currentPage,
     setCurrentPage,
+    setCurrMaxPages,
     currMaxPages,
   } = useProjects();
 
@@ -56,15 +52,9 @@ const Project = () => {
     if (projects.length <= 0) getProjects(searchParams.get("project"));
   }, [projectsAreFetching]);
 
-  useEffect(() => {
-    // Switch project type
-    setRenderingProjectsKey(["projects", searchParams.get("project")]);
-    getProjects(searchParams.get("project"));
-
-    // Reset search box, pagination on project type page switching
+  useEffect(() => {    
     setSearch("");
-    setCurrentPage(1);
-    setPaginationSize("10");
+    getProjects(searchParams.get("project"));
   }, [searchParams.get("project"), pathName]);
 
   useEffect(() => {
@@ -95,8 +85,8 @@ const Project = () => {
   if (user?.resources.includes("view_projects")) {
     return (
       <div className="flex h-full flex-col">
-        <div className="w-2/5">
-          <div className="flex w-full gap-4">
+        <div className="w-full">
+          <div className="flex w-3/5 gap-4">
             <TextInput
               placeholder="Search projects id, name, description"
               rightSection={
@@ -125,7 +115,7 @@ const Project = () => {
             <FilterModal />
           </div>
 
-          <div className="mt-4">
+          <div className="mt-4 w-full">
             {user.resources.includes("create_projects") ? (
               <>
                 <Button
@@ -155,9 +145,9 @@ const Project = () => {
           </div>
 
           <div
-            className={`mt-4 flex gap-4 ${projects.length < 1 ? "hidden" : ""}`}
+            className={`mt-4 w-full flex gap-8 ${projects.length < 1 ? "hidden" : ""}`}
           >
-            <div className="flex w-1/2 items-center gap-2">
+            <div className="flex items-center gap-2">
               <NativeSelect
                 value={paginationSize}
                 onChange={(event) => {
