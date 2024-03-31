@@ -8,10 +8,12 @@ import { ProgramsRepository } from './programs.repository';
 import { Program } from './entities/program.entity';
 import { Version } from './entities/version.entity';
 import { VersionsRepository } from './versions.repository';
+import { StudentOutcome } from './entities/student-outcome.entity';
+import { StudentOutcomesRepository } from './student-outcomes.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Branch, Program, Version])],
+  imports: [TypeOrmModule.forFeature([Branch, Program, Version, StudentOutcome])],
   controllers: [ProgramsController],
-  providers: [ProgramsService, BranchesRepository, ProgramsRepository, VersionsRepository]
+  providers: [ProgramsService, BranchesRepository, ProgramsRepository, VersionsRepository, StudentOutcomesRepository]
 })
 export class ProgramsModule {}

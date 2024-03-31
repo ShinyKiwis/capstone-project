@@ -5,10 +5,17 @@ import { CreateProgramDto } from './dto/create-program.dto';
 import { ProgramsRepository } from './programs.repository';
 import { CreateVersionDto } from './dto/create-version.dto';
 import { VersionsRepository } from './versions.repository';
+import { CreateStudentOutcomeDto } from './dto/create-student-outcome.dto';
+import { StudentOutcomesRepository } from './student-outcomes.repository';
 
 @Injectable()
 export class ProgramsService {
-  constructor(private branchesRepository: BranchesRepository, private programsRepository: ProgramsRepository, private versionsRepository: VersionsRepository) {}
+  constructor(
+    private branchesRepository: BranchesRepository,
+    private programsRepository: ProgramsRepository,
+    private versionsRepository: VersionsRepository,
+    private studentOutcomesRepository: StudentOutcomesRepository,
+  ) {}
 
   async createAProgram(createMajorDto: CreateProgramDto) {
     return this.programsRepository.createAProgram(createMajorDto);
@@ -24,5 +31,24 @@ export class ProgramsService {
 
   async createAVersion(id: number, createVersionDto: CreateVersionDto) {
     return this.versionsRepository.createAVersion(id, createVersionDto);
+  }
+
+  async createAStudentOutcome(
+    versionId: number,
+    programId: number,
+    createStudentOutcomeDto: CreateStudentOutcomeDto,
+  ) {
+    return this.studentOutcomesRepository.createStudentOutcome(
+      versionId,
+      programId,
+      createStudentOutcomeDto,
+    );
+  }
+
+  async getAllStudentOutcomesOfAVersion(versionId: number, programId: number) {
+    return this.studentOutcomesRepository.getAllStudentOutcomesOfAVersion(
+      versionId,
+      programId,
+    );
   }
 }

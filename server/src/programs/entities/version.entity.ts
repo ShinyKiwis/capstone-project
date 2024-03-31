@@ -18,7 +18,7 @@ export class Version {
   @Column()
   name: string;
 
-  @ManyToOne(() => Program)
+  @ManyToOne(() => Program, { onDelete: 'CASCADE' })
   program: Program;
 
   @Column()
