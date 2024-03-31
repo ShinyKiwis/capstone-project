@@ -10,10 +10,12 @@ import { Version } from './entities/version.entity';
 import { VersionsRepository } from './versions.repository';
 import { StudentOutcome } from './entities/student-outcome.entity';
 import { StudentOutcomesRepository } from './student-outcomes.repository';
+import { PerformanceIndicator } from './entities/performance-indicator.entity';
+import { PerformanceIndicatorsRepository } from './performance-indicators.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Branch, Program, Version, StudentOutcome])],
+  imports: [TypeOrmModule.forFeature([Branch, Program, Version, StudentOutcome, PerformanceIndicator])],
   controllers: [ProgramsController],
-  providers: [ProgramsService, BranchesRepository, ProgramsRepository, VersionsRepository, StudentOutcomesRepository]
+  providers: [ProgramsService, BranchesRepository, ProgramsRepository, VersionsRepository, StudentOutcomesRepository, PerformanceIndicatorsRepository]
 })
 export class ProgramsModule {}

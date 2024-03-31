@@ -7,6 +7,8 @@ import { CreateVersionDto } from './dto/create-version.dto';
 import { VersionsRepository } from './versions.repository';
 import { CreateStudentOutcomeDto } from './dto/create-student-outcome.dto';
 import { StudentOutcomesRepository } from './student-outcomes.repository';
+import { PerformanceIndicatorsRepository } from './performance-indicators.repository';
+import { CreatePerformanceIndicatorDto } from './dto/create-performance-indicator.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -15,6 +17,7 @@ export class ProgramsService {
     private programsRepository: ProgramsRepository,
     private versionsRepository: VersionsRepository,
     private studentOutcomesRepository: StudentOutcomesRepository,
+    private performanceIndicatorsRepository: PerformanceIndicatorsRepository,
   ) {}
 
   async createAProgram(createMajorDto: CreateProgramDto) {
@@ -47,6 +50,32 @@ export class ProgramsService {
 
   async getAllStudentOutcomesOfAVersion(versionId: number, programId: number) {
     return this.studentOutcomesRepository.getAllStudentOutcomesOfAVersion(
+      versionId,
+      programId,
+    );
+  }
+
+  async createAPerformanceIndicator(
+    studentOutcomeId: number,
+    versionId: number,
+    programId: number,
+    createPerformanceIndicatorDto: CreatePerformanceIndicatorDto,
+  ) {
+    return this.performanceIndicatorsRepository.createAPerformanceIndicator(
+      studentOutcomeId,
+      versionId,
+      programId,
+      createPerformanceIndicatorDto,
+    );
+  }
+
+  async getAllPerformanceIndicatorsOfAStudentOutcome(
+    studentOutcomeId: number,
+    versionId: number,
+    programId: number,
+  ) {
+    return this.performanceIndicatorsRepository.getAllPerformanceIndicatorsOfAStudentOutcome(
+      studentOutcomeId,
       versionId,
       programId,
     );
