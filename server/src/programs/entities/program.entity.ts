@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Branch } from "./branch.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Branch } from './branch.entity';
+import { Faculty } from 'src/faculties/entities/faculty.entity';
 
 @Entity()
 export class Program {
@@ -11,4 +12,7 @@ export class Program {
 
   @Column()
   major: string;
+
+  @ManyToOne(() => Faculty, {onDelete: 'CASCADE'})
+  faculty: Faculty;
 }
