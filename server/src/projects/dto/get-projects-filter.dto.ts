@@ -1,5 +1,6 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { ProjectStatus } from '../project-status.enum';
+import { Registration } from 'src/registrations/entities/registration.entity';
 
 export class GetProjectsFilterDto {
   @IsOptional()
@@ -11,6 +12,15 @@ export class GetProjectsFilterDto {
 
   @IsOptional()
   limit: number;
+
+  @IsOptional()
+  registration: {
+    semester: {
+      year: number;
+      no: number;
+    };
+    id: number;
+  };
 
   @IsOptional()
   page: number;

@@ -45,22 +45,25 @@ export class ProjectsController {
   @Get()
   async getProjects(
     @Request() req,
-    @Query() filterDto: GetProjectsFilterDto,
+    @Query() queryfilterDto: GetProjectsFilterDto,
     @Session() session: Record<string, any>,
+    @Body() filterDto: GetProjectsFilterDto,
   ) {
-    console.log(session);
-    session.visits = session.visits ? session.visits + 1 : 1;
-    console.log('session store');
-    if (req.sessionStore) {
-      console.log(req.sessionStore);
-      req.sessionStore.clear((error: any) => {
-        if (error) {
-          console.error('Failed to clear sessions:', error);
-        } else {
-          console.log('All sessions cleared successfully');
-        }
-      });
-    }
+    // console.log(session);
+    // session.visits = session.visits ? session.visits + 1 : 1;
+    // console.log('session store');
+    // if (req.sessionStore) {
+    //   console.log(req.sessionStore);
+    //   req.sessionStore.clear((error: any) => {
+    //     if (error) {
+    //       console.error('Failed to clear sessions:', error);
+    //     } else {
+    //       console.log('All sessions cleared successfully');
+    //     }
+    //   });
+    // }
+    console.log(queryfilterDto);
+    console.log(filterDto);
     return this.projectsService.getProjects(filterDto);
   }
 

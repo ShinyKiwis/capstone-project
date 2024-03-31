@@ -7,12 +7,11 @@ export class Program {
   @PrimaryGeneratedColumn()
   id: number;
 
+  name: string;
+
   @ManyToOne(() => Major)
   major: Major;
 
   @ManyToOne(() => Branch)
   branch: Branch;
-
-  @Column()
-  version: number;
 }

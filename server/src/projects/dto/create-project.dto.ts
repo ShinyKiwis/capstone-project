@@ -35,7 +35,13 @@ export class CreateProjectDto {
   references: string;
 
   @IsNotEmptyObject()
-  semester: { year: number, no: number};
+  registration: {
+    semester: {
+      year: number,
+      no: number,
+    },
+    id: number
+  }
 
   @IsOptional()
   requirements: CreateProjectRequirementDto[];

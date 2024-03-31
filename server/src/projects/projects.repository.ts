@@ -92,9 +92,12 @@ export class ProjectsRepository extends Repository<Project> {
       description,
       tasks,
       references,
-      semester: {
-        year: 2023,
-        no: 1,
+      registration: {
+        semester: {
+          year: 2023,
+          no: 1,
+        },
+        id: 1,
       },
       students: retrieveStudents,
       supervisors: retrieveInstructors,
@@ -103,7 +106,7 @@ export class ProjectsRepository extends Repository<Project> {
       branches: [retrieveBranch],
       limit,
       status: ProjectStatus.WAITING_FOR_DEPARTMENT_HEAD,
-      requirements: null
+      requirements: null,
     });
   }
 
@@ -114,7 +117,7 @@ export class ProjectsRepository extends Repository<Project> {
       description,
       tasks,
       references,
-      semester,
+      registration,
       students,
       requirements,
       supervisors,
@@ -131,7 +134,7 @@ export class ProjectsRepository extends Repository<Project> {
       description,
       tasks,
       references,
-      semester,
+      registration,
       students,
       supervisors,
       majors,
@@ -302,13 +305,14 @@ export class ProjectsRepository extends Repository<Project> {
       page,
       status,
       owner,
+      registration,
       stage,
       majors,
       branches,
       supervisors,
     } = filterDto;
     const query = this.createQueryBuilder('project')
-      .leftJoinAndSelect('project.semester', 'semester')
+      .leftJoinAndSelect('project.registration', 'registration')
       .leftJoinAndSelect('project.requirements', 'requirements')
       .leftJoinAndSelect('project.students', 'students')
       .leftJoinAndSelect('project.supervisors', 'supervisors')
@@ -319,13 +323,27 @@ export class ProjectsRepository extends Repository<Project> {
       .loadRelationCountAndMap('project.studentsCount', 'project.students');
 
     if (search) {
-      query.andWhere('LOWER(project.name) LIKE LOWER (:search)', {
-        search: `%${search}%`,
-      });
+      query.andWhere(
+        'LOWER(project.name) LIKE LOWER (:search) OR LOWER(project.description) LIKE LOWER (:search)',
+        {
+          search: `%${search}%`,
+        },
+      );
     }
 
     if (status) {
       query.andWhere('project.status = :status', { status });
+    }
+    console.log(registration);
+    if (registration) {
+      query.andWhere(
+        'registration.id = :id AND registration.semesterYear = :year AND registration.semesterNo = :no',
+        {
+          id: registration.id,
+          year: registration.semester.year,
+          no: registration.semester.no,
+        },
+      );
     }
 
     if (owner) {
@@ -464,7 +482,7 @@ export class ProjectsRepository extends Repository<Project> {
     const project = await this.findOne({
       where: { code },
       relations: {
-        semester: true,
+        registration: true,
         supervisors: true,
         students: true,
         majors: true,
