@@ -11,10 +11,10 @@ import {
 import { ProjectStatus } from '../project-status.enum';
 import { Requirement } from './requirement.entity';
 import { User } from '../../users/entities/user.entity';
-import { Major } from '../../programs/entities/major.entity';
 import { Branch } from '../../programs/entities/branch.entity';
 import { Student } from '../../students/entities/student.entity';
 import { Registration } from 'src/registrations/entities/registration.entity';
+import { Program } from 'src/programs/entities/program.entity';
 
 @Entity()
 export class Project {
@@ -58,13 +58,13 @@ export class Project {
   })
   students: Student[];
 
-  @ManyToMany(() => Major, {
+  @ManyToMany(() => Program, {
     eager: true,
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   })
   @JoinTable()
-  majors: Major[];
+  programs: Program[];
 
   @ManyToMany(() => Branch, {
     eager: true,

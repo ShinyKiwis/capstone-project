@@ -14,13 +14,13 @@ import { RequirementRepository } from './requirements.repository';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { UsersRepository } from '../users/users.repository';
 import { BranchesRepository } from '../programs/branches.repository';
-import { MajorsRepository } from '../programs/majors.repository';
 import { GetProjectsByStatusDto } from './dto/get-projects-by-status.dto';
 import { ApproveProjectDto } from './dto/approve-project.dto';
 import { RejectProjectDto } from './dto/reject-project.dto';
 import { ApproveProjectsDto } from './dto/approve-projects.dto';
 import { StudentsRepository } from 'src/students/students.repository';
 import { CreateProjectFromFileDto } from './dto/create-project-from-file.dto';
+import { ProgramsRepository } from 'src/programs/programs.repository';
 
 @Injectable()
 export class ProjectsRepository extends Repository<Project> {
@@ -29,7 +29,7 @@ export class ProjectsRepository extends Repository<Project> {
     private requirementRepository: RequirementRepository,
     private usersRepository: UsersRepository,
     private branchesRepository: BranchesRepository,
-    private majorsRepository: MajorsRepository,
+    private programsRepository: ProgramsRepository,
     @Inject(forwardRef(() => StudentsRepository))
     private studentsRepository: StudentsRepository,
   ) {
@@ -57,14 +57,14 @@ export class ProjectsRepository extends Repository<Project> {
     });
 
     if (!retrieveBranch) {
-      await this.branchesRepository.createABranch({ name: branch });
+      throw new NotFoundException(`${branch} does not exist`);
     }
 
-    let retrieveProgram = await this.majorsRepository.findOneBy({
+    let retrieveProgram = await this.programsRepository.findOneBy({
       name: program,
     });
     if (!retrieveProgram) {
-      await this.majorsRepository.createAMajor({ name: program });
+      throw new NotFoundException(`${program} does not exist`);
     }
 
     let retrieveInstructors = [];
@@ -101,7 +101,7 @@ export class ProjectsRepository extends Repository<Project> {
       },
       students: retrieveStudents,
       supervisors: retrieveInstructors,
-      majors: [retrieveProgram],
+      programs: [retrieveProgram],
       owner: retrieveInstructors[0],
       branches: [retrieveBranch],
       limit,
@@ -122,7 +122,7 @@ export class ProjectsRepository extends Repository<Project> {
       requirements,
       supervisors,
       owner,
-      majors,
+      programs,
       branches,
       limit,
       status,
@@ -137,7 +137,7 @@ export class ProjectsRepository extends Repository<Project> {
       registration,
       students,
       supervisors,
-      majors,
+      programs,
       owner,
       branches,
       limit,
@@ -165,7 +165,7 @@ export class ProjectsRepository extends Repository<Project> {
       stage,
       supervisors,
       students,
-      majors,
+      programs,
       branches,
       limit,
     } = updateProjectDto;
@@ -216,9 +216,9 @@ export class ProjectsRepository extends Repository<Project> {
       },
     });
 
-    const majorsList = await this.majorsRepository.find({
+    const programsList = await this.programsRepository.find({
       where: {
-        id: In(majors),
+        id: In(programs),
       },
     });
 
@@ -229,7 +229,7 @@ export class ProjectsRepository extends Repository<Project> {
     project.references = references;
     project.stage = stage;
     project.supervisors = supervisorsList;
-    project.majors = majorsList;
+    project.programs = programsList;
     project.branches = branchesList;
     project.limit = limit;
     project.students = studentsList;
@@ -307,7 +307,7 @@ export class ProjectsRepository extends Repository<Project> {
       owner,
       registration,
       stage,
-      majors,
+      programs,
       branches,
       supervisors,
     } = filterDto;
@@ -317,7 +317,7 @@ export class ProjectsRepository extends Repository<Project> {
       .leftJoinAndSelect('project.students', 'students')
       .leftJoinAndSelect('project.supervisors', 'supervisors')
       .leftJoinAndSelect('project.owner', 'owner')
-      .leftJoinAndSelect('project.majors', 'majors')
+      .leftJoinAndSelect('project.programs', 'programs')
       .leftJoinAndSelect('project.branches', 'branches')
       .leftJoinAndSelect('students.user', 'users')
       .loadRelationCountAndMap('project.studentsCount', 'project.students');
@@ -354,19 +354,21 @@ export class ProjectsRepository extends Repository<Project> {
       query.andWhere('project.stage = :stage', { stage });
     }
 
-    if (majors) {
+    if (programs) {
       // for(let major of majors) {
       //   console.log(major);
       //   query.andWhere('majors.id = :major', {major})
       // }
-      let newMajors = [];
-      if (!Array.isArray(majors)) {
-        newMajors = [majors];
+      let newPrograms = [];
+      if (!Array.isArray(programs)) {
+        newPrograms = [programs];
       } else {
-        newMajors = majors;
+        newPrograms = programs;
       }
-      query.andWhere('majors.id IN (:...majors)', { majors: newMajors });
-      query.leftJoinAndSelect('project.majors', 'allMajors');
+      query.andWhere('programs.id IN (:...programs)', {
+        programs: newPrograms,
+      });
+      query.leftJoinAndSelect('project.programs', 'allPrograms');
     }
 
     if (branches) {
@@ -485,7 +487,7 @@ export class ProjectsRepository extends Repository<Project> {
         registration: true,
         supervisors: true,
         students: true,
-        majors: true,
+        programs: true,
         branches: true,
         requirements: true,
       },

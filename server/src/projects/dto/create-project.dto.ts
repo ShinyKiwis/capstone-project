@@ -8,7 +8,6 @@ import {
   IsString,
 } from 'class-validator';
 import { Branch } from '../../programs/entities/branch.entity';
-import { Major } from '../../programs/entities/major.entity';
 import { Semester } from '../../semesters/entities/semester.entity';
 import { User } from '../../users/entities/user.entity';
 import { ProjectStatus } from '../project-status.enum';
@@ -50,7 +49,7 @@ export class CreateProjectDto {
   supervisors: {id: number}[];
 
   @ArrayNotEmpty()
-  majors: { id: number }[];
+  programs: { id: number }[];
 
   @ArrayNotEmpty()
   branches: { id: number }[];

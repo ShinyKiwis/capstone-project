@@ -36,7 +36,7 @@ export class GetProjectsFilterDto {
   stage: number;
 
   @IsOptional()
-  majors: number[];
+  programs: number[];
 
   @IsOptional()
   branches: number[];

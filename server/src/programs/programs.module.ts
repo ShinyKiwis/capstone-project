@@ -3,13 +3,15 @@ import { ProgramsController } from './programs.controller';
 import { ProgramsService } from './programs.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Branch } from './entities/branch.entity';
-import { Major } from './entities/major.entity';
 import { BranchesRepository } from './branches.repository';
-import { MajorsRepository } from './majors.repository';
+import { ProgramsRepository } from './programs.repository';
+import { Program } from './entities/program.entity';
+import { Version } from './entities/version.entity';
+import { VersionsRepository } from './versions.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Branch, Major])],
+  imports: [TypeOrmModule.forFeature([Branch, Program, Version])],
   controllers: [ProgramsController],
-  providers: [ProgramsService, BranchesRepository, MajorsRepository]
+  providers: [ProgramsService, BranchesRepository, ProgramsRepository, VersionsRepository]
 })
 export class ProgramsModule {}

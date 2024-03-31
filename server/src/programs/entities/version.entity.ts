@@ -1,6 +1,29 @@
-import { Entity } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Program } from './program.entity';
 
 @Entity()
 export class Version {
-  
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @PrimaryColumn()
+  programId: number;
+
+  @Column()
+  name: string;
+
+  @ManyToOne(() => Program)
+  program: Program;
+
+  @Column()
+  startDate: Date;
+
+  @Column()
+  endDate: Date;
 }

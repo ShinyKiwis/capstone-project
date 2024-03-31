@@ -1,6 +1,9 @@
 import { IsNotEmpty } from "class-validator";
 
-export class CreateMajorDto {
+export class CreateProgramDto {
   @IsNotEmpty()
   name: string;
+
+  @IsNotEmpty()
+  major: string;
 }
