@@ -62,6 +62,7 @@ const ProjectCardStudentList = ({
 };
 
 const ProjectCard = ({ projectObject }: ProjectCardProps) => {
+  console.log("PROJECT", projectObject)
   const projectContextValues = useProjects();
   const { user } = useAuth();
   const searchParams = useSearchParams();

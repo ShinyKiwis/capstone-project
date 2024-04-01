@@ -16,41 +16,38 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { usePathname, useSearchParams } from "next/navigation";
 import isValid from "../lib/isValid";
+import BreadCrumbProvider from "../providers/BreadCrumbProvider";
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const queryClient = new QueryClient();
-  console.log("new query client")
-  // const { user } = useAuth();
-  // const pathname = usePathname();
-  // const searchParams = useSearchParams();
-  // const navigate = useNavigate();
-  // console.log();
-  // useEffect(() => {
-  //   if (!user) {
-  //     navigate("/login");
-  //   }
-  // }, [user]);
+  console.log("new query client");
+  const { user } = useAuth();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const navigate = useNavigate();
+  console.log("ROOTLAYOUT: ", user);
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user]);
 
-  // if (!isValid(pathname, searchParams, user))
-  //   navigate("/forbidden")
+  // if (!isValid(pathname, searchParams, user)) return navigate("/forbidden");
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      {
-        <DeadlinesProvider>
-          <RolesProvider>
-            <ProjectProvider>
-              <App>{children}</App>
-            </ProjectProvider>
-          </RolesProvider>
-        </DeadlinesProvider>
-      }
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider> 
-  )
+  return user ? (
+    <BreadCrumbProvider>
+      <DeadlinesProvider>
+        <RolesProvider>
+          <ProjectProvider>
+            <App>{children}</App>
+          </ProjectProvider>
+        </RolesProvider>
+      </DeadlinesProvider>
+    </BreadCrumbProvider>
+  ) : (
+    navigate("/login")
+  );
 }
-

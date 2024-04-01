@@ -3,9 +3,6 @@
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
@@ -32,6 +29,8 @@ export const GeneralDataProvider = ({
   const [supervisorOpts, setSupervisorOpts] = useState<UserOptType[]>([]);
   const [projectStages, setProjectStages] = useState<ProjectStage[]>([]);
   const [programBranches, setProgramBranches] = useState<ProgramBranch[]>([]);
+
+  const [queryClient] =  useState(() => new QueryClient());
 
   useEffect(() => {
     // Get supervisors
@@ -97,9 +96,11 @@ export const GeneralDataProvider = ({
   };
 
   return (
-    <GeneralDataContext.Provider value={GeneralDataContextValue}>
-      {children}
-    </GeneralDataContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <GeneralDataContext.Provider value={GeneralDataContextValue}>
+        {children}
+      </GeneralDataContext.Provider>
+    </QueryClientProvider>
   );
 };
 
@@ -110,4 +111,4 @@ export const useGeneralData = () => {
   }
 
   return context;
-}
+};
