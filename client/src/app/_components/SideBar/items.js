@@ -42,7 +42,7 @@ const sidebarItems = [
     pages: [
       {
         title: "Programs Management",
-        href: "/programs",
+        href: "/program",
         resource: "manage_programs",
         display: true
       },

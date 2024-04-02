@@ -9,6 +9,7 @@ interface BreadCrumb {
 interface BreadCrumbContextType {
   breadCrumbs: BreadCrumb[];
   updateBreadCrumb: (title: string, href: string) => void;
+  clearBreadCrumb: () => void;
 }
 
 const BreadCrumbContext = createContext<BreadCrumbContextType | null>(null);
@@ -33,8 +34,12 @@ const BreadCrumbProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const clearBreadCrumb = () => {
+    setBreadCrumbs([])
+  }
+
   return (
-    <BreadCrumbContext.Provider value={{ breadCrumbs, updateBreadCrumb }}>
+    <BreadCrumbContext.Provider value={{ breadCrumbs, updateBreadCrumb, clearBreadCrumb }}>
       {children}
     </BreadCrumbContext.Provider>
   );

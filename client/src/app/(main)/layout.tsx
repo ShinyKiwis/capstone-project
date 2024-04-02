@@ -16,7 +16,9 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { usePathname, useSearchParams } from "next/navigation";
 import isValid from "../lib/isValid";
-import BreadCrumbProvider from "../providers/BreadCrumbProvider";
+import BreadCrumbProvider, {
+  useBreadCrumbs,
+} from "../providers/BreadCrumbProvider";
 
 export default function RootLayout({
   children,
@@ -25,8 +27,6 @@ export default function RootLayout({
 }) {
   console.log("new query client");
   const { user } = useAuth();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const navigate = useNavigate();
   console.log("ROOTLAYOUT: ", user);
   useEffect(() => {
