@@ -348,12 +348,12 @@ const EditProject = ({ params }: { params: { id: string } }) => {
           <div className="flex justify-end gap-4 pb-4 pt-4">
             <Button
               type="submit"
-              color="lime"
-              onClick={(e) => {
-                handleActionButton(e, 'submit');
+              variant="outline"
+              onClick={() => {
+                router.back()
               }}
             >
-              Submit for approval
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -362,6 +362,15 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               }}
             >
               Save Changes
+            </Button>
+            <Button
+              type="submit"
+              color="lime"
+              onClick={(e) => {
+                handleActionButton(e, 'submit');
+              }}
+            >
+              Submit for approval
             </Button>
           </div>
         </form>

@@ -58,7 +58,7 @@ const Project = () => {
   }, [searchParams.get("project"), pathName]);
 
   useEffect(() => {
-    console.log("fileuploaded:",fileUploaded)
+    // console.log("fileuploaded:",fileUploaded)
     if (fileUploaded) {
       invalidateAndRefresh();
       setFileUploaded(false);
@@ -180,6 +180,7 @@ const Project = () => {
                 h="100%"
                 scrollbars="y"
                 scrollbarSize={4}
+                offsetScrollbars='y'
               >
                 {projects.map((project: Project) => (
                   <ProjectCard projectObject={project} key={project.code} />

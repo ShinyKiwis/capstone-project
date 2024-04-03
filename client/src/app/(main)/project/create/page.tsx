@@ -73,20 +73,24 @@ const CreateProject = () => {
   });
 
   useEffect(() => {
-    if (user && user.resources.includes('create_projects')){
-      form.setFieldValue('supervisors', [user.id.toString()]);
-      form.setFieldValue('owner.id', user.id);
+    if (user && user.resources.includes("create_projects")) {
+      form.setFieldValue("supervisors", [user.id.toString()]);
+      form.setFieldValue("owner.id", user.id);
     }
   }, []);
 
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  async function handleFormSubmit(values: any, type: 'submit'|'save') {
+  async function handleFormSubmit(values: any, type: "submit" | "save") {
     // Check fields
     if (form.validate().hasErrors) {
       // console.error("Form validation failed");
-      toggleNotification("Error","Please fill out the required fields.","danger")
+      toggleNotification(
+        "Error",
+        "Please fill out the required fields.",
+        "danger",
+      );
       return;
     }
 
@@ -110,7 +114,8 @@ const CreateProject = () => {
     });
     newProjectBody.stage = parseInt(newProjectBody.stage);
     newProjectBody.limit = parseInt(newProjectBody.limit);
-    newProjectBody.status = (type==='submit') ? "WAITING_FOR_DEPARTMENT_HEAD" : "DRAFT";
+    newProjectBody.status =
+      type === "submit" ? "WAITING_FOR_DEPARTMENT_HEAD" : "DRAFT";
     delete newProjectBody.requirements; // API currently dont work with reqs
 
     console.log("Submit:", newProjectBody);
@@ -121,14 +126,18 @@ const CreateProject = () => {
         queryClient.invalidateQueries({
           queryKey: ["projects"],
         });
-        router.push(
+        navigate(
           `/project?project=${newProjectBody.stage === 1 ? "specialized" : "capstone"}`,
         );
-        toggleNotification("Success",`Your project is ${type==='submit' ? "submitted" : "saved"} !`,"success")
+        toggleNotification(
+          "Success",
+          `Your project is ${type === "submit" ? "submitted" : "saved"} !`,
+          "success",
+        );
       })
       .catch((error) => {
         console.error("Error posting project:", error.response);
-        toggleNotification("Error",`Can not ${type} your project !`,"danger")
+        toggleNotification("Error", `Can not ${type} your project !`, "danger");
       });
   }
 
@@ -190,7 +199,7 @@ const CreateProject = () => {
                 />
                 <NativeSelect
                   label="Semester"
-                  data={["1","2","3"]}
+                  data={["1", "2", "3"]}
                   aria-placeholder="Semester"
                   {...form.getInputProps("semester.no")}
                 />
@@ -308,27 +317,38 @@ const CreateProject = () => {
           <div className="flex justify-end gap-4 pb-4 pt-4">
             <Button
               type="submit"
-              color="lime"
+              variant="outline"
               onClick={() => {
-                handleFormSubmit(form.values, 'submit');
+                router.back();
               }}
             >
-              Submit for approval
+              Cancel
             </Button>
             <Button
               type="submit"
               onClick={() => {
-                handleFormSubmit(form.values, 'save');
+                handleFormSubmit(form.values, "save");
               }}
             >
               Save Changes
+            </Button>
+            <Button
+              type="submit"
+              color="lime"
+              onClick={() => {
+                handleFormSubmit(form.values, "submit");
+              }}
+            >
+              Submit for approval
             </Button>
           </div>
         </form>
       </ScrollArea>
     </div>
   ) : (
-    <div className="text-red-600 text-xl font-bold font mt-10">You dont have permissions for creating new projects</div>
+    <div className="font mt-10 text-xl font-bold text-red-600">
+      You dont have permissions for creating new projects
+    </div>
   );
 };
 

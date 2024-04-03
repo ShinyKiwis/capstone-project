@@ -5,8 +5,9 @@ import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import React, { SyntheticEvent } from "react";
+import { toggleNotification } from "@/app/lib/notification";
 
-const UnenrollModal = () => {
+const UnenrollModal = ({ targetProject }: { targetProject: Project }) => {
   const { user, handleUserEnrollProject } = useAuth();
   const {invalidateAndRefresh} = useProjects();
 
@@ -15,14 +16,19 @@ const UnenrollModal = () => {
     modals.openConfirmModal({
       title: (
         <Text size="lg" c="red" fw={600}>
-          Please confirm your enrollment
+          Confirm Unenrollment
         </Text>
       ),
       centered: true,
       children: (
-        <Text size="sm">
-          Are you sure you want to unenroll from this project?
-        </Text>
+        <>
+          <Text size="sm">
+            Are you sure you want to unenroll from this project?
+          </Text>
+          <Text size="sm" c='blue'>
+            {targetProject.code} - {targetProject.name}
+          </Text>
+        </>
       ),
       labels: { confirm: "Unenroll", cancel: "Cancel" },
       confirmProps: { color: "red" },
@@ -34,9 +40,13 @@ const UnenrollModal = () => {
         .then(async (res) =>{
           handleUserEnrollProject(-1);
           invalidateAndRefresh();
+          toggleNotification('Success', `Successfully unenroll from project ${targetProject.name}`, 'success')
           console.log(`Unenrolled`)
         })
-        .catch((err) => console.error("Error unenrolling project:", err))
+        .catch((err) => {
+          console.error("Error unenrolling project:", err);
+          toggleNotification("Error","Unenrollment failed!", 'danger')
+        })
       },
     });
   }

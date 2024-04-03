@@ -23,6 +23,7 @@ import { useProjects } from "@/app/providers/ProjectProvider";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { usePathname, useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
+import { isStudent } from "@/app/lib/isStudent";
 
 const ProjectCardDetail = () => {
   const projectContextValues = useProjects();
@@ -33,9 +34,9 @@ const ProjectCardDetail = () => {
 
   if (!viewing) return <Card className="shadow" h="100%" px="xl" radius="md" withBorder>Click on a project card to view details</Card>;
   return (
-    <Card className="shadow" h="100%" px="xl" radius="md" withBorder>
-      <ScrollArea h="100%" scrollbars="y" scrollbarSize={4}>
-        <Card.Section inheritPadding py="md">
+    <Card className="shadow" h="100%" radius="md" withBorder>
+      <ScrollArea h="100%" px='xl' scrollbars="y" scrollbarSize={4}>
+        <Card.Section inheritPadding py="md" className={isStudent(user) ? 'hidden' : ''}>
           <Badge color="yellow">{viewing.status}</Badge>
         </Card.Section>
         <Card.Section inheritPadding py="xs">
@@ -130,15 +131,15 @@ const ProjectCardDetail = () => {
           {user?.resources.includes("approve_projects") &&
           pathname.includes("approve") ? (
             <>
-              <ApproveModal targetProject={viewing} />
               <DenyModal targetProject={viewing} />
+              <ApproveModal targetProject={viewing} />
             </>
           ) : null}
           {!pathname.includes("approve") &&
           user?.resources.includes("enroll_projects") ? (
             <>
               {user?.project?.code === viewing.code ? (
-                <UnenrollModal />
+                <UnenrollModal targetProject={viewing} />
               ) : (
                 <EnrollModal targetProject={viewing} />
               )}
@@ -149,12 +150,12 @@ const ProjectCardDetail = () => {
           viewing.owner.id === user?.id ? (
             <>
               <DeactivateModal targetProject={viewing} />
+              <DeleteProjectModal targetProject={viewing} />
               <Button
                 onClick={() => navigate(`project/edit/${viewing.code}`)}
               >
                 Edit
               </Button>
-              <DeleteProjectModal targetProject={viewing} />
             </>
           ) : null}
         </Group>

@@ -23,6 +23,7 @@ import { ProjectContext, useProjects } from "@/app/providers/ProjectProvider";
 import useNavigate from "@/app/hooks/useNavigate";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { usePathname, useSearchParams } from "next/navigation";
+import { isStudent } from "@/app/lib/isStudent";
 
 interface ProjectCardProps {
   projectObject: Project;
@@ -70,7 +71,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
   // console.log("here's the user");
   // console.log(user);
   const navigate = useNavigate();
-  const { setViewing } = projectContextValues;
+  const { viewing, setViewing } = projectContextValues;
 
   return (
     <Card
@@ -78,11 +79,12 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
       padding="xl"
       radius="md"
       my="md"
+      bg={viewing&&(viewing.code === projectObject.code) ? '#cffafe' : ''}
       withBorder
       key={projectObject.code}
       onClick={() => setViewing(projectObject)}
     >
-      <Card.Section inheritPadding py="xs">
+      <Card.Section inheritPadding py="xs" className={isStudent(user) ? 'hidden' : ''}>
         <Badge color="yellow">{projectObject.status}</Badge>
       </Card.Section>
       <Card.Section inheritPadding>
@@ -143,15 +145,15 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
           {user?.resources.includes("approve_projects") &&
           pathname.includes("approve") ? (
             <>
-              <ApproveModal targetProject={projectObject} />
               <DenyModal targetProject={projectObject} />
+              <ApproveModal targetProject={projectObject} />
             </>
           ) : null}
           {!pathname.includes("approve") &&
           user?.resources.includes("enroll_projects") ? (
             <>
               {user?.project?.code === projectObject.code ? (
-                <UnenrollModal />
+                <UnenrollModal targetProject={projectObject} />
               ) : (
                 <EnrollModal targetProject={projectObject} />
               )}
@@ -162,12 +164,12 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
           projectObject.owner.id === user?.id ? (
             <>
               <DeactivateModal targetProject={projectObject} />
+              <DeleteProjectModal targetProject={projectObject} />
               <Button
                 onClick={() => navigate(`project/edit/${projectObject.code}`)}
               >
                 Edit
               </Button>
-              <DeleteProjectModal targetProject={projectObject} />
             </>
           ) : null}
         </Group>
