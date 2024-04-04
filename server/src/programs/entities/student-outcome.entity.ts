@@ -1,5 +1,13 @@
 import { Version } from 'src/programs/entities/version.entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { PerformanceIndicator } from './performance-indicator.entity';
 
 @Entity()
 export class StudentOutcome {
@@ -14,6 +22,13 @@ export class StudentOutcome {
 
   @ManyToOne(() => Version, { onDelete: 'CASCADE' })
   version: Version;
+
+  @OneToMany(
+    () => PerformanceIndicator,
+    (performanceIndicator) => performanceIndicator.studentOutcome,
+    { onDelete: 'SET NULL', onUpdate: 'CASCADE' },
+  )
+  performanceIndicators: PerformanceIndicator[];
 
   @Column()
   code: string;

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Program } from './entities/program.entity';
 import { CreateProgramDto } from './dto/create-program.dto';
@@ -23,6 +23,19 @@ export class ProgramsRepository extends Repository<Program> {
 
     await this.save(program);
 
+    return program;
+  }
+
+  async getAProgram(id: number) {
+    const program = this.findOne({
+      where: { id },
+      relations: {
+        versions: true,
+      },
+    });
+    if (!program) {
+      throw new NotFoundException(`Program with id ${id} not found`);
+    }
     return program;
   }
 }

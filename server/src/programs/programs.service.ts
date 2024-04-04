@@ -28,56 +28,73 @@ export class ProgramsService {
     return this.branchesRepository.createABranch(createBranchDto);
   }
 
-  async getAllVersionsOfAProgram(id: number) {
-    return this.versionsRepository.getAllVersionsOfAProgram(id);
+  async getAProgram(id: number) {
+    return this.programsRepository.getAProgram(id);
   }
 
-  async createAVersion(id: number, createVersionDto: CreateVersionDto) {
-    return this.versionsRepository.createAVersion(id, createVersionDto);
+  async createAVersionForAProgram(
+    programId: number,
+    createVersionDto: CreateVersionDto,
+  ) {
+    return this.versionsRepository.createAVersionForAProgram(
+      programId,
+      createVersionDto,
+    );
+  }
+
+  async getAVersionOfAProgram(versionId: number, programId: number) {
+    return this.versionsRepository.getAVersionOfAProgram(versionId, programId);
   }
 
   async createAStudentOutcome(
-    versionId: number,
     programId: number,
+    versionId: number,
     createStudentOutcomeDto: CreateStudentOutcomeDto,
   ) {
     return this.studentOutcomesRepository.createStudentOutcome(
-      versionId,
       programId,
+      versionId,
       createStudentOutcomeDto,
     );
   }
 
-  async getAllStudentOutcomesOfAVersion(versionId: number, programId: number) {
-    return this.studentOutcomesRepository.getAllStudentOutcomesOfAVersion(
-      versionId,
+  async getAStudentOutcomeOfAVersion(
+    programId: number,
+    versionId: number,
+    studentOutcomeId: number,
+  ) {
+    return this.studentOutcomesRepository.getAStudentOutcomeOfAVersion(
       programId,
+      versionId,
+      studentOutcomeId,
     );
   }
 
   async createAPerformanceIndicator(
-    studentOutcomeId: number,
-    versionId: number,
     programId: number,
+    versionId: number,
+    studentOutcomeId: number,
     createPerformanceIndicatorDto: CreatePerformanceIndicatorDto,
   ) {
     return this.performanceIndicatorsRepository.createAPerformanceIndicator(
-      studentOutcomeId,
-      versionId,
       programId,
+      versionId,
+      studentOutcomeId,
       createPerformanceIndicatorDto,
     );
   }
 
-  async getAllPerformanceIndicatorsOfAStudentOutcome(
-    studentOutcomeId: number,
-    versionId: number,
+  async getAPerformanceIndicatorOfAStudentOutcome(
     programId: number,
+    versionId: number,
+    studentOutcomeId: number,
+    performanceIndicatorId: number,
   ) {
-    return this.performanceIndicatorsRepository.getAllPerformanceIndicatorsOfAStudentOutcome(
-      studentOutcomeId,
-      versionId,
+    return this.performanceIndicatorsRepository.getAPerformanceIndicatorOfAStudentOutcome(
       programId,
+      versionId,
+      studentOutcomeId,
+      performanceIndicatorId,
     );
   }
 }

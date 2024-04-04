@@ -1,25 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { CreateStudentOutcomeDto } from './dto/create-student-outcome.dto';
 import { VersionsRepository } from 'src/programs/versions.repository';
-import { StudentOutcome } from './entities/student-outcome.entity';
+import { AssessmentScheme } from './entities/assessment-scheme.entity';
+import { CreateAssessmentSchemeDto } from './dto/create-assessment-scheme.dto';
 
 @Injectable()
-export class StudentOutcomesRepository extends Repository<StudentOutcome> {
+export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
   constructor(
     private dataSource: DataSource,
     private versionsRepository: VersionsRepository,
   ) {
-    super(StudentOutcome, dataSource.createEntityManager());
+    super(AssessmentScheme, dataSource.createEntityManager());
   }
 
-  async createStudentOutcome(
+  async createAssessmentScheme(
     programId: number,
     versionId: number,
-    createStudentOutcomeDto: CreateStudentOutcomeDto,
+    createAssessmentSchemeDto: CreateAssessmentSchemeDto,
   ) {
-    const { code, name, description, expectedGoal, passingThreshold } =
-      createStudentOutcomeDto;
+    const { name, semester, description } = createAssessmentSchemeDto;
     const version = await this.versionsRepository.findOneBy({
       id: versionId,
       programId,
@@ -29,23 +28,20 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
         `Version with id ${versionId} of program with id ${programId} not found`,
       );
     }
-    const studentOutcome = this.create({
-      code,
+    const assessmentScheme = this.create({
       version,
       name,
       description,
-      expectedGoal,
-      passingThreshold,
     });
 
-    await this.save(studentOutcome);
-    return studentOutcome;
+    await this.save(assessmentScheme);
+    return assessmentScheme;
   }
 
-  async getAStudentOutcomeOfAVersion(
+  async getAnAssessmentSchemeOfAVersion(
     programId: number,
     versionId: number,
-    studentOutcomeId: number,
+    assessmentSchemeId: number,
   ) {
     const version = await this.versionsRepository.findOneBy({
       id: versionId,
@@ -56,22 +52,22 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
         `Version with id ${versionId} of program with id ${programId} not found`,
       );
     }
-    const studentOutcome = await this.findOne({
+    const assessmentScheme = await this.findOne({
       where: {
         version,
-        id: studentOutcomeId,
+        id: assessmentSchemeId,
       },
-      relations: {
-        performanceIndicators: true,
-      },
+      // relations: {
+      //   : true,
+      // },
     });
 
-    if (!studentOutcome) {
+    if (!assessmentScheme) {
       throw new NotFoundException(
-        `Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} not found`,
+        `Student Outcome with id ${assessmentSchemeId} of version with id ${versionId} of program with id ${programId} not found`,
       );
     }
 
-    return studentOutcome;
+    return assessmentScheme;
   }
 }

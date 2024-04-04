@@ -14,60 +14,97 @@ export class ProgramsController {
     return this.programsService.createAProgram(createProgramDto);
   }
 
-  @Post(':id/versions')
-  createAVersion(
-    @Param('id') id: string,
+  @Get(':id/semesters')
+  GetAllSemestersOfAProgram(@Param('id') id: string) {
+    // return this.programsService.getAllSemestersOfAProgram(+id);
+  }
+
+  @Get(':id')
+  GetAProgram(@Param('id') id: string) {
+    return this.programsService.getAProgram(+id);
+  }
+
+  @Post(':programId/versions')
+  createAVersionForAProgram(
+    @Param('programId') programId: string,
     @Body() createVersionDto: CreateVersionDto,
   ) {
-    return this.programsService.createAVersion(+id, createVersionDto);
+    return this.programsService.createAVersionForAProgram(
+      +programId,
+      createVersionDto,
+    );
   }
 
-  @Get(':id/versions')
-  GetAllVersionsOfAProgram(
-    @Param('id') id: string,
+  @Get(':programId/versions/:versionId')
+  GetAVersionOfAProgram(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
   ) {
-    return this.programsService.getAllVersionsOfAProgram(+id);
+    return this.programsService.getAVersionOfAProgram(+programId, +versionId);
   }
 
-  @Post(':programId/versions/:versionId')
+  @Post(':programId/versions/:versionId/student-outcomes')
   createAStudentOutcome(
     @Param('programId') programId: string,
     @Param('versionId') versionId: string,
     @Body() createStudentOutcomeDto: CreateStudentOutcomeDto,
   ) {
-    return this.programsService.createAStudentOutcome(+versionId, +programId, createStudentOutcomeDto);
+    return this.programsService.createAStudentOutcome(
+      +programId,
+      +versionId,
+      createStudentOutcomeDto,
+    );
   }
 
-  @Get(':programId/versions/:versionId')
-  GetAllStudentOutcomesOfAVersion(
+  @Get(':programId/versions/:versionId/student-outcomes/:studentOutcomeId')
+  GetAStudentOutcomeOfAVersion(
     @Param('programId') programId: string,
     @Param('versionId') versionId: string,
+    @Param('studentOutcomeId') studentOutcomeId: string,
   ) {
-    return this.programsService.getAllStudentOutcomesOfAVersion(+versionId, +programId);
+    return this.programsService.getAStudentOutcomeOfAVersion(
+      +programId,
+      +versionId,
+      +studentOutcomeId,
+    );
   }
 
-  @Post(':programId/versions/:versionId/student-outcomes/:studentOutcomeId')
+  @Post(
+    ':programId/versions/:versionId/student-outcomes/:studentOutcomeId/performance-indicators',
+  )
   createAPerformanceIndicator(
     @Param('programId') programId: string,
     @Param('versionId') versionId: string,
     @Param('studentOutcomeId') studentOutcomeId: string,
     @Body() createPerformanceIndicatorDto: CreatePerformanceIndicatorDto,
   ) {
-    return this.programsService.createAPerformanceIndicator(+studentOutcomeId, +versionId, +programId, createPerformanceIndicatorDto);
+    return this.programsService.createAPerformanceIndicator(
+      +programId,
+      +versionId,
+      +studentOutcomeId,
+      createPerformanceIndicatorDto,
+    );
   }
 
-  @Get(':programId/versions/:versionId/student-outcomes/:studentOutcomeId')
+  @Get(
+    ':programId/versions/:versionId/student-outcomes/:studentOutcomeId/performance-indicators/:performanceIndicatorId',
+  )
   GetAllPerformanceIndicatorsOfAStudentOutcome(
     @Param('programId') programId: string,
     @Param('versionId') versionId: string,
     @Param('studentOutcomeId') studentOutcomeId: string,
+    @Param('performanceIndicatorId') performanceIndicatorId: string,
   ) {
-    return this.programsService.getAllPerformanceIndicatorsOfAStudentOutcome(+studentOutcomeId, +versionId, +programId);
+    return this.programsService.getAPerformanceIndicatorOfAStudentOutcome(
+      +programId,
+      +versionId,
+      +studentOutcomeId,
+      +performanceIndicatorId,
+    );
   }
 
   @Post('branches')
   createABranch(@Body() createBranchDto: CreateBranchDto) {
     return this.programsService.createABranch(createBranchDto);
   }
-  
 }

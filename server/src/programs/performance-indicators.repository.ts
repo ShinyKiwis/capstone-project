@@ -15,17 +15,22 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
     super(PerformanceIndicator, dataSource.createEntityManager());
   }
 
-  async createAPerformanceIndicator(studentOutcomeId: number, versionId: number, programId: number, createPerformanceIndicatorDto: CreatePerformanceIndicatorDto) {
+  async createAPerformanceIndicator(
+    programId: number,
+    versionId: number,
+    studentOutcomeId: number,
+    createPerformanceIndicatorDto: CreatePerformanceIndicatorDto,
+  ) {
     const { code, name, description, expectedGoal, passingThreshold } =
       createPerformanceIndicatorDto;
     const studentOutcome = await this.studentOutcomesRepository.findOneBy({
       id: studentOutcomeId,
       versionId,
-      versionProgramId: programId
+      versionProgramId: programId,
     });
     if (!studentOutcome) {
       throw new NotFoundException(
-        `Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} does not exist`,
+        `Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} not found`,
       );
     }
     const performanceIndicator = this.create({
@@ -41,20 +46,33 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
     return performanceIndicator;
   }
 
-  async getAllPerformanceIndicatorsOfAStudentOutcome(studentOutcomeId: number, versionId: number, programId: number) {
+  async getAPerformanceIndicatorOfAStudentOutcome(
+    programId: number,
+    versionId: number,
+    studentOutcomeId: number,
+    performanceIndicatorId: number,
+  ) {
     const studentOutcome = await this.studentOutcomesRepository.findOneBy({
       id: studentOutcomeId,
       versionId,
-      versionProgramId: programId
+      versionProgramId: programId,
     });
     if (!studentOutcome) {
       throw new NotFoundException(
-        `Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} does not exist`,
+        `Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} not found`,
       );
     }
-    const performanceIndicators = await this.findBy({
-      studentOutcome
+    const performanceIndicator = await this.findOne({
+      where: {
+        studentOutcome,
+      },
     });
-    return performanceIndicators;
+
+    if(!performanceIndicator) {
+      throw new NotFoundException(
+        `Performance Indicator with id ${performanceIndicatorId} of Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
+    return performanceIndicator;
   }
 }
