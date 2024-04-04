@@ -282,11 +282,11 @@ export class ProjectsRepository extends Repository<Project> {
   async getProjectsByStatus(getProjectsByStatusDto: GetProjectsByStatusDto) {
     const { status } = getProjectsByStatusDto;
     const query = this.createQueryBuilder('project')
-      .leftJoinAndSelect('project.semester', 'semester')
+      .leftJoinAndSelect('project.registration', 'registration')
       .leftJoinAndSelect('project.requirements', 'requirements')
       .leftJoinAndSelect('project.students', 'students')
       .leftJoinAndSelect('project.supervisors', 'supervisors')
-      .leftJoinAndSelect('project.majors', 'majors')
+      .leftJoinAndSelect('project.programs', 'programs')
       .leftJoinAndSelect('project.branches', 'branches')
       .leftJoinAndSelect('students.user', 'users')
       .loadRelationCountAndMap('project.studentsCount', 'project.students')
@@ -553,11 +553,11 @@ export class ProjectsRepository extends Repository<Project> {
 
   async getProjectByCode(code: number) {
     const query = this.createQueryBuilder('project')
-      .leftJoinAndSelect('project.semester', 'semester')
+      .leftJoinAndSelect('project.registration', 'registration')
       .leftJoinAndSelect('project.requirements', 'requirements')
       .leftJoinAndSelect('project.students', 'students')
       .leftJoinAndSelect('project.supervisors', 'supervisors')
-      .leftJoinAndSelect('project.majors', 'majors')
+      .leftJoinAndSelect('project.programs', 'programs')
       .leftJoinAndSelect('project.branches', 'branches')
       .leftJoinAndSelect('students.user', 'users')
       .loadRelationCountAndMap('project.studentsCount', 'project.students')
