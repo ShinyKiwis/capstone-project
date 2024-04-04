@@ -1,6 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -95,6 +96,9 @@ export class StudentsRepository extends Repository<Student> {
   async enrollProject(enrollProjectDto: EnrollProjectDto) {
     const { studentId, projectCode } = enrollProjectDto;
     const project = await this.projectRepository.getProjectByCode(projectCode);
+    if(project.students.length >= project.limit) {
+      throw new ForbiddenException('This project is full');
+    }
     const student = await this.getStudentById(studentId);
     student.project = project;
     student.enrolledAt = new Date();

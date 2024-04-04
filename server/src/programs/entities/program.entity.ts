@@ -1,18 +1,31 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Major } from "./major.entity";
-import { Branch } from "./branch.entity";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Branch } from './branch.entity';
+import { Faculty } from 'src/faculties/entities/faculty.entity';
+import { Version } from './version.entity';
 
 @Entity()
 export class Program {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Major)
-  major: Major;
-
-  @ManyToOne(() => Branch)
-  branch: Branch;
+  @Column()
+  name: string;
 
   @Column()
-  version: number;
+  major: string;
+
+  @OneToMany(() => Version, (version) => version.program, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  versions: Version[];
+
+  @ManyToOne(() => Faculty, { onDelete: 'CASCADE' })
+  faculty: Faculty;
 }

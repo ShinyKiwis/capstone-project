@@ -8,7 +8,7 @@ import { ProjectsRepository } from '../projects/projects.repository';
 import { RequirementRepository } from '../projects/requirements.repository';
 import { StudentsRepository } from '../students/students.repository';
 import { BranchesRepository } from 'src/programs/branches.repository';
-import { MajorsRepository } from 'src/programs/majors.repository';
+import { ProgramsRepository } from 'src/programs/programs.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
@@ -20,7 +20,7 @@ import { MajorsRepository } from 'src/programs/majors.repository';
     StudentsRepository,
     RequirementRepository,
     BranchesRepository,
-    MajorsRepository
+    ProgramsRepository,
   ],
 })
 export class UsersModule {}

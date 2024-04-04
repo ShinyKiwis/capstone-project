@@ -1,3 +1,14 @@
+import { User } from "src/users/entities/user.entity";
+import { Column, Entity, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+
+@Entity()
 export class Faculty {
-  
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @OneToOne(() => User, {onDelete: 'SET NULL'})
+  dean: User;
 }
