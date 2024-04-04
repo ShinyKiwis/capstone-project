@@ -8,12 +8,12 @@ import { Requirement } from './entities/requirement.entity';
 import { RequirementRepository } from './requirements.repository';
 import { UsersRepository } from 'src/users/users.repository';
 import { BranchesRepository } from 'src/programs/branches.repository';
-import { MajorsRepository } from 'src/programs/majors.repository';
 import { StudentsRepository } from 'src/students/students.repository';
+import { ProgramsRepository } from 'src/programs/programs.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Project, Requirement])],
   controllers: [ProjectsController],
-  providers: [ProjectsService, ProjectsRepository, RequirementRepository, UsersRepository, BranchesRepository, MajorsRepository, StudentsRepository],
+  providers: [ProjectsService, ProjectsRepository, RequirementRepository, UsersRepository, BranchesRepository, ProgramsRepository, StudentsRepository],
 })
 export class ProjectsModule {}

@@ -11,9 +11,10 @@ import {
 import { ProjectStatus } from '../project-status.enum';
 import { Requirement } from './requirement.entity';
 import { User } from '../../users/entities/user.entity';
-import { Major } from '../../programs/entities/major.entity';
 import { Branch } from '../../programs/entities/branch.entity';
 import { Student } from '../../students/entities/student.entity';
+import { Registration } from 'src/registrations/entities/registration.entity';
+import { Program } from 'src/programs/entities/program.entity';
 
 @Entity()
 export class Project {
@@ -38,10 +39,13 @@ export class Project {
   @Column()
   status: ProjectStatus;
 
-  @ManyToOne(() => Semester)
-  semester: Semester;
+  @ManyToOne(() => Registration, { onDelete: 'CASCADE' })
+  registration: Registration;
 
-  @OneToMany(() => Requirement, (requirement) => requirement.project, { onUpdate: 'CASCADE', onDelete: 'SET NULL'})
+  @OneToMany(() => Requirement, (requirement) => requirement.project, {
+    onUpdate: 'CASCADE',
+    onDelete: 'SET NULL',
+  })
   requirements: Requirement[];
 
   @ManyToMany(() => User, { eager: true, onUpdate: 'CASCADE' })
@@ -54,11 +58,19 @@ export class Project {
   })
   students: Student[];
 
-  @ManyToMany(() => Major, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToMany(() => Program, {
+    eager: true,
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
   @JoinTable()
-  majors: Major[];
+  programs: Program[];
 
-  @ManyToMany(() => Branch, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToMany(() => Branch, {
+    eager: true,
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
   @JoinTable()
   branches: Branch[];
 
