@@ -18,7 +18,7 @@ interface Project{
 interface ProjectFormProps {
   name: string;
   stage: string;
-  majors: string[];		// program ids
+  programs: string[];		// program ids
   branches: string[];
   supervisors: string[];
   limit: string;

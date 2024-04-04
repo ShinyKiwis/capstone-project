@@ -22,6 +22,7 @@ import { useAuth } from "@/app/providers/AuthProvider";
 import useNavigate from "@/app/hooks/useNavigate";
 import { useEffect } from "react";
 import { toggleNotification } from "@/app/lib/notification";
+import { userHasResource } from "@/app/lib/userHasResource";
 
 const CreateProject = () => {
   // Background data initialization
@@ -40,7 +41,7 @@ const CreateProject = () => {
     initialValues: {
       name: "",
       stage: "1",
-      majors: [],
+      programs: [],
       branches: [],
       supervisors: [],
       limit: "1",
@@ -58,7 +59,7 @@ const CreateProject = () => {
     },
     validate: {
       name: (value) => (value.length < 1 ? "Project title is required" : null),
-      majors: (value) =>
+      programs: (value) =>
         value.length < 1 ? "Must select at least 1 Program" : null,
       branches: (value) =>
         value.length < 1 ? "Must select at least 1 Branch" : null,
@@ -73,7 +74,7 @@ const CreateProject = () => {
   });
 
   useEffect(() => {
-    if (user && user.resources.includes("create_projects")) {
+    if (user && userHasResource("create_projects")) {
       form.setFieldValue("supervisors", [user.id.toString()]);
       form.setFieldValue("owner.id", user.id);
     }
@@ -142,7 +143,7 @@ const CreateProject = () => {
   }
 
   // Main return
-  return user?.resources.includes("create_projects") ? (
+  return userHasResource("create_projects") ? (
     <div className="h-full w-full bg-white">
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
         <form
@@ -218,11 +219,11 @@ const CreateProject = () => {
                 <MultiSelect
                   label="Branch"
                   placeholder={
-                    form.values.majors.length < 1
+                    form.values.programs.length < 1
                       ? "Select program(s) first"
                       : "Select available branches"
                   }
-                  data={getBranchOptions(form.values.majors, programBranches)}
+                  data={getBranchOptions(form.values.programs, programBranches)}
                   required
                   {...form.getInputProps("branches")}
                 />

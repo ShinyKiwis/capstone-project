@@ -23,6 +23,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { useAuth } from "@/app/providers/AuthProvider";
+import { userHasResource } from "@/app/lib/userHasResource";
 
 const Project = () => {
   const searchParams = useSearchParams();
@@ -46,7 +47,6 @@ const Project = () => {
   } = useProjects();
 
   const [search, setSearch] = useState("");
-  const [fileUploaded, setFileUploaded] = useState(false);
 
   useEffect(() => {
     // Initial render of projects list
@@ -58,14 +58,6 @@ const Project = () => {
     getProjects(searchParams.get("project"));
   }, [searchParams.get("project"), pathName]);
 
-  useEffect(() => {
-    console.log("fileuploaded:", fileUploaded);
-    if (fileUploaded) {
-      invalidateAndRefresh();
-      setFileUploaded(false);
-    }
-  }, [fileUploaded]);
-
   const NoData = () => {
     return (
       <div className="mx-auto mt-44 flex flex-col items-center gap-8">
@@ -76,14 +68,14 @@ const Project = () => {
   };
 
   if (
-    !user?.resources.includes("approve_projects") &&
+    !userHasResource("approve_projects") &&
     searchParams.get("action") === "approve"
   ) {
     return navigate("/forbidden");
   }
 
   // Main return
-  if (user?.resources.includes("approve_projects")) {
+  if (userHasResource("approve_projects")) {
     return (
       <div className="flex h-full flex-col">
         <div className="w-full">
@@ -130,7 +122,7 @@ const Project = () => {
               </>
             ) : null} */}
 
-            {user.resources.includes("approve_projects") ? (
+            {userHasResource("approve_projects") ? (
               <>
                 <Button
                   variant="filled"

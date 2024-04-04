@@ -38,7 +38,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
     initialValues: {
       name: "",
       stage: "1",
-      majors: [],
+      programs: [],
       branches: [],
       supervisors: [],
       limit: 0,
@@ -57,7 +57,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
 
     validate: {
       name: (value) => (value.length < 1 ? "Project title is required" : null),
-      majors: (value) =>
+      programs: (value) =>
         value.length < 1 ? "Must select at least 1 Program" : null,
       branches: (value) =>
         value.length < 1 ? "Must select at least 1 Branch" : null,
@@ -81,8 +81,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         let fetchedFormData = {
           name: response.data.name,
           stage: response.data.stage,
-          majors: response.data.majors.map((major: Program) =>
-            major.id.toString(),
+          programs: response.data.programs.map((program: Program) =>
+            program.id.toString(),
           ),
           branches: response.data.branches.map((branch: Branch) =>
             branch.id.toString(),
@@ -240,20 +240,20 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                   placeholder="Select project programs"
                   data={programOptions}
                   required
-                  {...form.getInputProps("majors")}
+                  {...form.getInputProps("programs")}
                   onChange={(val) => {
-                    form.getInputProps("majors").onChange(val);
+                    form.getInputProps("programs").onChange(val);
                     form.setValues({ branches: [] });
                   }}
                 />
                 <MultiSelect
                   label="Branch"
                   placeholder={
-                    form.values.majors.length < 1
+                    form.values.programs.length < 1
                       ? "Select program(s) first"
                       : "Select available branches"
                   }
-                  data={getBranchOptions(form.values.majors, programBranches)}
+                  data={getBranchOptions(form.values.programs, programBranches)}
                   required
                   {...form.getInputProps("branches")}
                 />
