@@ -24,6 +24,7 @@ import { useAuth } from "@/app/providers/AuthProvider";
 import { usePathname, useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 import { isStudent } from "@/app/lib/isStudent";
+import { userHasResource } from "@/app/lib/userHasResource";
 
 const ProjectCardDetail = () => {
   const projectContextValues = useProjects();
@@ -51,7 +52,7 @@ const ProjectCardDetail = () => {
                   Program
                 </Text>
                 <Text size="sm" fw={500}>
-                  {viewing.majors.map((major) => major.name).join(", ")}
+                  {viewing.programs.map((program) => program.name).join(", ")}
                 </Text>
               </div>
               <div>
@@ -128,7 +129,7 @@ const ProjectCardDetail = () => {
       </ScrollArea>
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
-          {user?.resources.includes("approve_projects") &&
+          {userHasResource("approve_projects") &&
           pathname.includes("approve") ? (
             <>
               <DenyModal targetProject={viewing} />
@@ -136,7 +137,7 @@ const ProjectCardDetail = () => {
             </>
           ) : null}
           {!pathname.includes("approve") &&
-          user?.resources.includes("enroll_projects") ? (
+          userHasResource("enroll_projects") ? (
             <>
               {user?.project?.code === viewing.code ? (
                 <UnenrollModal targetProject={viewing} />
@@ -146,7 +147,7 @@ const ProjectCardDetail = () => {
             </>
           ) : null}
           {!pathname.includes("approve") &&
-          user?.resources.includes("modify_projects") &&
+          userHasResource("modify_projects") &&
           viewing.owner.id === user?.id ? (
             <>
               <DeactivateModal targetProject={viewing} />

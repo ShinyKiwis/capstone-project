@@ -7,7 +7,7 @@ interface Project{
   tasks: string;
   references: string;
   branches: Branch[];
-  majors: Program[];
+  programs: Program[];
   supervisors: Supervisor[];
   studentsCount: number;
   students: Student[];

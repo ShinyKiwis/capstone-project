@@ -22,6 +22,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { useAuth } from "@/app/providers/AuthProvider";
+import { userHasResource } from "@/app/lib/userHasResource";
 
 const Project = () => {
   const searchParams = useSearchParams();
@@ -75,14 +76,14 @@ const Project = () => {
   };
 
   if (
-    !user?.resources.includes("approve_projects") &&
+    !userHasResource("approve_projects") &&
     searchParams.get("action") === "approve"
   ) {
     return navigate("/forbidden");
   }
 
   // Main return
-  if (user?.resources.includes("view_projects")) {
+  if (userHasResource("view_projects")) {
     return (
       <div className="flex h-full flex-col">
         <div className="w-full">
@@ -116,7 +117,7 @@ const Project = () => {
           </div>
 
           <div className="mt-4 w-full">
-            {user.resources.includes("create_projects") ? (
+            {userHasResource("create_projects") ? (
               <>
                 <Button
                   variant="filled"
@@ -129,7 +130,7 @@ const Project = () => {
               </>
             ) : null}
 
-            {user.resources.includes("approve_projects") ? (
+            {userHasResource("approve_projects") ? (
               <Button
                 leftSection={<FaRegCircleCheck />}
                 ms="md"

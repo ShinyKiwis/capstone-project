@@ -24,6 +24,7 @@ import useNavigate from "@/app/hooks/useNavigate";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { usePathname, useSearchParams } from "next/navigation";
 import { isStudent } from "@/app/lib/isStudent";
+import { userHasResource } from "@/app/lib/userHasResource";
 
 interface ProjectCardProps {
   projectObject: Project;
@@ -105,9 +106,9 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
             <Text size="sm" c="dimmed">
               Programs
             </Text>
-            {projectObject.majors.map((majors) => (
-              <Text key={majors.id} size="sm" fw={500}>
-                {majors.name}
+            {projectObject.programs.map((program) => (
+              <Text key={program.id} size="sm" fw={500}>
+                {program.name}
               </Text>
             ))}
           </div>
@@ -142,7 +143,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
       </Card.Section>
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
-          {user?.resources.includes("approve_projects") &&
+          {userHasResource("approve_projects") &&
           pathname.includes("approve") ? (
             <>
               <DenyModal targetProject={projectObject} />
@@ -150,7 +151,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
             </>
           ) : null}
           {!pathname.includes("approve") &&
-          user?.resources.includes("enroll_projects") ? (
+          userHasResource("enroll_projects") ? (
             <>
               {user?.project?.code === projectObject.code ? (
                 <UnenrollModal targetProject={projectObject} />
@@ -160,7 +161,7 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
             </>
           ) : null}
           {!pathname.includes("approve") &&
-          user?.resources.includes("modify_projects") &&
+          userHasResource("modify_projects") &&
           projectObject.owner.id === user?.id ? (
             <>
               <DeactivateModal targetProject={projectObject} />
