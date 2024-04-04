@@ -238,32 +238,6 @@ const CreateProject = () => {
               </div>
               <div className="w-2/3">
                 <div className="flex h-full flex-col">
-                  <InputFieldTitle title="Requirements" />
-                  <MantineRichText
-                    content={form.getInputProps("requirements").value}
-                    onChange={form.getInputProps("requirements").onChange}
-                    error={form.getInputProps("requirements").error}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* instructors and desc section */}
-            <div className="mt-4 flex h-fit gap-4">
-              <div className="h-fit min-h-[16rem] w-1/3">
-                <InputFieldTitle title="Instructors" required />
-                <ProfileSelector
-                  onChange={form.getInputProps("supervisors").onChange}
-                  value={form.getInputProps("supervisors").value}
-                  error={form.getInputProps("supervisors").error}
-                  optionsData={supervisorOpts}
-                  placeholder="Search instructor name, id"
-                  limit={7}
-                />
-              </div>
-
-              <div className="w-2/3">
-                <div className="flex h-full flex-col">
                   <InputFieldTitle title="Description" required />
                   <MantineRichText
                     content={form.getInputProps("description").value}
@@ -274,15 +248,16 @@ const CreateProject = () => {
               </div>
             </div>
 
-            {/* Members and tasks section */}
+            {/* instructors and tasks section */}
             <div className="mt-4 flex h-fit gap-4">
               <div className="h-fit min-h-[16rem] w-1/3">
-                <InputFieldTitle title="Members" />
-                <StudentProfileSelector
-                  onChange={form.getInputProps("students").onChange}
-                  value={form.getInputProps("students").value}
-                  placeholder="Search student name, id"
-                  searchApi="http://localhost:3500/users/students"
+                <InputFieldTitle title="Instructors" required />
+                <ProfileSelector
+                  onChange={form.getInputProps("supervisors").onChange}
+                  value={form.getInputProps("supervisors").value}
+                  error={form.getInputProps("supervisors").error}
+                  optionsData={supervisorOpts}
+                  placeholder="Search instructor name, id"
                   limit={7}
                 />
               </div>
@@ -299,8 +274,19 @@ const CreateProject = () => {
               </div>
             </div>
 
+            {/* Members and refs section */}
             <div className="mt-4 flex h-fit gap-4">
-              <div className="h-64 w-1/3"></div>
+              <div className="h-fit min-h-[16rem] w-1/3">
+                <InputFieldTitle title="Members" />
+                <StudentProfileSelector
+                  onChange={form.getInputProps("students").onChange}
+                  value={form.getInputProps("students").value}
+                  placeholder="Search student name, id"
+                  searchApi="http://localhost:3500/users/students"
+                  limit={7}
+                />
+              </div>
+
               <div className="w-2/3">
                 <div className="flex h-full flex-col">
                   <InputFieldTitle title="References" required />
@@ -308,6 +294,20 @@ const CreateProject = () => {
                     content={form.getInputProps("references").value}
                     onChange={form.getInputProps("references").onChange}
                     error={form.getInputProps("references").error}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 flex h-fit gap-4">
+              <div className="h-64 w-1/3"></div>
+              <div className="w-2/3">
+                <div className="flex h-full flex-col">
+                  <InputFieldTitle title="Requirements" />
+                  <MantineRichText
+                    content={form.getInputProps("requirements").value}
+                    onChange={form.getInputProps("requirements").onChange}
+                    error={form.getInputProps("requirements").error}
                   />
                 </div>
               </div>
