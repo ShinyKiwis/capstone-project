@@ -24,7 +24,7 @@ const deleteUserModal = (
       onConfirm: async () => {
         toggleNotification(
           `User "${user.name} deleted successfully"`,
-          `User ${user.name} is deleted from user database. This can't be undone`,
+          `User ${user.name} is deleted from database. This can't be undone`,
           "success",
         );
         setUsers(users.filter((existedUser) => existedUser.id != user.id));

@@ -14,7 +14,7 @@ const CreateProgramModal = () => {
         opened={opened}
         onClose={close}
         centered
-        size="40%"
+        size="45%"
         padding="md"
         yOffset="8em"
         title={

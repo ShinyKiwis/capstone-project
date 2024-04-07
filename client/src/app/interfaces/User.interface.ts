@@ -1,13 +1,14 @@
-interface User {
+export interface User {
   id: number;
   name: string;
   username: string;
   email: string;
-  roles: Role[];
-  project?: {
-    code: number;
-  };
-  resources: string[];
+  roles: {
+    id?: number;
+    roleName: string;
+    resources: string[];
+  }[];
+  [key: string]: any;
 }
 
 type UserOptType = {
