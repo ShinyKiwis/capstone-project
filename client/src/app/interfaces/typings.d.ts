@@ -4,9 +4,15 @@ type OptionType = {
   dataObject: any;
 }
 
+type Resource = {
+  id: number;
+  name: string
+}
+
 type Role = {
-	id: number,
-	name: string
+  id: number;
+  name: string;
+  resources: Resource[]
 }
 
 type Branch = {

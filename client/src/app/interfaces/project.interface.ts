@@ -7,7 +7,7 @@ interface Project{
   tasks: string;
   references: string;
   branches: Branch[];
-  majors: Program[];
+  programs: Program[];
   supervisors: Supervisor[];
   studentsCount: number;
   students: Student[];
@@ -18,7 +18,7 @@ interface Project{
 interface ProjectFormProps {
   name: string;
   stage: string;
-  majors: string[];		// program ids
+  programs: string[];		// program ids
   branches: string[];
   supervisors: string[];
   limit: string;

@@ -1,11 +1,15 @@
-import { PartialType } from "@nestjs/mapped-types";
-import { CreateProjectDto, CreateProjectRequirementDto } from "./create-project.dto";
-import { IsString, IsNotEmpty, IsNumber, IsOptional, ArrayNotEmpty, IsEnum } from "class-validator";
-import { Branch } from "src/programs/entities/branch.entity";
-import { Major } from "src/programs/entities/major.entity";
-import { Semester } from "src/semesters/entities/semester.entity";
-import { User } from "src/users/entities/user.entity";
-import { ProjectStatus } from "../project-status.enum";
+import {
+  CreateProjectRequirementDto,
+} from './create-project.dto';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  ArrayNotEmpty,
+  IsEnum,
+} from 'class-validator';
+import { ProjectStatus } from '../project-status.enum';
 
 export class UpdateProjectDto {
   @IsString()
@@ -34,7 +38,7 @@ export class UpdateProjectDto {
   supervisors: number[];
 
   @ArrayNotEmpty()
-  majors: number[];
+  programs: number[];
 
   @ArrayNotEmpty()
   branches: number[];

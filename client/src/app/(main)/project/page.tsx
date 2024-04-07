@@ -1,19 +1,14 @@
 "use client";
 import {
-  Badge,
   Button,
-  Card,
   ScrollArea,
   TextInput,
-  Box,
   Pagination,
   NativeSelect,
   Text,
 } from "@mantine/core";
-import { PiSliders } from "react-icons/pi";
 import React, { useContext, useEffect, useState } from "react";
 import { IoCreate } from "react-icons/io5";
-import { MdFileUpload } from "react-icons/md";
 import { BiSearch } from "react-icons/bi";
 import {
   ProjectCard,
@@ -23,14 +18,15 @@ import {
 } from "@/app/_components";
 import Image from "next/image";
 import { useProjects } from "@/app/providers/ProjectProvider";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { useAuth } from "@/app/providers/AuthProvider";
+import { userHasResource } from "@/app/lib/userHasResource";
 
 const Project = () => {
-  const projectContextValues = useProjects();
   const searchParams = useSearchParams();
+  const pathName = usePathname()
   const navigate = useNavigate();
   const { user } = useAuth();
   const {
@@ -39,13 +35,15 @@ const Project = () => {
     setRenderingProjectsKey,
     getProjects,
     refreshProjects,
+    invalidateAndRefresh,
     handleSearchProjects,
     paginationSize,
     setPaginationSize,
     currentPage,
     setCurrentPage,
+    setCurrMaxPages,
     currMaxPages,
-  } = projectContextValues;
+  } = useProjects();
 
   const [search, setSearch] = useState("");
   const [fileUploaded, setFileUploaded] = useState(false);
@@ -55,21 +53,15 @@ const Project = () => {
     if (projects.length <= 0) getProjects(searchParams.get("project"));
   }, [projectsAreFetching]);
 
-  useEffect(() => {
-    // Switch project type
-    setRenderingProjectsKey(["projects", searchParams.get("project")]);
-    getProjects(searchParams.get("project"));
-
-    // Reset search box, pagination on project type page switching
+  useEffect(() => {    
     setSearch("");
-    setCurrentPage(1);
-    setPaginationSize("10");
-  }, [searchParams.get("project")]);
+    getProjects(searchParams.get("project"));
+  }, [searchParams.get("project"), pathName]);
 
   useEffect(() => {
-    // console.log(fileUploaded)
+    // console.log("fileuploaded:",fileUploaded)
     if (fileUploaded) {
-      // getProjects(searchParams.get("project") as string)
+      invalidateAndRefresh();
       setFileUploaded(false);
     }
   }, [fileUploaded]);
@@ -84,18 +76,18 @@ const Project = () => {
   };
 
   if (
-    !user?.resources.includes("approve_projects") &&
+    !userHasResource("approve_projects") &&
     searchParams.get("action") === "approve"
   ) {
     return navigate("/forbidden");
   }
 
   // Main return
-  if (user?.resources.includes("view_projects")) {
+  if (userHasResource("view_projects")) {
     return (
       <div className="flex h-full flex-col">
-        <div className="w-2/5">
-          <div className="flex w-full gap-4">
+        <div className="w-full">
+          <div className="flex w-3/5 gap-4">
             <TextInput
               placeholder="Search projects id, name, description"
               rightSection={
@@ -124,8 +116,8 @@ const Project = () => {
             <FilterModal />
           </div>
 
-          <div className="mt-4">
-            {user.resources.includes("create_projects") ? (
+          <div className="mt-4 w-full">
+            {userHasResource("create_projects") ? (
               <>
                 <Button
                   variant="filled"
@@ -138,7 +130,7 @@ const Project = () => {
               </>
             ) : null}
 
-            {user.resources.includes("approve_projects") ? (
+            {userHasResource("approve_projects") ? (
               <Button
                 leftSection={<FaRegCircleCheck />}
                 ms="md"
@@ -154,9 +146,9 @@ const Project = () => {
           </div>
 
           <div
-            className={`mt-4 flex gap-4 ${projects.length < 1 ? "hidden" : ""}`}
+            className={`mt-4 w-full flex gap-8 ${projects.length < 1 ? "hidden" : ""}`}
           >
-            <div className="flex w-1/2 items-center gap-2">
+            <div className="flex items-center gap-2">
               <NativeSelect
                 value={paginationSize}
                 onChange={(event) => {
@@ -189,6 +181,7 @@ const Project = () => {
                 h="100%"
                 scrollbars="y"
                 scrollbarSize={4}
+                offsetScrollbars='y'
               >
                 {projects.map((project: Project) => (
                   <ProjectCard projectObject={project} key={project.code} />

@@ -1,19 +1,14 @@
 "use client";
 import {
-  Badge,
   Button,
-  Card,
   ScrollArea,
   TextInput,
-  Box,
   Pagination,
   NativeSelect,
   Text,
 } from "@mantine/core";
-import { PiSliders } from "react-icons/pi";
 import React, { useContext, useEffect, useState } from "react";
-import { IoCreate } from "react-icons/io5";
-import { MdFileUpload } from "react-icons/md";
+import { IoCreate, IoArrowBackCircleOutline } from "react-icons/io5";
 import { BiSearch } from "react-icons/bi";
 import {
   ProjectCard,
@@ -24,72 +19,44 @@ import {
 } from "@/app/_components";
 import Image from "next/image";
 import { useProjects } from "@/app/providers/ProjectProvider";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 import { FaRegCircleCheck } from "react-icons/fa6";
-import axios from "axios";
 import { useAuth } from "@/app/providers/AuthProvider";
+import { userHasResource } from "@/app/lib/userHasResource";
 
-const ApproveProject = () => {
-  const { user } = useAuth();
-  const projectContextValues = useProjects();
+const Project = () => {
   const searchParams = useSearchParams();
+  const pathName = usePathname();
   const navigate = useNavigate();
-  const { projects, getProjects, setProjects, setViewing } =
-    projectContextValues;
+  const { user } = useAuth();
+  const {
+    projects,
+    projectsAreFetching,
+    setRenderingProjectsKey,
+    getProjects,
+    refreshProjects,
+    invalidateAndRefresh,
+    handleSearchProjects,
+    paginationSize,
+    setPaginationSize,
+    currentPage,
+    setCurrentPage,
+    setCurrMaxPages,
+    currMaxPages,
+  } = useProjects();
 
   const [search, setSearch] = useState("");
-  const [activePage, setActivePage] = useState(1);
-  const [pageSize, setPageSize] = useState("10");
-  const [maxPages, setMaxPages] = useState(1);
 
   useEffect(() => {
-    // Change rendered projects on page switch
-    // console.log("Called get projects");
-    getProjects(searchParams.get("project") as string);
-    // Reset search box, pagination on page change
+    // Initial render of projects list
+    if (projects.length <= 0) getProjects(searchParams.get("project"));
+  }, [projectsAreFetching]);
+
+  useEffect(() => {
     setSearch("");
-    setActivePage(1);
-    handlePageSizeChange("10");
-  }, []);
-
-  async function handleSearchSubmit() {
-    axios
-      .get(
-        `http://localhost:3500/projects?search=${search}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
-      )
-      .then((res) => {
-        setProjects(res.data.projects);
-        setViewing(res.data.projects[0]);
-      })
-      .catch((err) => console.error("Error searching project:", err));
-  }
-
-  async function handlePageSizeChange(newPageSize: string) {
-    axios
-      .get(
-        `http://localhost:3500/projects?page=1&limit=${newPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
-      )
-      .then((res) => {
-        setPageSize(newPageSize);
-        setMaxPages(res.data.total);
-        setProjects(res.data.projects);
-        setViewing(res.data.projects[0]);
-      })
-      .catch((err) => console.error("Error changing projects page size:", err));
-  }
-
-  async function handlePageChange(newPage: number, currentPageSize: string) {
-    axios
-      .get(
-        `http://localhost:3500/projects?page=${newPage}&limit=${currentPageSize}&stage=${searchParams.get("project") === "specialized" ? "1" : "2"}`,
-      )
-      .then((res) => {
-        setProjects(res.data.projects);
-        // setViewing(res.data.projects[0]);
-      })
-      .catch((err) => console.error("Error changing projects page size:", err));
-  }
+    getProjects(searchParams.get("project"));
+  }, [searchParams.get("project"), pathName]);
 
   const NoData = () => {
     return (
@@ -100,90 +67,128 @@ const ApproveProject = () => {
     );
   };
 
-  return (
-    <div className="flex h-full flex-col">
-      <div className="w-2/5">
-        <div className="flex w-full gap-4">
-          <TextInput
-            placeholder="Search projects id, name, description"
-            rightSection={
-              <BiSearch
-                size={20}
-                className="group-focus-within:text-blue text-gray cursor-pointer"
-                onClick={handleSearchSubmit}
-              />
-            }
-            className="flex-1"
-            value={search}
-            onInput={(e) => setSearch(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSearchSubmit();
-            }}
-          />
-          <FilterModal />
-        </div>
+  if (
+    !userHasResource("approve_projects") &&
+    searchParams.get("action") === "approve"
+  ) {
+    return navigate("/forbidden");
+  }
 
-        <div className="mt-4">
-          {user?.resources.includes("create_projects") ? (
-            <>
-              <Button
-                variant="filled"
-                leftSection={<IoCreate size={20} />}
-                onClick={() => navigate("/project/create")}
-              >
-                Create project
-              </Button>
-              <UploadFileModal />
-            </>
-          ) : null}
-          <ApproveAllModal />
-        </div>
-
-        <div
-          className={`mt-4 flex gap-4 ${projects.length < 1 ? "hidden" : ""}`}
-        >
-          <div className="flex w-1/2 items-center gap-2">
-            <NativeSelect
-              value={pageSize}
-              onChange={(event) => {
-                setPageSize(event.currentTarget.value);
-                handlePageSizeChange(event.currentTarget.value);
+  // Main return
+  if (userHasResource("approve_projects")) {
+    return (
+      <div className="flex h-full flex-col">
+        <div className="w-full">
+          <div className="flex w-3/5 gap-4">
+            <TextInput
+              placeholder="Search projects id, name, description"
+              rightSection={
+                <BiSearch
+                  size={20}
+                  className="group-focus-within:text-blue text-gray cursor-pointer"
+                  onClick={(e) => {
+                    handleSearchProjects(
+                      search,
+                      searchParams.get("project") || "",
+                    );
+                  }}
+                />
+              }
+              className="flex-1"
+              value={search}
+              onInput={(e) => setSearch(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter")
+                  handleSearchProjects(
+                    search,
+                    searchParams.get("project") || "",
+                  );
               }}
-              data={["5", "10", "20", "50"]}
             />
-            <Text size="md" c="gray">
-              Projects per page
-            </Text>
+            <FilterModal />
           </div>
-          <Pagination
-            value={activePage}
-            onChange={(value) => {
-              setActivePage(value);
-              handlePageChange(value, pageSize);
-            }}
-            total={maxPages}
-          />
-        </div>
-      </div>
 
-      {projects.length < 1 ? (
-        <NoData />
-      ) : (
-        <div className="mt-4 flex w-full overflow-auto">
-          <div className="h-full w-2/5">
-            <ScrollArea type="hover" h="100%" scrollbars="y" scrollbarSize={4}>
-              {projects.map((project: Project) => (
-                <ProjectCard projectObject={project} key={project.code} />
-              ))}
-            </ScrollArea>
+          <div className="mt-4 w-full">
+            {/* {user.resources.includes("create_projects") ? (
+              <>
+                <Button
+                  variant="filled"
+                  leftSection={<IoCreate size={20} />}
+                  onClick={() => navigate("/project/create")}
+                >
+                  Create project
+                </Button>
+                <UploadFileModal setFileUploaded={setFileUploaded} />
+              </>
+            ) : null} */}
+
+            {userHasResource("approve_projects") ? (
+              <>
+                <Button
+                  variant="filled"
+                  leftSection={<IoArrowBackCircleOutline size={20} />}
+                  onClick={() =>
+                    navigate(`/project?project=${searchParams.get("project")}`)
+                  }
+                >
+                  Back to projects management
+                </Button>
+                <ApproveAllModal />
+              </>
+            ) : null}
           </div>
-          <div className="h-full flex-1 px-4 pt-4">
-            <ProjectCardDetail />
+
+          <div
+            className={`mt-4 flex w-full gap-8 ${projects.length < 1 ? "hidden" : ""}`}
+          >
+            <div className="flex items-center gap-2">
+              <NativeSelect
+                value={paginationSize}
+                onChange={(event) => {
+                  setPaginationSize(event.currentTarget.value);
+                  setCurrentPage(1);
+                }}
+                data={["1", "5", "10", "20", "50"]}
+              />
+              <Text size="md" c="gray">
+                Projects per page
+              </Text>
+            </div>
+            <Pagination
+              value={currentPage}
+              onChange={(value) => {
+                setCurrentPage(value);
+              }}
+              total={currMaxPages}
+            />
           </div>
         </div>
-      )}
-    </div>
-  );
+
+        {projects.length < 1 ? (
+          <NoData />
+        ) : (
+          <div className="mt-4 flex w-full overflow-auto">
+            <div className="h-full w-2/5">
+              <ScrollArea
+                type="hover"
+                h="100%"
+                scrollbars="y"
+                scrollbarSize={4}
+              >
+                {projects.map((project: Project) => (
+                  <ProjectCard projectObject={project} key={project.code} />
+                ))}
+              </ScrollArea>
+            </div>
+            <div className="h-full flex-1 px-4 pt-4">
+              <ProjectCardDetail />
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+  return navigate("/forbidden");
 };
 
-export default ApproveProject;
+export default Project;

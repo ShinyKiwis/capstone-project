@@ -21,6 +21,8 @@ import { getBranchOptions } from "@/app/lib/getBranchOptions";
 import { useAuth } from "@/app/providers/AuthProvider";
 import useNavigate from "@/app/hooks/useNavigate";
 import { useEffect } from "react";
+import { toggleNotification } from "@/app/lib/notification";
+import { userHasResource } from "@/app/lib/userHasResource";
 
 const CreateProject = () => {
   // Background data initialization
@@ -39,7 +41,7 @@ const CreateProject = () => {
     initialValues: {
       name: "",
       stage: "1",
-      majors: [],
+      programs: [],
       branches: [],
       supervisors: [],
       limit: "1",
@@ -57,7 +59,7 @@ const CreateProject = () => {
     },
     validate: {
       name: (value) => (value.length < 1 ? "Project title is required" : null),
-      majors: (value) =>
+      programs: (value) =>
         value.length < 1 ? "Must select at least 1 Program" : null,
       branches: (value) =>
         value.length < 1 ? "Must select at least 1 Branch" : null,
@@ -72,19 +74,24 @@ const CreateProject = () => {
   });
 
   useEffect(() => {
-    if (user && user.resources.includes('create_projects')){
-      form.setFieldValue('supervisors', [user.id.toString()]);
-      form.setFieldValue('owner.id', user.id);
+    if (user && userHasResource("create_projects")) {
+      form.setFieldValue("supervisors", [user.id.toString()]);
+      form.setFieldValue("owner.id", user.id);
     }
   }, []);
 
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  async function handleFormSubmit(values: any) {
+  async function handleFormSubmit(values: any, type: "submit" | "save") {
     // Check fields
     if (form.validate().hasErrors) {
-      console.error("Form validation failed");
+      // console.error("Form validation failed");
+      toggleNotification(
+        "Error",
+        "Please fill out the required fields.",
+        "danger",
+      );
       return;
     }
 
@@ -108,27 +115,35 @@ const CreateProject = () => {
     });
     newProjectBody.stage = parseInt(newProjectBody.stage);
     newProjectBody.limit = parseInt(newProjectBody.limit);
+    newProjectBody.status =
+      type === "submit" ? "WAITING_FOR_DEPARTMENT_HEAD" : "DRAFT";
     delete newProjectBody.requirements; // API currently dont work with reqs
 
     console.log("Submit:", newProjectBody);
     axios
       .post("http://localhost:3500/projects", newProjectBody)
       .then((res) => {
-        console.log("Project submitted successful");
+        // console.log("Project submitted successful");
         queryClient.invalidateQueries({
           queryKey: ["projects"],
         });
-        router.push(
+        navigate(
           `/project?project=${newProjectBody.stage === 1 ? "specialized" : "capstone"}`,
+        );
+        toggleNotification(
+          "Success",
+          `Your project is ${type === "submit" ? "submitted" : "saved"} !`,
+          "success",
         );
       })
       .catch((error) => {
         console.error("Error posting project:", error.response);
+        toggleNotification("Error", `Can not ${type} your project !`, "danger");
       });
   }
 
   // Main return
-  return user?.resources.includes("create_projects") ? (
+  return userHasResource("create_projects") ? (
     <div className="h-full w-full bg-white">
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
         <form
@@ -174,6 +189,22 @@ const CreateProject = () => {
                   required
                   {...form.getInputProps("stage")}
                 />
+                <NumberInput
+                  label="Year"
+                  defaultValue={2024}
+                  min={1957}
+                  max={9999}
+                  clampBehavior="strict"
+                  placeholder="Year"
+                  {...form.getInputProps("semester.year")}
+                />
+                <NativeSelect
+                  label="Semester"
+                  data={["1", "2", "3"]}
+                  aria-placeholder="Semester"
+                  {...form.getInputProps("semester.no")}
+                />
+
                 <MultiSelect
                   label="Program"
                   placeholder="Select project programs"
@@ -188,11 +219,11 @@ const CreateProject = () => {
                 <MultiSelect
                   label="Branch"
                   placeholder={
-                    form.values.majors.length < 1
+                    form.values.programs.length < 1
                       ? "Select program(s) first"
                       : "Select available branches"
                   }
-                  data={getBranchOptions(form.values.majors, programBranches)}
+                  data={getBranchOptions(form.values.programs, programBranches)}
                   required
                   {...form.getInputProps("branches")}
                 />
@@ -208,32 +239,6 @@ const CreateProject = () => {
               </div>
               <div className="w-2/3">
                 <div className="flex h-full flex-col">
-                  <InputFieldTitle title="Requirements" />
-                  <MantineRichText
-                    content={form.getInputProps("requirements").value}
-                    onChange={form.getInputProps("requirements").onChange}
-                    error={form.getInputProps("requirements").error}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* instructors and desc section */}
-            <div className="mt-4 flex h-fit gap-4">
-              <div className="h-fit min-h-[16rem] w-1/3">
-                <InputFieldTitle title="Instructors" required />
-                <ProfileSelector
-                  onChange={form.getInputProps("supervisors").onChange}
-                  value={form.getInputProps("supervisors").value}
-                  error={form.getInputProps("supervisors").error}
-                  optionsData={supervisorOpts}
-                  placeholder="Search instructor name, id"
-                  limit={7}
-                />
-              </div>
-
-              <div className="w-2/3">
-                <div className="flex h-full flex-col">
                   <InputFieldTitle title="Description" required />
                   <MantineRichText
                     content={form.getInputProps("description").value}
@@ -244,15 +249,16 @@ const CreateProject = () => {
               </div>
             </div>
 
-            {/* Members and tasks section */}
+            {/* instructors and tasks section */}
             <div className="mt-4 flex h-fit gap-4">
               <div className="h-fit min-h-[16rem] w-1/3">
-                <InputFieldTitle title="Members" />
-                <StudentProfileSelector
-                  onChange={form.getInputProps("students").onChange}
-                  value={form.getInputProps("students").value}
-                  placeholder="Search student name, id"
-                  searchApi="http://localhost:3500/users/students"
+                <InputFieldTitle title="Instructors" required />
+                <ProfileSelector
+                  onChange={form.getInputProps("supervisors").onChange}
+                  value={form.getInputProps("supervisors").value}
+                  error={form.getInputProps("supervisors").error}
+                  optionsData={supervisorOpts}
+                  placeholder="Search instructor name, id"
                   limit={7}
                 />
               </div>
@@ -269,8 +275,19 @@ const CreateProject = () => {
               </div>
             </div>
 
+            {/* Members and refs section */}
             <div className="mt-4 flex h-fit gap-4">
-              <div className="h-64 w-1/3"></div>
+              <div className="h-fit min-h-[16rem] w-1/3">
+                <InputFieldTitle title="Members" />
+                <StudentProfileSelector
+                  onChange={form.getInputProps("students").onChange}
+                  value={form.getInputProps("students").value}
+                  placeholder="Search student name, id"
+                  searchApi="http://localhost:3500/users/students"
+                  limit={7}
+                />
+              </div>
+
               <div className="w-2/3">
                 <div className="flex h-full flex-col">
                   <InputFieldTitle title="References" required />
@@ -282,34 +299,57 @@ const CreateProject = () => {
                 </div>
               </div>
             </div>
+
+            <div className="mt-4 flex h-fit gap-4">
+              <div className="h-64 w-1/3"></div>
+              <div className="w-2/3">
+                <div className="flex h-full flex-col">
+                  <InputFieldTitle title="Requirements" />
+                  <MantineRichText
+                    content={form.getInputProps("requirements").value}
+                    onChange={form.getInputProps("requirements").onChange}
+                    error={form.getInputProps("requirements").error}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end gap-4 pb-4 pt-4">
             <Button
               type="submit"
-              color="lime"
+              variant="outline"
               onClick={() => {
-                form.values.status = "WAITING_FOR_DEPARTMENT_HEAD";
-                handleFormSubmit(form.values);
+                router.back();
               }}
             >
-              Submit for approval
+              Cancel
             </Button>
             <Button
               type="submit"
               onClick={() => {
-                form.values.status = "DRAFT";
-                handleFormSubmit(form.values);
+                handleFormSubmit(form.values, "save");
               }}
             >
               Save Changes
+            </Button>
+            <Button
+              type="submit"
+              color="lime"
+              onClick={() => {
+                handleFormSubmit(form.values, "submit");
+              }}
+            >
+              Submit for approval
             </Button>
           </div>
         </form>
       </ScrollArea>
     </div>
   ) : (
-    <></>
+    <div className="font mt-10 text-xl font-bold text-red-600">
+      You dont have permissions for creating new projects
+    </div>
   );
 };
 

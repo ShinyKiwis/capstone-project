@@ -8,6 +8,8 @@ import {
 } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../users/entities/user.entity';
+import { Version } from 'src/programs/entities/version.entity';
+import { Branch } from 'src/programs/entities/branch.entity';
 
 @Entity()
 export class Student {
@@ -35,4 +37,10 @@ export class Student {
 
   @Column({ nullable: true })
   enrolledAt: Date;
+
+  @ManyToOne(() => Version)
+  version: Version;
+
+  @ManyToOne(() => Branch)
+  branch: Branch;
 }

@@ -1,9 +1,10 @@
 "use client";
 
 import axios from "axios";
-import { useEffect } from "react";
+import { SyntheticEvent, useEffect } from "react";
 import { useForm } from "@mantine/form";
 import {
+  Text,
   Button,
   MultiSelect,
   NativeSelect,
@@ -11,6 +12,7 @@ import {
   ScrollArea,
   TextInput,
 } from "@mantine/core";
+import { modals } from "@mantine/modals";
 import MantineRichText from "@/app/_components/UserAction/MantineRichText";
 import ProfileSelector from "@/app/_components/UserAction/ProfileSelector";
 import { StudentProfileSelector } from "@/app/_components";
@@ -19,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { InputFieldTitle } from "../../ProjCEComponents";
 import { getBranchOptions } from "@/app/lib/getBranchOptions";
+import { toggleNotification } from "@/app/lib/notification";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   // Background data initialization
@@ -35,7 +38,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
     initialValues: {
       name: "",
       stage: "1",
-      majors: [],
+      programs: [],
       branches: [],
       supervisors: [],
       limit: 0,
@@ -54,7 +57,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
 
     validate: {
       name: (value) => (value.length < 1 ? "Project title is required" : null),
-      majors: (value) =>
+      programs: (value) =>
         value.length < 1 ? "Must select at least 1 Program" : null,
       branches: (value) =>
         value.length < 1 ? "Must select at least 1 Branch" : null,
@@ -78,8 +81,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         let fetchedFormData = {
           name: response.data.name,
           stage: response.data.stage,
-          majors: response.data.majors.map((major: Program) =>
-            major.id.toString(),
+          programs: response.data.programs.map((program: Program) =>
+            program.id.toString(),
           ),
           branches: response.data.branches.map((branch: Branch) =>
             branch.id.toString(),
@@ -96,11 +99,8 @@ const EditProject = ({ params }: { params: { id: string } }) => {
           references: response.data.references,
           requirements: response.data.requirements,
           status: "WAITING_FOR_DEPARTMENT_HEAD",
-          semester: {
-            year: 2023,
-            no: 2,
-          },
-          owner: { id: 3 },
+          semester: response.data.semester,
+          owner: response.data.owner,
         };
         form.setValues(fetchedFormData);
         // console.log("Initialized form:", fetchedFormData);
@@ -113,22 +113,17 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  async function handleFormSubmit(values: any) {
-    // Check fields
-    if (form.validate().hasErrors) {
-      console.error("Form validation failed");
-      return;
-    }
-
+  async function handleFormSubmit(values: any, type: 'submit'|'save') {
     // Transform data according to api's requirements
     let updatedProject = { ...values };
     updatedProject.students = updatedProject.students.map((jsonVal: string) => {
       return JSON.parse(jsonVal).userId;
     });
     updatedProject.stage = parseInt(updatedProject.stage);
+    updatedProject.status = (type==='submit') ? "WAITING_FOR_DEPARTMENT_HEAD" : "DRAFT";
     delete updatedProject.requirements; // API currently dont work with reqs
 
-    console.log("Submit:", updatedProject);
+    console.log("Updated:", updatedProject);
     axios
       .patch(`http://localhost:3500/projects/${params.id}`, updatedProject)
       .then((res) => {
@@ -139,10 +134,41 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         router.push(
           `/project?project=${updatedProject.stage === 1 ? "specialized" : "capstone"}`,
         );
+        toggleNotification("Success",`Your project is ${type==='submit' ? "submitted" : "saved"} !`,"success");
       })
       .catch((error) => {
         console.error("Error updating project:", error);
+        toggleNotification("Error",`Can not ${type} your project !`,"danger");
       });
+  }
+
+  function handleActionButton(e:SyntheticEvent, type: 'submit'|'save'){
+    e.stopPropagation();
+    // Check form fields
+    if (form.validate().hasErrors) {
+      // console.error("Form validation failed");
+      toggleNotification("Error","Please fill out the required fields.","danger");
+      return;
+    }
+    
+    modals.openConfirmModal({
+      title: (
+        <Text size="lg" c="green" fw={600}>
+          {type==='submit'? "Submit modified":"Save your"} project ?
+        </Text>
+      ),
+      children: (
+        <Text size="sm">
+          {type==='submit'? "Your project will need to be approved again." : "Your project will be saved as a draft and needed to be submitted, approved again."}
+        </Text>
+      ),
+      labels: { confirm: "Confirm", cancel: "Cancel" },
+      confirmProps: { color: "green" },
+      onCancel: () => {},
+      onConfirm: () => {
+        handleFormSubmit(form.values, type)
+      },
+    });
   }
 
   // Main return
@@ -174,7 +200,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                 <TextInput
                   label="Project ID"
                   disabled
-                  value={"System generated"}
+                  value={params.id}
                 />
                 <TextInput
                   label="Project owner"
@@ -193,25 +219,41 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                   required
                   {...form.getInputProps("stage")}
                 />
+                <NumberInput
+                  label="Year"
+                  defaultValue={2024}
+                  min={1957}
+                  max={9999}
+                  clampBehavior="strict"
+                  placeholder="Year"
+                  {...form.getInputProps("semester.year")}
+                />
+                <NativeSelect
+                  label="Semester"
+                  data={["1","2","3"]}
+                  aria-placeholder="Semester"
+                  {...form.getInputProps("semester.no")}
+                /> 
+
                 <MultiSelect
                   label="Program"
                   placeholder="Select project programs"
                   data={programOptions}
                   required
-                  {...form.getInputProps("majors")}
+                  {...form.getInputProps("programs")}
                   onChange={(val) => {
-                    form.getInputProps("majors").onChange(val);
+                    form.getInputProps("programs").onChange(val);
                     form.setValues({ branches: [] });
                   }}
                 />
                 <MultiSelect
                   label="Branch"
                   placeholder={
-                    form.values.majors.length < 1
+                    form.values.programs.length < 1
                       ? "Select program(s) first"
                       : "Select available branches"
                   }
-                  data={getBranchOptions(form.values.majors, programBranches)}
+                  data={getBranchOptions(form.values.programs, programBranches)}
                   required
                   {...form.getInputProps("branches")}
                 />
@@ -227,32 +269,6 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               </div>
               <div className="w-2/3">
                 <div className="flex h-full flex-col">
-                  <InputFieldTitle title="Requirements" />
-                  <MantineRichText
-                    content={form.getInputProps("requirements").value}
-                    onChange={form.getInputProps("requirements").onChange}
-                    error={form.getInputProps("requirements").error}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* instructors and desc section */}
-            <div className="mt-4 flex h-fit gap-4">
-              <div className="h-fit min-h-[16rem] w-1/3">
-                <InputFieldTitle title="Instructors" required />
-                <ProfileSelector
-                  onChange={form.getInputProps("supervisors").onChange}
-                  value={form.getInputProps("supervisors").value}
-                  error={form.getInputProps("supervisors").error}
-                  optionsData={supervisorOpts}
-                  placeholder="Search instructor name, id"
-                  limit={7}
-                />
-              </div>
-
-              <div className="w-2/3">
-                <div className="flex h-full flex-col">
                   <InputFieldTitle title="Description" required />
                   <MantineRichText
                     content={form.getInputProps("description").value}
@@ -263,15 +279,16 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               </div>
             </div>
 
-            {/* Members and tasks section */}
+            {/* instructors and tasks section */}
             <div className="mt-4 flex h-fit gap-4">
               <div className="h-fit min-h-[16rem] w-1/3">
-                <InputFieldTitle title="Members" />
-                <StudentProfileSelector
-                  onChange={form.getInputProps("students").onChange}
-                  value={form.getInputProps("students").value}
-                  placeholder="Search student name, id"
-                  searchApi="http://localhost:3500/users/students"
+                <InputFieldTitle title="Instructors" required />
+                <ProfileSelector
+                  onChange={form.getInputProps("supervisors").onChange}
+                  value={form.getInputProps("supervisors").value}
+                  error={form.getInputProps("supervisors").error}
+                  optionsData={supervisorOpts}
+                  placeholder="Search instructor name, id"
                   limit={7}
                 />
               </div>
@@ -288,8 +305,19 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               </div>
             </div>
 
+            {/* Members and refs section */}
             <div className="mt-4 flex h-fit gap-4">
-              <div className="h-64 w-1/3"></div>
+              <div className="h-fit min-h-[16rem] w-1/3">
+                <InputFieldTitle title="Members" />
+                <StudentProfileSelector
+                  onChange={form.getInputProps("students").onChange}
+                  value={form.getInputProps("students").value}
+                  placeholder="Search student name, id"
+                  searchApi="http://localhost:3500/users/students"
+                  limit={7}
+                />
+              </div>
+
               <div className="w-2/3">
                 <div className="flex h-full flex-col">
                   <InputFieldTitle title="References" required />
@@ -301,27 +329,48 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                 </div>
               </div>
             </div>
+
+            <div className="mt-4 flex h-fit gap-4">
+              <div className="h-64 w-1/3"></div>
+              <div className="w-2/3">
+                <div className="flex h-full flex-col">
+                  <InputFieldTitle title="Requirements" />
+                  <MantineRichText
+                    content={form.getInputProps("requirements").value}
+                    onChange={form.getInputProps("requirements").onChange}
+                    error={form.getInputProps("requirements").error}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end gap-4 pb-4 pt-4">
             <Button
               type="submit"
-              color="lime"
+              variant="outline"
               onClick={() => {
-                form.values.status = "WAITING_FOR_DEPARTMENT_HEAD";
-                handleFormSubmit(form.values);
+                router.back()
               }}
             >
-              Submit for approval
+              Cancel
             </Button>
             <Button
               type="submit"
-              onClick={() => {
-                form.values.status = "DRAFT";
-                handleFormSubmit(form.values);
+              onClick={(e) => {
+                handleActionButton(e, 'save');
               }}
             >
               Save Changes
+            </Button>
+            <Button
+              type="submit"
+              color="lime"
+              onClick={(e) => {
+                handleActionButton(e, 'submit');
+              }}
+            >
+              Submit for approval
             </Button>
           </div>
         </form>

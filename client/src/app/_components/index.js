@@ -20,3 +20,4 @@ export { default as UnenrollModal } from "./Modals/UnenrollModal";
 export { default as DenyModal } from "./Modals/DenyModal";
 export { default as DeactivateModal } from "./Modals/DeactivateModal";
 export { default as CreateProgramModal } from "./Modals/Program/CreateProgramModal";
+export { default as DeleteProjectModal } from "./Modals/DeleteProjectModal";

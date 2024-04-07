@@ -8,6 +8,7 @@ import {
   IconSquareChevronRight,
 } from "@tabler/icons-react";
 import { useAuth } from "@/app/providers/AuthProvider";
+import { userHasResource, userResourcesIncludes } from "@/app/lib/userHasResource";
 
 const SideBar = () => {
   const [toggleSidebar, setToggleSidebar] = useState(true);
@@ -35,8 +36,7 @@ const SideBar = () => {
         </button>
       </div>
       {sidebarItems.map((item) => {
-        return user?.resources.some((resource) =>
-          resource.includes(item.resource),
+        return (userResourcesIncludes(item.resource)
         ) ? (
           <SideBarItem
             expand={toggleSidebar}

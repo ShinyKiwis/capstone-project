@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import App from "../_components/App";
 import DeadlinesProvider from "../providers/DeadlinesProvider";
 import RolesProvider from "../providers/RolesProvider";
@@ -25,28 +25,36 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log("new query client");
+  const [queryClient] = useState(() => new QueryClient());
+
   const { user } = useAuth();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const navigate = useNavigate();
-  console.log("ROOTLAYOUT: ", user);
+  console.log();
   useEffect(() => {
     if (!user) {
       navigate("/login");
     }
   }, [user]);
 
-  // if (!isValid(pathname, searchParams, user)) return navigate("/forbidden");
+  if (!isValid(pathname, searchParams, user)) navigate("/forbidden");
 
   return user ? (
-    <BreadCrumbProvider>
-      <DeadlinesProvider>
-        <RolesProvider>
-          <ProjectProvider>
-            <App>{children}</App>
-          </ProjectProvider>
-        </RolesProvider>
-      </DeadlinesProvider>
-    </BreadCrumbProvider>
+    <QueryClientProvider client={queryClient}>
+      {
+        <BreadCrumbProvider>
+          <DeadlinesProvider>
+            <RolesProvider>
+              <ProjectProvider>
+                <App>{children}</App>
+              </ProjectProvider>
+            </RolesProvider>
+          </DeadlinesProvider>
+        </BreadCrumbProvider>
+      }
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   ) : (
     navigate("/login")
   );

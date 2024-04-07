@@ -7,6 +7,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { usePageTitleContext } from "@/app/providers/PageTitleProvider";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/providers/AuthProvider";
+import { userHasResource } from "@/app/lib/userHasResource";
 
 interface Page {
   title: string;
@@ -73,7 +74,7 @@ const SideBarItem = ({ Icon, title, pages, expand }: SideBarItemProps) => {
           </Accordion.Control>
           <Accordion.Panel>
             {pages.map((page) => {
-              return user?.resources.includes(page.resource) && page.display ? (
+              return userHasResource(page.resource) && page.display ? (
                 <NavLink
                   label={page.title}
                   href={page.href}

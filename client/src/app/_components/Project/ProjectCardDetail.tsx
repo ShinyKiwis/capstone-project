@@ -14,6 +14,7 @@ import { BsFillPeopleFill } from "react-icons/bs";
 import {
   ApproveModal,
   DeactivateModal,
+  DeleteProjectModal,
   DenyModal,
   EnrollModal,
   UnenrollModal,
@@ -22,6 +23,8 @@ import { useProjects } from "@/app/providers/ProjectProvider";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { usePathname, useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
+import { isStudent } from "@/app/lib/isStudent";
+import { userHasResource } from "@/app/lib/userHasResource";
 
 const ProjectCardDetail = () => {
   const projectContextValues = useProjects();
@@ -32,9 +35,9 @@ const ProjectCardDetail = () => {
 
   if (!viewing) return <Card className="shadow" h="100%" px="xl" radius="md" withBorder>Click on a project card to view details</Card>;
   return (
-    <Card className="shadow" h="100%" px="xl" radius="md" withBorder>
-      <ScrollArea h="100%" scrollbars="y" scrollbarSize={4}>
-        <Card.Section inheritPadding py="md">
+    <Card className="shadow" h="100%" radius="md" withBorder>
+      <ScrollArea h="100%" px='xl' scrollbars="y" scrollbarSize={4}>
+        <Card.Section inheritPadding py="md" className={isStudent(user) ? 'hidden' : ''}>
           <Badge color="yellow">{viewing.status}</Badge>
         </Card.Section>
         <Card.Section inheritPadding py="xs">
@@ -49,7 +52,7 @@ const ProjectCardDetail = () => {
                   Program
                 </Text>
                 <Text size="sm" fw={500}>
-                  {viewing.majors.map((major) => major.name).join(", ")}
+                  {viewing.programs.map((program) => program.name).join(", ")}
                 </Text>
               </div>
               <div>
@@ -126,28 +129,29 @@ const ProjectCardDetail = () => {
       </ScrollArea>
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
-          {user?.resources.includes("approve_projects") &&
+          {userHasResource("approve_projects") &&
           pathname.includes("approve") ? (
             <>
-              <ApproveModal targetProject={viewing} />
               <DenyModal targetProject={viewing} />
+              <ApproveModal targetProject={viewing} />
             </>
           ) : null}
           {!pathname.includes("approve") &&
-          user?.resources.includes("enroll_projects") ? (
+          userHasResource("enroll_projects") ? (
             <>
               {user?.project?.code === viewing.code ? (
-                <UnenrollModal />
+                <UnenrollModal targetProject={viewing} />
               ) : (
                 <EnrollModal targetProject={viewing} />
               )}
             </>
           ) : null}
           {!pathname.includes("approve") &&
-          user?.resources.includes("modify_projects") &&
+          userHasResource("modify_projects") &&
           viewing.owner.id === user?.id ? (
             <>
               <DeactivateModal targetProject={viewing} />
+              <DeleteProjectModal targetProject={viewing} />
               <Button
                 onClick={() => navigate(`project/edit/${viewing.code}`)}
               >

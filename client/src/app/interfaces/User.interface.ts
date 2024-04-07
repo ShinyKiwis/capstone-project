@@ -3,13 +3,13 @@ export interface User {
   name: string;
   username: string;
   email: string;
-  roles: {
-    id?: number;
-    roleName: string;
-    resources: string[];
-  }[];
-  [key: string]: any;
+  roles: Role[];
+  project?: {
+    code: number;
+  };
 }
+
+
 
 type UserOptType = {
   name: string;
