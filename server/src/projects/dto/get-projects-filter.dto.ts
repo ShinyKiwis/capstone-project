@@ -13,14 +13,19 @@ export class GetProjectsFilterDto {
   @IsOptional()
   limit: number;
 
-  @IsOptional()
-  registration: {
-    semester: {
-      year: number;
-      no: number;
-    };
-    id: number;
-  };
+  // @IsOptional()
+  // registration: {
+  //   semester: {
+  //     year: number;
+  //     no: number;
+  //   };
+  //   id: number;
+  // };
+  year: number;
+
+  no: number;
+
+  registration: number
 
   @IsOptional()
   page: number;

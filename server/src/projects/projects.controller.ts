@@ -45,9 +45,9 @@ export class ProjectsController {
   @Get()
   async getProjects(
     @Request() req,
-    @Query() queryfilterDto: GetProjectsFilterDto,
+    @Query() filterDto: GetProjectsFilterDto,
     @Session() session: Record<string, any>,
-    @Body() filterDto: GetProjectsFilterDto,
+    // @Body() filterDto: GetProjectsFilterDto,
   ) {
     // console.log(session);
     // session.visits = session.visits ? session.visits + 1 : 1;
@@ -62,7 +62,6 @@ export class ProjectsController {
     //     }
     //   });
     // }
-    console.log(queryfilterDto);
     console.log(filterDto);
     return this.projectsService.getProjects(filterDto);
   }

@@ -306,6 +306,8 @@ export class ProjectsRepository extends Repository<Project> {
       status,
       owner,
       registration,
+      year,
+      no,
       stage,
       programs,
       branches,
@@ -339,9 +341,9 @@ export class ProjectsRepository extends Repository<Project> {
       query.andWhere(
         'registration.id = :id AND registration.semesterYear = :year AND registration.semesterNo = :no',
         {
-          id: registration.id,
-          year: registration.semester.year,
-          no: registration.semester.no,
+          id: registration,
+          year,
+          no,
         },
       );
     }
