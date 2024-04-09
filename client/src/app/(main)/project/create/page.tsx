@@ -27,9 +27,13 @@ import { userHasResource } from "@/app/lib/userHasResource";
 const CreateProject = () => {
   // Background data initialization
   const navigate = useNavigate();
-  const generalDataValues = useGeneralData();
   const { user } = useAuth();
-  const { supervisorOpts, projectStages, programBranches } = generalDataValues;
+  const {
+    supervisorOpts,
+    projectStages,
+    programBranches,
+    registrationPeriods,
+  } = useGeneralData();
   const programOptions = programBranches.map((progbranch) => {
     return {
       label: progbranch.name,
@@ -51,9 +55,12 @@ const CreateProject = () => {
       references: "",
       requirements: "",
       status: "WAITING_FOR_DEPARTMENT_HEAD",
-      semester: {
-        year: 2023,
-        no: 2,
+      registration: {
+        id: 2,
+        semester: {
+          year: 2023,
+          no: 2,
+        },
       },
       owner: { id: 3 },
     },
@@ -74,7 +81,7 @@ const CreateProject = () => {
   });
 
   useEffect(() => {
-    if (user && userHasResource("create_projects")) {
+    if (user) {
       form.setFieldValue("supervisors", [user.id.toString()]);
       form.setFieldValue("owner.id", user.id);
     }
@@ -97,8 +104,8 @@ const CreateProject = () => {
 
     // Transform data according to api's requirements
     let newProjectBody = { ...values };
-    newProjectBody.majors = values.majors.map((majorid: string) => {
-      return { id: majorid };
+    newProjectBody.programs = values.programs.map((progId: string) => {
+      return { id: progId };
     });
     newProjectBody.branches = newProjectBody.branches.map(
       (branchid: string) => {
@@ -132,7 +139,7 @@ const CreateProject = () => {
         );
         toggleNotification(
           "Success",
-          `Your project is ${type === "submit" ? "submitted" : "saved"} !`,
+          `Your project has been ${type === "submit" ? "submitted" : "saved"} sucessfully!`,
           "success",
         );
       })
@@ -189,30 +196,26 @@ const CreateProject = () => {
                   required
                   {...form.getInputProps("stage")}
                 />
-                <NumberInput
-                  label="Year"
-                  defaultValue={2024}
-                  min={1957}
-                  max={9999}
-                  clampBehavior="strict"
-                  placeholder="Year"
-                  {...form.getInputProps("semester.year")}
-                />
-                <NativeSelect
-                  label="Semester"
-                  data={["1", "2", "3"]}
-                  aria-placeholder="Semester"
-                  {...form.getInputProps("semester.no")}
-                />
+                {/* <NativeSelect
+                  label="Registration period"
+                  data={registrationPeriods.map((reg) => {
+                    return {
+                      label: `${reg.semester.year} - Sem.${reg.semester.no}`,
+                      value: reg.id.toString(),
+                    };
+                  })}
+                  aria-placeholder="Registration period"
+                  {...form.getInputProps("registration")}
+                /> */}
 
                 <MultiSelect
                   label="Program"
                   placeholder="Select project programs"
                   data={programOptions}
                   required
-                  {...form.getInputProps("majors")}
+                  {...form.getInputProps("programs")}
                   onChange={(val) => {
-                    form.getInputProps("majors").onChange(val);
+                    form.getInputProps("programs").onChange(val);
                     form.setValues({ branches: [] });
                   }}
                 />
