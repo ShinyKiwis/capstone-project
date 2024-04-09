@@ -31,4 +31,12 @@ type ProgramBranch = {
   branches: Branch[],
 }
 
+type Registration = {
+  id: number;
+  semester: {
+    year: number;
+    no: number;
+  }
+}
+
 type MantineOptType = {value:string, label: string}

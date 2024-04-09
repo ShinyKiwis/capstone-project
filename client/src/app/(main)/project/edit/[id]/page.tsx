@@ -48,9 +48,12 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       references: "",
       requirements: "",
       status: "WAITING_FOR_DEPARTMENT_HEAD",
-      semester: {
-        year: 2023,
-        no: 2,
+      registration: {
+        id: 2,
+        semester: {
+          year: 2023,
+          no: 2,
+        },
       },
       owner: { id: 3 },
     },
@@ -219,21 +222,17 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                   required
                   {...form.getInputProps("stage")}
                 />
-                <NumberInput
-                  label="Year"
-                  defaultValue={2024}
-                  min={1957}
-                  max={9999}
-                  clampBehavior="strict"
-                  placeholder="Year"
-                  {...form.getInputProps("semester.year")}
-                />
-                <NativeSelect
-                  label="Semester"
-                  data={["1","2","3"]}
-                  aria-placeholder="Semester"
-                  {...form.getInputProps("semester.no")}
-                /> 
+                {/* <NativeSelect
+                  label="Registration period"
+                  data={registrationPeriods.map((reg) => {
+                    return {
+                      label: `${reg.semester.year} - Sem.${reg.semester.no}`,
+                      value: reg.id.toString(),
+                    };
+                  })}
+                  aria-placeholder="Registration period"
+                  {...form.getInputProps("registration")}
+                /> */}
 
                 <MultiSelect
                   label="Program"
