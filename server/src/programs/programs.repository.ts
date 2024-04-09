@@ -15,10 +15,11 @@ export class ProgramsRepository extends Repository<Program> {
   }
 
   async createAProgram(createMajorDto: CreateProgramDto) {
-    const { name, major } = createMajorDto;
+    const { name, major, description } = createMajorDto;
     const program = this.create({
       name,
       major,
+      description
     });
 
     await this.save(program);
