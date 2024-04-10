@@ -5,6 +5,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient, QueryKey } from "@tanstack/react-query";
 import { useAuth } from "./AuthProvider";
 import { isStudent } from "../lib/isStudent";
+import { userHasRole } from "../lib/userHasResource";
 // import { useUser } from "../hooks";
 
 interface ProjectContextProps {
@@ -49,6 +50,17 @@ export const ProjectProvider = ({
   const [currMaxPages, setCurrMaxPages] = useState(1);
 
   const { user } = useAuth();
+  var userRoleParams = '';
+  if (userHasRole('Student')){
+    userRoleParams = '&status=APPROVED';
+  }
+  if (userHasRole('DepartmentHead')){
+    userRoleParams = '&status=WAITING_FOR_DEPARTMENT_HEAD';
+  }
+  if (userHasRole('ProgramChair')){
+    userRoleParams = '&status=WAITING_FOR_PROGRAM_CHAIR';
+  }
+
   const queryClient = useQueryClient();
 
   const {
@@ -56,7 +68,7 @@ export const ProjectProvider = ({
     isLoading: specializedProjectsIsLoading,
   } = useQuery({
     queryFn: async () => {
-      let queryURL = `http://localhost:3500/projects?stage=1${isStudent(user) ? "&status=APPROVED" : ""}&page=${currentPage}&limit=${paginationSize}`;
+      let queryURL = `http://localhost:3500/projects?stage=1${userRoleParams}&page=${currentPage}&limit=${paginationSize}`;
       let response = await (await axios.get(queryURL)).data;
       console.log("refetched specialized projects");
       // if (renderingProjectsKey.includes('specialized') && !renderingProjectsKey.includes('searched'))
@@ -74,7 +86,7 @@ export const ProjectProvider = ({
       queryFn: async () => {
         let response = await (
           await axios.get(
-            `http://localhost:3500/projects?stage=2${isStudent(user) ? "&status=APPROVED" : ""}&page=${currentPage}&limit=${paginationSize}`,
+            `http://localhost:3500/projects?stage=2${userRoleParams}&page=${currentPage}&limit=${paginationSize}`,
           )
         ).data;
         console.log("refetch capstone projects");
@@ -91,7 +103,7 @@ export const ProjectProvider = ({
   const { data: searchedProjects = [], isFetching: searchedProjectsIsLoading } =
     useQuery({
       queryFn: async () => {
-        let searchURL = `http://localhost:3500/projects?stage=${renderingProjectsKey[1] === "specialized" ? 1 : 2}${isStudent(user) ? "&status=APPROVED" : ""}&page=${currentPage}&limit=${paginationSize}&search=${savedSearch}`;
+        let searchURL = `http://localhost:3500/projects?stage=${renderingProjectsKey[1] === "specialized" ? 1 : 2}${userRoleParams}&page=${currentPage}&limit=${paginationSize}&search=${savedSearch}`;
         let response = await (await axios.get(searchURL)).data;
         console.log("refetch searched projects");
         // if (renderingProjectsKey.includes('searched'))
@@ -113,7 +125,7 @@ export const ProjectProvider = ({
 
     axios
       .get(
-        `http://localhost:3500/projects?stage=${stage === "specialized" ? 1 : 2}${isStudent(user) ? "&status=APPROVED" : ""}&page=1&limit=10`,
+        `http://localhost:3500/projects?stage=${stage === "specialized" ? 1 : 2}${userRoleParams}&page=1&limit=10`,
       )
       .then((response) => {
         // console.log("Get new projects list", response);

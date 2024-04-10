@@ -24,7 +24,7 @@ import useNavigate from "@/app/hooks/useNavigate";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { usePathname, useSearchParams } from "next/navigation";
 import { isStudent } from "@/app/lib/isStudent";
-import { userHasResource } from "@/app/lib/userHasResource";
+import { userHasResource, userHasRole } from "@/app/lib/userHasResource";
 
 interface ProjectCardProps {
   projectObject: Project;
@@ -81,12 +81,16 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
       padding="xl"
       radius="md"
       my="md"
-      bg={viewing&&(viewing.code === projectObject.code) ? '#cffafe' : ''}
+      bg={viewing && viewing.code === projectObject.code ? "#cffafe" : ""}
       withBorder
       key={projectObject.code}
       onClick={() => setViewing(projectObject)}
     >
-      <Card.Section inheritPadding py="xs" className={isStudent(user) ? 'hidden' : ''}>
+      <Card.Section
+        inheritPadding
+        py="xs"
+        className={isStudent(user) ? "hidden" : ""}
+      >
         <Badge color="yellow">{projectObject.status}</Badge>
       </Card.Section>
       <Card.Section inheritPadding>
@@ -145,7 +149,15 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
           {userHasResource("approve_projects") &&
-          pathname.includes("approve") ? (
+          pathname.includes("approve") &&
+          projectObject.status != "APPROVED" && projectObject.status != "DRAFT" && projectObject.status != "REJECTED" &&
+          ((userHasRole("DepartmentHead") &&
+            projectObject.status.toLowerCase() ===
+              "waiting_for_department_head") ||
+            (userHasRole("ProgramChair") &&
+              projectObject.status.toLowerCase() ===
+                "waiting_for_program_chair") ||
+            userHasRole("SuperAdmin")) ? (
             <>
               <DenyModal targetProject={projectObject} />
               <ApproveModal targetProject={projectObject} />

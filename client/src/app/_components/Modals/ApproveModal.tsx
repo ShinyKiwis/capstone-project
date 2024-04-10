@@ -4,6 +4,7 @@ import { modals } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import React, { SyntheticEvent } from "react";
+import { toggleNotification } from "@/app/lib/notification";
 
 const ApproveModal = ({targetProject}:{targetProject: Project}) => {
   const queryClient = useQueryClient();
@@ -32,6 +33,7 @@ const ApproveModal = ({targetProject}:{targetProject: Project}) => {
         .then(async (res) =>{
           invalidateAndRefresh();
           console.log(`Approved project ${targetProject.code} to: ${nextStatus}`)
+          toggleNotification("Success", `Project ${targetProject.name} has been approved!`, 'success')
         })
         .catch((err) => console.error("Error approving project:", err))
       },

@@ -15,6 +15,7 @@ interface GeneralDataContextProps {
   setProjectStages: (stages: ProjectStage[]) => void;
   programBranches: ProgramBranch[];
   setProgramBranches: (pg: ProgramBranch[]) => void;
+  registrationPeriods: Registration[];
 }
 
 export const GeneralDataContext = createContext<GeneralDataContextProps | null>(
@@ -29,6 +30,7 @@ export const GeneralDataProvider = ({
   const [supervisorOpts, setSupervisorOpts] = useState<UserOptType[]>([]);
   const [projectStages, setProjectStages] = useState<ProjectStage[]>([]);
   const [programBranches, setProgramBranches] = useState<ProgramBranch[]>([]);
+  const [registrationPeriods, setRegistrationPeriods] = useState<Registration[]>([]);
 
   const [queryClient] =  useState(() => new QueryClient());
 
@@ -84,6 +86,24 @@ export const GeneralDataProvider = ({
         ],
       },
     ]);
+
+    // Get created deadlines
+    setRegistrationPeriods([
+      {
+        id: 1,
+        semester: {
+          year: 2023,
+          no: 1
+        }
+      },
+      {
+        id: 2,
+        semester: {
+          year: 2023,
+          no: 2
+        }
+      }
+    ])
   }, []);
 
   const GeneralDataContextValue: GeneralDataContextProps = {
@@ -93,6 +113,7 @@ export const GeneralDataProvider = ({
     setProjectStages,
     programBranches,
     setProgramBranches,
+    registrationPeriods
   };
 
   return (

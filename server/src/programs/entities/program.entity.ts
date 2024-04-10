@@ -20,6 +20,9 @@ export class Program {
   @Column()
   major: string;
 
+  @Column({nullable: true})
+  description: string;
+
   @OneToMany(() => Version, (version) => version.program, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',

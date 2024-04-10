@@ -28,10 +28,7 @@ interface ProjectFormProps {
   references: string;
   requirements: string;
   status: string;
-  semester: {
-    year: number;
-    no: number;
-  };
+  registration: Registration;
   owner: { id: number };
 }
 
