@@ -6,4 +6,6 @@ export class CreateProgramDto {
 
   @IsNotEmpty()
   major: string;
+
+  description: string;
 }
