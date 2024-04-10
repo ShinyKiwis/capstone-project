@@ -149,12 +149,14 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
         <Group justify="flex-end">
           {userHasResource("approve_projects") &&
           pathname.includes("approve") &&
+          projectObject.status != "APPROVED" && projectObject.status != "DRAFT" && projectObject.status != "REJECTED" &&
           ((userHasRole("DepartmentHead") &&
             projectObject.status.toLowerCase() ===
               "waiting_for_department_head") ||
             (userHasRole("ProgramChair") &&
               projectObject.status.toLowerCase() ===
-                "waiting_for_program_chair") || userHasRole('SuperAdmin')) ? (
+                "waiting_for_program_chair") ||
+            userHasRole("SuperAdmin")) ? (
             <>
               <DenyModal targetProject={projectObject} />
               <ApproveModal targetProject={projectObject} />
