@@ -59,13 +59,18 @@ const Login = () => {
             <span className="text-lg font-medium">Username</span>
             <TextInput
               placeholder="Username"
+              required
               {...form.getInputProps("username")}
             />
             <span className="text-lg font-medium">Password</span>
             <PasswordInput
               placeholder="Password"
+              required
               {...form.getInputProps("password")}
             />
+            
+            <div className="text-red-500">{error}</div>
+
             <Button type="submit" fullWidth className="my-2">
               Log in
             </Button>
