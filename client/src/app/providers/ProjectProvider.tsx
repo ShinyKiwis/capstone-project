@@ -49,7 +49,8 @@ export const ProjectProvider = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [currMaxPages, setCurrMaxPages] = useState(1);
 
-  const { user } = useAuth();
+  const {user} = useAuth();
+
   var userRoleParams = '';
   if (userHasRole('Student')){
     userRoleParams = '&status=APPROVED';
@@ -59,6 +60,17 @@ export const ProjectProvider = ({
   }
   if (userHasRole('ProgramChair')){
     userRoleParams = '&status=WAITING_FOR_PROGRAM_CHAIR';
+  }
+
+  function filterOtherDrafts(retreivedProjects: Project[]){
+    // console.log("Called filter");
+    // retreivedProjects.forEach(project => {console.log(!(project.status === 'DRAFT' && project.owner.id != user?.id))})
+    // Filter out draft projects not belong to current teacher; dept head and program chair should not see other teacher's draft projects
+    let filteredProjects = retreivedProjects.filter(project => !(project.status === 'DRAFT' && project.owner.id != user?.id))
+    if (userHasRole('DepartmentHead', undefined, user) || userHasRole('ProgramChair', undefined, user)){
+      filteredProjects = filteredProjects.filter(project => project.status != 'DRAFT')
+    }
+    return filteredProjects;
   }
 
   const queryClient = useQueryClient();
@@ -74,6 +86,7 @@ export const ProjectProvider = ({
       // if (renderingProjectsKey.includes('specialized') && !renderingProjectsKey.includes('searched'))
       //   setCurrMaxPages(response.total)
       // setSpecializedPages(response.total)
+      if (!isStudent(user)) response.projects = filterOtherDrafts(response.projects);
       return response;
     },
     queryKey: ["projects", "specialized"],
@@ -93,6 +106,7 @@ export const ProjectProvider = ({
         // if (renderingProjectsKey.includes('capstone') && !renderingProjectsKey.includes('searched'))
         //   setCurrMaxPages(response.total)
         // setCapstonePages(response.total);
+        if (!isStudent(user)) response.projects = filterOtherDrafts(response.projects);
         return response;
       },
       queryKey: ["projects", "capstone"],
@@ -106,9 +120,11 @@ export const ProjectProvider = ({
         let searchURL = `http://localhost:3500/projects?stage=${renderingProjectsKey[1] === "specialized" ? 1 : 2}${userRoleParams}&page=${currentPage}&limit=${paginationSize}&search=${savedSearch}`;
         let response = await (await axios.get(searchURL)).data;
         console.log("refetch searched projects");
+        console.log("Search URL:", searchURL);
         // if (renderingProjectsKey.includes('searched'))
         //   setCurrMaxPages(response.total)
         // setSearchedPages(response.total);
+        if (!isStudent(user)) response.projects = filterOtherDrafts(response.projects);
         return response;
       },
       queryKey: ["projects", renderingProjectsKey[1], "searched"],
@@ -130,6 +146,8 @@ export const ProjectProvider = ({
       .then((response) => {
         // console.log("Get new projects list", response);
         setRenderingProjectsKey(["projects", stage]);
+        setsavedSearch('')
+        if (!isStudent(user)) response.data.projects = filterOtherDrafts(response.data.projects);
         setProjects(response.data.projects);
         setViewing(response.data.projects[0]);
         setCurrentPage(1);

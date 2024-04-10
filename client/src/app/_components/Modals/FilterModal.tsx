@@ -146,9 +146,9 @@ const FilterModal = () => {
                   )
                   .join("");
                 let filterQuery = `${
-                  projectType !== "all" ? `owner=${user?.id}` : ""
+                  projectType !== "all" ? `&owner=${user?.id}` : ""
                 }${membersNo ? `&members=${membersNo == 0 ? '' : membersNo}` : ""}${branchParams}${programParams}${instructorParams}`;
-                console.log(`Filter Query:`, filterQuery);
+                console.log(`Filter Params:`, filterQuery);
                 handleSearchProjects(
                   filterQuery,
                   searchParams.get("project") || "",
