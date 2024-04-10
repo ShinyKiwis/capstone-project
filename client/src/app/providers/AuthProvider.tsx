@@ -45,18 +45,24 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = async (username: string, password: string) => {
-    const response = await axios.post(
-      process.env.NEXT_PUBLIC_AUTH_URL!,
-      {
-        username,
-        password,
-      },
-      {
-        withCredentials: true,
-      },
-    );
-    console.log(response);
-    const { authenticated, user } = response.data;
+    let response = null;
+    try {
+      response = await axios.post(
+        process.env.NEXT_PUBLIC_AUTH_URL!,
+        {
+          username,
+          password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+    } catch (error) {
+      setError("Service error: "+error)
+    }
+
+    // console.log(response);
+    const { authenticated, user } = response?.data;
     if (authenticated) {
       sessionStorage.setItem("user", JSON.stringify(user));
       setUser(user);

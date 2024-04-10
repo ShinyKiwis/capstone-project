@@ -51,7 +51,7 @@ const Login = () => {
               className="mb-12"
             />
           </div>
-          <Text c="red" fw={600}>{error}</Text>
+          
           <form
             onSubmit={form.onSubmit((values) => handleLogin(values))}
             className="flex w-full flex-col gap-2"
@@ -68,8 +68,8 @@ const Login = () => {
               required
               {...form.getInputProps("password")}
             />
-            
-            <div className="text-red-500">{error}</div>
+
+            <Text c="red" fw={600}>{error}</Text>
 
             <Button type="submit" fullWidth className="my-2">
               Log in
