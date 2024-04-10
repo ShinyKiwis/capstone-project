@@ -1,46 +1,24 @@
 "use client";
 import { CreateProgramModal, UploadFileModal } from "@/app/_components";
+import DeleteModal from "@/app/_components/Modals/DeleteModal";
+import EditProgramModal from "@/app/_components/Modals/Program/EditProgramModal";
 import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 import { ActionIcon, Box, Group, TextInput } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
 import { BiSearch } from "react-icons/bi";
-
-const records = [
-  {
-    id: 1,
-    name: "Computer Science",
-    major: "Computer Science",
-    description: "Computer Science",
-  },
-  {
-    id: 2,
-    name: "Software Engineering",
-    major: "Software Engineering",
-    description: "Software Engineering",
-  },
-  {
-    id: 3,
-    name: "Information Technology",
-    major: "Information Technology",
-    description: "Information Technology",
-  },
-  {
-    id: 4,
-    name: "Information Systems",
-    major: "Information Systems",
-    description: "Information Systems",
-  },
-  {
-    id: 5,
-    name: "Data Science",
-    major: "Data Science",
-    description: "Data Science",
-  },
-]
+import Program from "@/app/interfaces/Program.interface";
 
 const Program = () => {
+  const [programs, setPrograms] = useState([
+    {
+      id: 1,
+      name: "Computer Science",
+      major: "Computer Science",
+      description: "Computer Science",
+    },
+  ]);
   const { updateBreadCrumb } = useBreadCrumbs();
   const [fileUploaded, setFileUploaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -49,7 +27,7 @@ const Program = () => {
     updateBreadCrumb("Programs Management", "/program");
   }, []);
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       <div className="flex">
         <CreateProgramModal />
         <UploadFileModal
@@ -103,11 +81,18 @@ const Program = () => {
               render: (record) => {
                 return (
                   <Group gap={4} justify="center" wrap="nowrap">
+                    <EditProgramModal program={record} />
                     <ActionIcon
                       size="sm"
                       variant="subtle"
                       color="red"
-                      onClick={() => {}}
+                      onClick={DeleteModal<Program>(
+                        "program",
+                        record,
+                        programs,
+                        setPrograms,
+                        `${process.env.NEXT_PUBLIC_DELETE_PROGRAM_URL!}/${record.id}`,
+                      )}
                     >
                       <IconTrash size={16} />
                     </ActionIcon>
@@ -116,7 +101,7 @@ const Program = () => {
               },
             },
           ]}
-          records={records}
+          records={programs}
         />
       </div>
     </div>

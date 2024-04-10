@@ -1,18 +1,22 @@
+import { Dispatch, SetStateAction } from 'react';
 import { toggleNotification } from "@/app/lib/notification";
 import { modals } from "@mantine/modals";
 import { Text } from "@mantine/core";
 import axios from "axios";
 import { User } from "../../interfaces/User.interface";
+import Program from "@/app/interfaces/Program.interface";
+
+type DeleteObject = User | Program;
 
 const capitalize = (str: string) => {
   return str[0].toUpperCase() + str.slice(1);
 }
 
-const DeleteModal = (
+const DeleteModal = <T extends DeleteObject>(
   type: string,
-  object: User,
-  objects: (User)[],
-  setObjects: (objects: (User)[]) => void,
+  object: T,
+  objects: T[],
+  setObjects: Dispatch<SetStateAction<T[]>>,
   deleteUrl: string
 ) => {
   const deleteModal = () =>
@@ -33,7 +37,7 @@ const DeleteModal = (
           `${capitalize(type)} ${object.name} is deleted from database. This can't be undone`,
           "success",
         );
-        setObjects(objects.filter((existedObject) => existedObject.id != object.id));
+        setObjects(objects.filter((existedObject) => existedObject.id !== object.id));
         await axios.delete(deleteUrl);
       },
     });

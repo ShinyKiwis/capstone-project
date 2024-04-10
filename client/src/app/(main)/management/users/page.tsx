@@ -13,7 +13,6 @@ import {
   SettingsModal,
 } from "./components";
 import { reducer } from "./components/SettingsModal";
-import deleteUserModal from "./components/DeleteUserModal";
 import { User } from "./interface/User.interface";
 import DeleteModal from "@/app/_components/Modals/DeleteModal";
 
@@ -178,7 +177,7 @@ const Users = () => {
                       size="sm"
                       variant="subtle"
                       color="red"
-                      onClick={DeleteModal(
+                      onClick={DeleteModal<User>(
                         "user",
                         record,
                         users,

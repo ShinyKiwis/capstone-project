@@ -1,5 +1,6 @@
 import { Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import axios from "axios";
 import React, { useState } from "react";
 import { IoCreate } from "react-icons/io5";
 
@@ -8,6 +9,17 @@ const CreateProgramModal = () => {
   const [programName, setProgramName] = useState("");
   const [majorName, setMajorName] = useState("");
   const [description, setDescription] = useState("");
+
+  const handleCreateProgram = async () => {
+    const response = await axios.post(
+      process.env.NEXT_PUBLIC_CREATE_PROGRAMS_URL!,
+      {
+        name: programName,
+        major: majorName,
+        description: description,
+      },
+    );
+  };
   return (
     <>
       <Modal
@@ -53,7 +65,9 @@ const CreateProgramModal = () => {
             <Button onClick={close} variant="outline">
               Cancel
             </Button>
-            <Button variant="filled">Create general program</Button>
+            <Button variant="filled" onClick={handleCreateProgram}>
+              Create general program
+            </Button>
           </Group>
         </div>
       </Modal>
