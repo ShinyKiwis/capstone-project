@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ProgramsService } from './programs.service';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { CreateProgramDto } from './dto/create-program.dto';
 import { CreateVersionDto } from './dto/create-version.dto';
 import { CreateStudentOutcomeDto } from './dto/create-student-outcome.dto';
 import { CreatePerformanceIndicatorDto } from './dto/create-performance-indicator.dto';
+import { UpdateProgramDto } from './dto/update-program.dto';
 
 @Controller('programs')
 export class ProgramsController {
@@ -106,6 +107,11 @@ export class ProgramsController {
   @Post('branches')
   createABranch(@Body() createBranchDto: CreateBranchDto) {
     return this.programsService.createABranch(createBranchDto);
+  }
+
+  @Patch(':id')
+  updateAProgram(@Param('id') id: string, @Body() updateProgramDto: UpdateProgramDto) {
+    return this.programsService.updateAProgram(+id, updateProgramDto);
   }
 
   @Delete(':id')
