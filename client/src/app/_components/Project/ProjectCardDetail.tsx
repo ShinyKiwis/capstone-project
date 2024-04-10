@@ -24,7 +24,7 @@ import { useAuth } from "@/app/providers/AuthProvider";
 import { usePathname, useSearchParams } from "next/navigation";
 import useNavigate from "@/app/hooks/useNavigate";
 import { isStudent } from "@/app/lib/isStudent";
-import { userHasResource } from "@/app/lib/userHasResource";
+import { userHasResource, userHasRole } from "@/app/lib/userHasResource";
 
 const ProjectCardDetail = () => {
   const projectContextValues = useProjects();
@@ -33,11 +33,20 @@ const ProjectCardDetail = () => {
   const navigate = useNavigate();
   const pathname = usePathname();
 
-  if (!viewing) return <Card className="shadow" h="100%" px="xl" radius="md" withBorder>Click on a project card to view details</Card>;
+  if (!viewing)
+    return (
+      <Card className="shadow" h="100%" px="xl" radius="md" withBorder>
+        Click on a project card to view details
+      </Card>
+    );
   return (
     <Card className="shadow" h="100%" radius="md" withBorder>
-      <ScrollArea h="100%" px='xl' scrollbars="y" scrollbarSize={4}>
-        <Card.Section inheritPadding py="md" className={isStudent(user) ? 'hidden' : ''}>
+      <ScrollArea h="100%" px="xl" scrollbars="y" scrollbarSize={4}>
+        <Card.Section
+          inheritPadding
+          py="md"
+          className={isStudent(user) ? "hidden" : ""}
+        >
           <Badge color="yellow">{viewing.status}</Badge>
         </Card.Section>
         <Card.Section inheritPadding py="xs">
@@ -84,7 +93,10 @@ const ProjectCardDetail = () => {
               <div className="flex flex-col gap-1">
                 {viewing.students.map((student) => {
                   return (
-                    <div className="flex items-center gap-1" key={student.userId}>
+                    <div
+                      className="flex items-center gap-1"
+                      key={student.userId}
+                    >
                       <Avatar src={null} alt="no image here" color="indigo" />
                       <span>{student.user.name}</span>
                     </div>
@@ -130,7 +142,13 @@ const ProjectCardDetail = () => {
       <Card.Section inheritPadding py="xs">
         <Group justify="flex-end">
           {userHasResource("approve_projects") &&
-          pathname.includes("approve") ? (
+          pathname.includes("approve") &&
+          viewing.status != "APPROVED" && viewing.status != "DRAFT" && viewing.status != "REJECTED" &&
+          ((userHasRole("DepartmentHead") &&
+            viewing.status.toLowerCase() === "waiting_for_department_head") ||
+            (userHasRole("ProgramChair") &&
+              viewing.status.toLowerCase() === "waiting_for_program_chair") ||
+            userHasRole("SuperAdmin")) ? (
             <>
               <DenyModal targetProject={viewing} />
               <ApproveModal targetProject={viewing} />
@@ -152,9 +170,7 @@ const ProjectCardDetail = () => {
             <>
               <DeactivateModal targetProject={viewing} />
               <DeleteProjectModal targetProject={viewing} />
-              <Button
-                onClick={() => navigate(`project/edit/${viewing.code}`)}
-              >
+              <Button onClick={() => navigate(`project/edit/${viewing.code}`)}>
                 Edit
               </Button>
             </>

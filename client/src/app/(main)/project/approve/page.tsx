@@ -133,7 +133,7 @@ const Project = () => {
                 >
                   Back to projects management
                 </Button>
-                <ApproveAllModal />
+                {/* <ApproveAllModal /> */}
               </>
             ) : null}
           </div>

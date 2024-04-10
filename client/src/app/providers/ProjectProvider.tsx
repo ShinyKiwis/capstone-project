@@ -5,6 +5,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient, QueryKey } from "@tanstack/react-query";
 import { useAuth } from "./AuthProvider";
 import { isStudent } from "../lib/isStudent";
+import { userHasRole } from "../lib/userHasResource";
 // import { useUser } from "../hooks";
 
 interface ProjectContextProps {
@@ -48,7 +49,30 @@ export const ProjectProvider = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [currMaxPages, setCurrMaxPages] = useState(1);
 
-  const { user } = useAuth();
+  const {user} = useAuth();
+
+  var userRoleParams = '';
+  if (userHasRole('Student')){
+    userRoleParams = '&status=APPROVED';
+  }
+  if (userHasRole('DepartmentHead')){
+    userRoleParams = '&status=WAITING_FOR_DEPARTMENT_HEAD';
+  }
+  if (userHasRole('ProgramChair')){
+    userRoleParams = '&status=WAITING_FOR_PROGRAM_CHAIR';
+  }
+
+  function filterOtherDrafts(retreivedProjects: Project[]){
+    // console.log("Called filter");
+    // retreivedProjects.forEach(project => {console.log(!(project.status === 'DRAFT' && project.owner.id != user?.id))})
+    // Filter out draft projects not belong to current teacher; dept head and program chair should not see other teacher's draft projects
+    let filteredProjects = retreivedProjects.filter(project => !(project.status === 'DRAFT' && project.owner.id != user?.id))
+    if (userHasRole('DepartmentHead', undefined, user) || userHasRole('ProgramChair', undefined, user)){
+      filteredProjects = filteredProjects.filter(project => project.status != 'DRAFT')
+    }
+    return filteredProjects;
+  }
+
   const queryClient = useQueryClient();
 
   const {
@@ -56,12 +80,13 @@ export const ProjectProvider = ({
     isLoading: specializedProjectsIsLoading,
   } = useQuery({
     queryFn: async () => {
-      let queryURL = `http://localhost:3500/projects?stage=1${isStudent(user) ? "&status=APPROVED" : ""}&page=${currentPage}&limit=${paginationSize}`;
+      let queryURL = `http://localhost:3500/projects?stage=1${userRoleParams}&page=${currentPage}&limit=${paginationSize}`;
       let response = await (await axios.get(queryURL)).data;
       console.log("refetched specialized projects");
       // if (renderingProjectsKey.includes('specialized') && !renderingProjectsKey.includes('searched'))
       //   setCurrMaxPages(response.total)
       // setSpecializedPages(response.total)
+      if (!isStudent(user)) response.projects = filterOtherDrafts(response.projects);
       return response;
     },
     queryKey: ["projects", "specialized"],
@@ -74,13 +99,14 @@ export const ProjectProvider = ({
       queryFn: async () => {
         let response = await (
           await axios.get(
-            `http://localhost:3500/projects?stage=2${isStudent(user) ? "&status=APPROVED" : ""}&page=${currentPage}&limit=${paginationSize}`,
+            `http://localhost:3500/projects?stage=2${userRoleParams}&page=${currentPage}&limit=${paginationSize}`,
           )
         ).data;
         console.log("refetch capstone projects");
         // if (renderingProjectsKey.includes('capstone') && !renderingProjectsKey.includes('searched'))
         //   setCurrMaxPages(response.total)
         // setCapstonePages(response.total);
+        if (!isStudent(user)) response.projects = filterOtherDrafts(response.projects);
         return response;
       },
       queryKey: ["projects", "capstone"],
@@ -91,12 +117,14 @@ export const ProjectProvider = ({
   const { data: searchedProjects = [], isFetching: searchedProjectsIsLoading } =
     useQuery({
       queryFn: async () => {
-        let searchURL = `http://localhost:3500/projects?stage=${renderingProjectsKey[1] === "specialized" ? 1 : 2}${isStudent(user) ? "&status=APPROVED" : ""}&page=${currentPage}&limit=${paginationSize}&search=${savedSearch}`;
+        let searchURL = `http://localhost:3500/projects?stage=${renderingProjectsKey[1] === "specialized" ? 1 : 2}${userRoleParams}&page=${currentPage}&limit=${paginationSize}&search=${savedSearch}`;
         let response = await (await axios.get(searchURL)).data;
         console.log("refetch searched projects");
+        console.log("Search URL:", searchURL);
         // if (renderingProjectsKey.includes('searched'))
         //   setCurrMaxPages(response.total)
         // setSearchedPages(response.total);
+        if (!isStudent(user)) response.projects = filterOtherDrafts(response.projects);
         return response;
       },
       queryKey: ["projects", renderingProjectsKey[1], "searched"],
@@ -113,11 +141,13 @@ export const ProjectProvider = ({
 
     axios
       .get(
-        `http://localhost:3500/projects?stage=${stage === "specialized" ? 1 : 2}${isStudent(user) ? "&status=APPROVED" : ""}&page=1&limit=10`,
+        `http://localhost:3500/projects?stage=${stage === "specialized" ? 1 : 2}${userRoleParams}&page=1&limit=10`,
       )
       .then((response) => {
         // console.log("Get new projects list", response);
         setRenderingProjectsKey(["projects", stage]);
+        setsavedSearch('')
+        if (!isStudent(user)) response.data.projects = filterOtherDrafts(response.data.projects);
         setProjects(response.data.projects);
         setViewing(response.data.projects[0]);
         setCurrentPage(1);

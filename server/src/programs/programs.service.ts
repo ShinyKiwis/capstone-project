@@ -33,6 +33,10 @@ export class ProgramsService {
     return this.programsRepository.getAProgram(id);
   }
 
+  async getPrograms() {
+    return this.programsRepository.find({ relations: { versions: true } });
+  }
+
   async createAVersionForAProgram(
     programId: number,
     createVersionDto: CreateVersionDto,

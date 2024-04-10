@@ -23,3 +23,18 @@ export function userResourcesIncludes(resourceStr: string, currentUser?: User|nu
     role.resources.some((resource) => resource.name.includes(resourceStr)),
   );
 }
+
+export function userHasRole(roleName?: string, roleId?: number, currentUser?: User|null){
+  if (!currentUser){
+    currentUser = useAuth().user;
+  }
+  if (!currentUser) return false;
+
+  if (roleName){
+    return currentUser.roles.some(role => role.name === roleName)
+  }
+  if (roleId){
+    return currentUser.roles.some(role => role.id === roleId)
+  }
+  return false;
+}
