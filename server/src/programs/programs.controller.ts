@@ -24,6 +24,11 @@ export class ProgramsController {
     return this.programsService.getAProgram(+id);
   }
 
+  @Get()
+  GetPrograms() {
+    return this.programsService.getPrograms();
+  }
+
   @Post(':programId/versions')
   createAVersionForAProgram(
     @Param('programId') programId: string,

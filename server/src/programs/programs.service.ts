@@ -18,7 +18,7 @@ export class ProgramsService {
     private versionsRepository: VersionsRepository,
     private studentOutcomesRepository: StudentOutcomesRepository,
     private performanceIndicatorsRepository: PerformanceIndicatorsRepository,
-  ) {}
+  ) { }
 
   async createAProgram(createMajorDto: CreateProgramDto) {
     return this.programsRepository.createAProgram(createMajorDto);
@@ -30,6 +30,10 @@ export class ProgramsService {
 
   async getAProgram(id: number) {
     return this.programsRepository.getAProgram(id);
+  }
+
+  async getPrograms() {
+    return this.programsRepository.find({ relations: { versions: true } });
   }
 
   async createAVersionForAProgram(
