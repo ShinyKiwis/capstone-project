@@ -116,9 +116,9 @@ const Project = () => {
             <FilterModal />
           </div>
 
-          <div className="mt-4 w-full">
+          <div className="mt-4 w-full flex">
             {userHasResource("create_projects") ? (
-              <>
+              <div className="mr-4">
                 <Button
                   variant="filled"
                   leftSection={<IoCreate size={20} />}
@@ -127,13 +127,12 @@ const Project = () => {
                   Create project
                 </Button>
                 <UploadFileModal setFileUploaded={setFileUploaded} />
-              </>
+              </div>
             ) : null}
 
             {userHasResource("approve_projects") ? (
               <Button
                 leftSection={<FaRegCircleCheck />}
-                ms="md"
                 onClick={() =>
                   navigate(
                     `/project/approve?project=${searchParams.get("project")}`,
