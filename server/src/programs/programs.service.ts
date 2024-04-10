@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BranchesRepository } from './branches.repository';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { CreateProgramDto } from './dto/create-program.dto';
@@ -96,5 +96,12 @@ export class ProgramsService {
       studentOutcomeId,
       performanceIndicatorId,
     );
+  }
+
+  async deleteProgram(id: number) {
+    const result = await this.programsRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Project with Code "${id}" not found`);
+    }
   }
 }

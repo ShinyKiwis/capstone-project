@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ProgramsService } from './programs.service';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { CreateProgramDto } from './dto/create-program.dto';
@@ -106,5 +106,10 @@ export class ProgramsController {
   @Post('branches')
   createABranch(@Body() createBranchDto: CreateBranchDto) {
     return this.programsService.createABranch(createBranchDto);
+  }
+
+  @Delete(':id')
+  DeleteAProgram(@Param('id') id: string) {
+    return this.programsService.deleteProgram(+id);
   }
 }
