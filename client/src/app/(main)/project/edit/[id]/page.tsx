@@ -41,7 +41,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       programs: [],
       branches: [],
       supervisors: [],
-      limit: 0,
+      limit: '0',
       students: [],
       description: "",
       tasks: "",
@@ -71,6 +71,9 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         value.length < 1 ? "References can not be empty" : null,
       supervisors: (value) =>
         value.length < 1 ? "Must select at least 1 Instructor" : null,
+      students: (value, values) =>{
+        return value.length > parseInt(values.limit) ? "Can not select more students than members limit!" : null;
+      }
     },
   });
 
@@ -175,7 +178,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   }
 
   // Main return
-  if (form.values.limit === 0) return <div>Fetching project...</div>;
+  if (form.values.limit === '0') return <div>Fetching project...</div>;
   return (
     <div className="h-full w-full bg-white">
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
@@ -311,6 +314,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                 <StudentProfileSelector
                   onChange={form.getInputProps("students").onChange}
                   value={form.getInputProps("students").value}
+                  error={form.getInputProps("students").error}
                   placeholder="Search student name, id"
                   searchApi="http://localhost:3500/users/students"
                   limit={7}
