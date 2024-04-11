@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BranchesRepository } from './branches.repository';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { CreateProgramDto } from './dto/create-program.dto';
@@ -9,6 +9,7 @@ import { CreateStudentOutcomeDto } from './dto/create-student-outcome.dto';
 import { StudentOutcomesRepository } from './student-outcomes.repository';
 import { PerformanceIndicatorsRepository } from './performance-indicators.repository';
 import { CreatePerformanceIndicatorDto } from './dto/create-performance-indicator.dto';
+import { UpdateProgramDto } from './dto/update-program.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -100,5 +101,16 @@ export class ProgramsService {
       studentOutcomeId,
       performanceIndicatorId,
     );
+  }
+
+  async updateAProgram(id: number, updateProgramDto: UpdateProgramDto) {
+    return this.programsRepository.updateAProgram(id, updateProgramDto);
+  }
+
+  async deleteProgram(id: number) {
+    const result = await this.programsRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Project with Code "${id}" not found`);
+    }
   }
 }

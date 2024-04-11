@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Program } from './entities/program.entity';
 import { CreateProgramDto } from './dto/create-program.dto';
+import { UpdateProgramDto } from './dto/update-program.dto';
 
 @Injectable()
 export class ProgramsRepository extends Repository<Program> {
@@ -38,5 +39,24 @@ export class ProgramsRepository extends Repository<Program> {
       throw new NotFoundException(`Program with id ${id} not found`);
     }
     return program;
+  }
+
+  async updateAProgram(id: number, updateProgramDto: UpdateProgramDto) {
+    const { name, major, description } = updateProgramDto;
+    const program = await this.findOneBy({
+      id
+    });
+    if (!program) {
+      throw new NotFoundException(`Program with id ${id} not found`);
+    }
+
+    program.name = name;
+    program.major = major;
+    if (description) {
+      program.description = description;
+    }
+
+    await this.save(program);
+    return program
   }
 }

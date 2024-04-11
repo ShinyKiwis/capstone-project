@@ -21,7 +21,7 @@ export class PerformanceIndicator {
   @PrimaryColumn()
   studentOutcomeVersionProgramId: number;
 
-  @ManyToOne(() => StudentOutcome)
+  @ManyToOne(() => StudentOutcome, { onDelete: 'CASCADE'})
   studentOutcome: StudentOutcome;
 
   @Column()
