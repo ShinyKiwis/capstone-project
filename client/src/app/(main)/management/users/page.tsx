@@ -55,7 +55,7 @@ const Users = () => {
     if (users.length === 0) {
       fetchUsers();
     } else {
-      console.log("USERS MANAGEMENT: ", users);
+      // console.log("USERS MANAGEMENT: ", users);
       setRecords(users);
       setFetching(false);
     }
