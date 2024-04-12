@@ -11,7 +11,11 @@ export class ProgramsRepository extends Repository<Program> {
   }
 
   async getAllPrograms() {
-    const programs = await this.find();
+    const programs = await this.find({
+      relations: {
+        versions: false
+      }
+    });
     return programs;
   }
 

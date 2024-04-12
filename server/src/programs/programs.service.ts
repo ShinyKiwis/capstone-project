@@ -34,7 +34,7 @@ export class ProgramsService {
   }
 
   async getPrograms() {
-    return this.programsRepository.find({ relations: { versions: true } });
+    return this.programsRepository.getAllPrograms();
   }
 
   async createAVersionForAProgram(
