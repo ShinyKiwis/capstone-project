@@ -1,16 +1,68 @@
+import { useProgram } from "@/app/providers/ProgramProvider";
 import { Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import { IoCreate } from "react-icons/io5";
 
+interface errorState {
+  nameError: string;
+  majorError: string;
+  descriptionError: string;
+}
+
+interface errorAction {
+  type: "set_name_error" | "set_major_error" | "set_description_error";
+}
+
+const reducer = (state: errorState, action: errorAction) => {
+  switch (action.type) {
+    case "set_name_error": {
+      return {
+        ...state,
+        nameError: "Name is required",
+      };
+    }
+    case "set_major_error": {
+      return {
+        ...state,
+        majorError: "Major is required",
+      };
+    }
+    case "set_description_error": {
+      return {
+        ...state,
+        descriptionError: "Description is required",
+      };
+    }
+  }
+};
+
 const CreateProgramModal = () => {
+  const [errors, dispatch] = useReducer(reducer, {
+    nameError: "",
+    majorError: "",
+    descriptionError: "",
+  });
   const [opened, { open, close }] = useDisclosure(false);
   const [programName, setProgramName] = useState("");
   const [majorName, setMajorName] = useState("");
   const [description, setDescription] = useState("");
+  const { programs, setPrograms } = useProgram();
 
   const handleCreateProgram = async () => {
+    if (programName === "") {
+      dispatch({ type: "set_name_error" });
+    }
+    if (majorName === "") {
+      dispatch({ type: "set_major_error" });
+    }
+    if (description === "") {
+      dispatch({ type: "set_description_error" });
+    }
+    if (programName === "" || majorName === "" || description === "") {
+      return
+    }
     const response = await axios.post(
       process.env.NEXT_PUBLIC_CREATE_PROGRAMS_URL!,
       {
@@ -19,6 +71,8 @@ const CreateProgramModal = () => {
         description: description,
       },
     );
+    setPrograms([...programs, response.data]);
+    close();
   };
   return (
     <>
@@ -43,6 +97,8 @@ const CreateProgramModal = () => {
             autoFocus
             value={programName}
             onChange={(event) => setProgramName(event.currentTarget.value)}
+            error={errors.nameError}
+            placeholder="Program name"
           />
           <Text size="md" fw={600} className="my-2">
             Major name
@@ -50,6 +106,8 @@ const CreateProgramModal = () => {
           <TextInput
             value={majorName}
             onChange={(event) => setMajorName(event.currentTarget.value)}
+            error={errors.majorError}
+            placeholder="Major name"
           />
           <Text size="md" fw={600} className="my-2">
             Description
@@ -60,6 +118,8 @@ const CreateProgramModal = () => {
             minRows={4}
             maxRows={6}
             onChange={(event) => setDescription(event.currentTarget.value)}
+            error={errors.descriptionError}
+            placeholder="Description of the program"
           />
           <Group justify="flex-end" gap="xs" mt="md">
             <Button onClick={close} variant="outline">

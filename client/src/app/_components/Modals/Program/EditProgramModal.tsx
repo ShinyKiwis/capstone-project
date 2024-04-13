@@ -1,4 +1,4 @@
-import { Program } from "@/app/providers/ProgramProvider";
+import Program from "@/app/interfaces/Program.interface";
 import {
   ActionIcon,
   Button,

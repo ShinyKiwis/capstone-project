@@ -127,7 +127,7 @@ const Project = () => {
                   Create project
                 </Button>
                 <UploadFileModal object="projects" setFileUploaded={setFileUploaded} />
-              </>
+              </div>
             ) : null}
 
             {userHasResource("approve_projects") ? (

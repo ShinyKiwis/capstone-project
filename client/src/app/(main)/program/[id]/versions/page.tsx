@@ -1,41 +1,48 @@
 "use client";
-import { CreateProgramModal, UploadFileModal } from "@/app/_components";
+import { useEffect, useState } from "react";
+import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
+import { useProgram } from "@/app/providers/ProgramProvider";
+import Program from "@/app/interfaces/Program.interface";
+import { CreateProgramVersionModal, UploadFileModal } from "@/app/_components";
 import DeleteModal from "@/app/_components/Modals/DeleteModal";
 import EditProgramModal from "@/app/_components/Modals/Program/EditProgramModal";
-import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
-import { ActionIcon, Box, Group, TextInput } from "@mantine/core";
+import { TextInput, Box, Group, ActionIcon, Anchor } from "@mantine/core";
 import { IconEye, IconTrash } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
-import React, { useEffect, useState } from "react";
-import { BiSearch } from "react-icons/bi";
-import Program from "@/app/interfaces/Program.interface";
-import { useProgram } from "@/app/providers/ProgramProvider";
 import Link from "next/link";
+import { BiSearch } from "react-icons/bi";
 
-const Program = () => {
-  const { programs } = useProgram();
-  const [loadedPrograms, setLoadedPrograms] = useState<Program[]>([]);
-  const { buildBreadCrumbs } = useBreadCrumbs();
-  const [fileUploaded, setFileUploaded] = useState(false);
+const Page = ({ params }: { params: { id: string } }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [program, setProgram] = useState<Program | null>(null);
+  const [fileUploaded, setFileUploaded] = useState(false);
+  const { buildBreadCrumbs } = useBreadCrumbs();
+  const { getProgram } = useProgram();
 
   useEffect(() => {
-    setLoadedPrograms(programs);
-  }, [programs]);
+    const fetchProgram = async () => {
+      const targetProgram = await getProgram(parseInt(params.id));
+      if (targetProgram) {
+        console.log("TARGET:", targetProgram);
+        buildBreadCrumbs(targetProgram);
+        setProgram(targetProgram);
+      }
+    };
 
-  useEffect(() => {
-    buildBreadCrumbs();
-  }, []);
-  return (
+    if (!program) {
+      fetchProgram();
+    }
+  });
+  return program ? (
     <div className="flex h-full flex-col">
       <div className="flex">
-        <CreateProgramModal />
+        <CreateProgramVersionModal />
         <UploadFileModal
-          object="general programs"
+          object="program versions"
           setFileUploaded={setFileUploaded}
         />
         <TextInput
-          placeholder="Search general program..."
+          placeholder="Search program version..."
           className="ms-auto w-72"
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.currentTarget.value)}
@@ -54,28 +61,29 @@ const Program = () => {
           columns={[
             {
               accessor: "id",
-              title: "Program ID",
+              title: "Version ID",
               width: "10%",
               sortable: true,
               render: (record) => {
                 return (
-                  <Link
-                    href={`/program/${record.id}/versions`}
+                  <Anchor
+                    component={Link}
+                    href={`/program/${program.id}/versions/${record.id}`}
                     className="text-blue-600 underline hover:text-blue-900"
                   >
                     {record.id}
-                  </Link>
+                  </Anchor>
                 );
               },
             },
             {
               accessor: "name",
-              title: "Program Name",
+              title: "Effective Period",
               sortable: true,
             },
             {
-              accessor: "major",
-              title: "Major",
+              accessor: "branches",
+              title: "Branches",
               sortable: true,
             },
             {
@@ -96,18 +104,11 @@ const Program = () => {
                         <IconEye size={16} />
                       </Link>
                     </ActionIcon>
-                    <EditProgramModal program={record} />
                     <ActionIcon
                       size="sm"
                       variant="subtle"
                       color="red"
-                      onClick={DeleteModal<Program>(
-                        "program",
-                        record,
-                        programs,
-                        setLoadedPrograms,
-                        `${process.env.NEXT_PUBLIC_DELETE_PROGRAM_URL!}/${record.id}`,
-                      )}
+                      onClick={() => {}}
                     >
                       <IconTrash size={16} />
                     </ActionIcon>
@@ -116,11 +117,13 @@ const Program = () => {
               },
             },
           ]}
-          records={loadedPrograms}
+          records={program.versions}
         />
       </div>
     </div>
+  ) : (
+    <div>Program not found</div>
   );
 };
 
-export default Program;
+export default Page;
