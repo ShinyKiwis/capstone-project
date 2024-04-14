@@ -5,6 +5,7 @@ import { VersionsRepository } from 'src/programs/versions.repository';
 import { PerformanceIndicator } from './entities/performance-indicator.entity';
 import { CreatePerformanceIndicatorDto } from './dto/create-performance-indicator.dto';
 import { StudentOutcomesRepository } from './student-outcomes.repository';
+import { UpdatePerformanceIndicatorDto } from './dto/update-performance-indicator.dto';
 
 @Injectable()
 export class PerformanceIndicatorsRepository extends Repository<PerformanceIndicator> {
@@ -73,6 +74,36 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
         `Performance Indicator with id ${performanceIndicatorId} of Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} not found`,
       );
     }
+    return performanceIndicator;
+  }
+
+  async updateAPerformanceIndicator(
+    programId: number,
+    versionId: number,
+    studentOutcomeId: number,
+    performanceIndicatorId: number,
+    updatePerformanceIndicatorDto: UpdatePerformanceIndicatorDto
+  ) {
+    const { name, description, expectedGoal, passingThreshold } = updatePerformanceIndicatorDto;
+    const performanceIndicator = await this.findOneBy({
+      studentOutcomeVersionProgramId: programId,
+      studentOutcomeVersionId: versionId,
+      studentOutcomeId,
+      id: performanceIndicatorId
+    });
+    if(!performanceIndicator) {
+      throw new NotFoundException(
+        `Performance Indicator with id ${performanceIndicatorId} of Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
+
+    if(name) performanceIndicator.name = name;
+    if(description) performanceIndicator.description = description;
+    if(expectedGoal) performanceIndicator.expectedGoal = expectedGoal;
+    if(passingThreshold) performanceIndicator.passingThreshold = passingThreshold
+
+    await this.save(performanceIndicator);
+
     return performanceIndicator;
   }
 }

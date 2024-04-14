@@ -6,6 +6,8 @@ import { CreateVersionDto } from './dto/create-version.dto';
 import { CreateStudentOutcomeDto } from './dto/create-student-outcome.dto';
 import { CreatePerformanceIndicatorDto } from './dto/create-performance-indicator.dto';
 import { UpdateProgramDto } from './dto/update-program.dto';
+import { UpdatePerformanceIndicatorDto } from './dto/update-performance-indicator.dto';
+import { UpdateVersionDto } from './dto/update-version.dto';
 
 @Controller('programs')
 export class ProgramsController {
@@ -53,8 +55,9 @@ export class ProgramsController {
   UpdateAVersion(
     @Param('programId') programId: string,
     @Param('versionId') versionId: string,
+    @Body() updateVersionDto: UpdateVersionDto
   ) {
-    return this.programsService.updateAVersion(+programId, +versionId);
+    return this.programsService.updateAVersion(+programId, +versionId, updateVersionDto);
   }
 
   @Post(':programId/versions/:versionId/student-outcomes')
@@ -115,6 +118,17 @@ export class ProgramsController {
       +studentOutcomeId,
       +performanceIndicatorId,
     );
+  }
+
+  @Patch(':programId/versions/:versionId/student-outcomes/:studentOutcomeId/performance-indicators/:performanceIndicatorId')
+  UpdateAPerformanceIndicator(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('studentOutcomeId') studentOutcomeId: string,
+    @Param('performanceIndicatorId') performanceIndicatorId: string,
+    updatePerformanceIndicatorDto: UpdatePerformanceIndicatorDto
+  ) {
+    return this.programsService.updateAPerformanceIndicator(+programId, +versionId, +studentOutcomeId, +performanceIndicatorId, updatePerformanceIndicatorDto);
   }
 
   @Post('branches')
