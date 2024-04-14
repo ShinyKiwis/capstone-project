@@ -30,7 +30,7 @@ export class Version {
   // @JoinTable()
   // semesters: Semester[];
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   @OneToMany(() => StudentOutcome, (studentOutcome) => studentOutcome.version, {
