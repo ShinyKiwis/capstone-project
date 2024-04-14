@@ -47,8 +47,13 @@ export class ProgramsRepository extends Repository<Program> {
 
   async updateAProgram(id: number, updateProgramDto: UpdateProgramDto) {
     const { name, major, description } = updateProgramDto;
-    const program = await this.findOneBy({
-      id
+    const program = await this.findOne({
+      where: {
+        id
+      },
+      relations: {
+        versions: true
+      }
     });
     if (!program) {
       throw new NotFoundException(`Program with id ${id} not found`);
