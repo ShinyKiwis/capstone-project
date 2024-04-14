@@ -49,6 +49,14 @@ export class ProgramsController {
     return this.programsService.getAVersionOfAProgram(+programId, +versionId);
   }
 
+  @Patch(':programId/versions/:versionId')
+  UpdateAVersion(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+  ) {
+    return this.programsService.updateAVersion(+programId, +versionId);
+  }
+
   @Post(':programId/versions/:versionId/student-outcomes')
   createAStudentOutcome(
     @Param('programId') programId: string,

@@ -47,8 +47,12 @@ export class ProgramsService {
     );
   }
 
-  async getAVersionOfAProgram(versionId: number, programId: number) {
-    return this.versionsRepository.getAVersionOfAProgram(versionId, programId);
+  async getAVersionOfAProgram(programId: number, versionId: number) {
+    return this.versionsRepository.getAVersionOfAProgram(programId, versionId);
+  }
+
+  async updateAVersion(programId: number, versionId: number) {
+    return this.updateAVersion(programId, versionId);
   }
 
   async createAStudentOutcome(

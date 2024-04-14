@@ -5,6 +5,7 @@ import { CreateBranchDto } from './dto/create-branch.dto';
 import { Version } from './entities/version.entity';
 import { CreateVersionDto } from './dto/create-version.dto';
 import { ProgramsRepository } from './programs.repository';
+import { UpdateVersionDto } from './dto/update-version.dto';
 
 @Injectable()
 export class VersionsRepository extends Repository<Version> {
@@ -77,5 +78,33 @@ export class VersionsRepository extends Repository<Version> {
       );
     }
     return;
+  }
+
+  async updateAVersion(programId: number, versionId: number, updateVersionDto: UpdateVersionDto) {
+    const { name, startDate, endDate } = updateVersionDto;
+    const version = await this.findOneBy({
+      programId,
+      id: versionId
+    });
+    if (!version) {
+      throw new NotFoundException(
+        `Version with id ${versionId} of program with id ${programId} does not exist`,
+      );
+    }
+    if(name) {
+      version.name = name;
+    }
+
+    if(startDate) {
+      version.startDate = startDate;
+    }
+
+    if(endDate) {
+      version.endDate = endDate;
+    }
+
+    await this.save(version);
+
+    return version;
   }
 }
