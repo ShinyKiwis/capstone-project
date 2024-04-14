@@ -13,7 +13,7 @@ export class ProgramsRepository extends Repository<Program> {
   async getAllPrograms() {
     const programs = await this.find({
       relations: {
-        versions: false
+        versions: true
       }
     });
     return programs;
