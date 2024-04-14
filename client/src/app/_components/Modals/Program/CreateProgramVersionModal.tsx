@@ -14,6 +14,7 @@ import axios from "axios";
 import React, { useReducer, useState } from "react";
 import { IoCreate } from "react-icons/io5";
 import { IoMdCalendar } from "react-icons/io";
+import Program from "@/app/interfaces/Program.interface";
 
 interface errorState {
   versionIdError: string;
@@ -75,7 +76,7 @@ const reducer = (state: errorState, action: errorAction) => {
   }
 };
 
-const CreateProgramVersionModal = () => {
+const CreateProgramVersionModal = ({ programId }: { programId: number }) => {
   const [errors, dispatch] = useReducer(reducer, {
     versionIdError: "",
     startsAtError: "",
@@ -121,15 +122,23 @@ const CreateProgramVersionModal = () => {
       return;
     }
 
-    // const response = await axios.post(
-    //   process.env.NEXT_PUBLIC_CREATE_PROGRAMS_URL!,
-    //   {
-    //     name: versionId,
-    //     major: majorName,
-    //     description: description,
-    //   },
-    // );
-    // setPrograms([...programs, response.data]);
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions`,
+      {
+        name: versionId,
+        startDate: startsAt,
+        endDate: endsAt,
+        description: description,
+      },
+    );
+    console.log(programs)
+    setPrograms(
+      programs.map((p) =>
+        p.id === programId
+          ? { ...p, versions: [...p.versions, response.data] }
+          : p,
+      ),
+    );
     close();
   };
   return (
@@ -177,7 +186,7 @@ const CreateProgramVersionModal = () => {
               error={errors.endsAtError || errors.dateError}
             />
           </div>
-          <Text size="md" fw={600} className="my-2">
+          {/* <Text size="md" fw={600} className="my-2">
             Branches
           </Text>
           <MultiSelect
@@ -185,7 +194,7 @@ const CreateProgramVersionModal = () => {
             value={branches}
             onChange={setBranches}
             error={errors.branchesError}
-          />
+          /> */}
           <Text size="md" fw={600} className="my-2">
             Description
           </Text>

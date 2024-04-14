@@ -1,3 +1,4 @@
+import { toggleNotification } from "@/app/lib/notification";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import { Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -72,6 +73,11 @@ const CreateProgramModal = () => {
       },
     );
     setPrograms([...programs, response.data]);
+    toggleNotification(
+      `Create program "${programName} successfully`,
+      `Create program "${programName}" successfully.`,
+      "success",
+    );
     close();
   };
   return (

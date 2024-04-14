@@ -52,7 +52,7 @@ const Page = ({ params }: { params: { id: string } }) => {
         </Text>
       </div>
       <div className="flex mt-2">
-        <CreateProgramVersionModal />
+        <CreateProgramVersionModal programId={program.id}/>
         <UploadFileModal
           object="program versions"
           setFileUploaded={setFileUploaded}
@@ -97,11 +97,11 @@ const Page = ({ params }: { params: { id: string } }) => {
               title: "Effective Period",
               sortable: true,
             },
-            {
-              accessor: "branches",
-              title: "Branches",
-              sortable: true,
-            },
+            // {
+            //   accessor: "branches",
+            //   title: "Branches",
+            //   sortable: true,
+            // },
             {
               accessor: "description",
               title: "Description",
