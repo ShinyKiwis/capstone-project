@@ -12,6 +12,7 @@ import { CreatePerformanceIndicatorDto } from './dto/create-performance-indicato
 import { UpdateProgramDto } from './dto/update-program.dto';
 import { UpdatePerformanceIndicatorDto } from './dto/update-performance-indicator.dto';
 import { UpdateVersionDto } from './dto/update-version.dto';
+import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -79,6 +80,15 @@ export class ProgramsService {
       versionId,
       studentOutcomeId,
     );
+  }
+
+  async updateAStudentOutcome(
+    programId: number,
+    versionId: number,
+    studentOutcomeId: number,
+    updateStudentOutcomeDto: UpdateStudentOutcomeDto
+  ) {
+    return this.studentOutcomesRepository.updateAStudentOutcome(programId, versionId, studentOutcomeId, updateStudentOutcomeDto);
   }
 
   async createAPerformanceIndicator(

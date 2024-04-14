@@ -3,6 +3,7 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateStudentOutcomeDto } from './dto/create-student-outcome.dto';
 import { VersionsRepository } from 'src/programs/versions.repository';
 import { StudentOutcome } from './entities/student-outcome.entity';
+import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 
 @Injectable()
 export class StudentOutcomesRepository extends Repository<StudentOutcome> {
@@ -71,6 +72,35 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
         `Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} not found`,
       );
     }
+
+    return studentOutcome;
+  }
+
+  async updateAStudentOutcome(
+    programId: number,
+    versionId: number,
+    studentOutcomeId: number,
+    updateStudentOutcomeDto: UpdateStudentOutcomeDto
+  ) {
+    const { name, description, expectedGoal, passingThreshold } = updateStudentOutcomeDto;
+    const studentOutcome = await this.findOneBy({
+      versionProgramId: programId,
+      versionId,
+      id: studentOutcomeId
+    });
+
+    if (!studentOutcome) {
+      throw new NotFoundException(
+        `Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
+
+    if(name) studentOutcome.name = name;
+    if(description) studentOutcome.description = description
+    if(expectedGoal) studentOutcome.expectedGoal = expectedGoal;
+    if(passingThreshold) studentOutcome.passingThreshold = passingThreshold;
+
+    await this.save(studentOutcome);
 
     return studentOutcome;
   }

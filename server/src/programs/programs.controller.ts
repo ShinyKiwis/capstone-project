@@ -8,6 +8,7 @@ import { CreatePerformanceIndicatorDto } from './dto/create-performance-indicato
 import { UpdateProgramDto } from './dto/update-program.dto';
 import { UpdatePerformanceIndicatorDto } from './dto/update-performance-indicator.dto';
 import { UpdateVersionDto } from './dto/update-version.dto';
+import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 
 @Controller('programs')
 export class ProgramsController {
@@ -84,6 +85,16 @@ export class ProgramsController {
       +versionId,
       +studentOutcomeId,
     );
+  }
+
+  @Patch(':programId/versions/:versionId/student-outcomes/:studentOutcomeId')
+  UpdateAStudentOutcome(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('studentOutcomeId') studentOutcomeId: string,
+    @Body() updateStudentOutcomeDto: UpdateStudentOutcomeDto
+  ) {
+    return this.programsService.updateAStudentOutcome(+programId, +versionId, +studentOutcomeId, updateStudentOutcomeDto)
   }
 
   @Post(
