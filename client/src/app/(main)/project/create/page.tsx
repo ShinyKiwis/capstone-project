@@ -77,6 +77,9 @@ const CreateProject = () => {
         value.length < 1 ? "References can not be empty" : null,
       supervisors: (value) =>
         value.length < 1 ? "Must select at least 1 Instructor" : null,
+      students: (value, values) =>{
+        return value.length > parseInt(values.limit) ? "Can not select more students than members limit!" : null;
+      }
     },
   });
 
@@ -285,6 +288,7 @@ const CreateProject = () => {
                 <StudentProfileSelector
                   onChange={form.getInputProps("students").onChange}
                   value={form.getInputProps("students").value}
+                  error={form.getInputProps("students").error}
                   placeholder="Search student name, id"
                   searchApi="http://localhost:3500/users/students"
                   limit={7}

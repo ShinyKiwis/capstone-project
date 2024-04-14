@@ -18,6 +18,7 @@ import { useProjects } from "@/app/providers/ProjectProvider";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { isStudent } from "@/app/lib/isStudent";
+import { userHasResource } from "@/app/lib/userHasResource";
 
 const FilterModal = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -61,7 +62,7 @@ const FilterModal = () => {
         }
       >
         <div className="mx-2">
-          {isStudent(user) ? null : (
+          {userHasResource('create_projects') ? (
             <>
               <Text size="md" fw={600} className="mb-2">
                 Project type
@@ -73,7 +74,7 @@ const FilterModal = () => {
                 </Stack>
               </Radio.Group>
             </>
-          )}
+          ) : null}
           <MultiSelect
             label="Program"
             placeholder="Select program(s)"

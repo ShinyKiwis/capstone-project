@@ -6,6 +6,9 @@ import { CreateVersionDto } from './dto/create-version.dto';
 import { CreateStudentOutcomeDto } from './dto/create-student-outcome.dto';
 import { CreatePerformanceIndicatorDto } from './dto/create-performance-indicator.dto';
 import { UpdateProgramDto } from './dto/update-program.dto';
+import { UpdatePerformanceIndicatorDto } from './dto/update-performance-indicator.dto';
+import { UpdateVersionDto } from './dto/update-version.dto';
+import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 
 @Controller('programs')
 export class ProgramsController {
@@ -49,6 +52,15 @@ export class ProgramsController {
     return this.programsService.getAVersionOfAProgram(+programId, +versionId);
   }
 
+  @Patch(':programId/versions/:versionId')
+  UpdateAVersion(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Body() updateVersionDto: UpdateVersionDto
+  ) {
+    return this.programsService.updateAVersion(+programId, +versionId, updateVersionDto);
+  }
+
   @Post(':programId/versions/:versionId/student-outcomes')
   createAStudentOutcome(
     @Param('programId') programId: string,
@@ -73,6 +85,16 @@ export class ProgramsController {
       +versionId,
       +studentOutcomeId,
     );
+  }
+
+  @Patch(':programId/versions/:versionId/student-outcomes/:studentOutcomeId')
+  UpdateAStudentOutcome(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('studentOutcomeId') studentOutcomeId: string,
+    @Body() updateStudentOutcomeDto: UpdateStudentOutcomeDto
+  ) {
+    return this.programsService.updateAStudentOutcome(+programId, +versionId, +studentOutcomeId, updateStudentOutcomeDto)
   }
 
   @Post(
@@ -107,6 +129,17 @@ export class ProgramsController {
       +studentOutcomeId,
       +performanceIndicatorId,
     );
+  }
+
+  @Patch(':programId/versions/:versionId/student-outcomes/:studentOutcomeId/performance-indicators/:performanceIndicatorId')
+  UpdateAPerformanceIndicator(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('studentOutcomeId') studentOutcomeId: string,
+    @Param('performanceIndicatorId') performanceIndicatorId: string,
+    updatePerformanceIndicatorDto: UpdatePerformanceIndicatorDto
+  ) {
+    return this.programsService.updateAPerformanceIndicator(+programId, +versionId, +studentOutcomeId, +performanceIndicatorId, updatePerformanceIndicatorDto);
   }
 
   @Post('branches')

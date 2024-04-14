@@ -204,6 +204,7 @@ export const ProjectProvider = ({
       refreshProjects();
     };
 
+    setCurrentPage(1)
     if (renderingProjectsKey.includes("searched")) waitAndRefresh();
   }, [savedSearch]);
 

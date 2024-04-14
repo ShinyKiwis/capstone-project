@@ -10,6 +10,9 @@ import { StudentOutcomesRepository } from './student-outcomes.repository';
 import { PerformanceIndicatorsRepository } from './performance-indicators.repository';
 import { CreatePerformanceIndicatorDto } from './dto/create-performance-indicator.dto';
 import { UpdateProgramDto } from './dto/update-program.dto';
+import { UpdatePerformanceIndicatorDto } from './dto/update-performance-indicator.dto';
+import { UpdateVersionDto } from './dto/update-version.dto';
+import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -34,7 +37,7 @@ export class ProgramsService {
   }
 
   async getPrograms() {
-    return this.programsRepository.find({ relations: { versions: true } });
+    return this.programsRepository.getAllPrograms();
   }
 
   async createAVersionForAProgram(
@@ -47,8 +50,12 @@ export class ProgramsService {
     );
   }
 
-  async getAVersionOfAProgram(versionId: number, programId: number) {
-    return this.versionsRepository.getAVersionOfAProgram(versionId, programId);
+  async getAVersionOfAProgram(programId: number, versionId: number) {
+    return this.versionsRepository.getAVersionOfAProgram(programId, versionId);
+  }
+
+  async updateAVersion(programId: number, versionId: number, updateVersionDto: UpdateVersionDto) {
+    return this.versionsRepository.updateAVersion(programId, versionId, updateVersionDto);
   }
 
   async createAStudentOutcome(
@@ -73,6 +80,15 @@ export class ProgramsService {
       versionId,
       studentOutcomeId,
     );
+  }
+
+  async updateAStudentOutcome(
+    programId: number,
+    versionId: number,
+    studentOutcomeId: number,
+    updateStudentOutcomeDto: UpdateStudentOutcomeDto
+  ) {
+    return this.studentOutcomesRepository.updateAStudentOutcome(programId, versionId, studentOutcomeId, updateStudentOutcomeDto);
   }
 
   async createAPerformanceIndicator(
@@ -100,6 +116,22 @@ export class ProgramsService {
       versionId,
       studentOutcomeId,
       performanceIndicatorId,
+    );
+  }
+
+  async updateAPerformanceIndicator(
+    programId: number,
+    versionId: number,
+    studentOutcomeId: number,
+    performanceIndicatorId: number,
+    updatePerformanceIndicatorDto: UpdatePerformanceIndicatorDto
+  ) {
+    return this.performanceIndicatorsRepository.updateAPerformanceIndicator(
+      programId,
+      versionId,
+      studentOutcomeId,
+      performanceIndicatorId,
+      updatePerformanceIndicatorDto
     );
   }
 

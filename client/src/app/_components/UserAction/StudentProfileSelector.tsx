@@ -3,6 +3,7 @@ import {
   CheckIcon,
   Combobox,
   Group,
+  Input,
   InputBase,
   Loader,
   useCombobox,
@@ -15,14 +16,20 @@ interface StudentProfileSelectorProps {
   onChange: Dispatch<SetStateAction<string[]>>;
   value: string[]; // stringyfied Student[]
   placeholder?: string;
+  label?: string;
+  description?: string;
+  error?: string;
   searchApi: string;
-  limit?:number
+  limit?:number;
 }
 
 function StudentProfileSelector({
   value,
   onChange,
   placeholder,
+  label,
+  description,
+  error,
   searchApi,
   limit
 }: StudentProfileSelectorProps) {
@@ -44,7 +51,7 @@ function StudentProfileSelector({
       if (data.length === 0 && !loading) {
         setLoading(true);
         axios
-          .get("http://localhost:3500/users/students?search=1")
+          .get("http://localhost:3500/users/students?search=")
           .then((res) => {
             setData(res.data);
             setLoading(false);
@@ -150,7 +157,8 @@ function StudentProfileSelector({
   }
 
   return (
-    <div>
+    <>
+    <Input.Wrapper label={label} description={description} error={error}>
       <Combobox
         store={combobox}
         // withinPortal={false}
@@ -192,6 +200,7 @@ function StudentProfileSelector({
           </Combobox.Options>
         </Combobox.Dropdown>
       </Combobox>
+    </Input.Wrapper>
 
       <div className="flex flex-1 flex-col items-center justify-center px-3">
         {value.length > 0 &&
@@ -207,7 +216,7 @@ function StudentProfileSelector({
             );
           })}
       </div>
-    </div>
+    </>
   );
 }
 
