@@ -1,5 +1,13 @@
 import { useProgram } from "@/app/providers/ProgramProvider";
-import { Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Modal,
+  MultiSelect,
+  Text,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import axios from "axios";
@@ -13,6 +21,7 @@ interface errorState {
   endsAtError: string;
   descriptionError: string;
   dateError: string;
+  branchesError: string;
 }
 
 interface errorAction {
@@ -20,6 +29,7 @@ interface errorAction {
     | "set_version_id_error"
     | "set_starts_at_error"
     | "set_ends_at_error"
+    | "set_branches_error"
     | "set_date_error"
     | "set_description_error";
 }
@@ -50,6 +60,12 @@ const reducer = (state: errorState, action: errorAction) => {
         descriptionError: "Description is required",
       };
     }
+    case "set_branches_error": {
+      return {
+        ...state,
+        branchesError: "Branches are required",
+      };
+    }
     case "set_date_error": {
       return {
         ...state,
@@ -66,11 +82,13 @@ const CreateProgramVersionModal = () => {
     endsAtError: "",
     descriptionError: "",
     dateError: "",
+    branchesError: "",
   });
   const [opened, { open, close }] = useDisclosure(false);
   const [versionId, setVersionId] = useState("");
   const [startsAt, setStartsAt] = useState<Date | null>(null);
   const [endsAt, setEndsAt] = useState<Date | null>(null);
+  const [branches, setBranches] = useState<string[]>([]);
   const [description, setDescription] = useState("");
   const { programs, setPrograms } = useProgram();
 
@@ -90,6 +108,9 @@ const CreateProgramVersionModal = () => {
     if (startsAt !== null && endsAt !== null && startsAt > endsAt) {
       dispatch({ type: "set_date_error" });
       return;
+    }
+    if (branches.length === 0) {
+      dispatch({ type: "set_branches_error" });
     }
     if (
       versionId === "" ||
@@ -156,6 +177,15 @@ const CreateProgramVersionModal = () => {
               error={errors.endsAtError || errors.dateError}
             />
           </div>
+          <Text size="md" fw={600} className="my-2">
+            Branches
+          </Text>
+          <MultiSelect
+            data={["High Quality", "General Program"]}
+            value={branches}
+            onChange={setBranches}
+            error={errors.branchesError}
+          />
           <Text size="md" fw={600} className="my-2">
             Description
           </Text>

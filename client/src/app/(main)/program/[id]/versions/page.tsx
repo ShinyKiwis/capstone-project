@@ -6,7 +6,7 @@ import Program from "@/app/interfaces/Program.interface";
 import { CreateProgramVersionModal, UploadFileModal } from "@/app/_components";
 import DeleteModal from "@/app/_components/Modals/DeleteModal";
 import EditProgramModal from "@/app/_components/Modals/Program/EditProgramModal";
-import { TextInput, Box, Group, ActionIcon, Anchor } from "@mantine/core";
+import { TextInput, Box, Group, ActionIcon, Anchor, Text } from "@mantine/core";
 import { IconEye, IconTrash } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import Link from "next/link";
@@ -35,7 +35,23 @@ const Page = ({ params }: { params: { id: string } }) => {
   });
   return program ? (
     <div className="flex h-full flex-col">
-      <div className="flex">
+      <div className="flex gap-2">
+        <Text size="md" fw={600}>
+          Program:
+        </Text>
+        <Text size="md" fw={400}>
+          {program.name}
+        </Text>
+      </div>
+      <div className="flex gap-2">
+        <Text size="md" fw={600}>
+          Major:
+        </Text>
+        <Text size="md" fw={400}>
+          {program.major}
+        </Text>
+      </div>
+      <div className="flex mt-2">
         <CreateProgramVersionModal />
         <UploadFileModal
           object="program versions"
@@ -100,7 +116,9 @@ const Page = ({ params }: { params: { id: string } }) => {
                 return (
                   <Group gap={4} justify="center" wrap="nowrap">
                     <ActionIcon size="sm" variant="subtle" color="green">
-                      <Link href={`/program/${record.id}/versions`}>
+                      <Link
+                        href={`/program/${program.id}/versions/${record.id}`}
+                      >
                         <IconEye size={16} />
                       </Link>
                     </ActionIcon>
