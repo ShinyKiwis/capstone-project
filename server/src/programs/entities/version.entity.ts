@@ -30,6 +30,9 @@ export class Version {
   // @JoinTable()
   // semesters: Semester[];
 
+  @Column()
+  description: string;
+
   @OneToMany(() => StudentOutcome, (studentOutcome) => studentOutcome.version, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',

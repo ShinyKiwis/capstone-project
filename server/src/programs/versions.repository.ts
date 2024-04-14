@@ -25,7 +25,7 @@ export class VersionsRepository extends Repository<Version> {
     programId: number,
     createVersionDto: CreateVersionDto,
   ) {
-    const { name, startDate, endDate } = createVersionDto;
+    const { name, description, startDate, endDate } = createVersionDto;
     const program = await this.programsRepository.findOneBy({ id: programId });
     if (!program) {
       throw new NotFoundException(
@@ -34,6 +34,7 @@ export class VersionsRepository extends Repository<Version> {
     }
     const branch = this.create({
       name,
+      description,
       startDate,
       endDate,
       program,
@@ -81,7 +82,7 @@ export class VersionsRepository extends Repository<Version> {
   }
 
   async updateAVersion(programId: number, versionId: number, updateVersionDto: UpdateVersionDto) {
-    const { name, startDate, endDate } = updateVersionDto;
+    const { name, description, startDate, endDate } = updateVersionDto;
     const version = await this.findOneBy({
       programId,
       id: versionId
@@ -91,15 +92,19 @@ export class VersionsRepository extends Repository<Version> {
         `Version with id ${versionId} of program with id ${programId} does not exist`,
       );
     }
-    if(name) {
+    if (name) {
       version.name = name;
     }
 
-    if(startDate) {
+    if (description) {
+      version.description = description;
+    }
+
+    if (startDate) {
       version.startDate = startDate;
     }
 
-    if(endDate) {
+    if (endDate) {
       version.endDate = endDate;
     }
 
