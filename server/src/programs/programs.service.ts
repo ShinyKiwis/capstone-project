@@ -58,6 +58,18 @@ export class ProgramsService {
     return this.versionsRepository.updateAVersion(programId, versionId, updateVersionDto);
   }
 
+  async deleteAVersion(programId: number, versionId: number) {
+    const result = await this.versionsRepository.delete({
+      programId,
+      id: versionId
+    });
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        `Version with id ${versionId} of program with id ${programId} does not exist`,
+      );
+    }
+  }
+
   async createAStudentOutcome(
     programId: number,
     versionId: number,
@@ -89,6 +101,19 @@ export class ProgramsService {
     updateStudentOutcomeDto: UpdateStudentOutcomeDto
   ) {
     return this.studentOutcomesRepository.updateAStudentOutcome(programId, versionId, studentOutcomeId, updateStudentOutcomeDto);
+  }
+
+  async deleteAStudentOutcome(programId: number, versionId: number, studentOutcomeId: number,) {
+    const result = await this.studentOutcomesRepository.delete({
+      versionProgramId: programId,
+      versionId,
+      id: studentOutcomeId
+    });
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        `Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
   }
 
   async createAPerformanceIndicator(
@@ -133,6 +158,20 @@ export class ProgramsService {
       performanceIndicatorId,
       updatePerformanceIndicatorDto
     );
+  }
+
+  async deleteAPerformanceIndicator(programId: number, versionId: number, studentOutcomeId: number, performanceIndicatorId: number) {
+    const result = await this.performanceIndicatorsRepository.delete({
+      studentOutcomeVersionProgramId: programId,
+      studentOutcomeVersionId: versionId,
+      studentOutcomeId,
+      id: performanceIndicatorId
+    });
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        `Performance Indicator with id ${performanceIndicatorId} of Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
   }
 
   async updateAProgram(id: number, updateProgramDto: UpdateProgramDto) {

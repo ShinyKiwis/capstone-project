@@ -12,7 +12,7 @@ import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 
 @Controller('programs')
 export class ProgramsController {
-  constructor(private programsService: ProgramsService) {}
+  constructor(private programsService: ProgramsService) { }
   @Post()
   createAProgram(@Body() createProgramDto: CreateProgramDto) {
     return this.programsService.createAProgram(createProgramDto);
@@ -61,6 +61,14 @@ export class ProgramsController {
     return this.programsService.updateAVersion(+programId, +versionId, updateVersionDto);
   }
 
+  @Delete(':programId/versions/:versionId')
+  DeleteAVersion(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+  ) {
+    return this.programsService.deleteAVersion(+programId, +versionId);
+  }
+
   @Post(':programId/versions/:versionId/student-outcomes')
   createAStudentOutcome(
     @Param('programId') programId: string,
@@ -95,6 +103,15 @@ export class ProgramsController {
     @Body() updateStudentOutcomeDto: UpdateStudentOutcomeDto
   ) {
     return this.programsService.updateAStudentOutcome(+programId, +versionId, +studentOutcomeId, updateStudentOutcomeDto)
+  }
+
+  @Delete(':programId/versions/:versionId/student-outcomes/:studentOutcomeId')
+  DeleteAStudentOutcome(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('studentOutcomeId') studentOutcomeId: string,
+  ) {
+    return this.programsService.deleteAStudentOutcome(+programId, +versionId, +studentOutcomeId);
   }
 
   @Post(
@@ -140,6 +157,16 @@ export class ProgramsController {
     updatePerformanceIndicatorDto: UpdatePerformanceIndicatorDto
   ) {
     return this.programsService.updateAPerformanceIndicator(+programId, +versionId, +studentOutcomeId, +performanceIndicatorId, updatePerformanceIndicatorDto);
+  }
+
+  @Delete(':programId/versions/:versionId/student-outcomes/:studentOutcomeId/performance-indicators/:performanceIndicatorId')
+  DeleteAPerformanceIndicator(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('studentOutcomeId') studentOutcomeId: string,
+    @Param('performanceIndicatorId') performanceIndicatorId: string,
+  ) {
+    return this.programsService.deleteAPerformanceIndicator(+programId, +versionId, +studentOutcomeId, +performanceIndicatorId);
   }
 
   @Post('branches')
