@@ -326,7 +326,7 @@ export class ProjectsRepository extends Repository<Project> {
 
     if (search) {
       query.andWhere(
-        'LOWER(project.name) LIKE LOWER (:search) OR LOWER(project.description) LIKE LOWER (:search)',
+        'LOWER(project.name) LIKE LOWER (:search) OR LOWER(project.description) LIKE LOWER (:search) OR LOWER(project.code::varchar(255)) LIKE LOWER(:search)',
         {
           search: `%${search}%`,
         },
