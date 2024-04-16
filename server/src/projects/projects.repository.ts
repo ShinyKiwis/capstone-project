@@ -419,6 +419,8 @@ export class ProjectsRepository extends Repository<Project> {
       // console.log(result);
     }
 
+    query.orderBy('project.code', 'ASC');
+
     if (limit && page) {
       query.skip((page - 1) * limit).take(limit);
     }
