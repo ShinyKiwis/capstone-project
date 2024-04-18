@@ -326,7 +326,7 @@ export class ProjectsRepository extends Repository<Project> {
 
     if (search) {
       query.andWhere(
-        'LOWER(project.name) LIKE LOWER (:search) OR LOWER(project.description) LIKE LOWER (:search)',
+        'LOWER(project.name) LIKE LOWER (:search) OR LOWER(project.description) LIKE LOWER (:search) OR LOWER(project.code::varchar(255)) LIKE LOWER(:search)',
         {
           search: `%${search}%`,
         },
@@ -418,6 +418,8 @@ export class ProjectsRepository extends Repository<Project> {
       // const result = await subQuery.getMany();
       // console.log(result);
     }
+
+    query.orderBy('project.code', 'ASC');
 
     if (limit && page) {
       query.skip((page - 1) * limit).take(limit);
