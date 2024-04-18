@@ -77,17 +77,17 @@ const reducer = (state: errorState, action: errorAction) => {
   }
 };
 
-interface CreateProgramVersionModalPropsTypes {
+interface EditProgramVersionModalPropsTypes {
   programId: number;
   program: Program;
   setProgram: React.Dispatch<React.SetStateAction<Program | null>>;
 }
 
-const CreateProgramVersionModal = ({
+const EditProgramVersionModal = ({
   programId,
   program,
   setProgram,
-}: CreateProgramVersionModalPropsTypes) => {
+}: EditProgramVersionModalPropsTypes) => {
   const [errors, dispatch] = useReducer(reducer, {
     versionIdError: "",
     startsAtError: "",
@@ -242,4 +242,4 @@ const CreateProgramVersionModal = ({
   );
 };
 
-export default CreateProgramVersionModal;
+export default EditProgramVersionModal;

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 import { useProgram } from "@/app/providers/ProgramProvider";
-import Program from "@/app/interfaces/Program.interface";
+import Program, { Version } from "@/app/interfaces/Program.interface";
 import { CreateProgramVersionModal, UploadFileModal } from "@/app/_components";
 import DeleteModal from "@/app/_components/Modals/DeleteModal";
 import EditProgramModal from "@/app/_components/Modals/Program/EditProgramModal";
@@ -11,6 +11,18 @@ import { IconEye, IconTrash } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import Link from "next/link";
 import { BiSearch } from "react-icons/bi";
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  const formattedDay = day < 10 ? `0${day}` : day;
+  const formattedMonth = month < 10 ? `0${month}` : month;
+
+  return `${formattedDay}/${formattedMonth}/${year}`;
+};
 
 const Page = ({ params }: { params: { id: string } }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -23,7 +35,6 @@ const Page = ({ params }: { params: { id: string } }) => {
     const fetchProgram = async () => {
       const targetProgram = await getProgram(parseInt(params.id));
       if (targetProgram) {
-        console.log("TARGET:", targetProgram);
         buildBreadCrumbs(targetProgram);
         setProgram(targetProgram);
       }
@@ -33,6 +44,13 @@ const Page = ({ params }: { params: { id: string } }) => {
       fetchProgram();
     }
   });
+
+  const handleDeleteVersion = (version: Version) => {
+    if(program) {
+      setProgram({...program, versions: program.versions.filter(existedVersion => existedVersion.id != version.id)});
+    }
+  }
+    
   return program ? (
     <div className="flex h-full flex-col">
       <div className="flex gap-2">
@@ -51,8 +69,8 @@ const Page = ({ params }: { params: { id: string } }) => {
           {program.major}
         </Text>
       </div>
-      <div className="flex mt-2">
-        <CreateProgramVersionModal programId={program.id}/>
+      <div className="mt-2 flex">
+        <CreateProgramVersionModal programId={program.id} program={program} setProgram={setProgram} />
         <UploadFileModal
           object="program versions"
           setFileUploaded={setFileUploaded}
@@ -76,7 +94,7 @@ const Page = ({ params }: { params: { id: string } }) => {
           withTableBorder
           columns={[
             {
-              accessor: "id",
+              accessor: "name",
               title: "Version ID",
               width: "10%",
               sortable: true,
@@ -87,15 +105,26 @@ const Page = ({ params }: { params: { id: string } }) => {
                     href={`/program/${program.id}/versions/${record.id}`}
                     className="text-blue-600 underline hover:text-blue-900"
                   >
-                    {record.id}
+                    {record.name}
                   </Anchor>
                 );
               },
             },
             {
-              accessor: "name",
-              title: "Effective Period",
+              accessor: "startDate",
+              title: "Start Date",
               sortable: true,
+              render: (record) => {
+                return <Text>{formatDate(record.startDate)}</Text>;
+              },
+            },
+            {
+              accessor: "endDate",
+              title: "End Date",
+              sortable: true,
+              render: (record) => {
+                return <Text>{formatDate(record.endDate)}</Text>;
+              },
             },
             // {
             //   accessor: "branches",
@@ -126,7 +155,7 @@ const Page = ({ params }: { params: { id: string } }) => {
                       size="sm"
                       variant="subtle"
                       color="red"
-                      onClick={() => {}}
+                      onClick={DeleteModal<Version>("version", record, handleDeleteVersion, `${process.env.NEXT_PUBLIC_DELETE_PROGRAM_URL!}/${program.id}/versions/${record.id}`)}
                     >
                       <IconTrash size={16} />
                     </ActionIcon>

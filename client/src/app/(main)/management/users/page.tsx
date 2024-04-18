@@ -37,6 +37,10 @@ const Users = () => {
   const [selectedRecords, setSelectedRecords] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  const handleDeleteUser = (user: User) => {
+    setUsers(users.filter((existedUser) => existedUser.id !== user.id));
+  }
+
   useEffect(() => {
     const fetchUsers = async () => {
       // This transformation is caused by inconsistent name between FE and BE.
@@ -180,8 +184,7 @@ const Users = () => {
                       onClick={DeleteModal<User>(
                         "user",
                         record,
-                        users,
-                        setUsers,
+                        handleDeleteUser,
                         `${process.env.NEXT_PUBLIC_USERS_URL!}/${record.id}`,
                       )}
                     >

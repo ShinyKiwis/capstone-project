@@ -26,6 +26,11 @@ const Program = () => {
   useEffect(() => {
     buildBreadCrumbs();
   }, []);
+
+  const handleDeleteProgram = (program: Program) => {
+    setLoadedPrograms(loadedPrograms.filter((existedProgram) => existedProgram.id !== program.id));
+  }
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex">
@@ -104,8 +109,7 @@ const Program = () => {
                       onClick={DeleteModal<Program>(
                         "program",
                         record,
-                        programs,
-                        setLoadedPrograms,
+                        handleDeleteProgram,
                         `${process.env.NEXT_PUBLIC_DELETE_PROGRAM_URL!}/${record.id}`,
                       )}
                     >

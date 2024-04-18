@@ -4,9 +4,9 @@ import { modals } from "@mantine/modals";
 import { Text } from "@mantine/core";
 import axios from "axios";
 import { User } from "../../interfaces/User.interface";
-import Program from "@/app/interfaces/Program.interface";
+import Program, { Version } from "@/app/interfaces/Program.interface";
 
-type DeleteObject = User | Program;
+type DeleteObject = User | Program | Version;
 
 const capitalize = (str: string) => {
   return str[0].toUpperCase() + str.slice(1);
@@ -15,8 +15,7 @@ const capitalize = (str: string) => {
 const DeleteModal = <T extends DeleteObject>(
   type: string,
   object: T,
-  objects: T[],
-  setObjects: Dispatch<SetStateAction<T[]>>,
+  handleDelete: (object: T) => void,
   deleteUrl: string
 ) => {
   const deleteModal = () =>
@@ -37,7 +36,7 @@ const DeleteModal = <T extends DeleteObject>(
           `${capitalize(type)} ${object.name} is deleted from database. This can't be undone`,
           "success",
         );
-        setObjects(objects.filter((existedObject) => existedObject.id !== object.id));
+        handleDelete(object)
         await axios.delete(deleteUrl);
       },
     });
