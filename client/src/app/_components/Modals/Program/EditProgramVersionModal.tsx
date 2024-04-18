@@ -1,5 +1,6 @@
 import { useProgram } from "@/app/providers/ProgramProvider";
 import {
+    ActionIcon,
   Button,
   Group,
   Modal,
@@ -14,8 +15,9 @@ import axios from "axios";
 import React, { useReducer, useState } from "react";
 import { IoCreate } from "react-icons/io5";
 import { IoMdCalendar } from "react-icons/io";
-import Program from "@/app/interfaces/Program.interface";
+import Program, { Version } from "@/app/interfaces/Program.interface";
 import { toggleNotification } from "@/app/lib/notification";
+import { IconEdit } from "@tabler/icons-react";
 
 interface errorState {
   versionIdError: string;
@@ -78,14 +80,14 @@ const reducer = (state: errorState, action: errorAction) => {
 };
 
 interface EditProgramVersionModalPropsTypes {
-  programId: number;
   program: Program;
+  version: Version;
   setProgram: React.Dispatch<React.SetStateAction<Program | null>>;
 }
 
 const EditProgramVersionModal = ({
-  programId,
   program,
+  version,
   setProgram,
 }: EditProgramVersionModalPropsTypes) => {
   const [errors, dispatch] = useReducer(reducer, {
@@ -97,14 +99,13 @@ const EditProgramVersionModal = ({
     branchesError: "",
   });
   const [opened, { open, close }] = useDisclosure(false);
-  const [versionId, setVersionId] = useState("");
-  const [startsAt, setStartsAt] = useState<Date | null>(null);
-  const [endsAt, setEndsAt] = useState<Date | null>(null);
+  const [versionId, setVersionId] = useState(version.name);
+  const [startsAt, setStartsAt] = useState<Date | null>(new Date(version.startDate));
+  const [endsAt, setEndsAt] = useState<Date | null>(new Date(version.endDate));
   const [branches, setBranches] = useState<string[]>([]);
-  const [description, setDescription] = useState("");
-  const { programs, setPrograms } = useProgram();
+  const [description, setDescription] = useState(version.description);
 
-  const handleCreateProgramVersion = async () => {
+  const handleUpdateProgramVersion = async () => {
     if (versionId === "") {
       dispatch({ type: "set_version_id_error" });
     }
@@ -133,8 +134,8 @@ const EditProgramVersionModal = ({
       return;
     }
 
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions`,
+    const response = await axios.patch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}`,
       {
         name: versionId,
         startDate: startsAt,
@@ -142,17 +143,22 @@ const EditProgramVersionModal = ({
         description: description,
       },
     );
-    setProgram({ ...program, versions: [...program.versions, response.data] });
-    setPrograms(
-      programs.map((p) =>
-        p.id === programId
-          ? { ...p, versions: [...p.versions, response.data] }
-          : p,
-      ),
-    );
+    setProgram({...program, versions: program.versions.map(existedVersion => {
+      if(existedVersion.id == version.id) {
+        return {
+          ...version,
+          name: versionId,
+          startDate: startsAt.toString(),
+          endDate: endsAt.toString(),
+          description: description,
+        }
+      }else {
+        return existedVersion
+      }
+    })})
     toggleNotification(
-      `Create program version "${versionId}" of program "${program.name}"  successfully`,
-      `Create program version "${versionId}" of program "${program.name}" successfully.`,
+      `Update program version "${versionId}" of program "${program.name}"  successfully`,
+      `Update program version "${versionId}" of program "${program.name}" successfully.`,
       "success",
     );
     close();
@@ -192,6 +198,7 @@ const EditProgramVersionModal = ({
               placeholder="Start date"
               onChange={setStartsAt}
               leftSection={<IoMdCalendar size={20} />}
+              value={startsAt}
               error={errors.startsAtError || errors.dateError}
             />
             <DateInput
@@ -199,6 +206,7 @@ const EditProgramVersionModal = ({
               placeholder="End date"
               onChange={setEndsAt}
               leftSection={<IoMdCalendar size={20} />}
+              value={endsAt}
               error={errors.endsAtError || errors.dateError}
             />
           </div>
@@ -229,16 +237,16 @@ const EditProgramVersionModal = ({
             <Button onClick={close} variant="outline">
               Cancel
             </Button>
-            <Button variant="filled" onClick={handleCreateProgramVersion}>
-              Create program version
+            <Button variant="filled" onClick={handleUpdateProgramVersion}>
+              Update program version
             </Button>
           </Group>
         </div>
       </Modal>
-      <Button onClick={open} leftSection={<IoCreate size={20} />}>
-        Create program version
-      </Button>
-    </>
+      <ActionIcon size="sm" variant="subtle" color="blue" onClick={open}>
+        <IconEdit size={16} />
+      </ActionIcon>
+ </>
   );
 };
 

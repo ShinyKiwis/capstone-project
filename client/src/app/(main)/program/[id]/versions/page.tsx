@@ -11,6 +11,7 @@ import { IconEye, IconTrash } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import Link from "next/link";
 import { BiSearch } from "react-icons/bi";
+import EditProgramVersionModal from "@/app/_components/Modals/Program/EditProgramVersionModal";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -151,6 +152,7 @@ const Page = ({ params }: { params: { id: string } }) => {
                         <IconEye size={16} />
                       </Link>
                     </ActionIcon>
+                    <EditProgramVersionModal program={program} version={record} setProgram={setProgram} />
                     <ActionIcon
                       size="sm"
                       variant="subtle"

@@ -3,7 +3,8 @@ export interface Version {
   name: string,
   programId: number,
   endDate: string,
-  startDate: string
+  startDate: string,
+  description: string
 }
 
 export default interface Program {
