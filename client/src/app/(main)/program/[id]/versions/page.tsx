@@ -12,18 +12,7 @@ import { DataTable } from "mantine-datatable";
 import Link from "next/link";
 import { BiSearch } from "react-icons/bi";
 import EditProgramVersionModal from "@/app/_components/Modals/Program/EditProgramVersionModal";
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-
-  const formattedDay = day < 10 ? `0${day}` : day;
-  const formattedMonth = month < 10 ? `0${month}` : month;
-
-  return `${formattedDay}/${formattedMonth}/${year}`;
-};
+import formatDate from "@/app/lib/formatDate";
 
 const Page = ({ params }: { params: { id: string } }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");

@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState } from "react";
-import Program from "../interfaces/Program.interface";
+import Program, { Version } from "../interfaces/Program.interface";
 
 interface BreadCrumb {
   title: string;
@@ -14,7 +14,7 @@ interface BreadCrumb {
 
 interface BreadCrumbContextType {
   breadCrumbs: BreadCrumb[];
-  buildBreadCrumbs: (object?: Program) => void;
+  buildBreadCrumbs: (program?: Program, version?: Version) => void;
 }
 
 const BreadCrumbContext = createContext<BreadCrumbContextType | null>(null);
@@ -22,7 +22,7 @@ const BreadCrumbContext = createContext<BreadCrumbContextType | null>(null);
 const BreadCrumbProvider = ({ children }: { children: React.ReactNode }) => {
   const [breadCrumbs, setBreadCrumbs] = useState<BreadCrumb[]>([]);
 
-  const buildBreadCrumbs = (object?: Program) => {
+  const buildBreadCrumbs = (program?: Program, version?: Version) => {
     const path = window.location.pathname;
     if (!path.includes("/program")) {
       setBreadCrumbs([]);
@@ -31,25 +31,34 @@ const BreadCrumbProvider = ({ children }: { children: React.ReactNode }) => {
     const components = path.split("/").filter((component) => component !== "");
     const ids = components.filter((component) => !isNaN(parseInt(component)));
     if (path.includes("/program")) {
-      breadCrumbsArray = buildProgramBreadCrumbs(ids, object);
+      breadCrumbsArray = buildProgramBreadCrumbs(ids, program, version);
     }
     console.log("BREAD:", breadCrumbsArray);
     setBreadCrumbs(breadCrumbsArray);
   };
 
-  const buildProgramBreadCrumbs = (ids: string[], object?: Program) => {
+  const buildProgramBreadCrumbs = (ids: string[], program?: Program, version?: Version) => {
     const programBreadCrumbs: BreadCrumb[] = [];
     programBreadCrumbs.push({ title: "Programs Management", href: "/program" });
-    if (object) {
+    if (program) {
       switch (ids.length) {
         case 1:
           programBreadCrumbs.push({
-            title: object.name + " - " + object.major,
-            href: `/program/${object.id}/versions`,
+            title: program.name + " - " + program.major,
+            href: `/program/${program.id}/versions`,
           });
-          break;
+          break
         case 2:
-          break;
+          programBreadCrumbs.push({
+            title: program.name + " - " + program.major,
+            href: `/program/${program.id}/versions`,
+          });
+          if(version) {
+            programBreadCrumbs.push({
+              title: version.name,
+              href: `/program/${program.id}/versions/${version.id}`,
+            });
+          }
         case 3:
           break;
       }
