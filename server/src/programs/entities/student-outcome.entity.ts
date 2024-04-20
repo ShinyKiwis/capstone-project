@@ -34,9 +34,6 @@ export class StudentOutcome {
   code: string;
 
   @Column()
-  name: string;
-
-  @Column()
   description: string;
 
   @Column('decimal', { precision: 6, scale: 2, default: 0 })
