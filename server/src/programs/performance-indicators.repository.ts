@@ -67,6 +67,14 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
       where: {
         studentOutcome,
       },
+      select: {
+        id: true,
+        studentOutcomeVersionId: true,
+        studentOutcomeVersionProgramId: true,
+        studentOutcomeId: true,
+        code: true,
+        description: true,
+      }
     });
 
     if(!performanceIndicator) {

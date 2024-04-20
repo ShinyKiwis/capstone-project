@@ -65,6 +65,13 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
       relations: {
         performanceIndicators: true,
       },
+      select: {
+        id: true,
+        versionId: true,
+        code: true,
+        description: true,
+        performanceIndicators: true
+      }
     });
 
     if (!studentOutcome) {
