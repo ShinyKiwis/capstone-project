@@ -7,9 +7,7 @@ export class CreateStudentOutcomeDto {
   @IsNotEmpty()
   description: string;
 
-  @IsNotEmpty()
   expectedGoal: number;
 
-  @IsNotEmpty()
   passingThreshold: number;
 }
