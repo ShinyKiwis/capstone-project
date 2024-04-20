@@ -14,3 +14,9 @@ export default interface Program {
   description: string,
   versions: Version[]
 }
+
+export interface SO {
+  id: number,
+  name: string,
+  description: string,
+}

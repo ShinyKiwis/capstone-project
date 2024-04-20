@@ -38,6 +38,7 @@ const BreadCrumbProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const buildProgramBreadCrumbs = (ids: string[], program?: Program, version?: Version) => {
+    const path = window.location.pathname;
     const programBreadCrumbs: BreadCrumb[] = [];
     programBreadCrumbs.push({ title: "Programs Management", href: "/program" });
     if (program) {
@@ -58,6 +59,12 @@ const BreadCrumbProvider = ({ children }: { children: React.ReactNode }) => {
               title: version.name,
               href: `/program/${program.id}/versions/${version.id}`,
             });
+            if(path.includes("sos")) {
+              programBreadCrumbs.push({
+                title: "SOs",
+                href: `/program/${program.id}/versions/${version.id}/sos`,
+              });
+            }
           }
         case 3:
           break;
