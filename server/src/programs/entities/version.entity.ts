@@ -11,6 +11,7 @@ import {
 import { Program } from './program.entity';
 import { Semester } from 'src/semesters/entities/semester.entity';
 import { StudentOutcome } from './student-outcome.entity';
+import { ProgramEducationObjective } from './program-education-objectives.entity';
 
 @Entity()
 export class Version {
@@ -38,6 +39,12 @@ export class Version {
     onUpdate: 'CASCADE',
   })
   studentOutcomes: StudentOutcome[];
+
+  @OneToMany(() => ProgramEducationObjective, (programEducationObjective) => programEducationObjective.version, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  programEducationObjectives: ProgramEducationObjective[];
 
   @Column()
   startDate: Date;

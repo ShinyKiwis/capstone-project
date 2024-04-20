@@ -9,6 +9,8 @@ import { UpdateProgramDto } from './dto/update-program.dto';
 import { UpdatePerformanceIndicatorDto } from './dto/update-performance-indicator.dto';
 import { UpdateVersionDto } from './dto/update-version.dto';
 import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
+import { CreateProgramEducationObjectiveDto } from './dto/create-program-education-objective.dto';
+import { UpdateProgramEducationObjectiveDto } from './dto/update-program-education-objective.dto';
 
 @Controller('programs')
 export class ProgramsController {
@@ -67,6 +69,51 @@ export class ProgramsController {
     @Param('versionId') versionId: string,
   ) {
     return this.programsService.deleteAVersion(+programId, +versionId);
+  }
+
+  @Post(':programId/versions/:versionId/program-education-objectives')
+  createAProgramEducationObjective(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Body() createProgramEducationObjectiveDto: CreateProgramEducationObjectiveDto,
+  ) {
+    return this.programsService.createAProgramEducationObjective(
+      +programId,
+      +versionId,
+      createProgramEducationObjectiveDto,
+    );
+  }
+
+  @Get(':programId/versions/:versionId/program-education-objectives/:programEducationObjectiveId')
+  GetAProgramEducationObjective(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('programEducationObjectiveId') programEducationObjectiveId: string,
+  ) {
+    return this.programsService.getAProgramEducationObjectiveOfAVersion(
+      +programId,
+      +versionId,
+      +programEducationObjectiveId,
+    );
+  }
+
+  @Patch(':programId/versions/:versionId/program-education-objectives/:programEducationObjectiveId')
+  UpdateAProgramEducationObjective(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('programEducationObjectiveId') programEducationObjectiveId: string,
+    @Body() updateProgramEducationObjectiveDto: UpdateProgramEducationObjectiveDto
+  ) {
+    return this.programsService.updateAProgramEducationObjective(+programId, +versionId, +programEducationObjectiveId, updateProgramEducationObjectiveDto)
+  }
+
+  @Delete(':programId/versions/:versionId/program-education-objectives/:programEducationObjectiveId')
+  DeleteAProgramEducationObjective(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('programEducationObjectiveId') programEducationObjectiveId: string,
+  ) {
+    return this.programsService.deleteAProgramEducationObjective(+programId, +versionId, +programEducationObjectiveId);
   }
 
   @Post(':programId/versions/:versionId/student-outcomes')
