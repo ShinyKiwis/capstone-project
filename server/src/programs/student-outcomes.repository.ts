@@ -68,6 +68,7 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
       select: {
         id: true,
         versionId: true,
+        versionProgramId: true,
         code: true,
         description: true,
         performanceIndicators: true
