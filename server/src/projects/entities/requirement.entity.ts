@@ -12,7 +12,7 @@ export class Requirement {
   @PrimaryColumn()
   projectCode: number;
 
-  @ManyToOne(() => Project, (project) => project.requirements)
+  @ManyToOne(() => Project, (project) => project.requirements, {onDelete: "CASCADE"})
   project: Project;
 
   @PrimaryGeneratedColumn()
