@@ -3,11 +3,15 @@ import { useEffect, useState } from 'react'
 import Program, { SO, Version } from '@/app/interfaces/Program.interface';
 import { useBreadCrumbs } from '@/app/providers/BreadCrumbProvider';
 import { useProgram } from '@/app/providers/ProgramProvider';
-import { Text, TextInput } from '@mantine/core';
+import { ActionIcon, Anchor, Box, Group, Text, TextInput } from '@mantine/core';
 import formatDate from '@/app/lib/formatDate';
 import CreateSOModal from '@/app/_components/Modals/SO/CreateSOModal';
 import { UploadFileModal } from '@/app/_components';
 import { BiSearch } from 'react-icons/bi';
+import { DataTable } from 'mantine-datatable';
+import Link from 'next/link';
+import { IconEye, IconTrash } from '@tabler/icons-react';
+import axios from 'axios';
 
 const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   const [program, setProgram] = useState<Program | null>(null);
@@ -17,6 +21,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   const [fileUploaded, setFileUploaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [SOs, setSOs] = useState<SO[]>([])
+  console.log("SOs", SOs)
 
   useEffect(() => {
     const fetchProgram = async () => {
@@ -26,6 +31,9 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
         buildBreadCrumbs(targetProgram, targetVersion);
         setProgram(targetProgram);
         setVersion(targetVersion);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${targetProgram.id}/versions/${targetVersion.id}`)
+        const targetSOs = response.data.studentOutcomes;
+        setSOs(targetSOs);
       }
     };
 
@@ -60,7 +68,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
         </Text>
       </div>
       <div className="mt-2 flex">
-        <CreateSOModal programId={program.id} versionId={version.id} SOs={SOs} setSOs={setSOs}/>
+        <CreateSOModal programId={program.id} versionId={version.id} setSOs={setSOs}/>
         <UploadFileModal
           object="SOs"
           setFileUploaded={setFileUploaded}
@@ -77,6 +85,60 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
               onClick={(e) => {}}
             />
           }
+        />
+      </div>
+      <div className="mt-4 h-full overflow-auto pb-4">
+        <DataTable
+          withTableBorder
+          columns={[
+            {
+              accessor: "code",
+              title: "SO Code",
+              width: "10%",
+              sortable: true,
+              render: (record) => {
+                return (
+                  <Link
+                    href={`/program/${program.id}/versions/${version.id}/sos/${record.id}`}
+                    className="text-blue-600 underline hover:text-blue-900"
+                  >
+                    {record.id}
+                  </Link>
+                );
+              },
+            },
+            {
+              accessor: "description",
+              title: "Description",
+              width: "40%",
+              sortable: true,
+            },
+            {
+              accessor: "actions",
+              width: "5%",
+              title: <Box mr={6}>Actions</Box>,
+              render: (record) => {
+                return (
+                  <Group gap={4} justify="center" wrap="nowrap">
+                    <ActionIcon size="sm" variant="subtle" color="green">
+                      <Link href={`/program/${record.id}/versions`}>
+                        <IconEye size={16} />
+                      </Link>
+                    </ActionIcon>
+                    <ActionIcon
+                      size="sm"
+                      variant="subtle"
+                      color="red"
+                      onClick={() => {}}
+                    >
+                      <IconTrash size={16} />
+                    </ActionIcon>
+                  </Group>
+                );
+              },
+            },
+          ]}
+          records={SOs}
         />
       </div>
     </div>

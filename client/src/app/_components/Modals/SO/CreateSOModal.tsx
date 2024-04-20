@@ -5,13 +5,13 @@ import { ActionIcon, Button, Group, Modal, Table, Text, TextInput } from "@manti
 import { useDisclosure } from "@mantine/hooks";
 import { IconX } from "@tabler/icons-react";
 import axios from "axios";
+import { setSourceMapsEnabled } from "process";
 import React, { Dispatch, SetStateAction, useEffect, useReducer, useState } from "react";
 import { IoCreate } from "react-icons/io5";
 
 interface SOModalPropTypes {
   programId: number;
   versionId: number;
-  SOs: SO[];
   setSOs: Dispatch<SetStateAction<SO[]>>;
 }
 
@@ -22,7 +22,7 @@ interface InitialSOType {
   descriptionError: string
 }
 
-const CreateSOModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) => {
+const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [inputs, setInputs] = useState<InitialSOType[]>([{
     code: "",
@@ -39,12 +39,11 @@ const CreateSOModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =
         codeError: "",
         descriptionError: ""
       }
-      if (input.code === "") {
+      if ((inputs.length === 1 || index !== inputs.length - 1) && input.code === "") {
         hasError = true
         errors.codeError = "Code is required"
-
       }
-      if(input.description === "") {
+      if((inputs.length === 1 || index !== inputs.length - 1) && input.description === "") {
         hasError = true
         errors.descriptionError = "Description is required"
       }
@@ -64,15 +63,20 @@ const CreateSOModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =
       return;
     }
     inputs.forEach(async input => {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}`,
-        {
-        },
-      );
+      if(input.code !== "" && input.description != "") {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes`,
+          {
+            code: input.code,
+            description: input.description
+          },
+        );
+        setSOs(sos => [...sos, response.data])
+      }
     })
     toggleNotification(
-      `Create program "" successfully`,
-      `Create program "" successfully.`,
+      `Create ${inputs.length - 1} SOs successfully`,
+      `Create ${inputs.length - 1} SOs successfully.`,
       "success",
     );
     close();
