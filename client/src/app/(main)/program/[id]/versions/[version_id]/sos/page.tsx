@@ -56,11 +56,11 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
           Version:
         </Text>
         <Text size="md" fw={400}>
-          {version?.name} ({formatDate(version.startDate.toString())} - {formatDate(version.endDate.toString())})
+          {version.name} ({formatDate(version.startDate.toString())} - {formatDate(version.endDate.toString())})
         </Text>
       </div>
       <div className="mt-2 flex">
-        <CreateSOModal SOs={SOs} setSOs={setSOs}/>
+        <CreateSOModal programId={program.id} versionId={version.id} SOs={SOs} setSOs={setSOs}/>
         <UploadFileModal
           object="SOs"
           setFileUploaded={setFileUploaded}

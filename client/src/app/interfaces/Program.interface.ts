@@ -17,6 +17,9 @@ export default interface Program {
 
 export interface SO {
   id: number,
-  name: string,
+  versionId: number,
+  versionProgramId: number,
+  code: string,
   description: string,
+  performanceIndicators: any[]
 }
