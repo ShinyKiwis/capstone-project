@@ -33,9 +33,9 @@ const PageHeader = () => {
   
   return (
     <div className="relative flex h-20 items-center gap-4 px-8 pt-5">
-      <Text size="xl" fw={700} c="blue">
+      {/* <Text size="xl" fw={700} c="blue">
         {pageTitle}
-      </Text>
+      </Text> */}
       <div className="ms-auto flex gap-4">
         <button className="w-fit">
           <FaBell size={20} />

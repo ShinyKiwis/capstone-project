@@ -11,6 +11,7 @@ import { DeleteAllUsersModal, EditUserModal, SettingsModal } from "./components"
 import { reducer } from "./components/SettingsModal";
 import deleteUserModal from "./components/DeleteUserModal";
 import { User } from "./interface/User.interface";
+import { PageTitle } from "@/app/_components";
 
 const PAGE_SIZES = [10, 15, 20, 25, 30];
 
@@ -100,7 +101,8 @@ const Users = () => {
   }, [searchQuery]);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col gap-3">
+      <PageTitle title="Users Management"/>
       <div className="flex items-center">
         <div className="flex items-center gap-4">
           <SettingsModal hideOptions={hideOptions} dispatch={dispatch} />

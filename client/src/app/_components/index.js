@@ -7,6 +7,7 @@ export { default as RoleCard } from "./RoleCard";
 export { default as MantineRichText } from "./UserAction/MantineRichText";
 export { default as ProfileSelector } from "./UserAction/ProfileSelector";
 export { default as StudentProfileSelector } from "./UserAction/StudentProfileSelector";
+export { default as PageTitle } from "./PageTitle";
 
 // Modals
 export { default as RemoveModal } from "./Modals/RemoveModal";

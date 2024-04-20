@@ -15,7 +15,7 @@ import {
 import { modals } from "@mantine/modals";
 import MantineRichText from "@/app/_components/UserAction/MantineRichText";
 import ProfileSelector from "@/app/_components/UserAction/ProfileSelector";
-import { StudentProfileSelector } from "@/app/_components";
+import { PageTitle, StudentProfileSelector } from "@/app/_components";
 import { useGeneralData } from "@/app/providers/GeneralDataProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -181,6 +181,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   if (form.values.limit === '0') return <div>Fetching project...</div>;
   return (
     <div className="h-full w-full bg-white">
+      <PageTitle title="Edit Project" />
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
         <form
           onSubmit={(e) => {

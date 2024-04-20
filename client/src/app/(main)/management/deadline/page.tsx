@@ -1,4 +1,5 @@
 "use client";
+import { PageTitle } from "@/app/_components";
 import DeadlineModal from "@/app/_components/Modals/DeadlineModal";
 import { toggleNotification } from "@/app/lib/notification";
 import { Deadline, useDeadlines } from "@/app/providers/DeadlinesProvider";
@@ -43,7 +44,7 @@ const DeadlineCard = ({ deadline }: { deadline: Deadline }) => {
       },
     });
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder className="mt-4 shadow transition-all hover:-translate-y-0.5 hover:shadow-lg">
+    <Card shadow="sm" padding="lg" radius="md" withBorder className="mt-4 self-stretch shadow transition-all hover:-translate-y-0.5 hover:shadow-lg">
       <Badge variant="light" color="blue">
         Semester {deadline.semester}
       </Badge>
@@ -87,7 +88,8 @@ const DeadlineCard = ({ deadline }: { deadline: Deadline }) => {
 const Deadline = () => {
   const { deadlines } = useDeadlines();
   return (
-    <div>
+    <div className="flex h-full flex-col gap-3 items-start">
+      <PageTitle title="Deadline Management"/>
       <DeadlineModal Icon={IoMdAdd} action="Create deadline" />
       <Text size="lg" fw={600} c="blue" className="mt-4">
         Deadlines

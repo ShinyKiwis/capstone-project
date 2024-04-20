@@ -15,6 +15,7 @@ import {
   ProjectCardDetail,
   UploadFileModal,
   FilterModal,
+  PageTitle,
 } from "@/app/_components";
 import Image from "next/image";
 import { useProjects } from "@/app/providers/ProjectProvider";
@@ -85,7 +86,8 @@ const Project = () => {
   // Main return
   if (userHasResource("view_projects")) {
     return (
-      <div className="flex h-full flex-col">
+      <div className="flex h-full flex-col gap-3">
+        <PageTitle title={searchParams.get("project") === "specialized" ? "Specialized Projects" : "Capstone Projects"}/>
         <div className="w-full">
           <div className="flex w-3/5 gap-4">
             <TextInput
