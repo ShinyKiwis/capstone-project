@@ -12,6 +12,8 @@ import { DataTable } from 'mantine-datatable';
 import Link from 'next/link';
 import { IconEye, IconTrash } from '@tabler/icons-react';
 import axios from 'axios';
+import DeleteModal from '@/app/_components/Modals/DeleteModal';
+import EditSOsModal from '@/app/_components/Modals/SO/EditSOsModal';
 
 const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   const [program, setProgram] = useState<Program | null>(null);
@@ -21,7 +23,11 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   const [fileUploaded, setFileUploaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [SOs, setSOs] = useState<SO[]>([])
-  console.log("SOs", SOs)
+  const [selectedRecords, setSelectedRecords] = useState<SO[]>([]);
+
+  const handleDeleteSO = (SO: SO) => {
+    setSOs(SOs.filter(existedSO => existedSO.id !== SO.id))
+  }
 
   useEffect(() => {
     const fetchProgram = async () => {
@@ -41,6 +47,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
       fetchProgram();
     }
   })
+
   return program && version ? (
     <div className='flex h-full flex-col'>
       <div className="flex gap-2">
@@ -73,6 +80,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
           object="SOs"
           setFileUploaded={setFileUploaded}
         />
+        <EditSOsModal programId={program.id} versionId ={version.id} SOs={selectedRecords} setSOs={setSOs} />
         <TextInput
           placeholder="Search SO..."
           className="ms-auto w-72"
@@ -94,7 +102,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
             {
               accessor: "code",
               title: "SO Code",
-              width: "10%",
+              width: "5%",
               sortable: true,
               render: (record) => {
                 return (
@@ -110,7 +118,6 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
             {
               accessor: "description",
               title: "Description",
-              width: "40%",
               sortable: true,
             },
             {
@@ -129,7 +136,12 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
                       size="sm"
                       variant="subtle"
                       color="red"
-                      onClick={() => {}}
+                      onClick={DeleteModal(
+                        "SO", 
+                        record, 
+                        handleDeleteSO, 
+                        `${process.env.NEXT_PUBLIC_DELETE_PROGRAM_URL!}/${program.id}/versions/${version.id}/student-outcomes/${record.id}`
+                      )}
                     >
                       <IconTrash size={16} />
                     </ActionIcon>
@@ -139,6 +151,8 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
             },
           ]}
           records={SOs}
+          selectedRecords={selectedRecords}
+          onSelectedRecordsChange={setSelectedRecords}
         />
       </div>
     </div>

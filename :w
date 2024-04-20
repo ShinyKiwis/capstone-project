@@ -3,7 +3,7 @@ import { toggleNotification } from "@/app/lib/notification";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import { ActionIcon, Button, Group, Modal, Table, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconX } from "@tabler/icons-react";
+import { IconEdit, IconX } from "@tabler/icons-react";
 import axios from "axios";
 import { setSourceMapsEnabled } from "process";
 import React, { Dispatch, SetStateAction, useEffect, useReducer, useState } from "react";
@@ -12,6 +12,7 @@ import { IoCreate } from "react-icons/io5";
 interface SOModalPropTypes {
   programId: number;
   versionId: number;
+  SOs: SO[];
   setSOs: Dispatch<SetStateAction<SO[]>>;
 }
 
@@ -22,14 +23,16 @@ interface InitialSOType {
   descriptionError: string
 }
 
-const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
+const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) => {
   const [opened, { open, close }] = useDisclosure(false);
-  const [inputs, setInputs] = useState<InitialSOType[]>([{
-    code: "",
-    description: "",
+  const [inputs, setInputs] = useState<InitialSOType[]>(SOs.map(SO => ({
+    code: SO.code,
+    description: SO.description,
     codeError: "",
     descriptionError: ""
-  }]);
+  }
+  )));
+  console.log(SOs)
   const [index, setIndex] = useState(-1)
 
   const handleCreateSOs = () => {
@@ -74,7 +77,6 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
         setSOs(sos => [...sos, response.data])
       }
     })
-    handleCancel();
     toggleNotification(
       `Create ${inputs.length - 1} SOs successfully`,
       `Create ${inputs.length - 1} SOs successfully.`,
@@ -102,15 +104,6 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
       setInputs(inputs.filter((_, idx) => idx != index))
     }
   }
-
-  const handleCancel = () => {
-    setInputs([{
-      code: "",
-      description: "",
-      codeError: "",
-      descriptionError: ""
-    }])
-  }
  
   useEffect(() => {
     if(index == inputs.length - 1 && inputs[index].code !== "" && inputs[index].description !== "") {
@@ -127,10 +120,7 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
     <>
       <Modal
         opened={opened}
-        onClose={() => {
-          close();
-          handleCancel();
-        }}
+        onClose={close}
         centered
         size="45%"
         padding="md"
@@ -181,23 +171,20 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
             </Table.Tbody>
           </Table>
           <Group justify="flex-end" gap="xs" mt="md">
-            <Button onClick={() => {
-              close();
-              handleCancel();
-            }} variant="outline">
+            <Button onClick={close} variant="outline">
               Cancel
             </Button>
             <Button variant="filled" onClick={handleCreateSOs}>
-              Create SOs
+              Update SOs
             </Button>
           </Group>
         </div>
       </Modal>
-      <Button onClick={open} leftSection={<IoCreate size={20} />}>
-        Create SOs
+      <Button onClick={open} leftSection={<IconEdit size={20} />}>
+        Update selected SOs
       </Button>
     </>
   );
 };
 
-export default CreateSOModal;
+export default EditSOsModal;

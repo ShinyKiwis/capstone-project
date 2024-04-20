@@ -3,7 +3,7 @@ import { toggleNotification } from "@/app/lib/notification";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import { ActionIcon, Button, Group, Modal, Table, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconX } from "@tabler/icons-react";
+import { IconEdit, IconX } from "@tabler/icons-react";
 import axios from "axios";
 import { setSourceMapsEnabled } from "process";
 import React, { Dispatch, SetStateAction, useEffect, useReducer, useState } from "react";
@@ -12,27 +12,27 @@ import { IoCreate } from "react-icons/io5";
 interface SOModalPropTypes {
   programId: number;
   versionId: number;
+  SOs: SO[];
   setSOs: Dispatch<SetStateAction<SO[]>>;
 }
 
 interface InitialSOType {
+  id?: number
   code: string,
   description: string,
   codeError: string,
   descriptionError: string
 }
 
-const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
+const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) => {
+  console.log(SOs)
   const [opened, { open, close }] = useDisclosure(false);
-  const [inputs, setInputs] = useState<InitialSOType[]>([{
-    code: "",
-    description: "",
-    codeError: "",
-    descriptionError: ""
-  }]);
+  const [inputs, setInputs] = useState<InitialSOType[]>([]);
+  console.log("INPUTS:", inputs)
   const [index, setIndex] = useState(-1)
+  const [deleteIds, setDeleteIds] = useState<number[]>([])
 
-  const handleCreateSOs = () => {
+  const handleUpdateSOs = () => {
     let hasError = false;
     inputs.forEach((input, index) => {
       const errors = {
@@ -62,24 +62,35 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
     if(hasError) {
       return;
     }
+    console.log(inputs)
+    let length = 0;
     inputs.forEach(async input => {
       if(input.code !== "" && input.description != "") {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes`,
+        length++;
+        const response = await axios.patch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes/${input.id}`,
           {
             code: input.code,
             description: input.description
           },
         );
-        setSOs(sos => [...sos, response.data])
+        setSOs(sos => sos.map(so => {
+          if(so.id == response.data.id) {
+            return response.data
+          } else {
+            return so
+          }
+        }))
       }
     })
-    handleCancel();
-    toggleNotification(
-      `Create ${inputs.length - 1} SOs successfully`,
-      `Create ${inputs.length - 1} SOs successfully.`,
-      "success",
-    );
+    handleDeleteOperation();
+    if(length > 0) {
+      toggleNotification(
+        `Update ${length} SOs successfully`,
+        `Update ${length} SOs successfully.`,
+        "success",
+      );
+    }
     close();
   };
 
@@ -98,22 +109,39 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
   }
 
   const handleDeleteSO = (index: number) => {
-    if(inputs.length > 1) {
-      setInputs(inputs.filter((_, idx) => idx != index))
+    if(inputs[index].id) {
+      setDeleteIds(prevIds=> [...prevIds, inputs[index].id!])
+    }
+    setInputs(inputs.filter((_, idx) => idx != index))
+  }
+
+  const handleDeleteOperation = () => {
+    deleteIds.forEach(async id => {
+      await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes/${id}`)
+      setSOs(sos => sos.filter(so => so.id != id))
+    })
+    if(deleteIds.length > 0) {
+      toggleNotification(
+        `Delete ${deleteIds.length} SOs successfully`,
+        `Delete ${deleteIds.length} SOs successfully.`,
+        "success",
+      );
     }
   }
 
   const handleCancel = () => {
-    setInputs([{
-      code: "",
-      description: "",
+    setInputs(SOs.map(existedSO => ({
+      id: existedSO.id,
+      code: existedSO.code,
+      description: existedSO.description,
       codeError: "",
       descriptionError: ""
-    }])
+    })))
   }
  
   useEffect(() => {
-    if(index == inputs.length - 1 && inputs[index].code !== "" && inputs[index].description !== "") {
+    // New Input
+    if(inputs.length > 0 && index == inputs.length - 1 && inputs[index].code !== "" && inputs[index].description !== "") {
       setInputs([...inputs, {
         code: "",
         description: "",
@@ -122,6 +150,16 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
       }])
     }
   }, [inputs])
+
+  useEffect(() => {
+    setInputs(SOs.map(existedSO => ({
+      id: existedSO.id,
+      code: existedSO.code,
+      description: existedSO.description,
+      codeError: "",
+      descriptionError: ""
+    })))
+  }, [SOs])
 
   return (
     <>
@@ -137,7 +175,7 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
         yOffset="8em"
         title={
           <Text size="lg" c="blue" fw={600}>
-            Create SOs
+            Update SOs
           </Text>
         }
       >
@@ -181,23 +219,25 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
             </Table.Tbody>
           </Table>
           <Group justify="flex-end" gap="xs" mt="md">
-            <Button onClick={() => {
-              close();
-              handleCancel();
-            }} variant="outline">
+            <Button 
+              onClick={() => {
+                close();
+                handleCancel();
+              }} 
+              variant="outline" >
               Cancel
             </Button>
-            <Button variant="filled" onClick={handleCreateSOs}>
-              Create SOs
+            <Button variant="filled" onClick={handleUpdateSOs}>
+              Update SOs
             </Button>
           </Group>
         </div>
       </Modal>
-      <Button onClick={open} leftSection={<IoCreate size={20} />}>
-        Create SOs
+      <Button onClick={open} leftSection={<IconEdit size={20} />} disabled={SOs.length === 0} ms="md">
+        Update selected SOs
       </Button>
     </>
   );
 };
 
-export default CreateSOModal;
+export default EditSOsModal;
