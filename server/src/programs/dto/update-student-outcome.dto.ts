@@ -1,5 +1,5 @@
 export class UpdateStudentOutcomeDto {
-  code: string;
+  name: string;
 
   description: string;
 

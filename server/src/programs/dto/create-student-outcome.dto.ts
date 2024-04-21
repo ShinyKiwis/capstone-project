@@ -2,7 +2,7 @@ import { IsNotEmpty, IsNotEmptyObject } from "class-validator";
 
 export class CreateStudentOutcomeDto {
   @IsNotEmpty()
-  code: string;
+  name: string;
 
   @IsNotEmpty()
   description: string;

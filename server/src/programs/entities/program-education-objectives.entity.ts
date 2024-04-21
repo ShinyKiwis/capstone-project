@@ -16,7 +16,7 @@ export class ProgramEducationObjective {
   version: Version;
 
   @Column()
-  code: string;
+  name: string;
 
   @Column()
   description: string;
