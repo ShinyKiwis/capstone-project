@@ -1,8 +1,7 @@
 import { PEO } from "@/app/interfaces/Program.interface";
 import { toggleNotification } from "@/app/lib/notification";
-import { ActionIcon, Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
+import { Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconEdit } from "@tabler/icons-react";
 import axios from "axios";
 import React, { Dispatch, SetStateAction, useReducer, useState } from "react";
 import { IoCreate } from "react-icons/io5";
@@ -36,20 +35,20 @@ const reducer = (state: errorState, action: errorAction) => {
 interface PEOModalPropTypes {
   programId: number;
   versionId: number;
-  PEO: PEO;
-  setPEOs: Dispatch<SetStateAction<PEO[]>>;
+  soId: number;
+  setPIs: Dispatch<SetStateAction<PEO[]>>;
 }
 
-const EditPEOModal = ({programId, versionId, PEO, setPEOs}: PEOModalPropTypes) => {
+const CreatePIModal = ({programId, versionId, soId, setPIs}: PEOModalPropTypes) => {
   const [errors, dispatch] = useReducer(reducer, {
     nameError: "",
     descriptionError: "",
   });
   const [opened, { open, close }] = useDisclosure(false);
-  const [name, setName] = useState(PEO.name);
-  const [description, setDescription] = useState(PEO.description);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
 
-  const handleCreatePEO = async () => {
+  const handleCreatePI = async () => {
     if (name === "") {
       dispatch({ type: "set_name_error" });
     }
@@ -60,30 +59,26 @@ const EditPEOModal = ({programId, versionId, PEO, setPEOs}: PEOModalPropTypes) =
       return
     }
 
-    const response = await axios.patch(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/program-education-objectives/${PEO.id}`, {
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes/${soId}`, {
+      code: "",
       name: name,
-      description: description
+      description: description,
+      expectedGoal: 0,
+      passingThreshold: 0,
     })
 
-    setPEOs(peos => peos.map(peo => {
-      if(peo.id == response.data.id) {
-        return response.data
-      }else {
-        return peo
-      }
-    }))
-
+    console.log(response.data)
     toggleNotification(
-      `Update PEO "${name} successfully`,
-      `Update PEO "${name}" successfully.`,
+      `Create PI "${name} successfully`,
+      `Create PI "${name}" successfully.`,
       "success",
     );
     close();
   };
 
   const handleCancel = () => {
-    setName(PEO.name);
-    setDescription(PEO.description);
+    setName("");
+    setDescription("");
   }
   return (
     <>
@@ -99,7 +94,7 @@ const EditPEOModal = ({programId, versionId, PEO, setPEOs}: PEOModalPropTypes) =
         yOffset="8em"
         title={
           <Text size="lg" c="blue" fw={600}>
-            Update PEO "{PEO.name}"
+            Create PI
           </Text>
         }
       >
@@ -112,7 +107,7 @@ const EditPEOModal = ({programId, versionId, PEO, setPEOs}: PEOModalPropTypes) =
             value={name}
             onChange={(event) => setName(event.currentTarget.value)}
             error={errors.nameError}
-            placeholder="PEO name"
+            placeholder="PI name"
           />
           <Text size="md" fw={600} className="my-2">
             Description
@@ -124,7 +119,7 @@ const EditPEOModal = ({programId, versionId, PEO, setPEOs}: PEOModalPropTypes) =
             maxRows={6}
             onChange={(event) => setDescription(event.currentTarget.value)}
             error={errors.descriptionError}
-            placeholder="Description of the PEO"
+            placeholder="Description of the PI"
           />
           <Group justify="flex-end" gap="xs" mt="md">
             <Button onClick={() => {
@@ -133,17 +128,17 @@ const EditPEOModal = ({programId, versionId, PEO, setPEOs}: PEOModalPropTypes) =
             }} variant="outline">
               Cancel
             </Button>
-            <Button variant="filled" onClick={handleCreatePEO}>
-              Update PEO
+            <Button variant="filled" onClick={handleCreatePI}>
+              Create PI
             </Button>
           </Group>
         </div>
       </Modal>
-      <ActionIcon size="sm" variant="subtle" color="blue" onClick={open}>
-        <IconEdit size={16} />
-      </ActionIcon>
+      <Button onClick={open} leftSection={<IoCreate size={20} />}>
+        Create PI
+      </Button>
     </>
   );
 };
 
-export default EditPEOModal;
+export default CreatePIModal;

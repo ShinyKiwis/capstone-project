@@ -12,6 +12,7 @@ import { DataTable } from 'mantine-datatable';
 import { IconEye, IconTrash } from '@tabler/icons-react';
 import DeleteModal from '@/app/_components/Modals/DeleteModal';
 import Link from 'next/link';
+import EditPEOModal from '@/app/_components/Modals/PEO/EditPEOModal';
 
 const Page = ({params}: { params: { id: string, version_id: string} }) => {
   const [program, setProgram] = useState<Program | null>(null);
@@ -21,8 +22,8 @@ const Page = ({params}: { params: { id: string, version_id: string} }) => {
   const [fileUploaded, setFileUploaded] = useState(false);
   const [PEOs, setPEOs] = useState<PEO[]>([])
 
-  const handleDeletePEO = () => {
-
+  const handleDeletePEO = (PEO: PEO) => {
+    setPEOs(PEOs.filter(existedPEO => existedPEO.id !== PEO.id))
   }
 
   useEffect(() => {
@@ -33,8 +34,9 @@ const Page = ({params}: { params: { id: string, version_id: string} }) => {
         buildBreadCrumbs(targetProgram, targetVersion);
         setProgram(targetProgram);
         setVersion(targetVersion);
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${targetProgram.id}/versions/${targetVersion.id}`)
-        console.log(targetVersion)
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${targetProgram.id}/versions/${targetVersion.id}/program-education-objectives`)
+        setPEOs(response.data)
+        console.log(response.data)
       }
     };
 
@@ -83,17 +85,6 @@ const Page = ({params}: { params: { id: string, version_id: string} }) => {
               accessor: "name",
               title: "PEO Name",
               width: "5%",
-              sortable: true,
-              render: (record) => {
-                return (
-                  <Link
-                    href={`/program/${program.id}/versions/${version.id}/peos/${record.id}`}
-                    className="text-blue-600 underline hover:text-blue-900"
-                  >
-                    {record.name}
-                  </Link>
-                );
-              },
             },
             {
               accessor: "description",
@@ -106,21 +97,16 @@ const Page = ({params}: { params: { id: string, version_id: string} }) => {
               render: (record) => {
                 return (
                   <Group gap={4} justify="center" wrap="nowrap">
-                    <ActionIcon size="sm" variant="subtle" color="green">
-                      <Link href={`/program/${record.id}/versions`}>
-                        <IconEye size={16} />
-                      </Link>
-                    </ActionIcon>
-                    <EditSOModal programId={program.id} versionId={version.id} SO={record} setSOs={setSOs} />
+                    <EditPEOModal programId={program.id} versionId={version.id} PEO={record} setPEOs={setPEOs}/>
                     <ActionIcon
                       size="sm"
                       variant="subtle"
                       color="red"
                       onClick={DeleteModal(
-                        "SO", 
+                        "PEO", 
                         record, 
-                        handleDeleteSO, 
-                        `${process.env.NEXT_PUBLIC_DELETE_PROGRAM_URL!}/${program.id}/versions/${version.id}/student-outcomes/${record.id}`
+                        handleDeletePEO, 
+                        `${process.env.NEXT_PUBLIC_DELETE_PROGRAM_URL!}/${program.id}/versions/${version.id}/program-education-objectives/${record.id}`
                       )}
                     >
                       <IconTrash size={16} />

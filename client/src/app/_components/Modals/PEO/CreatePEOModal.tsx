@@ -1,6 +1,5 @@
 import { PEO } from "@/app/interfaces/Program.interface";
 import { toggleNotification } from "@/app/lib/notification";
-import { useProgram } from "@/app/providers/ProgramProvider";
 import { Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import axios from "axios";
@@ -64,20 +63,28 @@ const CreatePEOModal = ({programId, versionId, setPEOs}: PEOModalPropTypes) => {
       description: description
     })
 
-    console.log(response.data)
+    setPEOs(peos => [...peos, response.data])
 
     toggleNotification(
-      `Create program "${name} successfully`,
-      `Create program "${name}" successfully.`,
+      `Create PEO "${name} successfully`,
+      `Create PEO "${name}" successfully.`,
       "success",
     );
     close();
   };
+
+  const handleCancel = () => {
+    setName("");
+    setDescription("");
+  }
   return (
     <>
       <Modal
         opened={opened}
-        onClose={close}
+        onClose={() => {
+          close();
+          handleCancel();
+        }}
         centered
         size="45%"
         padding="md"
@@ -112,7 +119,10 @@ const CreatePEOModal = ({programId, versionId, setPEOs}: PEOModalPropTypes) => {
             placeholder="Description of the PEO"
           />
           <Group justify="flex-end" gap="xs" mt="md">
-            <Button onClick={close} variant="outline">
+            <Button onClick={() => {
+              close();
+              handleCancel();
+            }} variant="outline">
               Cancel
             </Button>
             <Button variant="filled" onClick={handleCreatePEO}>

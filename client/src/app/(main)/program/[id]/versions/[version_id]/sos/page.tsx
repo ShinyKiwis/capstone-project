@@ -22,7 +22,6 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   const {buildBreadCrumbs} = useBreadCrumbs();
   const {getProgram} = useProgram();
   const [fileUploaded, setFileUploaded] = useState(false);
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const [SOs, setSOs] = useState<SO[]>([])
   const [selectedRecords, setSelectedRecords] = useState<SO[]>([]);
 
@@ -94,19 +93,6 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
           setFileUploaded={setFileUploaded}
         />
         <EditSOsModal programId={program.id} versionId ={version.id} SOs={selectedRecords} setSOs={setSOs} />
-        <TextInput
-          placeholder="Search SO..."
-          className="ms-auto w-72"
-          value={searchQuery}
-          onChange={(event) => setSearchQuery(event.currentTarget.value)}
-          rightSection={
-            <BiSearch
-              size={20}
-              className="group-focus-within:text-blue text-gray"
-              onClick={(e) => {}}
-            />
-          }
-        />
       </div>
       <div className="mt-4 h-full overflow-auto pb-4">
         <DataTable
@@ -120,7 +106,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
               render: (record) => {
                 return (
                   <Link
-                    href={`/program/${program.id}/versions/${version.id}/sos/${record.id}`}
+                    href={`/program/${program.id}/versions/${version.id}/sos/${record.id}/pis`}
                     className="text-blue-600 underline hover:text-blue-900"
                   >
                     {record.name}
@@ -140,7 +126,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
                 return (
                   <Group gap={4} justify="center" wrap="nowrap">
                     <ActionIcon size="sm" variant="subtle" color="green">
-                      <Link href={`/program/${record.id}/versions`}>
+                      <Link href={`/program/${program.id}/versions/${version.id}/sos/${record.id}/pis`}>
                         <IconEye size={16} />
                       </Link>
                     </ActionIcon>

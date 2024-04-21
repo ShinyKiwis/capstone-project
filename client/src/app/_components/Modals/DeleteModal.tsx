@@ -4,9 +4,9 @@ import { modals } from "@mantine/modals";
 import { Text } from "@mantine/core";
 import axios from "axios";
 import { User } from "../../interfaces/User.interface";
-import Program, { SO, Version } from "@/app/interfaces/Program.interface";
+import Program, { PEO, SO, Version } from "@/app/interfaces/Program.interface";
 
-type DeleteObject = User | Program | Version | SO;
+type DeleteObject = User | Program | Version | SO | PEO;
 
 const capitalize = (str: string) => {
   return str[0].toUpperCase() + str.slice(1);
