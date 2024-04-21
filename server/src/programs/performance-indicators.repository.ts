@@ -71,7 +71,7 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
         studentOutcomeVersionId: true,
         studentOutcomeVersionProgramId: true,
         studentOutcomeId: true,
-        code: true,
+        name: true,
         description: true,
       }
     });
