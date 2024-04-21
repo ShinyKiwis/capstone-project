@@ -1,9 +1,10 @@
+import { PEO } from "@/app/interfaces/Program.interface";
 import { toggleNotification } from "@/app/lib/notification";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import { Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import axios from "axios";
-import React, { useReducer, useState } from "react";
+import React, { Dispatch, SetStateAction, useReducer, useState } from "react";
 import { IoCreate } from "react-icons/io5";
 
 interface errorState {
@@ -32,7 +33,13 @@ const reducer = (state: errorState, action: errorAction) => {
   }
 };
 
-const CreatePEOModal = () => {
+interface PEOModalPropTypes {
+  programId: number;
+  versionId: number;
+  setPEOs: Dispatch<SetStateAction<PEO[]>>;
+}
+
+const CreatePEOModal = ({programId, versionId, setPEOs}: PEOModalPropTypes) => {
   const [errors, dispatch] = useReducer(reducer, {
     nameError: "",
     descriptionError: "",
@@ -51,6 +58,13 @@ const CreatePEOModal = () => {
     if (name === "" || description === "") {
       return
     }
+
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/program-education-objectives`, {
+      name: name,
+      description: description
+    })
+
+    console.log(response.data)
 
     toggleNotification(
       `Create program "${name} successfully`,

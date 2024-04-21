@@ -23,3 +23,12 @@ export interface SO {
   description: string,
   performanceIndicators: any[]
 }
+
+export interface PEO {
+  id: number,
+  versionId: number,
+  versionProgramId: number,
+  name: string,
+  description: string,
+  versions: any[]
+}
