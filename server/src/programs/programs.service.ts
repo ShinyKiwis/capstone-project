@@ -132,6 +132,16 @@ export class ProgramsService {
     );
   }
 
+  async getAllProgramEducationObjectiveOfAVersion(
+    programId: number,
+    versionId: number,
+  ) {
+    return this.programEducationObjectivesRepository.getAllProgramEducationObjectiveOfAVersion(
+      programId,
+      versionId,
+    );
+  }
+
   async getAProgramEducationObjectiveOfAVersion(
     programId: number,
     versionId: number,

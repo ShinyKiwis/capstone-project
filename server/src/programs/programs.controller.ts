@@ -97,6 +97,17 @@ export class ProgramsController {
     );
   }
 
+  @Get(':programId/versions/:versionId/program-education-objectives')
+  GetAllProgramEducationObjectiveOfAVersion(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+  ) {
+    return this.programsService.getAllProgramEducationObjectiveOfAVersion(
+      +programId,
+      +versionId
+    );
+  }
+
   @Patch(':programId/versions/:versionId/program-education-objectives/:programEducationObjectiveId')
   UpdateAProgramEducationObjective(
     @Param('programId') programId: string,
