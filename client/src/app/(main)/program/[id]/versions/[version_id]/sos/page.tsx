@@ -14,6 +14,7 @@ import { IconEye, IconTrash } from '@tabler/icons-react';
 import axios from 'axios';
 import DeleteModal from '@/app/_components/Modals/DeleteModal';
 import EditSOsModal from '@/app/_components/Modals/SO/EditSOsModal';
+import EditSOModal from '@/app/_components/Modals/SO/EditSOModal';
 
 const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   const [program, setProgram] = useState<Program | null>(null);
@@ -25,6 +26,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   const [SOs, setSOs] = useState<SO[]>([])
   const [selectedRecords, setSelectedRecords] = useState<SO[]>([]);
 
+  console.log(SOs)
   const handleDeleteSO = (SO: SO) => {
     setSOs(SOs.filter(existedSO => existedSO.id !== SO.id))
   }
@@ -110,7 +112,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
                     href={`/program/${program.id}/versions/${version.id}/sos/${record.id}`}
                     className="text-blue-600 underline hover:text-blue-900"
                   >
-                    {record.id}
+                    {record.code}
                   </Link>
                 );
               },
@@ -132,6 +134,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
                         <IconEye size={16} />
                       </Link>
                     </ActionIcon>
+                    <EditSOModal programId={program.id} versionId={version.id} SO={record} setSOs={setSOs} />
                     <ActionIcon
                       size="sm"
                       variant="subtle"

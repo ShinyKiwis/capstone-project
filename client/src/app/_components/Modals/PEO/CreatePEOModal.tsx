@@ -1,19 +1,9 @@
-import Program, { SO } from "@/app/interfaces/Program.interface";
 import { toggleNotification } from "@/app/lib/notification";
 import { useProgram } from "@/app/providers/ProgramProvider";
-import {
-  ActionIcon,
-  Button,
-  Group,
-  Modal,
-  Text,
-  TextInput,
-  Textarea,
-} from "@mantine/core";
+import { Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconEdit } from "@tabler/icons-react";
 import axios from "axios";
-import React, { Dispatch, SetStateAction, useReducer, useState } from "react";
+import React, { useReducer, useState } from "react";
 import { IoCreate } from "react-icons/io5";
 
 interface errorState {
@@ -42,28 +32,16 @@ const reducer = (state: errorState, action: errorAction) => {
   }
 };
 
-interface EditSOModalProps {
-  programId: number,
-  versionId: number,
-  SO: SO,
-  setSOs: Dispatch<SetStateAction<SO[]>>;
-}
-
-const EditSOModal = ({ programId, versionId, SO, setSOs }: EditSOModalProps) => {
+const CreatePEOModal = () => {
   const [errors, dispatch] = useReducer(reducer, {
     nameError: "",
     descriptionError: "",
   });
   const [opened, { open, close }] = useDisclosure(false);
-  const [name, setName] = useState(SO.code);
-  const [description, setDescription] = useState(SO.description);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
 
-  const handleCancel = () => {
-    setName(SO.code);
-    setDescription(SO.description);
-  }
-
-  const handleUpdateSO = async () => {
+  const handleCreatePEO = async () => {
     if (name === "") {
       dispatch({ type: "set_name_error" });
     }
@@ -71,27 +49,12 @@ const EditSOModal = ({ programId, versionId, SO, setSOs }: EditSOModalProps) => 
       dispatch({ type: "set_description_error" });
     }
     if (name === "" || description === "") {
-      return;
+      return
     }
 
-    const response = await axios.patch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes/${SO.id}`,
-      {
-        code: name,
-        description: description
-      },
-    );
-    setSOs(sos => sos.map(so => {
-      if(so.id == response.data.id) {
-        return response.data
-      } else {
-        return so
-      }
-    }))
-
     toggleNotification(
-      `Update SO "${SO.code} successfully`,
-      `Update SO "${SO.code}" successfully.`,
+      `Create program "${name} successfully`,
+      `Create program "${name}" successfully.`,
       "success",
     );
     close();
@@ -100,17 +63,14 @@ const EditSOModal = ({ programId, versionId, SO, setSOs }: EditSOModalProps) => 
     <>
       <Modal
         opened={opened}
-        onClose={() => {
-          close();
-          handleCancel();
-        }}
+        onClose={close}
         centered
         size="45%"
         padding="md"
         yOffset="8em"
         title={
           <Text size="lg" c="blue" fw={600}>
-            Update SO "{SO.code}"
+            Create PEO
           </Text>
         }
       >
@@ -123,7 +83,7 @@ const EditSOModal = ({ programId, versionId, SO, setSOs }: EditSOModalProps) => 
             value={name}
             onChange={(event) => setName(event.currentTarget.value)}
             error={errors.nameError}
-            placeholder="SO name"
+            placeholder="PEO name"
           />
           <Text size="md" fw={600} className="my-2">
             Description
@@ -135,28 +95,23 @@ const EditSOModal = ({ programId, versionId, SO, setSOs }: EditSOModalProps) => 
             maxRows={6}
             onChange={(event) => setDescription(event.currentTarget.value)}
             error={errors.descriptionError}
-            placeholder="Description of the SO"
+            placeholder="Description of the PEO"
           />
           <Group justify="flex-end" gap="xs" mt="md">
-            <Button onClick={() => {
-              close();
-              handleCancel();
-            }} 
-              variant="outline"
-            >
+            <Button onClick={close} variant="outline">
               Cancel
             </Button>
-            <Button variant="filled" onClick={handleUpdateSO}>
-              Update
+            <Button variant="filled" onClick={handleCreatePEO}>
+              Create PEO
             </Button>
           </Group>
         </div>
       </Modal>
-      <ActionIcon size="sm" variant="subtle" color="blue" onClick={open}>
-        <IconEdit size={16} />
-      </ActionIcon>
+      <Button onClick={open} leftSection={<IoCreate size={20} />}>
+        Create PEO
+      </Button>
     </>
   );
 };
 
-export default EditSOModal;
+export default CreatePEOModal;

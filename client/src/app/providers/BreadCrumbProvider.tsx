@@ -64,6 +64,11 @@ const BreadCrumbProvider = ({ children }: { children: React.ReactNode }) => {
                 title: "SOs",
                 href: `/program/${program.id}/versions/${version.id}/sos`,
               });
+            } else if (path.includes("peos")) {
+              programBreadCrumbs.push({
+                title: "PEOs",
+                href: `/program/${program.id}/versions/${version.id}/peos`,
+              });
             }
           }
         case 3:
