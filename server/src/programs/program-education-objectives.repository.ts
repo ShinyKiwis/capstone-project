@@ -41,6 +41,35 @@ export class ProgramEducationObjectivesRepository extends Repository<ProgramEduc
     return studentOutcome;
   }
 
+  async getAllProgramEducationObjectiveOfAVersion(
+    programId: number,
+    versionId: number
+  ) {
+    const version = await this.versionsRepository.findOneBy({
+      id: versionId,
+      programId,
+    });
+    if (!version) {
+      throw new NotFoundException(
+        `Version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
+
+    const programEducationObjectives = await this.find({
+      where: {
+        version
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        versionId: true,
+        versionProgramId: true
+      }
+    });
+    return programEducationObjectives;
+  }
+
   async getAProgramEducationObjective(
     programId: number,
     versionId: number,
@@ -59,6 +88,13 @@ export class ProgramEducationObjectivesRepository extends Repository<ProgramEduc
       where: {
         version,
         id: programEducationObjectiveId,
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        versionId: true,
+        versionProgramId: true
       }
     });
 
