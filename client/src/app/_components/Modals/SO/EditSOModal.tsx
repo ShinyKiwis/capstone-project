@@ -55,11 +55,11 @@ const EditSOModal = ({ programId, versionId, SO, setSOs }: EditSOModalProps) => 
     descriptionError: "",
   });
   const [opened, { open, close }] = useDisclosure(false);
-  const [name, setName] = useState(SO.code);
+  const [name, setName] = useState(SO.name);
   const [description, setDescription] = useState(SO.description);
 
   const handleCancel = () => {
-    setName(SO.code);
+    setName(SO.name);
     setDescription(SO.description);
   }
 
@@ -90,8 +90,8 @@ const EditSOModal = ({ programId, versionId, SO, setSOs }: EditSOModalProps) => 
     }))
 
     toggleNotification(
-      `Update SO "${SO.code} successfully`,
-      `Update SO "${SO.code}" successfully.`,
+      `Update SO "${SO.name} successfully`,
+      `Update SO "${SO.name}" successfully.`,
       "success",
     );
     close();
@@ -110,7 +110,7 @@ const EditSOModal = ({ programId, versionId, SO, setSOs }: EditSOModalProps) => 
         yOffset="8em"
         title={
           <Text size="lg" c="blue" fw={600}>
-            Update SO "{SO.code}"
+            Update SO "{SO.name}"
           </Text>
         }
       >
@@ -128,11 +128,8 @@ const EditSOModal = ({ programId, versionId, SO, setSOs }: EditSOModalProps) => 
           <Text size="md" fw={600} className="my-2">
             Description
           </Text>
-          <Textarea
-            autosize
+          <TextInput
             value={description}
-            minRows={4}
-            maxRows={6}
             onChange={(event) => setDescription(event.currentTarget.value)}
             error={errors.descriptionError}
             placeholder="Description of the SO"

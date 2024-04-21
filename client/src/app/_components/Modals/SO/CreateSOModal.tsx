@@ -16,7 +16,7 @@ interface SOModalPropTypes {
 }
 
 interface InitialSOType {
-  code: string,
+  name: string,
   description: string,
   codeError: string,
   descriptionError: string
@@ -25,21 +25,21 @@ interface InitialSOType {
 const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [inputs, setInputs] = useState<InitialSOType[]>([{
-    code: "",
+    name: "",
     description: "",
     codeError: "",
     descriptionError: ""
   }]);
   const [index, setIndex] = useState(-1)
 
-  const handleCreateSOs = () => {
+  const handleCreateSOs = async () => {
     let hasError = false;
     inputs.forEach((input, index) => {
       const errors = {
         codeError: "",
         descriptionError: ""
       }
-      if ((inputs.length === 1 || index !== inputs.length - 1) && input.code === "") {
+      if ((inputs.length === 1 || index !== inputs.length - 1) && input.name === "") {
         hasError = true
         errors.codeError = "Code is required"
       }
@@ -62,18 +62,26 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
     if(hasError) {
       return;
     }
-    inputs.forEach(async input => {
-      if(input.code !== "" && input.description != "") {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes`,
-          {
-            code: input.code,
-            description: input.description
-          },
-        );
-        setSOs(sos => [...sos, response.data])
-      }
-    })
+
+    const responses = await Promise.all(
+      inputs.map((input) => {
+        if (input.name !== "" && input.description !== "") {
+          return axios.post(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes`,
+            {
+              name: input.name,
+              description: input.description
+            }
+          );
+        } else {
+          return null;
+        }
+      })
+    );
+
+    const successfulResponses = responses.filter((response) => response !== null);
+    setSOs((sos) => [...sos, ...successfulResponses.map((response) => response!.data)]);
+
     handleCancel();
     toggleNotification(
       `Create ${inputs.length - 1} SOs successfully`,
@@ -105,7 +113,7 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
 
   const handleCancel = () => {
     setInputs([{
-      code: "",
+      name: "",
       description: "",
       codeError: "",
       descriptionError: ""
@@ -113,9 +121,9 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
   }
  
   useEffect(() => {
-    if(index == inputs.length - 1 && inputs[index].code !== "" && inputs[index].description !== "") {
+    if(index == inputs.length - 1 && inputs[index].name !== "" && inputs[index].description !== "") {
       setInputs([...inputs, {
-        code: "",
+        name: "",
         description: "",
         codeError: "",
         descriptionError: ""
@@ -153,12 +161,12 @@ const CreateSOModal = ({programId, versionId, setSOs} : SOModalPropTypes) => {
             <Table.Tbody>
               {
                 inputs.map((input, index) => (
-                  <Table.Tr key={input.code}>
+                  <Table.Tr key={index}>
                     <Table.Td>
                       <TextInput 
-                        placeholder="SO code..." 
-                        value={input.code} 
-                        onChange={(e) => handleChangeSO(index, "code", e.target.value)} 
+                        placeholder="SO name..." 
+                        value={input.name} 
+                        onChange={(e) => handleChangeSO(index, "name", e.target.value)} 
                         error={input.codeError}
                       />
                     </Table.Td>

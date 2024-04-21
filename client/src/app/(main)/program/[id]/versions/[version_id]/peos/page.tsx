@@ -15,6 +15,7 @@ const Page = ({params}: { params: { id: string, version_id: string} }) => {
   const {buildBreadCrumbs} = useBreadCrumbs();
   const {getProgram} = useProgram();
   const [fileUploaded, setFileUploaded] = useState(false);
+  const [PEOs, setPEOs] = useState([])
 
   useEffect(() => {
     const fetchProgram = async () => {

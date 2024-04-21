@@ -26,7 +26,6 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   const [SOs, setSOs] = useState<SO[]>([])
   const [selectedRecords, setSelectedRecords] = useState<SO[]>([]);
 
-  console.log(SOs)
   const handleDeleteSO = (SO: SO) => {
     setSOs(SOs.filter(existedSO => existedSO.id !== SO.id))
   }
@@ -49,6 +48,18 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
       fetchProgram();
     }
   })
+
+  useEffect(() => {
+    setSOs(SOs.sort((a: SO, b: SO) => {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    }));
+  }, [SOs])
 
   return program && version ? (
     <div className='flex h-full flex-col'>
@@ -112,7 +123,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
                     href={`/program/${program.id}/versions/${version.id}/sos/${record.id}`}
                     className="text-blue-600 underline hover:text-blue-900"
                   >
-                    {record.code}
+                    {record.name}
                   </Link>
                 );
               },
@@ -120,7 +131,6 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
             {
               accessor: "description",
               title: "Description",
-              sortable: true,
             },
             {
               accessor: "actions",

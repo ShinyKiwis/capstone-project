@@ -18,7 +18,7 @@ interface SOModalPropTypes {
 
 interface InitialSOType {
   id?: number
-  code: string,
+  name: string,
   description: string,
   codeError: string,
   descriptionError: string
@@ -39,7 +39,7 @@ const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =>
         codeError: "",
         descriptionError: ""
       }
-      if ((inputs.length === 1 || index !== inputs.length - 1) && input.code === "") {
+      if ((inputs.length === 1 || index !== inputs.length - 1) && input.name === "") {
         hasError = true
         errors.codeError = "Code is required"
       }
@@ -65,12 +65,12 @@ const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =>
     console.log(inputs)
     let length = 0;
     inputs.forEach(async input => {
-      if(input.code !== "" && input.description != "") {
+      if(input.name !== "" && input.description != "") {
         length++;
         const response = await axios.patch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes/${input.id}`,
           {
-            code: input.code,
+            name: input.name,
             description: input.description
           },
         );
@@ -132,7 +132,7 @@ const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =>
   const handleCancel = () => {
     setInputs(SOs.map(existedSO => ({
       id: existedSO.id,
-      code: existedSO.code,
+      name: existedSO.name,
       description: existedSO.description,
       codeError: "",
       descriptionError: ""
@@ -141,9 +141,9 @@ const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =>
  
   useEffect(() => {
     // New Input
-    if(inputs.length > 0 && index == inputs.length - 1 && inputs[index].code !== "" && inputs[index].description !== "") {
+    if(inputs.length > 0 && index == inputs.length - 1 && inputs[index].name !== "" && inputs[index].description !== "") {
       setInputs([...inputs, {
-        code: "",
+        name: "",
         description: "",
         codeError: "",
         descriptionError: ""
@@ -154,7 +154,7 @@ const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =>
   useEffect(() => {
     setInputs(SOs.map(existedSO => ({
       id: existedSO.id,
-      code: existedSO.code,
+      name: existedSO.name,
       description: existedSO.description,
       codeError: "",
       descriptionError: ""
@@ -191,11 +191,11 @@ const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =>
             <Table.Tbody>
               {
                 inputs.map((input, index) => (
-                  <Table.Tr key={input.code}>
+                  <Table.Tr key={input.name}>
                     <Table.Td>
                       <TextInput 
                         placeholder="SO code..." 
-                        value={input.code} 
+                        value={input.name} 
                         onChange={(e) => handleChangeSO(index, "code", e.target.value)} 
                         error={input.codeError}
                       />

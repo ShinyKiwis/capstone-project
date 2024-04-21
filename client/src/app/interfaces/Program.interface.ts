@@ -19,7 +19,7 @@ export interface SO {
   id: number,
   versionId: number,
   versionProgramId: number,
-  code: string,
+  name: string,
   description: string,
   performanceIndicators: any[]
 }
