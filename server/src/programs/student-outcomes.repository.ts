@@ -19,7 +19,7 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
     versionId: number,
     createStudentOutcomeDto: CreateStudentOutcomeDto,
   ) {
-    const { code, description, expectedGoal, passingThreshold } =
+    const { name, description, expectedGoal, passingThreshold } =
       createStudentOutcomeDto;
     const version = await this.versionsRepository.findOneBy({
       id: versionId,
@@ -31,7 +31,7 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
       );
     }
     const studentOutcome = this.create({
-      code,
+      name,
       version,
       description,
       expectedGoal,
@@ -68,7 +68,7 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
         id: true,
         versionId: true,
         versionProgramId: true,
-        code: true,
+        name: true,
         description: true,
         performanceIndicators: true
       }
@@ -89,7 +89,7 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
     studentOutcomeId: number,
     updateStudentOutcomeDto: UpdateStudentOutcomeDto
   ) {
-    const { code, description, expectedGoal, passingThreshold } = updateStudentOutcomeDto;
+    const { name, description, expectedGoal, passingThreshold } = updateStudentOutcomeDto;
     const studentOutcome = await this.findOneBy({
       versionProgramId: programId,
       versionId,
@@ -102,7 +102,7 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
       );
     }
 
-    if(code) studentOutcome.code = code;
+    if(name) studentOutcome.name = name;
     if(description) studentOutcome.description = description
     if(expectedGoal) studentOutcome.expectedGoal = expectedGoal;
     if(passingThreshold) studentOutcome.passingThreshold = passingThreshold;

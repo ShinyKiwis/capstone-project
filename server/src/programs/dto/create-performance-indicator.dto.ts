@@ -1,9 +1,6 @@
 import { IsNotEmpty } from "class-validator";
 
-export class CreatePerformanceIndicatorDto {
-  @IsNotEmpty()
-  code: string;
-  
+export class CreatePerformanceIndicatorDto { 
   @IsNotEmpty()
   name: string;
 

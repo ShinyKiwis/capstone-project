@@ -20,7 +20,7 @@ export class ProgramEducationObjectivesRepository extends Repository<ProgramEduc
     versionId: number,
     createProgramEducationDto: CreateProgramEducationObjectiveDto,
   ) {
-    const { code, description } =
+    const { name, description } =
       createProgramEducationDto;
     const version = await this.versionsRepository.findOneBy({
       id: versionId,
@@ -33,7 +33,7 @@ export class ProgramEducationObjectivesRepository extends Repository<ProgramEduc
     }
     const studentOutcome = this.create({
       version,
-      code,
+      name,
       description,
     });
 
@@ -77,7 +77,7 @@ export class ProgramEducationObjectivesRepository extends Repository<ProgramEduc
     programEducationObjectiveId: number,
     updateProgramEducationObjectiveDto: UpdateProgramEducationObjectiveDto
   ) {
-    const { code, description } = updateProgramEducationObjectiveDto;
+    const { name, description } = updateProgramEducationObjectiveDto;
     const programEducationObjective = await this.findOneBy({
       versionProgramId: programId,
       versionId,
@@ -90,7 +90,7 @@ export class ProgramEducationObjectivesRepository extends Repository<ProgramEduc
       );
     }
 
-    if (code) programEducationObjective.code = code;
+    if (name) programEducationObjective.name = name;
     if (description) programEducationObjective.description = description;
 
     await this.save(programEducationObjective);

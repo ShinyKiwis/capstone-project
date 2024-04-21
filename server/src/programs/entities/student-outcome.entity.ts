@@ -31,7 +31,7 @@ export class StudentOutcome {
   performanceIndicators: PerformanceIndicator[];
 
   @Column()
-  code: string;
+  name: string;
 
   @Column()
   description: string;

@@ -1,4 +1,4 @@
 export class UpdateProgramEducationObjectiveDto {
-  code: string;
+  name: string;
   description: string;
 }
