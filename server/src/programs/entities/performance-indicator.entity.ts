@@ -25,9 +25,6 @@ export class PerformanceIndicator {
   studentOutcome: StudentOutcome;
 
   @Column()
-  code: string;
-
-  @Column()
   name: string;
 
   @Column()
