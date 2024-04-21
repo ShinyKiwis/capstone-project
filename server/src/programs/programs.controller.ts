@@ -212,7 +212,7 @@ export class ProgramsController {
     @Param('versionId') versionId: string,
     @Param('studentOutcomeId') studentOutcomeId: string,
     @Param('performanceIndicatorId') performanceIndicatorId: string,
-    updatePerformanceIndicatorDto: UpdatePerformanceIndicatorDto
+    @Body() updatePerformanceIndicatorDto: UpdatePerformanceIndicatorDto
   ) {
     return this.programsService.updateAPerformanceIndicator(+programId, +versionId, +studentOutcomeId, +performanceIndicatorId, updatePerformanceIndicatorDto);
   }
