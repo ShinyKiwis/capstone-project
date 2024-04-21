@@ -32,3 +32,15 @@ export interface PEO {
   description: string,
   versions: any[]
 }
+
+export interface PI {
+  studentOutcomeId: number,
+  studentOutcomeVersionId: number,
+  studentOutcomeVersionProgramId: number,
+  name: string,
+  description: string,
+  studentOutcome: any, 
+  id: number,
+  expectedGoal: string,
+  passingThreshold: string
+}

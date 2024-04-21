@@ -1,7 +1,17 @@
-import { PEO, PI } from "@/app/interfaces/Program.interface";
+import Program, { PI, SO } from "@/app/interfaces/Program.interface";
 import { toggleNotification } from "@/app/lib/notification";
-import { Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
+import { useProgram } from "@/app/providers/ProgramProvider";
+import {
+  ActionIcon,
+  Button,
+  Group,
+  Modal,
+  Text,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { IconEdit } from "@tabler/icons-react";
 import axios from "axios";
 import React, { Dispatch, SetStateAction, useReducer, useState } from "react";
 import { IoCreate } from "react-icons/io5";
@@ -32,23 +42,29 @@ const reducer = (state: errorState, action: errorAction) => {
   }
 };
 
-interface PEOModalPropTypes {
-  programId: number;
-  versionId: number;
-  soId: number;
+interface EditPIModalProps {
+  programId: number,
+  versionId: number,
+  soId: number,
+  PI: PI,
   setPIs: Dispatch<SetStateAction<PI[]>>;
 }
 
-const CreatePIModal = ({programId, versionId, soId, setPIs}: PEOModalPropTypes) => {
+const EditPIModal = ({ programId, versionId, soId, PI, setPIs }: EditPIModalProps) => {
   const [errors, dispatch] = useReducer(reducer, {
     nameError: "",
     descriptionError: "",
   });
   const [opened, { open, close }] = useDisclosure(false);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState(PI.name);
+  const [description, setDescription] = useState(PI.description);
 
-  const handleCreatePI = async () => {
+  const handleCancel = () => {
+    setName(PI.name);
+    setDescription(PI.description);
+  }
+
+  const handleUpdatePI = async () => {
     if (name === "") {
       dispatch({ type: "set_name_error" });
     }
@@ -56,27 +72,31 @@ const CreatePIModal = ({programId, versionId, soId, setPIs}: PEOModalPropTypes) 
       dispatch({ type: "set_description_error" });
     }
     if (name === "" || description === "") {
-      return
+      return;
     }
 
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes/${soId}/performance-indicators`, {
-      name: name,
-      description: description,
-    })
+    const response = await axios.patch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes/${soId}/performance-indicators/${PI.id}`,
+      {
+        name: name,
+        description: description
+      },
+    );
+    setPIs(pis => pis.map(pi => {
+      if(pi.id == response.data.id) {
+        return response.data
+      } else {
+        return pi
+      }
+    }))
 
-    setPIs(pis => [...pis, response.data])
     toggleNotification(
-      `Create PI "${name} successfully`,
-      `Create PI "${name}" successfully.`,
+      `Update PI "${PI.name} successfully`,
+      `Update PI "${PI.name}" successfully.`,
       "success",
     );
     close();
   };
-
-  const handleCancel = () => {
-    setName("");
-    setDescription("");
-  }
   return (
     <>
       <Modal
@@ -91,7 +111,7 @@ const CreatePIModal = ({programId, versionId, soId, setPIs}: PEOModalPropTypes) 
         yOffset="8em"
         title={
           <Text size="lg" c="blue" fw={600}>
-            Create PI
+            Update PI "{PI.name}"
           </Text>
         }
       >
@@ -104,38 +124,37 @@ const CreatePIModal = ({programId, versionId, soId, setPIs}: PEOModalPropTypes) 
             value={name}
             onChange={(event) => setName(event.currentTarget.value)}
             error={errors.nameError}
-            placeholder="PI name"
+            placeholder="SO name"
           />
           <Text size="md" fw={600} className="my-2">
             Description
           </Text>
-          <Textarea
-            autosize
+          <TextInput
             value={description}
-            minRows={4}
-            maxRows={6}
             onChange={(event) => setDescription(event.currentTarget.value)}
             error={errors.descriptionError}
-            placeholder="Description of the PI"
+            placeholder="Description of the SO"
           />
           <Group justify="flex-end" gap="xs" mt="md">
             <Button onClick={() => {
               close();
               handleCancel();
-            }} variant="outline">
+            }} 
+              variant="outline"
+            >
               Cancel
             </Button>
-            <Button variant="filled" onClick={handleCreatePI}>
-              Create PI
+            <Button variant="filled" onClick={handleUpdatePI}>
+              Update
             </Button>
           </Group>
         </div>
       </Modal>
-      <Button onClick={open} leftSection={<IoCreate size={20} />}>
-        Create PI
-      </Button>
+      <ActionIcon size="sm" variant="subtle" color="blue" onClick={open}>
+        <IconEdit size={16} />
+      </ActionIcon>
     </>
   );
 };
 
-export default CreatePIModal;
+export default EditPIModal;

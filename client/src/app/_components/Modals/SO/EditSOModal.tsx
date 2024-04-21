@@ -77,7 +77,7 @@ const EditSOModal = ({ programId, versionId, SO, setSOs }: EditSOModalProps) => 
     const response = await axios.patch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes/${SO.id}`,
       {
-        code: name,
+        name: name,
         description: description
       },
     );
