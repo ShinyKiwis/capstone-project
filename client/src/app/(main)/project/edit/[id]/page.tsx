@@ -15,7 +15,7 @@ import {
 import { modals } from "@mantine/modals";
 import MantineRichText from "@/app/_components/UserAction/MantineRichText";
 import ProfileSelector from "@/app/_components/UserAction/ProfileSelector";
-import { PageTitle, StudentProfileSelector } from "@/app/_components";
+import { PageHeader, StudentProfileSelector } from "@/app/_components";
 import { useGeneralData } from "@/app/providers/GeneralDataProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -25,7 +25,7 @@ import { toggleNotification } from "@/app/lib/notification";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   // Background data initialization
-  const generalDataValues = useGeneralData()
+  const generalDataValues = useGeneralData();
   const { supervisorOpts, projectStages, programBranches } = generalDataValues;
   const programOptions = programBranches.map((progbranch) => {
     return {
@@ -41,7 +41,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       programs: [],
       branches: [],
       supervisors: [],
-      limit: '0',
+      limit: "0",
       students: [],
       description: "",
       tasks: "",
@@ -71,9 +71,11 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         value.length < 1 ? "References can not be empty" : null,
       supervisors: (value) =>
         value.length < 1 ? "Must select at least 1 Instructor" : null,
-      students: (value, values) =>{
-        return value.length > parseInt(values.limit) ? "Can not select more students than members limit!" : null;
-      }
+      students: (value, values) => {
+        return value.length > parseInt(values.limit)
+          ? "Can not select more students than members limit!"
+          : null;
+      },
     },
   });
 
@@ -119,14 +121,15 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  async function handleFormSubmit(values: any, type: 'submit'|'save') {
+  async function handleFormSubmit(values: any, type: "submit" | "save") {
     // Transform data according to api's requirements
     let updatedProject = { ...values };
     updatedProject.students = updatedProject.students.map((jsonVal: string) => {
       return JSON.parse(jsonVal).userId;
     });
     updatedProject.stage = parseInt(updatedProject.stage);
-    updatedProject.status = (type==='submit') ? "WAITING_FOR_DEPARTMENT_HEAD" : "DRAFT";
+    updatedProject.status =
+      type === "submit" ? "WAITING_FOR_DEPARTMENT_HEAD" : "DRAFT";
     delete updatedProject.requirements; // API currently dont work with reqs
 
     console.log("Updated:", updatedProject);
@@ -140,48 +143,58 @@ const EditProject = ({ params }: { params: { id: string } }) => {
         router.push(
           `/project?project=${updatedProject.stage === 1 ? "specialized" : "capstone"}`,
         );
-        toggleNotification("Success",`Your project is ${type==='submit' ? "submitted" : "saved"} !`,"success");
+        toggleNotification(
+          "Success",
+          `Your project is ${type === "submit" ? "submitted" : "saved"} !`,
+          "success",
+        );
       })
       .catch((error) => {
         console.error("Error updating project:", error);
-        toggleNotification("Error",`Can not ${type} your project !`,"danger");
+        toggleNotification("Error", `Can not ${type} your project !`, "danger");
       });
   }
 
-  function handleActionButton(e:SyntheticEvent, type: 'submit'|'save'){
+  function handleActionButton(e: SyntheticEvent, type: "submit" | "save") {
     e.stopPropagation();
     // Check form fields
     if (form.validate().hasErrors) {
       // console.error("Form validation failed");
-      toggleNotification("Error","Please fill out the required fields.","danger");
+      toggleNotification(
+        "Error",
+        "Please fill out the required fields.",
+        "danger",
+      );
       return;
     }
-    
+
     modals.openConfirmModal({
       title: (
         <Text size="lg" c="green" fw={600}>
-          {type==='submit'? "Submit modified":"Save your"} project ?
+          {type === "submit" ? "Submit modified" : "Save your"} project ?
         </Text>
       ),
       children: (
         <Text size="sm">
-          {type==='submit'? "Your project will need to be approved again." : "Your project will be saved as a draft and needed to be submitted, approved again."}
+          {type === "submit"
+            ? "Your project will need to be approved again."
+            : "Your project will be saved as a draft and needed to be submitted, approved again."}
         </Text>
       ),
       labels: { confirm: "Confirm", cancel: "Cancel" },
       confirmProps: { color: "green" },
       onCancel: () => {},
       onConfirm: () => {
-        handleFormSubmit(form.values, type)
+        handleFormSubmit(form.values, type);
       },
     });
   }
 
   // Main return
-  if (form.values.limit === '0') return <div>Fetching project...</div>;
+  if (form.values.limit === "0") return <div>Fetching project...</div>;
   return (
     <div className="h-full w-full bg-white">
-      <PageTitle title="Edit Project" />
+      <PageHeader pageTitle="Edit Project" />
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
         <form
           onSubmit={(e) => {
@@ -204,11 +217,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             <div className="flex h-fit gap-4">
               <div className="flex w-1/3 flex-col gap-4">
                 <InputFieldTitle title="Project's information" />
-                <TextInput
-                  label="Project ID"
-                  disabled
-                  value={params.id}
-                />
+                <TextInput label="Project ID" disabled value={params.id} />
                 <TextInput
                   label="Project owner"
                   disabled
@@ -354,7 +363,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               type="submit"
               variant="outline"
               onClick={() => {
-                router.back()
+                router.back();
               }}
             >
               Cancel
@@ -362,7 +371,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
             <Button
               type="submit"
               onClick={(e) => {
-                handleActionButton(e, 'save');
+                handleActionButton(e, "save");
               }}
             >
               Save Changes
@@ -371,7 +380,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               type="submit"
               color="lime"
               onClick={(e) => {
-                handleActionButton(e, 'submit');
+                handleActionButton(e, "submit");
               }}
             >
               Submit for approval

@@ -1,5 +1,5 @@
 "use client";
-import { PageTitle } from "@/app/_components";
+import { PageHeader } from "@/app/_components";
 import DeadlineModal from "@/app/_components/Modals/DeadlineModal";
 import { toggleNotification } from "@/app/lib/notification";
 import { Deadline, useDeadlines } from "@/app/providers/DeadlinesProvider";
@@ -89,7 +89,7 @@ const Deadline = () => {
   const { deadlines } = useDeadlines();
   return (
     <div className="flex h-full flex-col gap-3 items-start">
-      <PageTitle title="Deadline Management"/>
+      <PageHeader pageTitle="Deadline Management"/>
       <DeadlineModal Icon={IoMdAdd} action="Create deadline" />
       <Text size="lg" fw={600} c="blue" className="mt-4">
         Deadlines

@@ -6,7 +6,7 @@ import { useProgram } from '@/app/providers/ProgramProvider';
 import { ActionIcon, Anchor, Box, Group, Text, TextInput } from '@mantine/core';
 import formatDate from '@/app/lib/formatDate';
 import CreateSOModal from '@/app/_components/Modals/SO/CreateSOModal';
-import { UploadFileModal } from '@/app/_components';
+import { PageHeader, UploadFileModal } from '@/app/_components';
 import { BiSearch } from 'react-icons/bi';
 import { DataTable } from 'mantine-datatable';
 import Link from 'next/link';
@@ -61,7 +61,8 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   }, [SOs])
 
   return program && version ? (
-    <div className='flex h-full flex-col'>
+    <div className='flex h-full flex-col gap-3'>
+      <PageHeader pageTitle="Student Outcomes Management" />
       <div className="flex gap-2">
         <Text size="md" fw={600}>
           Program:

@@ -1,5 +1,5 @@
 "use client";
-import { CreateProgramModal, UploadFileModal } from "@/app/_components";
+import { CreateProgramModal, PageHeader, UploadFileModal } from "@/app/_components";
 import DeleteModal from "@/app/_components/Modals/DeleteModal";
 import EditProgramModal from "@/app/_components/Modals/Program/EditProgramModal";
 import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
@@ -32,7 +32,8 @@ const Program = () => {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col gap-3">
+      <PageHeader pageTitle="Programs Management"/>
       <div className="flex">
         <CreateProgramModal />
         <UploadFileModal

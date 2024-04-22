@@ -12,8 +12,8 @@ import { IconLogout } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import useNavigate from "@/app/hooks/useNavigate";
 
-const PageHeader = () => {
-  const { pageTitle } = usePageTitleContext();
+const PageHeader = ({pageTitle}: {pageTitle: string}) => {
+  // const { pageTitle } = usePageTitleContext();
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
@@ -33,9 +33,9 @@ const PageHeader = () => {
   
   return (
     <div className="relative flex h-20 items-center gap-4">
-      {/* <Text size="xl" fw={700} c="blue">
+      <Text size="xl" fw={700} c="blue">
         {pageTitle}
-      </Text> */}
+      </Text>
       <div className="ms-auto flex gap-4">
         <button className="w-fit">
           <FaBell size={20} />

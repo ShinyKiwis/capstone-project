@@ -16,7 +16,7 @@ import {
   UploadFileModal,
   FilterModal,
   ApproveAllModal,
-  PageTitle,
+  PageHeader,
 } from "@/app/_components";
 import Image from "next/image";
 import { useProjects } from "@/app/providers/ProjectProvider";
@@ -79,8 +79,8 @@ const Project = () => {
   if (userHasResource("approve_projects")) {
     return (
       <div className="flex h-full flex-col gap-3">
-        <PageTitle
-          title={
+        <PageHeader
+          pageTitle={
             searchParams.get("project") === "specialized"
               ? "Approve Specialized Projects"
               : "Approve Capstone Projects"

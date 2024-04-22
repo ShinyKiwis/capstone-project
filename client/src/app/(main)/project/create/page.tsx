@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import MantineRichText from "@/app/_components/UserAction/MantineRichText";
 import ProfileSelector from "@/app/_components/UserAction/ProfileSelector";
-import { PageTitle, StudentProfileSelector } from "@/app/_components";
+import { PageHeader, StudentProfileSelector } from "@/app/_components";
 import { ScrollArea } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGeneralData } from "@/app/providers/GeneralDataProvider";
@@ -155,7 +155,7 @@ const CreateProject = () => {
   // Main return
   return userHasResource("create_projects") ? (
     <div className="h-full w-full bg-white">
-      <PageTitle title="Create Project" />
+      <PageHeader pageTitle="Create Project" />
       <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
         <form
           onSubmit={(e) => {

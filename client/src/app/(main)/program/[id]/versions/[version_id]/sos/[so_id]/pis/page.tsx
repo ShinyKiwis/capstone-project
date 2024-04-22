@@ -7,7 +7,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import formatDate from '@/app/lib/formatDate';
 import CreatePIModal from '@/app/_components/Modals/PI/CreatePIModal';
-import { UploadFileModal } from '@/app/_components';
+import { PageHeader, UploadFileModal } from '@/app/_components';
 import { DataTable } from 'mantine-datatable';
 import { IconTrash } from '@tabler/icons-react';
 import EditPIModal from '@/app/_components/Modals/PI/EditPIModal';
@@ -46,7 +46,8 @@ const Page = ({ params }: { params: { id: string, version_id: string, so_id: str
   })
 
   return program && version && SO ? (
-    <div className='flex flex-col h-full'>
+    <div className='flex flex-col h-full gap-3'>
+      <PageHeader pageTitle="Student Outcome Detail" />
       <div className="flex gap-2">
         <Text size="md" fw={600}>
           Program:

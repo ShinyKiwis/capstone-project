@@ -7,6 +7,7 @@ import formatDate from "@/app/lib/formatDate";
 import { useBreadCrumbs } from '@/app/providers/BreadCrumbProvider';
 import { IconExternalLink } from '@tabler/icons-react';
 import Link from 'next/link';
+import { PageHeader } from '@/app/_components';
 
 const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   const [program, setProgram] = useState<Program | null>(null);
@@ -32,6 +33,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   console.log(version)
   return program && version ? (
     <div className='flex h-full flex-col gap-4'>
+      <PageHeader pageTitle="Version Detail" />
       <div className="flex gap-2">
         <Text size="md" fw={600}>
           Program:

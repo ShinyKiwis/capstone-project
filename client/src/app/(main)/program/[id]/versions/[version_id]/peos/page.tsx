@@ -7,7 +7,7 @@ import { ActionIcon, Box, Group, Text } from "@mantine/core"
 import React, { useEffect, useState } from 'react'
 import formatDate from '@/app/lib/formatDate';
 import CreatePEOModal from '@/app/_components/Modals/PEO/CreatePEOModal';
-import { UploadFileModal } from '@/app/_components';
+import { PageHeader, UploadFileModal } from '@/app/_components';
 import { DataTable } from 'mantine-datatable';
 import { IconEye, IconTrash } from '@tabler/icons-react';
 import DeleteModal from '@/app/_components/Modals/DeleteModal';
@@ -45,7 +45,8 @@ const Page = ({params}: { params: { id: string, version_id: string} }) => {
     }
   })
   return program && version ? (
-    <div className='flex h-full flex-col'>
+    <div className='flex h-full flex-col gap-3'>
+      <PageHeader pageTitle="Program Education Objectives Management" />
       <div className="flex gap-2">
         <Text size="md" fw={600}>
           Program:
