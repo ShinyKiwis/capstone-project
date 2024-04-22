@@ -19,7 +19,7 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
     versionId: number,
     createStudentOutcomeDto: CreateStudentOutcomeDto,
   ) {
-    const { code, name, description, expectedGoal, passingThreshold } =
+    const { name, description, expectedGoal, passingThreshold } =
       createStudentOutcomeDto;
     const version = await this.versionsRepository.findOneBy({
       id: versionId,
@@ -31,9 +31,8 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
       );
     }
     const studentOutcome = this.create({
-      code,
-      version,
       name,
+      version,
       description,
       expectedGoal,
       passingThreshold,
@@ -65,6 +64,14 @@ export class StudentOutcomesRepository extends Repository<StudentOutcome> {
       relations: {
         performanceIndicators: true,
       },
+      select: {
+        id: true,
+        versionId: true,
+        versionProgramId: true,
+        name: true,
+        description: true,
+        performanceIndicators: true
+      }
     });
 
     if (!studentOutcome) {

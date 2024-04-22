@@ -7,10 +7,14 @@ import sortBy from "lodash/sortBy";
 import { Group, ActionIcon, Box, TextInput } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 import axios from "axios";
-import { DeleteAllUsersModal, EditUserModal, SettingsModal } from "./components";
+import {
+  DeleteAllUsersModal,
+  EditUserModal,
+  SettingsModal,
+} from "./components";
 import { reducer } from "./components/SettingsModal";
-import deleteUserModal from "./components/DeleteUserModal";
 import { User } from "./interface/User.interface";
+import DeleteModal from "@/app/_components/Modals/DeleteModal";
 import { PageTitle } from "@/app/_components";
 
 const PAGE_SIZES = [10, 15, 20, 25, 30];
@@ -33,6 +37,10 @@ const Users = () => {
   });
   const [selectedRecords, setSelectedRecords] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const handleDeleteUser = (user: User) => {
+    setUsers(users.filter((existedUser) => existedUser.id !== user.id));
+  }
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -106,11 +114,15 @@ const Users = () => {
       <div className="flex items-center">
         <div className="flex items-center gap-4">
           <SettingsModal hideOptions={hideOptions} dispatch={dispatch} />
-          <DeleteAllUsersModal users={users} setUsers={setUsers} selectedRecords={selectedRecords} />
+          <DeleteAllUsersModal
+            users={users}
+            setUsers={setUsers}
+            selectedRecords={selectedRecords}
+          />
         </div>
         <TextInput
           placeholder="Search users"
-          className="ms-auto"
+          className="ms-auto w-72"
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.currentTarget.value)}
         />
@@ -171,7 +183,12 @@ const Users = () => {
                       size="sm"
                       variant="subtle"
                       color="red"
-                      onClick={deleteUserModal(record, users, setUsers)}
+                      onClick={DeleteModal<User>(
+                        "user",
+                        record,
+                        handleDeleteUser,
+                        `${process.env.NEXT_PUBLIC_USERS_URL!}/${record.id}`,
+                      )}
                     >
                       <IconTrash size={16} />
                     </ActionIcon>

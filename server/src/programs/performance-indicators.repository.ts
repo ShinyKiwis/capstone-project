@@ -22,7 +22,7 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
     studentOutcomeId: number,
     createPerformanceIndicatorDto: CreatePerformanceIndicatorDto,
   ) {
-    const { code, name, description, expectedGoal, passingThreshold } =
+    const { name, description, expectedGoal, passingThreshold } =
       createPerformanceIndicatorDto;
     const studentOutcome = await this.studentOutcomesRepository.findOneBy({
       id: studentOutcomeId,
@@ -35,7 +35,6 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
       );
     }
     const performanceIndicator = this.create({
-      code,
       studentOutcome,
       name,
       description,
@@ -67,6 +66,14 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
       where: {
         studentOutcome,
       },
+      select: {
+        id: true,
+        studentOutcomeVersionId: true,
+        studentOutcomeVersionProgramId: true,
+        studentOutcomeId: true,
+        name: true,
+        description: true,
+      }
     });
 
     if(!performanceIndicator) {

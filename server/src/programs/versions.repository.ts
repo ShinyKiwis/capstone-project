@@ -58,6 +58,7 @@ export class VersionsRepository extends Repository<Version> {
       relations: {
         studentOutcomes: true,
         program: false,
+        programEducationObjectives: true
         // semesters: true,
       },
     });

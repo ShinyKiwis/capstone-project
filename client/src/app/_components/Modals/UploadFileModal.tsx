@@ -29,7 +29,13 @@ const getFileIcon = (fileType: string) => {
   return <FiFileText size={20} />;
 };
 
-const UploadFileModal = ({setFileUploaded}:{setFileUploaded: (arg:boolean) => void}) => {
+const UploadFileModal = ({
+  object,
+  setFileUploaded,
+}: {
+  object: string;
+  setFileUploaded: (arg: boolean) => void;
+}) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [files, setFiles] = useState<FileWithPath[]>([]);
 
@@ -55,7 +61,7 @@ const UploadFileModal = ({setFileUploaded}:{setFileUploaded: (arg:boolean) => vo
     if (failure) {
       toggleNotification(
         `${failure} files uploaded unsucessfully`,
-        "Try to contact admin or check the template format",
+        "Try to contact admin and check the template format",
         "danger",
       );
     }
@@ -66,7 +72,7 @@ const UploadFileModal = ({setFileUploaded}:{setFileUploaded: (arg:boolean) => vo
         "success",
       );
     }
-    setFileUploaded(true)
+    setFileUploaded(true);
     close();
   };
 
@@ -77,6 +83,7 @@ const UploadFileModal = ({setFileUploaded}:{setFileUploaded: (arg:boolean) => vo
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
+    // Update later with switch case for different objects
     link.download = "Project Template.docx";
     link.click();
     window.URL.revokeObjectURL(url);
@@ -86,6 +93,8 @@ const UploadFileModal = ({setFileUploaded}:{setFileUploaded: (arg:boolean) => vo
     <>
       <Modal
         size="45%"
+        yOffset="8em"
+        centered
         opened={opened}
         onClose={close}
         title={
@@ -99,7 +108,7 @@ const UploadFileModal = ({setFileUploaded}:{setFileUploaded: (arg:boolean) => vo
           leftSection={<MdFileDownload size={20} />}
           onClick={handleDownloadTemplateFile}
         >
-          Download project template
+          Download {object.slice(0, -1)} template
         </Button>
         <Dropzone
           onReject={(files) => console.log("rejected files", files)}
@@ -197,7 +206,7 @@ const UploadFileModal = ({setFileUploaded}:{setFileUploaded: (arg:boolean) => vo
         onClick={open}
         ms="md"
       >
-        Upload File
+        Upload {object}
       </Button>
     </>
   );

@@ -32,7 +32,7 @@ const PageHeader = () => {
     });
   
   return (
-    <div className="relative flex h-20 items-center gap-4 px-8 pt-5">
+    <div className="relative flex h-20 items-center gap-4">
       {/* <Text size="xl" fw={700} c="blue">
         {pageTitle}
       </Text> */}

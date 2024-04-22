@@ -31,7 +31,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await axios.get(process.env.NEXT_PUBLIC_SYNC_USER_URL!, {
         withCredentials: true,
       });
-      // console.log('Res:', response)
       const { user } = response.data;
       if (user) {
         sessionStorage.setItem("user", JSON.stringify(user));

@@ -13,6 +13,9 @@ import { UpdateProgramDto } from './dto/update-program.dto';
 import { UpdatePerformanceIndicatorDto } from './dto/update-performance-indicator.dto';
 import { UpdateVersionDto } from './dto/update-version.dto';
 import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
+import { CreateProgramEducationObjectiveDto } from './dto/create-program-education-objective.dto';
+import { ProgramEducationObjectivesRepository } from './program-education-objectives.repository';
+import { UpdateProgramEducationObjectiveDto } from './dto/update-program-education-objective.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -22,6 +25,7 @@ export class ProgramsService {
     private versionsRepository: VersionsRepository,
     private studentOutcomesRepository: StudentOutcomesRepository,
     private performanceIndicatorsRepository: PerformanceIndicatorsRepository,
+    private programEducationObjectivesRepository: ProgramEducationObjectivesRepository
   ) { }
 
   async createAProgram(createMajorDto: CreateProgramDto) {
@@ -112,6 +116,62 @@ export class ProgramsService {
     if (result.affected === 0) {
       throw new NotFoundException(
         `Student Outcome with id ${studentOutcomeId} of version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
+  }
+
+  async createAProgramEducationObjective(
+    programId: number,
+    versionId: number,
+    createProgramEducationObjectiveDto: CreateProgramEducationObjectiveDto,
+  ) {
+    return this.programEducationObjectivesRepository.createProgramEducationObjective(
+      programId,
+      versionId,
+      createProgramEducationObjectiveDto,
+    );
+  }
+
+  async getAllProgramEducationObjectiveOfAVersion(
+    programId: number,
+    versionId: number,
+  ) {
+    return this.programEducationObjectivesRepository.getAllProgramEducationObjectiveOfAVersion(
+      programId,
+      versionId,
+    );
+  }
+
+  async getAProgramEducationObjectiveOfAVersion(
+    programId: number,
+    versionId: number,
+    programEducationObjectiveId: number,
+  ) {
+    return this.programEducationObjectivesRepository.getAProgramEducationObjective(
+      programId,
+      versionId,
+      programEducationObjectiveId,
+    );
+  }
+
+  async updateAProgramEducationObjective(
+    programId: number,
+    versionId: number,
+    programEducationObjectiveId: number,
+    updateProgramEducationObjectiveDto: UpdateProgramEducationObjectiveDto
+  ) {
+    return this.programEducationObjectivesRepository.updateAProgramEducationObjective(programId, versionId, programEducationObjectiveId, updateProgramEducationObjectiveDto);
+  }
+
+  async deleteAProgramEducationObjective(programId: number, versionId: number, programEducationObjectiveId: number,) {
+    const result = await this.programEducationObjectivesRepository.delete({
+      versionProgramId: programId,
+      versionId,
+      id: programEducationObjectiveId
+    });
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        `Program Education Objective with id ${programEducationObjectiveId} of version with id ${versionId} of program with id ${programId} not found`,
       );
     }
   }

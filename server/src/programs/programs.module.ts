@@ -16,10 +16,12 @@ import { AssessmentScheme } from './entities/assessment-scheme.entity';
 import { Criterion } from './entities/criterion.entity';
 import { Level } from './entities/level.entity';
 import { AssessmentRecord } from './entities/assessment-record.entity';
+import { ProgramEducationObjective } from './entities/program-education-objectives.entity';
+import { ProgramEducationObjectivesRepository } from './program-education-objectives.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Branch, Program, Version, StudentOutcome, PerformanceIndicator, AssessmentScheme, Criterion, Level, AssessmentRecord])],
+  imports: [TypeOrmModule.forFeature([Branch, Program, Version, ProgramEducationObjective,StudentOutcome, PerformanceIndicator, AssessmentScheme, Criterion, Level, AssessmentRecord])],
   controllers: [ProgramsController],
-  providers: [ProgramsService, BranchesRepository, ProgramsRepository, VersionsRepository, StudentOutcomesRepository, PerformanceIndicatorsRepository]
+  providers: [ProgramsService, BranchesRepository, ProgramsRepository, VersionsRepository, ProgramEducationObjectivesRepository, StudentOutcomesRepository, PerformanceIndicatorsRepository]
 })
 export class ProgramsModule {}
