@@ -1,4 +1,6 @@
-interface User {
+import { Role } from "../providers/RolesProvider";
+
+export interface User {
   id: number;
   name: string;
   username: string;

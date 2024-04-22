@@ -14,7 +14,7 @@ import { MdManageAccounts } from "react-icons/md";
 import { VscGraph } from "react-icons/vsc";
 import { useState } from "react";
 import { useDisclosure, useListState } from "@mantine/hooks";
-import { managementInitialValues, projectInitialValues } from "./roleData";
+import { managementInitialValues, programInitialValues, projectInitialValues } from "./roleData";
 import { Role, useRoles } from "@/app/providers/RolesProvider";
 import { toggleNotification } from "@/app/lib/notification";
 
@@ -59,6 +59,18 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
   const indeterminateProject =
     projectValues.some((value) => value.checked) && !allProjectValuesChecked;
 
+  const [programValues, setProgramValues] = useListState(
+    programInitialValues.map((value) => ({
+      ...value,
+      checked: role?.resources.includes(value.key) ?? false,
+    })),
+  );
+
+  const allProgramValuesChecked = programValues.every((value) => value.checked);
+
+  const indeterminateProgram =
+    programValues.some((value) => value.checked) && !allProgramValuesChecked;
+
   const handleCreateRole = async () => {
     if (roleName.length === 0) {
       setError("Role name is required");
@@ -83,6 +95,7 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
     setError("");
     setManagementValues.setState(managementInitialValues);
     setProjectValues.setState(projectInitialValues);
+    setProgramValues.setState(programInitialValues);
     setRoleName("");
     close();
   };
@@ -101,7 +114,7 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
         "danger",
       );
     } else {
-      const resources = [managementValues, projectValues].flatMap((array) =>
+      const resources = [managementValues, projectValues, programValues].flatMap((array) =>
         array.filter((item) => item.checked == true).map((item) => item.key),
       );
       console.log(role);
@@ -202,6 +215,16 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
             </Grid.Col>
             <Grid.Col span={4}>
               <Checkbox
+                checked={allProgramValuesChecked}
+                indeterminate={indeterminateProgram}
+                onChange={() =>
+                  setProgramValues.setState((current) =>
+                    current.map((value) => ({
+                      ...value,
+                      checked: !allProgramValuesChecked,
+                    })),
+                  )
+                }
                 label={
                   <div className="flex items-center gap-1 font-medium">
                     <FaChalkboardTeacher size={20} />
@@ -209,6 +232,22 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
                   </div>
                 }
               />
+              {programValues.map((value, index) => (
+                <Checkbox
+                  mt="xs"
+                  ml={33}
+                  label={value.label}
+                  key={value.key}
+                  checked={value.checked}
+                  onChange={(e) =>
+                    setProgramValues.setItemProp(
+                      index,
+                      "checked",
+                      e.currentTarget.checked,
+                    )
+                  }
+                />
+              ))}
             </Grid.Col>
             <Grid.Col span={4}>
               <Checkbox

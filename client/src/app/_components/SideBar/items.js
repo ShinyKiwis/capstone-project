@@ -38,13 +38,12 @@ const sidebarItems = [
   {
     Icon: FaChalkboardTeacher,
     title: "Program",
-    resource: "",
-    paths: ["/program"],
+    resource: "programs",
     pages: [
       {
         title: "Programs Management",
-        href: "/programs",
-        resource: "",
+        href: "/program",
+        resource: "manage_programs",
         display: true
       },
     ],

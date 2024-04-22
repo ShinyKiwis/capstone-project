@@ -9,7 +9,8 @@ const pageTitleMappings: PageTitleMappings = {
   "/management/roles": "Roles Management",
   "/project?project=specialized": "Specialized Projects",
   "/project?project=capstone": "Capstone Projects",
-  "/project/create": "New Project"
+  "/project/create": "New Project",
+  "/program": "Programs Management"
 }
 
 interface PageTitleMappings {

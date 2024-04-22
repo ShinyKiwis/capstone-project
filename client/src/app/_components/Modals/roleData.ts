@@ -16,6 +16,14 @@ export const managementInitialValues = [
   },
 ];
 
+export const programInitialValues = [
+  {
+    label: "Manage programs",
+    checked: false,
+    key: "manage_programs"
+  }
+]
+
 export const projectInitialValues = [
   {
     label: "Create projects",

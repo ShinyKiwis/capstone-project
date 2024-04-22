@@ -16,13 +16,17 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { usePathname, useSearchParams } from "next/navigation";
 import isValid from "../lib/isValid";
+import BreadCrumbProvider, {
+  useBreadCrumbs,
+} from "../providers/BreadCrumbProvider";
+import { ProgramProvider } from "../providers/ProgramProvider";
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [queryClient] =  useState(() => new QueryClient());
+  const [queryClient] = useState(() => new QueryClient());
 
   const { user } = useAuth();
   const pathname = usePathname();
@@ -35,23 +39,26 @@ export default function RootLayout({
     }
   }, [user]);
 
-  if (!isValid(pathname, searchParams, user))
-    navigate("/forbidden")
+  if (!isValid(pathname, searchParams, user)) navigate("/forbidden");
 
   return user ? (
     <QueryClientProvider client={queryClient}>
       {
-        <DeadlinesProvider>
-          <RolesProvider>
-            <ProjectProvider>
-              <App>{children}</App>
-            </ProjectProvider>
-          </RolesProvider>
-        </DeadlinesProvider>
+        <ProgramProvider>
+          <BreadCrumbProvider>
+            <DeadlinesProvider>
+              <RolesProvider>
+                <ProjectProvider>
+                  <App>{children}</App>
+                </ProjectProvider>
+              </RolesProvider>
+            </DeadlinesProvider>
+          </BreadCrumbProvider>
+        </ProgramProvider>
       }
       <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider> 
-  ):
-  navigate('/login')
+    </QueryClientProvider>
+  ) : (
+    navigate("/login")
+  );
 }
-
