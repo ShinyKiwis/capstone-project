@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import useNavigate from "../hooks/useNavigate";
+import { User } from "../interfaces/User.interface";
 
 interface AuthContextType {
   error: string;

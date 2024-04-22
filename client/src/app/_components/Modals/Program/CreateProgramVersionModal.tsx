@@ -1,3 +1,4 @@
+"use client"
 import { useProgram } from "@/app/providers/ProgramProvider";
 import {
   Button,

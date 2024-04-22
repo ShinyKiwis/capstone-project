@@ -1,6 +1,7 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
 import sidebarItems from "../_components/SideBar/items";
 import { userHasResource } from "./userHasResource";
+import { User } from "../interfaces/User.interface";
 
 const isValid = (
   pathname: string,

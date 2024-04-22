@@ -7,7 +7,7 @@ import { IoMdAdd } from "react-icons/io";
 const Roles = () => {
   const { roles } = useRoles();
   return (
-    <div className="flex flex-col gap-3 items-start">
+    <div className="flex h-full flex-col gap-3 items-start">
       <PageHeader pageTitle="Roles Management" />
       <RoleModal Icon={IoMdAdd} action="Create role" />
       <Text size="lg" fw={600} c="blue" className="mt-4">

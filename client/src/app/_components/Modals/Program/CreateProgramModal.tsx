@@ -1,3 +1,4 @@
+"use client";
 import { toggleNotification } from "@/app/lib/notification";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import { Button, Group, Modal, Text, TextInput, Textarea } from "@mantine/core";
@@ -62,7 +63,7 @@ const CreateProgramModal = () => {
       dispatch({ type: "set_description_error" });
     }
     if (programName === "" || majorName === "" || description === "") {
-      return
+      return;
     }
     const response = await axios.post(
       process.env.NEXT_PUBLIC_CREATE_PROGRAMS_URL!,

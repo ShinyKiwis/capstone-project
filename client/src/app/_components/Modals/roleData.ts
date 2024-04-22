@@ -56,3 +56,16 @@ export const projectInitialValues = [
     key: "approve_projects"
   }
 ]
+
+export const assessmentInitialValues = [
+  {
+    label: "Manage schemes",
+    checked: false,
+    key: "manage_assessments_schemes"
+  },
+  {
+    label: "Manage assessments",
+    checked: false,
+    key: "manage_assessments"
+  }
+]

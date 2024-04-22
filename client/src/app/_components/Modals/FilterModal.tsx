@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import {
   Modal,
@@ -56,18 +57,22 @@ const FilterModal = () => {
         onClose={close}
         yOffset="10vh"
         title={
-          <Text size="lg" c="blue" fw={600} mx={'0.5rem'}>
+          <Text size="lg" c="blue" fw={600} mx={"0.5rem"}>
             Filter
           </Text>
         }
       >
         <div className="mx-2">
-          {userHasResource('create_projects') ? (
+          {userHasResource("create_projects") ? (
             <>
               <Text size="md" fw={600} className="mb-2">
                 Project type
               </Text>
-              <Radio.Group value={projectType} onChange={setProjectType} mb="sm">
+              <Radio.Group
+                value={projectType}
+                onChange={setProjectType}
+                mb="sm"
+              >
                 <Stack gap="sm">
                   <Radio value="personal" label="Your projects" />
                   <Radio value="all" label="All projects of your faculty" />
@@ -101,7 +106,7 @@ const FilterModal = () => {
             <Text size="sm" fw={600}>
               Number of members
             </Text>
-            <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-4">
               <NumberInput
                 min={0}
                 max={999}
@@ -114,7 +119,9 @@ const FilterModal = () => {
                   )
                 }
               />
-              <span className="italic text-gray-400 text-xs">Set to 0 to filter projects with any members count</span>
+              <span className="text-xs italic text-gray-400">
+                Set to 0 to filter projects with any members count
+              </span>
             </div>
           </div>
           <div className="my-4">
@@ -143,12 +150,13 @@ const FilterModal = () => {
                   .join("");
                 let instructorParams = selectedInstructors
                   .map(
-                    (selectedInstructor) => `&supervisors=${selectedInstructor}`,
+                    (selectedInstructor) =>
+                      `&supervisors=${selectedInstructor}`,
                   )
                   .join("");
                 let filterQuery = `${
                   projectType !== "all" ? `&owner=${user?.id}` : ""
-                }${membersNo ? `&members=${membersNo == 0 ? '' : membersNo}` : ""}${branchParams}${programParams}${instructorParams}`;
+                }${membersNo ? `&members=${membersNo == 0 ? "" : membersNo}` : ""}${branchParams}${programParams}${instructorParams}`;
                 console.log(`Filter Params:`, filterQuery);
                 handleSearchProjects(
                   filterQuery,

@@ -12,7 +12,7 @@ import Program from "@/app/interfaces/Program.interface";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import Link from "next/link";
 
-const Program = () => {
+const Page = () => {
   const { programs } = useProgram();
   const [loadedPrograms, setLoadedPrograms] = useState<Program[]>([]);
   const { buildBreadCrumbs } = useBreadCrumbs();
@@ -128,4 +128,4 @@ const Program = () => {
   );
 };
 
-export default Program;
+export default Page;

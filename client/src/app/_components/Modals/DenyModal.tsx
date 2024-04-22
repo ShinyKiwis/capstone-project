@@ -1,3 +1,4 @@
+"use client"
 import { useProjects } from "@/app/providers/ProjectProvider";
 import { Text, Button, Textarea, TextInput } from "@mantine/core";
 import { modals } from "@mantine/modals";

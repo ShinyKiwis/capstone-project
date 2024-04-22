@@ -19,19 +19,19 @@ const sidebarItems = [
         title: "Users Management",
         href: "/management/users",
         resource: "manage_users",
-        display: true
+        display: true,
       },
       {
         title: "Roles Management",
         href: "/management/roles",
         resource: "manage_roles",
-        display: true
+        display: true,
       },
       {
         title: "Deadline Management",
         href: "/management/deadline",
         resource: "manage_deadline",
-        display: true
+        display: true,
       },
     ],
   },
@@ -44,7 +44,7 @@ const sidebarItems = [
         title: "Programs Management",
         href: "/program",
         resource: "manage_programs",
-        display: true
+        display: true,
       },
     ],
   },
@@ -57,56 +57,56 @@ const sidebarItems = [
         title: "Specialized Projects",
         href: "/project?project=specialized",
         resource: "view_projects",
-        display: true
+        display: true,
       },
       {
         title: "Capstone Projects",
         href: "/project?project=capstone",
         resource: "view_projects",
-        display: true
+        display: true,
       },
       {
         title: "Create project",
         href: "/project/create",
         resource: "create_projects",
-        display: false
+        display: false,
       },
       {
         title: "Approve Specialized Projects",
         href: "/project/approve?project=specialized",
         resource: "approve_projects",
-        display: false
+        display: false,
       },
       {
         title: "Approve Capstone Projects",
         href: "/project/approve?project=capstone",
         resource: "approve_projects",
-        display: false
+        display: false,
       },
       {
         title: "Edit Projects",
         href: "/project/edit",
         resource: "modify_projects",
-        display: false
-      }
+        display: false,
+      },
     ],
   },
   {
     Icon: PiExam,
     title: "Assessment",
-    resource: "",
+    resource: "assessments",
     pages: [
       {
-        title: "Assessment schemes",
-        href: "/assessment/schemes",
-        resource: "",
-        display: true
+        title: "Schemes Management",
+        href: "/assessment/programs",
+        resource: "manage_assessments_schemes",
+        display: true,
       },
       {
-        title: "Assessment records",
-        href: "/assessment/records",
-        resource: "",
-        display: true
+        title: "Assessment Management",
+        href: "/assessment/",
+        resource: "manage_assessments",
+        display: true,
       },
     ],
   },
@@ -119,13 +119,13 @@ const sidebarItems = [
         title: "Evaluation Setup",
         href: "",
         resource: "",
-        display: true
+        display: true,
       },
       {
         title: "Feedback Management",
         href: "",
         resource: "",
-        display: true
+        display: true,
       },
     ],
   },

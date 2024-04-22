@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "setup": "concurrently \"yarn --cwd $PWD/client install\" \"yarn --cwd $PWD/services install\" \"yarn --cwd $PWD/server install\"",
-    "dev": "concurrently \"yarn --cwd $PWD/client dev\" \"yarn --cwd $PWD/services dev\" \"yarn --cwd $PWD/server start:dev\"",
+    "dev": "concurrently \"yarn --cwd $PWD/client dev --turbo\" \"yarn --cwd $PWD/services dev\" \"yarn --cwd $PWD/server start:dev\"",
     "docker": "docker compose -f ./server/docker-compose.yml up"
   },
   "devDependencies": {

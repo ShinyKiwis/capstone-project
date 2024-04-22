@@ -16,7 +16,7 @@ const SideBar = () => {
 
   return (
     <div
-      className={`flex h-screen flex-col items-center border-r border-gray-300  py-10 ${toggleSidebar ? "w-64 px-4" : "w-20"} duration-300`}
+      className={`flex h-screen flex-col items-center border-r border-gray-300  py-10 ${toggleSidebar ? "w-72 px-4" : "w-20"} duration-300`}
     >
       <div
         className={`mb-4 flex w-[85%] items-center ${toggleSidebar ? "justify-between" : "justify-center"}`}
