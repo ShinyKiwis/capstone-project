@@ -171,6 +171,7 @@ const UploadFileModal = ({
               <Badge
                 className="flex justify-between normal-case"
                 fullWidth
+                key={file.name}
                 variant="light"
                 rightSection={
                   <CloseButton

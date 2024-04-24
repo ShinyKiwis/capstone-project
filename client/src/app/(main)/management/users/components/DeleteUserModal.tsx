@@ -12,10 +12,10 @@ const deleteUserModal = (
   const deleteModal = () =>
     modals.openConfirmModal({
       centered: true,
-      title: <Text fw={600}>Are you sure you want to delete user "{user.name}" ?</Text>,
+      title: <Text fw={600}>Are you sure you want to delete user &quot{user.name}&quot ?</Text>,
       children: (
         <Text size="sm">
-          User "{user.name}" will be deleted. This action can't be undone!
+          User &quot{user.name}&quot will be deleted. This action can&apost be undone!
         </Text>
       ),
       labels: { confirm: "Confirm", cancel: "Cancel" },

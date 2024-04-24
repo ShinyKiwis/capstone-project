@@ -111,7 +111,7 @@ const EditPIModal = ({ programId, versionId, soId, PI, setPIs }: EditPIModalProp
         yOffset="8em"
         title={
           <Text size="lg" c="blue" fw={600}>
-            Update PI "{PI.name}"
+            Update PI &quot{PI.name}&quot
           </Text>
         }
       >
