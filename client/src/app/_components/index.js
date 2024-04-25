@@ -23,3 +23,7 @@ export { default as DeactivateModal } from "./Modals/DeactivateModal";
 export { default as CreateProgramModal } from "./Modals/Program/CreateProgramModal";
 export { default as CreateProgramVersionModal } from "./Modals/Program/CreateProgramVersionModal";
 export { default as DeleteProjectModal } from "./Modals/DeleteProjectModal";
+
+
+// Assessment module
+export { default as CriterionCard } from "./Assessment/CriterionCard";
