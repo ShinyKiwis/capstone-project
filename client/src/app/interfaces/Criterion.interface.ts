@@ -1,5 +1,18 @@
 import { PI } from "./Program.interface";
 
+const index_levelMapping = {
+  0: 'A',
+  1: 'B',
+  2: 'C',
+  3: 'D',
+  4: 'E',
+  'A': 0, 
+  'B': 1, 
+  'C': 2, 
+  'D': 3, 
+  'E': 4, 
+}
+
 export type CriterionType = "multilevel" | "written" | "multiplechoice";
 export interface Criterion {
   description: string;
@@ -12,6 +25,8 @@ export interface Criterion {
 
   // Methods
   changeType: (type:CriterionType|null) => void;
+  addLevel: () => void;
+  changeSelection: (newOption:string) => void
 }
 
 export class CriterionObject implements Criterion {
@@ -45,8 +60,8 @@ export class CriterionObject implements Criterion {
     }
   }
 
-  changeType(type:CriterionType|null){
-    switch (type) {
+  changeType(newtype:CriterionType|null){
+    switch (newtype) {
       case "multilevel":
         this.type = 'multilevel';
         this.assessment = new CriterionLevels_multi();
@@ -66,7 +81,27 @@ export class CriterionObject implements Criterion {
     }
     return;
   }
+
+  addLevel(){
+    switch (this.type) {
+      case "multilevel":
+        (this.assessment as MultipleLevelCriterion).addLevel();
+        break;
+      case "multiplechoice":
+        (this.assessment as MultipleChoiceCriterion).addLevel();
+        break;
+      default:
+        break;
+    }
+    return;
+  }
   
+  changeSelection(newOption:string){
+    if (this.type === 'multiplechoice'){
+      (this.assessment as MultipleChoiceCriterion).changeSelection(newOption)
+    }
+    return;
+  }
 }
 
 interface MultiLevelOption {
@@ -79,6 +114,9 @@ interface MultiLevelOption {
 export interface MultipleLevelCriterion {
   numberOfLevels: number;
   options: MultiLevelOption[];
+
+  //Methods
+  addLevel: ()=>void;
 }
 
 class CriterionLevels_multi implements MultipleLevelCriterion {
@@ -114,6 +152,16 @@ class CriterionLevels_multi implements MultipleLevelCriterion {
       },
     ];
   }
+
+  addLevel(){
+    this.numberOfLevels += 1;
+    this.options.push({
+      levelLabel: "E",
+      description: "",
+      minScore: 4,
+      maxScore: 4,
+    })
+  }
 }
 
 export interface WrittenResponseCriterion {
@@ -130,6 +178,11 @@ export interface MultipleChoiceCriterion {
   score: number;
   numberOfLevels: number;
   options: MultipleChoiceOption[];
+
+  //Methods
+  addLevel: ()=>void;
+  changeSelection: (newOption:string) => void
+  getValue: ()=>string;
 }
 
 class CriterionLevels_choice implements MultipleChoiceCriterion {
@@ -162,6 +215,33 @@ class CriterionLevels_choice implements MultipleChoiceCriterion {
         is_correct: false,
       },
     ];
+  }
+
+  addLevel(){
+    this.numberOfLevels += 1;
+    this.options.push({
+      levelLabel: "E",
+      description: "",
+      is_correct: false
+    })
+  }
+
+  changeSelection(newOption:string){
+    this.options.forEach(option => {
+      if (option.levelLabel !== newOption)
+        option.is_correct = false;
+      else
+        option.is_correct = true;
+    })
+  }
+
+  getValue(){
+    for (let option of this.options) {
+      if (option.is_correct === true){
+        return option.levelLabel
+      }
+    }
+    return '';
   }
 }
 

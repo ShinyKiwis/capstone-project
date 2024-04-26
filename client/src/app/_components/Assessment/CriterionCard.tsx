@@ -2,6 +2,7 @@ import {
   Criterion,
   CriterionObject,
   CriterionType,
+  MultipleChoiceCriterion,
   MultipleLevelCriterion,
 } from "@/app/interfaces/Criterion.interface";
 import {
@@ -17,7 +18,7 @@ import {
   NumberInput,
   Radio,
 } from "@mantine/core";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   IoIosAddCircleOutline,
   IoIosRemoveCircleOutline,
@@ -26,6 +27,8 @@ import {
 interface CriterionCardProps {
   criterionObject: CriterionObject;
   criterionNumber: number;
+  refreshFunction: () => void;
+  removeFunction: () => void;
 }
 
 interface LevelCardProps {
@@ -79,15 +82,27 @@ const LevelCard = ({ levelLabel, type }: LevelCardProps) => {
   );
 };
 
-const renderAssessmentBody = (criterionObject: Criterion) => {
-  console.log(criterionObject);
+interface LevelCardBodyProps {
+  criterionObject: Criterion;
+  criterionNumber: number;
+  refreshFunction: () => void;
+}
+
+const LevelCardBody = ({
+  criterionObject,
+  criterionNumber,
+  refreshFunction,
+}: LevelCardBodyProps) => {
+
   switch (criterionObject.type) {
     case "multilevel":
       return (
         <div className="flex flex-col gap-2">
           {(criterionObject.assessment as MultipleLevelCriterion).options.map(
             (level) => {
-              return <LevelCard levelLabel={level.levelLabel} type='multilevel'/>
+              return (
+                <LevelCard levelLabel={level.levelLabel} type="multilevel" />
+              );
             },
           )}
           <Button
@@ -96,7 +111,10 @@ const renderAssessmentBody = (criterionObject: Criterion) => {
             c={"blue"}
             px={0}
             justify="flex-start"
-            onClick={() => {}}
+            onClick={() => {
+              criterionObject.addLevel();
+              refreshFunction();
+            }}
             leftSection={<IoIosAddCircleOutline size={25} />}
           >
             Add another level
@@ -133,18 +151,28 @@ const renderAssessmentBody = (criterionObject: Criterion) => {
           />
 
           <Radio.Group
-            name="correctChoice"
+            name={`choice_${criterionNumber}`}
             label="Choose correct selection"
+            onChange={(value) => {
+              criterionObject.changeSelection(value);
+            }}
+            value={(criterionObject.assessment as MultipleChoiceCriterion).getValue()}
             required
           >
             <div className="flex flex-col gap-2">
               {(
-                criterionObject.assessment as MultipleLevelCriterion
+                criterionObject.assessment as MultipleChoiceCriterion
               ).options.map((level) => {
                 return (
                   <div className="flex items-start gap-3">
-                    <Radio value={level.levelLabel} />
-                    <LevelCard levelLabel={level.levelLabel} type='multiplechoice' />
+                    <Radio
+                      value={level.levelLabel}
+                      checked={level.is_correct}
+                    />
+                    <LevelCard
+                      levelLabel={level.levelLabel}
+                      type="multiplechoice"
+                    />
                   </div>
                 );
               })}
@@ -157,7 +185,10 @@ const renderAssessmentBody = (criterionObject: Criterion) => {
             c={"blue"}
             px={0}
             justify="flex-start"
-            onClick={() => {}}
+            onClick={() => {
+              criterionObject.addLevel();
+              refreshFunction();
+            }}
             leftSection={<IoIosAddCircleOutline size={25} />}
           >
             Add another level
@@ -171,6 +202,8 @@ const renderAssessmentBody = (criterionObject: Criterion) => {
 const CriterionCard = ({
   criterionObject,
   criterionNumber,
+  refreshFunction,
+  removeFunction,
 }: CriterionCardProps) => {
   return (
     <div className="flex w-full flex-col rounded-md bg-gray-100 py-4 pl-6 pr-4">
@@ -178,7 +211,15 @@ const CriterionCard = ({
         <Text size="md" td="underline" fw={700}>
           Criterion {criterionNumber}
         </Text>
-        <Button variant="transparent" c={"red"} px={0} py={0}>
+        <Button
+          variant="transparent"
+          c={"red"}
+          px={0}
+          py={0}
+          onClick={() => {
+            removeFunction();
+          }}
+        >
           <IoIosRemoveCircleOutline size={25} />
         </Button>
       </div>
@@ -216,22 +257,27 @@ const CriterionCard = ({
             Assessment Method
           </Text>
           <Select
-            defaultValue={criterionObject.type}
+            value={criterionObject.type}
             data={[
               { label: "Multiple Levels", value: "multilevel" },
               { label: "Written Response", value: "written" },
               { label: "Multiple Choice", value: "multiplechoice" },
             ]}
-            onChange={(value) =>
-              criterionObject.changeType(value as CriterionType)
-            }
+            onChange={(value) => {
+              criterionObject.changeType(value as CriterionType);
+              refreshFunction();
+            }}
           />
           <Text size="xs" fw={400} c="red">
             *Levels configurations will be discarded upon method change
           </Text>
         </div>
 
-        {renderAssessmentBody(criterionObject)}
+        <LevelCardBody
+          criterionObject={criterionObject}
+          criterionNumber={criterionNumber}
+          refreshFunction={refreshFunction}
+        />
       </div>
     </div>
   );

@@ -2,7 +2,10 @@
 
 import { CriterionCard } from "@/app/_components";
 import MultipleLevelCriterion from "@/app/_components/Criterion/MultipleLevelCriterion";
-import { Criterion, CriterionObject } from "@/app/interfaces/Criterion.interface";
+import {
+  Criterion,
+  CriterionObject,
+} from "@/app/interfaces/Criterion.interface";
 import {
   Accordion,
   Button,
@@ -18,9 +21,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 
 const Step1 = () => {
   const [criteria, setCriteria] = useState<CriterionObject[]>([]);
-  const [numberOfCriterion, setNumberOfCriterion] = useState<string | number>(
-    1,
-  );
+  const [numberOfCriterion, setNumberOfCriterion] = useState<number>(0);
 
   // const generateCriterion = () => {
   //   const generatedCriteria: Criterion[] = [];
@@ -89,7 +90,7 @@ const Step1 = () => {
               minRows={4}
               maxRows={8}
             />
-            <Select
+            {/* <Select
               label="Assessment type"
               defaultValue={"i"}
               placeholder="Semester"
@@ -98,7 +99,7 @@ const Step1 = () => {
                 { label: "Group", value: "g" },
                 { label: "Individual within group", value: "ig" },
               ]}
-            />
+            /> */}
           </div>
         </div>
 
@@ -109,8 +110,13 @@ const Step1 = () => {
 
           {criteria.map((criterion, index) => (
             <CriterionCard
+              key={index+Date.now().toString()}
               criterionObject={criterion}
-              criterionNumber={index+1}
+              criterionNumber={index + 1}
+              refreshFunction={() => setCriteria([...criteria])}
+              removeFunction={() => {
+                setCriteria([...criteria.toSpliced(index, 1)]);
+              }}
             />
           ))}
 
@@ -121,10 +127,11 @@ const Step1 = () => {
             px={0}
             justify="flex-start"
             onClick={() => {
-              let newCriterion = new CriterionObject('', 'multilevel');
+              let newCriterion = new CriterionObject("", "written");
               setCriteria([...criteria, newCriterion]);
+              setNumberOfCriterion(numberOfCriterion + 1);
             }}
-            leftSection={<IoIosAddCircleOutline size={25}/>}
+            leftSection={<IoIosAddCircleOutline size={25} />}
           >
             Add another criterion
           </Button>
@@ -135,9 +142,9 @@ const Step1 = () => {
             justify="flex-start"
             onClick={() => {
               setCriteria([...criteria]);
-              console.log(criteria)
+              console.log(criteria);
             }}
-            leftSection={<IoIosAddCircleOutline size={25}/>}
+            leftSection={<IoIosAddCircleOutline size={25} />}
           >
             Refresh
           </Button>
