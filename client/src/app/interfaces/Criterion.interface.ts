@@ -25,8 +25,9 @@ export interface Criterion {
 
   // Methods
   changeType: (type:CriterionType|null) => void;
-  addLevel: () => void;
-  changeSelection: (newOption:string) => void
+  setDesc: (newDesc: string) => void;
+  getDesc: () => string;
+  setPI: (newPI: number) => void;
 }
 
 export class CriterionObject implements Criterion {
@@ -60,6 +61,7 @@ export class CriterionObject implements Criterion {
     }
   }
 
+  // Methods
   changeType(newtype:CriterionType|null){
     switch (newtype) {
       case "multilevel":
@@ -81,27 +83,18 @@ export class CriterionObject implements Criterion {
     }
     return;
   }
-
-  addLevel(){
-    switch (this.type) {
-      case "multilevel":
-        (this.assessment as MultipleLevelCriterion).addLevel();
-        break;
-      case "multiplechoice":
-        (this.assessment as MultipleChoiceCriterion).addLevel();
-        break;
-      default:
-        break;
-    }
-    return;
-  }
   
-  changeSelection(newOption:string){
-    if (this.type === 'multiplechoice'){
-      (this.assessment as MultipleChoiceCriterion).changeSelection(newOption)
-    }
-    return;
-  }
+  setDesc(newDesc: string){
+    this.description = newDesc;
+  };
+
+  getDesc(){
+    return this.description;
+  };
+
+  setPI(newPI: number){
+    // set new PI
+  };
 }
 
 interface MultiLevelOption {
