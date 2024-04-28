@@ -3,6 +3,8 @@ import {
   WrittenResponseCriterion,
   MultipleChoiceCriterion,
   MultipleLevelCriterion,
+  MultiLevelOption,
+  MultipleChoiceOption,
 } from "@/app/interfaces/Criterion.interface";
 import { Button, Textarea, NumberInput, Radio, Text } from "@mantine/core";
 import { useState } from "react";
@@ -12,18 +14,22 @@ import {
 } from "react-icons/io";
 
 interface LevelCardProps {
-  levelLabel: string;
+  levelObject: MultiLevelOption | MultipleChoiceOption;
   type: "multilevel" | "multiplechoice";
   removeFunction: () => void;
   levelsCount: number;
 }
 
-const LevelCard = ({ levelLabel, type, removeFunction, levelsCount }: LevelCardProps) => {
+const LevelCard = ({ levelObject, type, removeFunction, levelsCount }: LevelCardProps) => {
+  const [desc, setDesc] = useState(levelObject.description);
+  const [minScore, setMinScore] = useState(levelObject as MultiLevelOption && (levelObject as MultiLevelOption).minScore);
+  const [maxScore, setMaxScore] = useState(levelObject as MultiLevelOption && (levelObject as MultiLevelOption).maxScore);
+
   return (
     <div className="flex w-full flex-col gap-1 rounded-sm border-2 bg-white px-3 py-4">
       <div className="flex w-full justify-between align-top">
         <Text size="sm" td="underline" fw={500}>
-          Level {levelLabel}
+          Level {levelObject.levelLabel}
         </Text>
         {levelsCount <=4 ? null : (
           <Button
@@ -45,25 +51,40 @@ const LevelCard = ({ levelLabel, type, removeFunction, levelsCount }: LevelCardP
           autosize
           minRows={1}
           maxRows={3}
+          value={desc}
+          onChange={e => {
+            levelObject.description = e.currentTarget.value;
+            setDesc(e.currentTarget.value);
+          }}
         />
 
         {type === "multilevel" ? (
           <div className="flex gap-8">
             <NumberInput
-              label="Score range"
+              label="Minimum score"
               placeholder="From"
               clampBehavior="strict"
               min={0}
               max={9999}
               required
+              value={minScore}
+              onChange={newVal => {
+                (levelObject as MultiLevelOption).minScore = newVal as number;
+                setMinScore(newVal as number);
+              }}
             />
             <NumberInput
-              label=" "
+              label="Maximum Score"
               placeholder="To"
               clampBehavior="strict"
               min={0}
               max={9999}
               required
+              value={maxScore}
+              onChange={newVal => {
+                (levelObject as MultiLevelOption).maxScore = newVal as number;
+                setMaxScore(newVal as number);
+              }}
             />
           </div>
         ) : null}
@@ -85,7 +106,8 @@ const MultiLevelCardLevels = ({
         (level) => {
           return (
             <LevelCard
-              levelLabel={level.levelLabel}
+              key={level.levelLabel + Date.now().toString()}
+              levelObject={level}
               type="multilevel"
               levelsCount={(criterionObject.assessment as MultipleLevelCriterion).numberOfLevels}
               removeFunction={() => {
@@ -164,7 +186,7 @@ const MultipleChoiceCardLevels = ({
                   checked={level.is_correct}
                 />
                 <LevelCard
-                  levelLabel={level.levelLabel}
+                  levelObject={level}
                   type="multiplechoice"
                   levelsCount={(criterionObject.assessment as MultipleChoiceCriterion).numberOfLevels}
                   removeFunction={() => {

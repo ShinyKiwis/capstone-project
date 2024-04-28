@@ -1,33 +1,33 @@
 import { PI } from "./Program.interface";
 
-const index_levelMapping: {[key:number]: string} = {
-  0: 'A',
-  1: 'B',
-  2: 'C',
-  3: 'D',
-  4: 'E',
-}
+const index_levelMapping: { [key: number]: string } = {
+  0: "A",
+  1: "B",
+  2: "C",
+  3: "D",
+  4: "E",
+};
 
-const level_indexMapping: {[key:string]: number} = {
-  'A': 0, 
-  'B': 1, 
-  'C': 2, 
-  'D': 3, 
-  'E': 4, 
-}
+const level_indexMapping: { [key: string]: number } = {
+  A: 0,
+  B: 1,
+  C: 2,
+  D: 3,
+  E: 4,
+};
 
 export type CriterionType = "multilevel" | "written" | "multiplechoice";
 export interface Criterion {
   description: string;
   associatedPI: PI | null;
-  type: CriterionType
+  type: CriterionType;
   assessment:
     | MultipleLevelCriterion
     | MultipleChoiceCriterion
     | WrittenResponseCriterion;
 
   // Methods
-  changeType: (type:CriterionType|null) => void;
+  changeType: (type: CriterionType | null) => void;
   setDesc: (newDesc: string) => void;
   getDesc: () => string;
   setPI: (newPI: number) => void;
@@ -52,7 +52,7 @@ export class CriterionObject implements Criterion {
         this.assessment = new CriterionLevels_multi();
         break;
       case "written":
-        this.assessment = {maximumScore: 3};
+        this.assessment = { maximumScore: 3 };
         break;
       case "multiplechoice":
         this.assessment = new CriterionLevels_choice();
@@ -65,18 +65,18 @@ export class CriterionObject implements Criterion {
   }
 
   // Methods
-  changeType(newtype:CriterionType|null){
+  changeType(newtype: CriterionType | null) {
     switch (newtype) {
       case "multilevel":
-        this.type = 'multilevel';
+        this.type = "multilevel";
         this.assessment = new CriterionLevels_multi();
         break;
       case "written":
-        this.type = 'written';
-        this.assessment = {maximumScore: 3};
+        this.type = "written";
+        this.assessment = { maximumScore: 3 };
         break;
       case "multiplechoice":
-        this.type = 'multiplechoice';
+        this.type = "multiplechoice";
         this.assessment = new CriterionLevels_choice();
         break;
 
@@ -86,34 +86,50 @@ export class CriterionObject implements Criterion {
     }
     return;
   }
-  
-  setDesc(newDesc: string){
+
+  setDesc(newDesc: string) {
     this.description = newDesc;
-  };
+  }
 
-  getDesc(){
+  getDesc() {
     return this.description;
-  };
+  }
 
-  setPI(newPI: number){
+  setPI(newPI: number) {
     // set new PI
-  };
+  }
 }
 
-interface MultiLevelOption {
+export interface MultiLevelOption {
   levelLabel: string;
   description: string;
   minScore: number;
   maxScore: number;
+
+  // Methods
 }
+
+// class MultiLevelOption implements MultiLevelOption {
+//   levelLabel: string;
+//   description: string;
+//   minScore: number;
+//   maxScore: number;
+
+//   constructor(label: string, desc: string, min: number, max: number) {
+//     this.levelLabel = label;
+//     this.description = desc;
+//     this.minScore = min;
+//     this.maxScore = max;
+//   }
+// }
 
 export interface MultipleLevelCriterion {
   numberOfLevels: number;
   options: MultiLevelOption[];
 
   //Methods
-  addLevel: ()=>void;
-  removeLevel: (label: string)=>void;
+  addLevel: () => void;
+  removeLevel: (label: string) => void;
 }
 
 class CriterionLevels_multi implements MultipleLevelCriterion {
@@ -150,20 +166,22 @@ class CriterionLevels_multi implements MultipleLevelCriterion {
     ];
   }
 
-  addLevel(){
+  addLevel() {
     this.numberOfLevels += 1;
     this.options.push({
-      levelLabel: index_levelMapping[this.numberOfLevels-1],
+      levelLabel: index_levelMapping[this.numberOfLevels - 1],
       description: "",
-      minScore: this.numberOfLevels-1,
-      maxScore: this.numberOfLevels-1,
-    })
+      minScore: this.numberOfLevels - 1,
+      maxScore: this.numberOfLevels - 1,
+    });
   }
 
-  removeLevel(label: string){
+  removeLevel(label: string) {
     this.numberOfLevels -= 1;
     this.options.splice(level_indexMapping[label], 1);
-    this.options.forEach((option, index) => option.levelLabel = index_levelMapping[index]);
+    this.options.forEach(
+      (option, index) => (option.levelLabel = index_levelMapping[index]),
+    );
   }
 }
 
@@ -171,7 +189,7 @@ export interface WrittenResponseCriterion {
   maximumScore: number;
 }
 
-interface MultipleChoiceOption {
+export interface MultipleChoiceOption {
   levelLabel: string;
   description: string;
   is_correct: boolean;
@@ -183,10 +201,10 @@ export interface MultipleChoiceCriterion {
   options: MultipleChoiceOption[];
 
   //Methods
-  addLevel: ()=>void;
-  removeLevel: (label:string) => void;
-  changeSelection: (newOption:string) => void;
-  getValue: ()=>string;
+  addLevel: () => void;
+  removeLevel: (label: string) => void;
+  changeSelection: (newOption: string) => void;
+  getValue: () => string;
 }
 
 class CriterionLevels_choice implements MultipleChoiceCriterion {
@@ -195,7 +213,7 @@ class CriterionLevels_choice implements MultipleChoiceCriterion {
   options: MultipleChoiceOption[];
 
   constructor() {
-    this.score=3;
+    this.score = 3;
     this.numberOfLevels = 4;
     this.options = [
       {
@@ -222,38 +240,37 @@ class CriterionLevels_choice implements MultipleChoiceCriterion {
   }
 
   // Methods
-  addLevel(){
+  addLevel() {
     this.numberOfLevels += 1;
     this.options.push({
-      levelLabel: index_levelMapping[this.numberOfLevels-1],
+      levelLabel: index_levelMapping[this.numberOfLevels - 1],
       description: "",
-      is_correct: false
-    })
+      is_correct: false,
+    });
   }
 
-  removeLevel(label: string){
+  removeLevel(label: string) {
     this.numberOfLevels -= 1;
-    if (label === this.getValue()) this.changeSelection('')
+    if (label === this.getValue()) this.changeSelection("");
     this.options.splice(level_indexMapping[label], 1);
-    this.options.forEach((option, index) => option.levelLabel = index_levelMapping[index]);
+    this.options.forEach(
+      (option, index) => (option.levelLabel = index_levelMapping[index]),
+    );
   }
 
-  changeSelection(newOption:string){
-    this.options.forEach(option => {
-      if (option.levelLabel !== newOption)
-        option.is_correct = false;
-      else
-        option.is_correct = true;
-    })
+  changeSelection(newOption: string) {
+    this.options.forEach((option) => {
+      if (option.levelLabel !== newOption) option.is_correct = false;
+      else option.is_correct = true;
+    });
   }
 
-  getValue(){
+  getValue() {
     for (let option of this.options) {
-      if (option.is_correct === true){
-        return option.levelLabel
+      if (option.is_correct === true) {
+        return option.levelLabel;
       }
     }
-    return '';
+    return "";
   }
 }
-

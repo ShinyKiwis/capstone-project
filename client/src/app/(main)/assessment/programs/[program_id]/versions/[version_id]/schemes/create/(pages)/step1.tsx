@@ -22,6 +22,11 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 const Step1 = () => {
   const [criteria, setCriteria] = useState<CriterionObject[]>([]);
   const [numberOfCriterion, setNumberOfCriterion] = useState<number>(0);
+  const [schemeName, setSchemeName] = useState('');
+  const [year, setYear] = useState(2008);
+  const [semester, setSemester] = useState('1');
+  const [schemeDesc, setSchemeDesc] = useState('');
+
 
   // const generateCriterion = () => {
   //   const generatedCriteria: Criterion[] = [];
@@ -65,22 +70,26 @@ const Step1 = () => {
               label="Scheme Name"
               placeholder="Input name of the assessment scheme"
               required
+              value={schemeName}
+              onChange={(e) => setSchemeName(e.currentTarget.value)}
             />
             <div className="flex gap-8">
               <NumberInput
-                label="Assess time"
+                label="Assess year"
                 placeholder="Year"
                 clampBehavior="strict"
                 min={2008}
                 max={2014}
-                defaultValue={2008}
                 required
+                value={year}
+                onChange={(val) => setYear(val as number)}
               />
               <Select
-                label=" "
-                defaultValue={"1"}
+                label="Assess semester"
                 placeholder="Semester"
                 data={["1", "2"]}
+                value={semester}
+                onChange={(val) => setSemester(val || '')}
               />
             </div>
             <Textarea
@@ -89,6 +98,8 @@ const Step1 = () => {
               autosize
               minRows={4}
               maxRows={8}
+              value={schemeDesc}
+              onChange={e => setSchemeDesc(e.currentTarget.value)}
             />
             {/* <Select
               label="Assessment type"
@@ -135,7 +146,8 @@ const Step1 = () => {
           >
             Add another criterion
           </Button>
-          <Button
+
+          {/* <Button
             variant="transparent"
             c={"red"}
             px={0}
@@ -146,8 +158,8 @@ const Step1 = () => {
             }}
             leftSection={<IoIosAddCircleOutline size={25} />}
           >
-            Refresh
-          </Button>
+            [Debug] Refresh criteria
+          </Button> */}
         </div>
       </div>
     </ScrollArea>
