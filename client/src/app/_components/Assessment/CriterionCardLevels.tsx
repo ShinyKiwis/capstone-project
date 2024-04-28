@@ -20,10 +20,21 @@ interface LevelCardProps {
   levelsCount: number;
 }
 
-const LevelCard = ({ levelObject, type, removeFunction, levelsCount }: LevelCardProps) => {
+const LevelCard = ({
+  levelObject,
+  type,
+  removeFunction,
+  levelsCount,
+}: LevelCardProps) => {
   const [desc, setDesc] = useState(levelObject.description);
-  const [minScore, setMinScore] = useState(levelObject as MultiLevelOption && (levelObject as MultiLevelOption).minScore);
-  const [maxScore, setMaxScore] = useState(levelObject as MultiLevelOption && (levelObject as MultiLevelOption).maxScore);
+  const [minScore, setMinScore] = useState(
+    (levelObject as MultiLevelOption) &&
+      (levelObject as MultiLevelOption).minScore,
+  );
+  const [maxScore, setMaxScore] = useState(
+    (levelObject as MultiLevelOption) &&
+      (levelObject as MultiLevelOption).maxScore,
+  );
 
   return (
     <div className="flex w-full flex-col gap-1 rounded-sm border-2 bg-white px-3 py-4">
@@ -31,16 +42,16 @@ const LevelCard = ({ levelObject, type, removeFunction, levelsCount }: LevelCard
         <Text size="sm" td="underline" fw={500}>
           Level {levelObject.levelLabel}
         </Text>
-        {levelsCount <=4 ? null : (
+        {levelsCount <= 4 ? null : (
           <Button
-          variant="transparent"
-          c={"red"}
-          px={0}
-          py={0}
-          onClick={removeFunction}
-        >
-          <IoIosRemoveCircleOutline size={25} />
-        </Button>
+            variant="transparent"
+            c={"red"}
+            px={0}
+            py={0}
+            onClick={removeFunction}
+          >
+            <IoIosRemoveCircleOutline size={25} />
+          </Button>
         )}
       </div>
 
@@ -52,7 +63,7 @@ const LevelCard = ({ levelObject, type, removeFunction, levelsCount }: LevelCard
           minRows={1}
           maxRows={3}
           value={desc}
-          onChange={e => {
+          onChange={(e) => {
             levelObject.description = e.currentTarget.value;
             setDesc(e.currentTarget.value);
           }}
@@ -68,7 +79,7 @@ const LevelCard = ({ levelObject, type, removeFunction, levelsCount }: LevelCard
               max={9999}
               required
               value={minScore}
-              onChange={newVal => {
+              onChange={(newVal) => {
                 (levelObject as MultiLevelOption).minScore = newVal as number;
                 setMinScore(newVal as number);
               }}
@@ -81,7 +92,7 @@ const LevelCard = ({ levelObject, type, removeFunction, levelsCount }: LevelCard
               max={9999}
               required
               value={maxScore}
-              onChange={newVal => {
+              onChange={(newVal) => {
                 (levelObject as MultiLevelOption).maxScore = newVal as number;
                 setMaxScore(newVal as number);
               }}
@@ -109,7 +120,10 @@ const MultiLevelCardLevels = ({
               key={level.levelLabel + Date.now().toString()}
               levelObject={level}
               type="multilevel"
-              levelsCount={(criterionObject.assessment as MultipleLevelCriterion).numberOfLevels}
+              levelsCount={
+                (criterionObject.assessment as MultipleLevelCriterion)
+                  .numberOfLevels
+              }
               removeFunction={() => {
                 (
                   criterionObject.assessment as MultipleLevelCriterion
@@ -148,19 +162,28 @@ const MultipleChoiceCardLevels = ({
   criterionObject: Criterion;
   updateLevels: () => void;
 }) => {
-  const [selectedOption, setSelectedOption] = useState((criterionObject.assessment as MultipleChoiceCriterion
-  ).getValue());
+  const [score, setScore] = useState(
+    (criterionObject.assessment as MultipleChoiceCriterion).score,
+  );
+  const [selectedOption, setSelectedOption] = useState(
+    (criterionObject.assessment as MultipleChoiceCriterion).getValue(),
+  );
 
   return (
     <div className="flex flex-col gap-2">
       <NumberInput
         label="Score"
-        placeholder="Numbwe"
+        placeholder="Number"
         clampBehavior="strict"
         min={0}
         max={9999}
         defaultValue={3}
         required
+        value={score}
+        onChange={(value) => {
+          (criterionObject.assessment as MultipleChoiceCriterion).score = value as number;
+          setScore(value as number);
+        }}
       />
 
       <Radio.Group
@@ -176,30 +199,32 @@ const MultipleChoiceCardLevels = ({
         required
       >
         <div className="flex flex-col gap-2">
-          {(
-            criterionObject.assessment as MultipleChoiceCriterion
-          ).options.map((level) => {
-            return (
-              <div className="flex items-start gap-3">
-                <Radio
-                  value={level.levelLabel}
-                  checked={level.is_correct}
-                />
-                <LevelCard
-                  levelObject={level}
-                  type="multiplechoice"
-                  levelsCount={(criterionObject.assessment as MultipleChoiceCriterion).numberOfLevels}
-                  removeFunction={() => {
-                    if (selectedOption === level.levelLabel) setSelectedOption('');
-                    (
-                      criterionObject.assessment as MultipleChoiceCriterion
-                    ).removeLevel(level.levelLabel);
-                    updateLevels();
-                  }}
-                />
-              </div>
-            );
-          })}
+          {(criterionObject.assessment as MultipleChoiceCriterion).options.map(
+            (level) => {
+              return (
+                <div className="flex items-start gap-3">
+                  <Radio value={level.levelLabel} checked={level.is_correct} />
+                  <LevelCard
+                    key={level.levelLabel + Date.now().toString()}
+                    levelObject={level}
+                    type="multiplechoice"
+                    levelsCount={
+                      (criterionObject.assessment as MultipleChoiceCriterion)
+                        .numberOfLevels
+                    }
+                    removeFunction={() => {
+                      if (selectedOption === level.levelLabel)
+                        setSelectedOption("");
+                      (
+                        criterionObject.assessment as MultipleChoiceCriterion
+                      ).removeLevel(level.levelLabel);
+                      updateLevels();
+                    }}
+                  />
+                </div>
+              );
+            },
+          )}
         </div>
       </Radio.Group>
 
@@ -222,7 +247,7 @@ const MultipleChoiceCardLevels = ({
       )}
     </div>
   );
-}
+};
 
 const WrittenCardLevels = ({
   criterionObject,
@@ -284,7 +309,12 @@ const CriterionCardLevels = ({
       return <WrittenCardLevels criterionObject={renderingCriterion} />;
 
     case "multiplechoice":
-      return <MultipleChoiceCardLevels criterionObject={criterionObject} updateLevels={updateLevels} />
+      return (
+        <MultipleChoiceCardLevels
+          criterionObject={criterionObject}
+          updateLevels={updateLevels}
+        />
+      );
   }
   return <>cannot switch type{}</>;
 };

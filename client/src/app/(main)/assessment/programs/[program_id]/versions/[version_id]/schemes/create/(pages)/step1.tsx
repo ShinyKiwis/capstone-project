@@ -78,8 +78,8 @@ const Step1 = () => {
                 label="Assess year"
                 placeholder="Year"
                 clampBehavior="strict"
-                min={2008}
-                max={2014}
+                min={0}
+                max={9999}
                 required
                 value={year}
                 onChange={(val) => setYear(val as number)}
