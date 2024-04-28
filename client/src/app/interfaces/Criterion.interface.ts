@@ -1,11 +1,14 @@
 import { PI } from "./Program.interface";
 
-const index_levelMapping = {
+const index_levelMapping: {[key:number]: string} = {
   0: 'A',
   1: 'B',
   2: 'C',
   3: 'D',
   4: 'E',
+}
+
+const level_indexMapping: {[key:string]: number} = {
   'A': 0, 
   'B': 1, 
   'C': 2, 
@@ -110,6 +113,7 @@ export interface MultipleLevelCriterion {
 
   //Methods
   addLevel: ()=>void;
+  removeLevel: (label: string)=>void;
 }
 
 class CriterionLevels_multi implements MultipleLevelCriterion {
@@ -149,11 +153,17 @@ class CriterionLevels_multi implements MultipleLevelCriterion {
   addLevel(){
     this.numberOfLevels += 1;
     this.options.push({
-      levelLabel: "E",
+      levelLabel: index_levelMapping[this.numberOfLevels-1],
       description: "",
-      minScore: 4,
-      maxScore: 4,
+      minScore: this.numberOfLevels-1,
+      maxScore: this.numberOfLevels-1,
     })
+  }
+
+  removeLevel(label: string){
+    this.numberOfLevels -= 1;
+    this.options.splice(level_indexMapping[label], 1);
+    this.options.forEach((option, index) => option.levelLabel = index_levelMapping[index]);
   }
 }
 
@@ -174,7 +184,8 @@ export interface MultipleChoiceCriterion {
 
   //Methods
   addLevel: ()=>void;
-  changeSelection: (newOption:string) => void
+  removeLevel: (label:string) => void;
+  changeSelection: (newOption:string) => void;
   getValue: ()=>string;
 }
 
@@ -210,13 +221,21 @@ class CriterionLevels_choice implements MultipleChoiceCriterion {
     ];
   }
 
+  // Methods
   addLevel(){
     this.numberOfLevels += 1;
     this.options.push({
-      levelLabel: "E",
+      levelLabel: index_levelMapping[this.numberOfLevels-1],
       description: "",
       is_correct: false
     })
+  }
+
+  removeLevel(label: string){
+    this.numberOfLevels -= 1;
+    if (label === this.getValue()) this.changeSelection('')
+    this.options.splice(level_indexMapping[label], 1);
+    this.options.forEach((option, index) => option.levelLabel = index_levelMapping[index]);
   }
 
   changeSelection(newOption:string){

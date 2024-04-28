@@ -127,7 +127,7 @@ const Step1 = () => {
             px={0}
             justify="flex-start"
             onClick={() => {
-              let newCriterion = new CriterionObject("", "written");
+              let newCriterion = new CriterionObject("", "multilevel");
               setCriteria([...criteria, newCriterion]);
               setNumberOfCriterion(numberOfCriterion + 1);
             }}
