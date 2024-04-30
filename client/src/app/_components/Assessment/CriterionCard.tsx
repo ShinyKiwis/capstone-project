@@ -187,7 +187,7 @@ class CriterionCard extends React.Component<CriterionCardProps, CriterionCardSta
         <div>
           <div className="flex items-center gap-4 pb-4">
             <Text size="sm" fw={500}>
-              Assessment Method
+              Criterion Type
             </Text>
             <Select
               value={this.state.criterionObject.type}
