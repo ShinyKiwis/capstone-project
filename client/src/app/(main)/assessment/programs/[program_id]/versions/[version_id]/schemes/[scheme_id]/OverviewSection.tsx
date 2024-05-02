@@ -7,7 +7,10 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { AiOutlineEdit } from "react-icons/ai";
+import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
+import { IoDuplicateOutline } from "react-icons/io5";
+import { TbFileExport } from "react-icons/tb";
+import { AiOutlineFileWord } from "react-icons/ai";
 
 const OverViewSection = ({ schemeObject }: { schemeObject: any }) => {
   return (
@@ -100,22 +103,22 @@ const OverViewSection = ({ schemeObject }: { schemeObject: any }) => {
         </Text>
         <div className="flex gap-4">
           <Stack>
-            <Button w={"20rem"} leftSection={<AiOutlineEdit />}>
+            <Button w={"20rem"} leftSection={<AiOutlineEdit size={20} />} classNames={{inner: 'justify-start px-2'}}>
               Edit Scheme
             </Button>
-            <Button w={"20rem"} leftSection={<AiOutlineEdit />}>
+            <Button w={"20rem"} leftSection={<IoDuplicateOutline size={20} /> } classNames={{inner: 'justify-start px-2'}}>
               Duplicate Scheme
             </Button>
             <Divider my="xs" w={"20rem"} />
-            <Button color="red" w={"20rem"} leftSection={<AiOutlineEdit />}>
+            <Button color="red" w={"20rem"} leftSection={<AiOutlineDelete size={20} />} classNames={{inner: 'justify-start px-2'}}>
               Delete Scheme
             </Button>
           </Stack>
           <Stack>
-            <Button w={"20rem"} leftSection={<AiOutlineEdit />}>
+            <Button w={"20rem"} leftSection={<AiOutlineFileWord  size={20}/>} classNames={{inner: 'justify-start px-2'}}>
               Export Assessment Form
             </Button>
-            <Button w={"20rem"} leftSection={<AiOutlineEdit />}>
+            <Button w={"20rem"} leftSection={<TbFileExport size={20} />} classNames={{inner: 'justify-start px-2'}}>
               Export Scheme
             </Button>
           </Stack>
