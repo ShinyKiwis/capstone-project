@@ -27,10 +27,10 @@ const SchemeDetail = ({ params }: { params: { scheme_id: string } }) => {
 
   if (!fetchedScheme) return <div>Fetching scheme data...</div>;
   return (
-    <div className="flex h-full flex-col">
-      <PageHeader pageTitle="Create Assessment Scheme" />
-      <ScrollArea type="auto" scrollbarSize={8} className="flex-1">
-        <div className="flex flex-1 flex-col overflow-hidden">
+    <div className="flex min-w-0 h-full w-full flex-col">
+      <PageHeader pageTitle="Scheme Details" />
+      <ScrollArea type="auto" scrollbarSize={8} className="flex flex-1 min-w-0">
+        <div className="flex flex-1 min-w-0 flex-col overflow-hidden">
           <Button
             ml={"auto"}
             px={0}
