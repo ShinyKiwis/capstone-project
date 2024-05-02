@@ -1,16 +1,14 @@
 "use client";
 import { PageHeader } from "@/app/_components";
 import React, { useEffect, useState } from "react";
-import { Accordion, Button, ScrollArea } from "@mantine/core";
+import { Accordion, Button, ScrollArea, Text } from "@mantine/core";
 import OverViewSection from "./OverviewSection";
 import RecordsSection from "./RecordsSection";
 import AttainmentsSection from "./AttainmentsSection";
 
 const SchemeDetail = ({ params }: { params: { scheme_id: string } }) => {
   const [openedSections, setOpenedSections] = useState<string[] | undefined>([
-    "overview",
     "records",
-    "attainments",
   ]);
   const [fetchedScheme, setFetchedScheme] = useState<any>();
 
@@ -59,7 +57,7 @@ const SchemeDetail = ({ params }: { params: { scheme_id: string } }) => {
           >
             <Accordion.Item value="overview">
               <Accordion.Control style={{ borderBottom: "2px black solid" }}>
-                Overview
+                <Text size="lg" fw={500}>Overview</Text>
               </Accordion.Control>
               <Accordion.Panel>
                 schemeID: {params.scheme_id}
@@ -69,16 +67,16 @@ const SchemeDetail = ({ params }: { params: { scheme_id: string } }) => {
 
             <Accordion.Item value="records">
               <Accordion.Control style={{ borderBottom: "2px black solid" }}>
-                Assessment Records
+              <Text size="lg" fw={500}>Assessment Records</Text>
               </Accordion.Control>
               <Accordion.Panel>
-                <RecordsSection />
+                <RecordsSection schemeObject={fetchedScheme}/>
               </Accordion.Panel>
             </Accordion.Item>
 
             <Accordion.Item value="attainments">
               <Accordion.Control style={{ borderBottom: "2px black solid" }}>
-                PI Achievements
+              <Text size="lg" fw={500}>PI Achievements</Text>
               </Accordion.Control>
               <Accordion.Panel>
                 <AttainmentsSection />
