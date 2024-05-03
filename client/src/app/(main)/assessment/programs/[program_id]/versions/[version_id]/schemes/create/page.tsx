@@ -10,6 +10,7 @@ import AssessmentForm from "./(pages)/AssessmentForm";
 import PIsConfiguration from "./(pages)/PIsConfiguration";
 import axios from "axios";
 import FinalReview from "./(pages)/FinalReview";
+import { useForm } from "@mantine/form";
 
 const sampleScheme = {
   name: "Foundation Test 2012_3",
@@ -21,6 +22,17 @@ const sampleScheme = {
   maximumScore: 50,
   type: "Individual",
 };
+
+export interface AssessmentFormInputs {
+  name: string;
+  year: number;
+  semester: string;
+  description: string;
+}
+
+export interface AssessmentFormConfigs {
+  goal: number;
+}
 
 const Page = ({
   params,
@@ -66,18 +78,26 @@ const Page = ({
   // Stepper states & controllers
   const [active, setActive] = useState<number>(0); // current step
   const handleStepChange = (step: number) => {
+    if (step < active) {
+      setActive(step);
+      return;
+    }
+
     switch (
       active // Validate current step before changing step
     ) {
       case 0:
         // Validate assessment form
-
-        setActive(step);
+        console.log(form1.values);
+        if (!form1.validate().hasErrors) {
+          setActive(step);
+        }
         break;
       case 1:
         // Validate PI configurations
-
-        setActive(step);
+        if (!form2.validate().hasErrors) {
+          setActive(step);
+        }
         break;
       case 2:
         // No validation needed
@@ -86,12 +106,44 @@ const Page = ({
     }
   };
 
+  // Forms
+  const form1 = useForm<AssessmentFormInputs>({
+    initialValues: {
+      name: "",
+      year: 2008,
+      semester: "1",
+      description: "",
+    },
+
+    validate: {
+      name: (value) => (value === "" ? "Scheme name required" : null),
+      year: (value) => {
+        if (!value) return 'Year required'
+        if (value < (new Date(version!.startDate)).getFullYear() ) return 'Year cannot be smaller than version start year';
+        if (value > (new Date(version!.endDate)).getFullYear()) return 'Year cannot be larger than version end year';
+        return null;
+      },
+      semester: (value) => (!value ? "Semester required" : null),
+    },
+  });
+
+  const form2 = useForm<AssessmentFormConfigs>({
+    initialValues: {
+      goal: 50,
+    },
+
+    validate: {
+      goal: (value) => (value !== 50 ? null : "Invalid number"),
+    },
+  });
+
   // Main return
   return program && version ? (
     <div className="flex h-full flex-col">
       <PageHeader pageTitle="Create Assessment Scheme" />
 
-      <div>{/* Contexts section */}
+      <div>
+        {/* Contexts section */}
         <div className="flex gap-2">
           <Text size="md" fw={600}>
             Program:
@@ -126,14 +178,14 @@ const Page = ({
             description="Create assessment form"
             allowStepSelect={active !== 0}
           >
-            <AssessmentForm />
+            <AssessmentForm form={form1} />
           </Stepper.Step>
           <Stepper.Step
             label="Second step"
             description="Configure PIs"
             allowStepSelect={active !== 1}
           >
-            <PIsConfiguration studentOutcomes={SOs} />
+            <PIsConfiguration form={form2} studentOutcomes={SOs} />
           </Stepper.Step>
           <Stepper.Step
             label="Final step"
@@ -152,9 +204,7 @@ const Page = ({
             Back
           </Button>
           {active === 2 ? (
-            <Button onClick={() => {}}>
-              Save Scheme
-            </Button>
+            <Button onClick={() => {}}>Save Scheme</Button>
           ) : (
             <Button
               onClick={() => handleStepChange(active < 2 ? active + 1 : active)}

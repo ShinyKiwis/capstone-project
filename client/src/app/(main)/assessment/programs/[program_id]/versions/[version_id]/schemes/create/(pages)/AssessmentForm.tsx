@@ -16,10 +16,12 @@ import {
   TextInput,
   Textarea,
 } from "@mantine/core";
+import { UseFormReturnType } from "@mantine/form";
 import React, { useEffect, useState } from "react";
 import { IoIosAddCircleOutline } from "react-icons/io";
+import { AssessmentFormInputs } from "../page";
 
-const AssessmentForm = () => {
+const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormInputs>}) => {
   const [criteria, setCriteria] = useState<CriterionObject[]>([]);
   const [numberOfCriterion, setNumberOfCriterion] = useState<number>(0);
   const [schemeName, setSchemeName] = useState('');
@@ -70,8 +72,9 @@ const AssessmentForm = () => {
               label="Scheme Name"
               placeholder="Input name of the assessment scheme"
               required
-              value={schemeName}
-              onChange={(e) => setSchemeName(e.currentTarget.value)}
+              // value={schemeName}
+              // onChange={(e) => setSchemeName(e.currentTarget.value)}
+              {...form.getInputProps('name')}
             />
             <div className="flex gap-8">
               <NumberInput
@@ -81,15 +84,18 @@ const AssessmentForm = () => {
                 min={0}
                 max={9999}
                 required
-                value={year}
-                onChange={(val) => setYear(val as number)}
+                // value={year}
+                // onChange={(val) => setYear(val as number)}
+                {...form.getInputProps('year')}
               />
               <Select
                 label="Assess semester"
                 placeholder="Semester"
                 data={["1", "2"]}
-                value={semester}
-                onChange={(val) => setSemester(val || '')}
+                required
+                // value={semester}
+                // onChange={(val) => setSemester(val || '')}
+                {...form.getInputProps('semester')}
               />
             </div>
             <Textarea
@@ -98,8 +104,9 @@ const AssessmentForm = () => {
               autosize
               minRows={4}
               maxRows={8}
-              value={schemeDesc}
-              onChange={e => setSchemeDesc(e.currentTarget.value)}
+              // value={schemeDesc}
+              // onChange={e => setSchemeDesc(e.currentTarget.value)}
+              {...form.getInputProps('description')}
             />
             {/* <Select
               label="Assessment type"

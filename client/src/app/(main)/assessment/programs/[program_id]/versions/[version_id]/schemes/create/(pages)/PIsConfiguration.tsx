@@ -2,8 +2,16 @@ import { PI, SO } from "@/app/interfaces/Program.interface";
 import { Accordion, Input, Text } from "@mantine/core";
 import { DataTable } from "mantine-datatable";
 import React from "react";
+import { AssessmentFormConfigs } from "../page";
+import { UseFormReturnType } from "@mantine/form";
 
-const PIsConfiguration = ({ studentOutcomes }: { studentOutcomes: SO[] }) => {
+const PIsConfiguration = ({
+  form,
+  studentOutcomes,
+}: {
+  form: UseFormReturnType<AssessmentFormConfigs>;
+  studentOutcomes: SO[];
+}) => {
   return (
     <div>
       <div>PIsConfiguration</div>
@@ -37,8 +45,11 @@ const PIsConfiguration = ({ studentOutcomes }: { studentOutcomes: SO[] }) => {
                       title: "Passing Goal",
                       render: (record: PI) => {
                         return (
-                          <div className="flex gap-1 items-center">
-                            <Input value={record.passingThreshold} />
+                          <div className="flex items-center gap-1">
+                            <Input
+                              // value={record.passingThreshold}
+                              {...form.getInputProps("goal")}
+                            />
                             <Text>%</Text>
                           </div>
                         );
