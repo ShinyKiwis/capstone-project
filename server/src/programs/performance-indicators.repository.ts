@@ -22,7 +22,7 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
     studentOutcomeId: number,
     createPerformanceIndicatorDto: CreatePerformanceIndicatorDto,
   ) {
-    const { name, description, expectedGoal, passingThreshold } =
+    const { name, description } =
       createPerformanceIndicatorDto;
     const studentOutcome = await this.studentOutcomesRepository.findOneBy({
       id: studentOutcomeId,
@@ -38,8 +38,6 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
       studentOutcome,
       name,
       description,
-      expectedGoal,
-      passingThreshold,
     });
 
     await this.save(performanceIndicator);
@@ -91,7 +89,7 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
     performanceIndicatorId: number,
     updatePerformanceIndicatorDto: UpdatePerformanceIndicatorDto
   ) {
-    const { name, description, expectedGoal, passingThreshold } = updatePerformanceIndicatorDto;
+    const { name, description } = updatePerformanceIndicatorDto;
     const performanceIndicator = await this.findOneBy({
       studentOutcomeVersionProgramId: programId,
       studentOutcomeVersionId: versionId,
@@ -106,8 +104,6 @@ export class PerformanceIndicatorsRepository extends Repository<PerformanceIndic
 
     if(name) performanceIndicator.name = name;
     if(description) performanceIndicator.description = description;
-    if(expectedGoal) performanceIndicator.expectedGoal = expectedGoal;
-    if(passingThreshold) performanceIndicator.passingThreshold = passingThreshold
 
     await this.save(performanceIndicator);
 
