@@ -19,17 +19,9 @@ import {
 import { UseFormReturnType } from "@mantine/form";
 import React, { useEffect, useState } from "react";
 import { IoIosAddCircleOutline } from "react-icons/io";
-import { AssessmentFormInputs } from "../page";
+import { AssessmentFormSection } from "../page";
 
-const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormInputs>}) => {
-  const [criteria, setCriteria] = useState<CriterionObject[]>([]);
-  const [numberOfCriterion, setNumberOfCriterion] = useState<number>(0);
-  const [schemeName, setSchemeName] = useState('');
-  const [year, setYear] = useState(2008);
-  const [semester, setSemester] = useState('1');
-  const [schemeDesc, setSchemeDesc] = useState('');
-
-
+const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormSection>}) => {
   // const generateCriterion = () => {
   //   const generatedCriteria: Criterion[] = [];
   //   Array.from({ length: +numberOfCriterion }).forEach((_) => {
@@ -55,9 +47,7 @@ const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormInputs>}) 
 
   // useEffect(() => {
   //   generateCriterion();
-  // }, [numberOfCriterion]);
-
-  console.log(criteria);
+  // }, [numberOfCriterion]);  
 
   return (
     <ScrollArea type="auto" scrollbarSize={8} className="flex-1">
@@ -72,8 +62,6 @@ const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormInputs>}) 
               label="Scheme Name"
               placeholder="Input name of the assessment scheme"
               required
-              // value={schemeName}
-              // onChange={(e) => setSchemeName(e.currentTarget.value)}
               {...form.getInputProps('name')}
             />
             <div className="flex gap-8">
@@ -84,8 +72,6 @@ const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormInputs>}) 
                 min={0}
                 max={9999}
                 required
-                // value={year}
-                // onChange={(val) => setYear(val as number)}
                 {...form.getInputProps('year')}
               />
               <Select
@@ -93,8 +79,6 @@ const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormInputs>}) 
                 placeholder="Semester"
                 data={["1", "2"]}
                 required
-                // value={semester}
-                // onChange={(val) => setSemester(val || '')}
                 {...form.getInputProps('semester')}
               />
             </div>
@@ -104,8 +88,6 @@ const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormInputs>}) 
               autosize
               minRows={4}
               maxRows={8}
-              // value={schemeDesc}
-              // onChange={e => setSchemeDesc(e.currentTarget.value)}
               {...form.getInputProps('description')}
             />
             {/* <Select
@@ -126,15 +108,17 @@ const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormInputs>}) 
             Criteria
           </Text>
 
-          {criteria.map((criterion, index) => (
+          {form.values.criteria.map((criterion, index) => (
             <CriterionCard
               key={index+Date.now().toString()}
               criterionObject={criterion}
               criterionNumber={index + 1}
-              refreshFunction={() => setCriteria([...criteria])}
+              refreshFunction={() => form.setFieldValue("criteria", [...form.values.criteria])}
               removeFunction={() => {
-                setCriteria([...criteria.toSpliced(index, 1)]);
+                form.setFieldValue("criteria", [...form.values.criteria.toSpliced(index, 1)]);
+                form.values.criteriaCount -= 1;
               }}
+              form={form}
             />
           ))}
 
@@ -146,8 +130,8 @@ const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormInputs>}) 
             justify="flex-start"
             onClick={() => {
               let newCriterion = new CriterionObject("", "multilevel");
-              setCriteria([...criteria, newCriterion]);
-              setNumberOfCriterion(numberOfCriterion + 1);
+              form.setFieldValue("criteria", [...form.values.criteria, newCriterion]);
+              form.values.criteriaCount += 1;
             }}
             leftSection={<IoIosAddCircleOutline size={25} />}
           >

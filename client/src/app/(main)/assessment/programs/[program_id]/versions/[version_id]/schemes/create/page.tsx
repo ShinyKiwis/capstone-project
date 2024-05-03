@@ -11,6 +11,7 @@ import PIsConfiguration from "./(pages)/PIsConfiguration";
 import axios from "axios";
 import FinalReview from "./(pages)/FinalReview";
 import { useForm } from "@mantine/form";
+import { Criterion } from "@/app/interfaces/Criterion.interface";
 
 const sampleScheme = {
   name: "Foundation Test 2012_3",
@@ -23,14 +24,16 @@ const sampleScheme = {
   type: "Individual",
 };
 
-export interface AssessmentFormInputs {
+export interface AssessmentFormSection {
   name: string;
   year: number;
   semester: string;
   description: string;
+  criteriaCount: number;
+  criteria: Criterion[]
 }
 
-export interface AssessmentFormConfigs {
+export interface SchemeConfigs {
   goal: number;
 }
 
@@ -107,12 +110,14 @@ const Page = ({
   };
 
   // Forms
-  const form1 = useForm<AssessmentFormInputs>({
+  const form1 = useForm<AssessmentFormSection>({
     initialValues: {
-      name: "",
+      name: "default name",
       year: 2008,
       semester: "1",
       description: "",
+      criteriaCount: 0,
+      criteria: []
     },
 
     validate: {
@@ -127,7 +132,7 @@ const Page = ({
     },
   });
 
-  const form2 = useForm<AssessmentFormConfigs>({
+  const form2 = useForm<SchemeConfigs>({
     initialValues: {
       goal: 50,
     },
