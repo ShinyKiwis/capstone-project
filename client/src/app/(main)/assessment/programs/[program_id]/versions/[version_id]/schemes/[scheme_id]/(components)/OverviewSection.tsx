@@ -11,6 +11,8 @@ import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { IoDuplicateOutline } from "react-icons/io5";
 import { TbFileExport } from "react-icons/tb";
 import { AiOutlineFileWord } from "react-icons/ai";
+import FormExportModal from "./FormExportModal";
+import { toggleNotification } from "@/app/lib/notification";
 
 const OverViewSection = ({ schemeObject }: { schemeObject: any }) => {
   return (
@@ -115,10 +117,14 @@ const OverViewSection = ({ schemeObject }: { schemeObject: any }) => {
             </Button>
           </Stack>
           <Stack>
-            <Button w={"20rem"} leftSection={<AiOutlineFileWord  size={20}/>} classNames={{inner: 'justify-start px-2'}}>
-              Export Assessment Form
-            </Button>
-            <Button w={"20rem"} leftSection={<TbFileExport size={20} />} classNames={{inner: 'justify-start px-2'}}>
+            <FormExportModal targetScheme={schemeObject} />
+            <Button w={"20rem"} leftSection={<TbFileExport size={20} />} classNames={{inner: 'justify-start px-2'}} onClick={()=>{
+              toggleNotification(
+                "Success",
+                `Assessment scheme ${schemeObject.name} has been exported!`,
+                "success",
+              );
+            }}>
               Export Scheme
             </Button>
           </Stack>

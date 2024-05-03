@@ -2,9 +2,9 @@
 import { PageHeader } from "@/app/_components";
 import React, { useEffect, useState } from "react";
 import { Accordion, Button, ScrollArea, Text } from "@mantine/core";
-import OverViewSection from "./OverviewSection";
-import RecordsSection from "./RecordsSection";
-import AttainmentsSection from "./AttainmentsSection";
+import OverViewSection from "./(components)/OverviewSection";
+import RecordsSection from "./(components)/RecordsSection";
+import AttainmentsSection from "./(components)/AttainmentsSection";
 
 const SchemeDetail = ({ params }: { params: { scheme_id: string } }) => {
   const [openedSections, setOpenedSections] = useState<string[] | undefined>(["overview", "records", "attainments"]);
