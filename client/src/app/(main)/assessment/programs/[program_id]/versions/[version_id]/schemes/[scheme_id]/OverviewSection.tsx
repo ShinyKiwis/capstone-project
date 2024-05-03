@@ -15,8 +15,8 @@ import { AiOutlineFileWord } from "react-icons/ai";
 const OverViewSection = ({ schemeObject }: { schemeObject: any }) => {
   return (
     <div>
-      <div className="w-9/12">
-        <table style={{ width: "85%" }}>
+      <div className="w-10/12">
+        <table style={{ width: "100%" }}>
           <tr>
             <td style={{ width: "25%", verticalAlign: "top" }}>
               <Text size="md" fw={500}>
@@ -98,7 +98,7 @@ const OverViewSection = ({ schemeObject }: { schemeObject: any }) => {
       <Divider my="md" />
 
       <div>
-        <Text size="md" fw={500}>
+        <Text size="md" fw={500} mb={'0.8rem'}>
           Actions
         </Text>
         <div className="flex gap-4">

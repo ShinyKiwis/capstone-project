@@ -7,9 +7,7 @@ import RecordsSection from "./RecordsSection";
 import AttainmentsSection from "./AttainmentsSection";
 
 const SchemeDetail = ({ params }: { params: { scheme_id: string } }) => {
-  const [openedSections, setOpenedSections] = useState<string[] | undefined>([
-    "records",
-  ]);
+  const [openedSections, setOpenedSections] = useState<string[] | undefined>(["overview", "records", "attainments"]);
   const [fetchedScheme, setFetchedScheme] = useState<any>();
 
   useEffect(() => {
@@ -27,10 +25,10 @@ const SchemeDetail = ({ params }: { params: { scheme_id: string } }) => {
 
   if (!fetchedScheme) return <div>Fetching scheme data...</div>;
   return (
-    <div className="flex min-w-0 h-full w-full flex-col">
+    <div className="flex h-full w-full min-w-0 flex-col">
       <PageHeader pageTitle="Scheme Details" />
-      <ScrollArea type="auto" scrollbarSize={8} className="flex flex-1 min-w-0">
-        <div className="flex flex-1 min-w-0 flex-col overflow-hidden">
+      <ScrollArea type="auto" scrollbarSize={8} className="flex min-w-0 flex-1">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <Button
             ml={"auto"}
             px={0}
@@ -57,7 +55,9 @@ const SchemeDetail = ({ params }: { params: { scheme_id: string } }) => {
           >
             <Accordion.Item value="overview">
               <Accordion.Control style={{ borderBottom: "2px black solid" }}>
-                <Text size="lg" fw={500}>Overview</Text>
+                <Text size="lg" fw={500}>
+                  Overview
+                </Text>
               </Accordion.Control>
               <Accordion.Panel>
                 schemeID: {params.scheme_id}
@@ -67,19 +67,28 @@ const SchemeDetail = ({ params }: { params: { scheme_id: string } }) => {
 
             <Accordion.Item value="records">
               <Accordion.Control style={{ borderBottom: "2px black solid" }}>
-              <Text size="lg" fw={500}>Assessment Records</Text>
+                <Text size="lg" fw={500}>
+                  Assessment Records
+                </Text>
               </Accordion.Control>
               <Accordion.Panel>
-                <RecordsSection schemeObject={fetchedScheme}/>
+                <RecordsSection schemeObject={fetchedScheme} />
               </Accordion.Panel>
             </Accordion.Item>
 
             <Accordion.Item value="attainments">
               <Accordion.Control style={{ borderBottom: "2px black solid" }}>
-              <Text size="lg" fw={500}>PI Achievements</Text>
+                <div className="flex gap-2 items-center">
+                  <Text size="lg" fw={500}>
+                    PI Attainments
+                  </Text>
+                  <Text size="md" c="gray" fs="italic">
+                    *Error records are omitted
+                  </Text>
+                </div>
               </Accordion.Control>
               <Accordion.Panel>
-                <AttainmentsSection />
+                <AttainmentsSection schemeObject={fetchedScheme} />
               </Accordion.Panel>
             </Accordion.Item>
           </Accordion>
