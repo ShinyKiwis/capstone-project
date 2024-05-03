@@ -1,73 +1,192 @@
+"use client";
+
+import { CriterionCard } from "@/app/_components";
+import MultipleLevelCriterion from "@/app/_components/Criterion/MultipleLevelCriterion";
 import {
+  Criterion,
+  CriterionObject,
+} from "@/app/interfaces/Criterion.interface";
+import {
+  Accordion,
+  Button,
+  NumberInput,
   ScrollArea,
+  Select,
   Text,
   TextInput,
-  Group,
   Textarea,
-  Select,
 } from "@mantine/core";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { IoIosAddCircleOutline } from "react-icons/io";
 
 const AssessmentForm = () => {
+  const [criteria, setCriteria] = useState<CriterionObject[]>([]);
+  const [numberOfCriterion, setNumberOfCriterion] = useState<number>(0);
+  const [schemeName, setSchemeName] = useState('');
+  const [year, setYear] = useState(2008);
+  const [semester, setSemester] = useState('1');
+  const [schemeDesc, setSchemeDesc] = useState('');
+
+
+  // const generateCriterion = () => {
+  //   const generatedCriteria: Criterion[] = [];
+  //   Array.from({ length: +numberOfCriterion }).forEach((_) => {
+  //     generatedCriteria.push({
+  //       description: "",
+  //       associatedPI: null,
+  //       assessment: {
+  //         type: "MultipleLevelCriterion",
+  //         numberOfLevels: 1,
+  //         options: [
+  //           {
+  //             level: "A",
+  //             description: "",
+  //             minScore: 0,
+  //             maxScore: 10,
+  //           },
+  //         ],
+  //       },
+  //     });
+  //     setCriteria(generatedCriteria);
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   generateCriterion();
+  // }, [numberOfCriterion]);
+
+  console.log(criteria);
+
   return (
-    <div>
-      <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <div className="flex h-fit flex-col gap-4">
-            <div>
-              <Text size="md" fw={600} className="mb-2">
-                Scheme Name
-              </Text>
-              <TextInput
-                autoFocus
-                // value={name}
-                // onChange={(event) => setName(event.currentTarget.value)}
-                // error={errors.nameError}
-                placeholder="Scheme Name"
+    <ScrollArea type="auto" scrollbarSize={8} className="flex-1">
+      <div className="flex flex-col gap-6">
+        <div>
+          <Text size="xl" fw={600}>
+            General
+          </Text>
+
+          <div className="flex flex-col gap-4 pl-4">
+            <TextInput
+              label="Scheme Name"
+              placeholder="Input name of the assessment scheme"
+              required
+              value={schemeName}
+              onChange={(e) => setSchemeName(e.currentTarget.value)}
+            />
+            <div className="flex gap-8">
+              <NumberInput
+                label="Assess year"
+                placeholder="Year"
+                clampBehavior="strict"
+                min={0}
+                max={9999}
+                required
+                value={year}
+                onChange={(val) => setYear(val as number)}
+              />
+              <Select
+                label="Assess semester"
+                placeholder="Semester"
+                data={["1", "2"]}
+                value={semester}
+                onChange={(val) => setSemester(val || '')}
               />
             </div>
-            <div>
-              <Text size="md" fw={600} className="mb-2">
-                Assess Time
-              </Text>
-              <div className="flex gap-5">
-                <Select
-                  autoFocus
-                  label="Year"
-                  placeholder="Pick value"
-                  data={["React", "Angular", "Vue", "Svelte"]}
-                />
-                <Select
-                  autoFocus
-                  label="Semester"
-                  placeholder="Pick value"
-                  data={["React", "Angular", "Vue", "Svelte"]}
-                />
-              </div>
-            </div>
-            <div>
-              <Text size="md" fw={600} className="mb-2">
-                Description
-              </Text>
-              <Textarea
-                autosize
-                // value={description}
-                minRows={4}
-                maxRows={6}
-                // onChange={(event) => setDescription(event.currentTarget.value)}
-                // error={errors.descriptionError}
-                placeholder="Description"
-              />
-            </div>
+            <Textarea
+              label="Description"
+              placeholder="Input assessment scheme description"
+              autosize
+              minRows={4}
+              maxRows={8}
+              value={schemeDesc}
+              onChange={e => setSchemeDesc(e.currentTarget.value)}
+            />
+            {/* <Select
+              label="Assessment type"
+              defaultValue={"i"}
+              placeholder="Semester"
+              data={[
+                { label: "Individual", value: "i" },
+                { label: "Group", value: "g" },
+                { label: "Individual within group", value: "ig" },
+              ]}
+            /> */}
           </div>
-        </form>
-      </ScrollArea>
-    </div>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <Text size="xl" fw={600}>
+            Criteria
+          </Text>
+
+          {criteria.map((criterion, index) => (
+            <CriterionCard
+              key={index+Date.now().toString()}
+              criterionObject={criterion}
+              criterionNumber={index + 1}
+              refreshFunction={() => setCriteria([...criteria])}
+              removeFunction={() => {
+                setCriteria([...criteria.toSpliced(index, 1)]);
+              }}
+            />
+          ))}
+
+          <Button
+            variant="transparent"
+            td={"underline"}
+            c={"blue"}
+            px={0}
+            justify="flex-start"
+            onClick={() => {
+              let newCriterion = new CriterionObject("", "multilevel");
+              setCriteria([...criteria, newCriterion]);
+              setNumberOfCriterion(numberOfCriterion + 1);
+            }}
+            leftSection={<IoIosAddCircleOutline size={25} />}
+          >
+            Add another criterion
+          </Button>
+
+          {/* <Button
+            variant="transparent"
+            c={"red"}
+            px={0}
+            justify="flex-start"
+            onClick={() => {
+              setCriteria([...criteria]);
+              console.log(criteria);
+            }}
+            leftSection={<IoIosAddCircleOutline size={25} />}
+          >
+            [Debug] Refresh criteria
+          </Button> */}
+        </div>
+      </div>
+    </ScrollArea>
   );
 };
 
 export default AssessmentForm;
+
+{
+  /* <NumberInput
+					label="Number of criterion"
+					placeholder="Number of criterion"
+					value={numberOfCriterion}
+					onChange={setNumberOfCriterion}
+					className="w-1/6"
+					min={0}
+				/>
+				<Accordion variant="contained">
+					<div className="flex flex-col gap-4">
+						{criteria.map((criterion, idx) => {
+							switch (criterion.assessment.type) {
+								case "MultipleLevelCriterion":
+									return (
+										<MultipleLevelCriterion criterion={criterion} order={idx} />
+									);
+							}
+						})}
+					</div>
+				</Accordion> */
+}
