@@ -245,7 +245,7 @@ class CriterionLevels_choice implements MultipleChoiceCriterion {
     this.options.push({
       levelLabel: index_levelMapping[this.numberOfLevels - 1],
       description: "",
-      is_correct: false,
+      is_correct: true,
     });
   }
 
