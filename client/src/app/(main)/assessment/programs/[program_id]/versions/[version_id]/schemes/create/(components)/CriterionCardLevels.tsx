@@ -1,3 +1,4 @@
+import { AssessmentFormSection } from "@/app/(main)/assessment/programs/[program_id]/versions/[version_id]/schemes/create/page";
 import {
   Criterion,
   WrittenResponseCriterion,
@@ -5,19 +6,23 @@ import {
   MultipleLevelCriterion,
   MultiLevelOption,
   MultipleChoiceOption,
+  level_indexMapping,
 } from "@/app/interfaces/Criterion.interface";
 import { Button, Textarea, NumberInput, Radio, Text } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useFormContext1 } from "@/app/(main)/assessment/programs/[program_id]/versions/[version_id]/schemes/create/page";
 import {
   IoIosRemoveCircleOutline,
   IoIosAddCircleOutline,
 } from "react-icons/io";
+
 
 interface LevelCardProps {
   levelObject: MultiLevelOption | MultipleChoiceOption;
   type: "multilevel" | "multiplechoice";
   removeFunction: () => void;
   levelsCount: number;
+  parentCriterionNum: number;
 }
 
 const LevelCard = ({
@@ -25,6 +30,7 @@ const LevelCard = ({
   type,
   removeFunction,
   levelsCount,
+  parentCriterionNum
 }: LevelCardProps) => {
   const [desc, setDesc] = useState(levelObject.description);
   const [minScore, setMinScore] = useState(
@@ -35,6 +41,7 @@ const LevelCard = ({
     (levelObject as MultiLevelOption) &&
       (levelObject as MultiLevelOption).maxScore,
   );
+  const form = useFormContext1();
 
   return (
     <div className="flex w-full flex-col gap-1 rounded-sm border-2 bg-white px-3 py-4">
@@ -67,6 +74,8 @@ const LevelCard = ({
             levelObject.description = e.currentTarget.value;
             setDesc(e.currentTarget.value);
           }}
+          required
+          error = {form.getInputProps(`criteria.${parentCriterionNum-1}.assessment.options.${level_indexMapping[levelObject.levelLabel]}.description`).error}
         />
 
         {type === "multilevel" ? (
@@ -83,6 +92,7 @@ const LevelCard = ({
                 (levelObject as MultiLevelOption).minScore = newVal as number;
                 setMinScore(newVal as number);
               }}
+              error = {form.getInputProps(`criteria.${parentCriterionNum-1}.assessment.options.${level_indexMapping[levelObject.levelLabel]}.minScore`).error}
             />
             <NumberInput
               label="Maximum Score"
@@ -96,6 +106,7 @@ const LevelCard = ({
                 (levelObject as MultiLevelOption).maxScore = newVal as number;
                 setMaxScore(newVal as number);
               }}
+              error = {form.getInputProps(`criteria.${parentCriterionNum-1}.assessment.options.${level_indexMapping[levelObject.levelLabel]}.maxScore`).error}
             />
           </div>
         ) : null}
@@ -107,10 +118,13 @@ const LevelCard = ({
 const MultiLevelCardLevels = ({
   criterionObject,
   updateLevels,
+  criterionNum,
 }: {
   criterionObject: Criterion;
   updateLevels: () => void;
+  criterionNum: number;
 }) => {
+
   return (
     <div className="flex flex-col gap-2">
       {(criterionObject.assessment as MultipleLevelCriterion).options.map(
@@ -130,6 +144,7 @@ const MultiLevelCardLevels = ({
                 ).removeLevel(level.levelLabel);
                 updateLevels();
               }}
+              parentCriterionNum = {criterionNum}
             />
           );
         },
@@ -158,9 +173,11 @@ const MultiLevelCardLevels = ({
 const MultipleChoiceCardLevels = ({
   criterionObject,
   updateLevels,
+  criterionNum,
 }: {
   criterionObject: Criterion;
   updateLevels: () => void;
+  criterionNum: number;
 }) => {
   const [score, setScore] = useState(
     (criterionObject.assessment as MultipleChoiceCriterion).score,
@@ -168,6 +185,7 @@ const MultipleChoiceCardLevels = ({
   const [selectedOption, setSelectedOption] = useState(
     (criterionObject.assessment as MultipleChoiceCriterion).getValue(),
   );
+  const form = useFormContext1();
 
   return (
     <div className="flex flex-col gap-2">
@@ -184,6 +202,7 @@ const MultipleChoiceCardLevels = ({
           (criterionObject.assessment as MultipleChoiceCriterion).score = value as number;
           setScore(value as number);
         }}
+        error = {form.getInputProps(`criteria.${criterionNum-1}.assessment.score`).error}
       />
 
       <Radio.Group
@@ -220,6 +239,7 @@ const MultipleChoiceCardLevels = ({
                       ).removeLevel(level.levelLabel);
                       updateLevels();
                     }}
+                    parentCriterionNum={criterionNum}
                   />
                 </div>
               );
@@ -251,9 +271,12 @@ const MultipleChoiceCardLevels = ({
 
 const WrittenCardLevels = ({
   criterionObject,
+  criterionNum
 }: {
   criterionObject: Criterion;
+  criterionNum: number;
 }) => {
+  const form = useFormContext1();
   const [maxScore, setMaxScore] = useState(
     (criterionObject.assessment as WrittenResponseCriterion).maximumScore,
   );
@@ -275,6 +298,7 @@ const WrittenCardLevels = ({
           setMaxScore(newValue as number);
         }}
         value={maxScore}
+        error = {form.getInputProps(`criteria.${criterionNum-1}.assessment.maximumScore`).error}
       />
     </div>
   );
@@ -284,11 +308,13 @@ interface CriterionCardLevelsProps {
   criterionObject: Criterion;
   criterionNumber: number;
   refreshFunction: () => void;
+  parentCriterionNum: number;
 }
 
 const CriterionCardLevels = ({
   criterionObject,
   refreshFunction,
+  parentCriterionNum
 }: CriterionCardLevelsProps) => {
   const [renderingCriterion, setRenderingCriterion] =
     useState<Criterion>(criterionObject);
@@ -302,17 +328,19 @@ const CriterionCardLevels = ({
         <MultiLevelCardLevels
           criterionObject={renderingCriterion}
           updateLevels={updateLevels}
+          criterionNum = {parentCriterionNum}
         />
       );
 
     case "written":
-      return <WrittenCardLevels criterionObject={renderingCriterion} />;
+      return <WrittenCardLevels criterionObject={renderingCriterion} criterionNum = {parentCriterionNum}/>;
 
     case "multiplechoice":
       return (
         <MultipleChoiceCardLevels
           criterionObject={criterionObject}
           updateLevels={updateLevels}
+          criterionNum = {parentCriterionNum}
         />
       );
   }

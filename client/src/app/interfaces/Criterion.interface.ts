@@ -8,7 +8,7 @@ const index_levelMapping: { [key: number]: string } = {
   4: "E",
 };
 
-const level_indexMapping: { [key: string]: number } = {
+export const level_indexMapping: { [key: string]: number } = {
   A: 0,
   B: 1,
   C: 2,

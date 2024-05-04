@@ -10,10 +10,10 @@ import AssessmentForm from "./(pages)/AssessmentForm";
 import PIsConfiguration from "./(pages)/PIsConfiguration";
 import axios from "axios";
 import FinalReview from "./(pages)/FinalReview";
-import { useForm } from "@mantine/form";
+import { createFormContext, useForm } from "@mantine/form";
+import { isNotEmpty, isEmail, isInRange, hasLength, matches } from '@mantine/form';
 import { Criterion } from "@/app/interfaces/Criterion.interface";
 import { toggleNotification } from "@/app/lib/notification";
-import MultipleLevelCriterion from "@/app/_components/Criterion/MultipleLevelCriterion";
 
 const sampleScheme = {
   name: "Foundation Test 2012_3",
@@ -35,9 +35,13 @@ export interface AssessmentFormSection {
   criteria: Criterion[]
 }
 
+export const [FormProvider1, useFormContext1, useForm1] = createFormContext<AssessmentFormSection>();
+
 export interface SchemeConfigs {
   goal: number;
 }
+
+export const [FormProvider2, useFormContext2, useForm2] = createFormContext<SchemeConfigs>();
 
 const Page = ({
   params,
@@ -118,7 +122,7 @@ const Page = ({
   };
 
   // Forms
-  const form1 = useForm<AssessmentFormSection>({
+  const form1 = useForm1({
     initialValues: {
       name: "default name",
       year: 2008,
@@ -129,7 +133,7 @@ const Page = ({
     },
 
     validate: {
-      name: (value) => (value === "" ? "Scheme name required" : null),
+      name: isNotEmpty("Scheme name required"),
       year: (value) => {
         if (!value) return 'Year required'
         if (value < (new Date(version!.startDate)).getFullYear() ) return 'Year cannot be smaller than version start year';
@@ -141,12 +145,12 @@ const Page = ({
         description: (value) => (value === "" ? "Criterion description required" : null),
         // associatedPI: (value) => (!value ? "A PI is required" : null),
         assessment: {
-          score: (value) => (!value ? "Score is required" : null),
-          maximumScore: (value) => (!value ? "Maximum score is required" : null),
+          score: isNotEmpty("Score is required"),
+          maximumScore: isNotEmpty("Maximum score is required"),
           options: {
-            description: (value) => (value === "" ? "Description required" : null),
-            maxScore: (value) => (!value ? "Maximum score is required" : null),
-            minScore: (value) => (!value ? "Minimum score is required" : null),
+            description: isNotEmpty("Description required"),
+            maxScore: isNotEmpty("Maximum score is required"),
+            minScore: isNotEmpty("Minimum score is required"),
           }
         }
       }
@@ -157,7 +161,7 @@ const Page = ({
     console.log("Form1:", form1.values)
   }, [form1]);
 
-  const form2 = useForm<SchemeConfigs>({
+  const form2 = useForm2({
     initialValues: {
       goal: 50,
     },
@@ -208,14 +212,18 @@ const Page = ({
             description="Create assessment form"
             allowStepSelect={active !== 0}
           >
-            <AssessmentForm form={form1} />
+            <FormProvider1 form={form1}>
+              <AssessmentForm />
+            </FormProvider1>
           </Stepper.Step>
           <Stepper.Step
             label="Second step"
             description="Configure PIs"
             allowStepSelect={active !== 1}
           >
-            <PIsConfiguration form={form2} studentOutcomes={SOs} />
+            <FormProvider2 form={form2}>
+              <PIsConfiguration form={form2} studentOutcomes={SOs} />
+            </FormProvider2>
           </Stepper.Step>
           <Stepper.Step
             label="Final step"

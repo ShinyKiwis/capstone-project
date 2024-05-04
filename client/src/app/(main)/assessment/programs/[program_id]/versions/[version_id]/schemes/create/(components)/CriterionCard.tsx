@@ -25,8 +25,8 @@ import {
   IoIosRemoveCircleOutline,
 } from "react-icons/io";
 import CriterionCardLevels from "./CriterionCardLevels";
-import { AssessmentFormSection } from "@/app/(main)/assessment/programs/[program_id]/versions/[version_id]/schemes/create/page";
-import { UseFormReturnType, createFormContext } from "@mantine/form";
+import { AssessmentFormSection, useFormContext1 } from "@/app/(main)/assessment/programs/[program_id]/versions/[version_id]/schemes/create/page";
+import { UseFormReturnType } from "@mantine/form";
 
 interface CriterionCardProps {
   criterionObject: CriterionObject;
@@ -41,7 +41,6 @@ interface CriterionCardStates {
   criterionNumber: number;
 }
 
-const [FormProvider, useFormContext, useForm] = createFormContext<AssessmentFormSection>();
 class CriterionCard extends React.Component<
   CriterionCardProps,
   CriterionCardStates

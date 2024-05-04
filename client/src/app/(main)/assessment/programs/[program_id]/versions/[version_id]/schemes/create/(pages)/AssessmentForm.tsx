@@ -1,6 +1,6 @@
 "use client";
 
-import { CriterionCard } from "@/app/_components";
+import CriterionCard from "../(components)/CriterionCard";
 import MultipleLevelCriterion from "@/app/_components/Criterion/MultipleLevelCriterion";
 import {
   Criterion,
@@ -20,8 +20,9 @@ import { UseFormReturnType } from "@mantine/form";
 import React, { useEffect, useState } from "react";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { AssessmentFormSection } from "../page";
+import { useFormContext1 } from "../page";
 
-const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormSection>}) => {
+const AssessmentForm = () => {
   // const generateCriterion = () => {
   //   const generatedCriteria: Criterion[] = [];
   //   Array.from({ length: +numberOfCriterion }).forEach((_) => {
@@ -48,6 +49,7 @@ const AssessmentForm = ({form}:{form: UseFormReturnType<AssessmentFormSection>})
   // useEffect(() => {
   //   generateCriterion();
   // }, [numberOfCriterion]);  
+  const form = useFormContext1();
 
   return (
     <ScrollArea type="auto" scrollbarSize={8} className="flex-1">
