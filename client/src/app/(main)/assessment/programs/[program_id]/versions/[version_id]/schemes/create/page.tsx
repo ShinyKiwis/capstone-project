@@ -12,6 +12,8 @@ import axios from "axios";
 import FinalReview from "./(pages)/FinalReview";
 import { useForm } from "@mantine/form";
 import { Criterion } from "@/app/interfaces/Criterion.interface";
+import { toggleNotification } from "@/app/lib/notification";
+import MultipleLevelCriterion from "@/app/_components/Criterion/MultipleLevelCriterion";
 
 const sampleScheme = {
   name: "Foundation Test 2012_3",
@@ -95,11 +97,17 @@ const Page = ({
         if (!form1.validate().hasErrors) {
           setActive(step);
         }
+        else{
+          toggleNotification("Error", "Check unsatisfied fields", "danger")
+        }
         break;
       case 1:
         // Validate PI configurations
         if (!form2.validate().hasErrors) {
           setActive(step);
+        }
+        else{
+          toggleNotification("Error", "Check unsatisfied configurations", "danger")
         }
         break;
       case 2:
@@ -129,8 +137,25 @@ const Page = ({
         return null;
       },
       semester: (value) => (!value ? "Semester required" : null),
+      criteria:{
+        description: (value) => (value === "" ? "Criterion description required" : null),
+        // associatedPI: (value) => (!value ? "A PI is required" : null),
+        assessment: {
+          score: (value) => (!value ? "Score is required" : null),
+          maximumScore: (value) => (!value ? "Maximum score is required" : null),
+          options: {
+            description: (value) => (value === "" ? "Description required" : null),
+            maxScore: (value) => (!value ? "Maximum score is required" : null),
+            minScore: (value) => (!value ? "Minimum score is required" : null),
+          }
+        }
+      }
     },
   });
+
+  useEffect(() => { // for testing
+    console.log("Form1:", form1.values)
+  }, [form1]);
 
   const form2 = useForm<SchemeConfigs>({
     initialValues: {
