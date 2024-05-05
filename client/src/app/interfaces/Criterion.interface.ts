@@ -30,7 +30,7 @@ export interface Criterion {
   changeType: (type: CriterionType | null) => void;
   setDesc: (newDesc: string) => void;
   getDesc: () => string;
-  setPI: (newPI: number) => void;
+  setPI: (newPI: PI) => void;
 }
 
 export class CriterionObject implements Criterion {
@@ -95,8 +95,9 @@ export class CriterionObject implements Criterion {
     return this.description;
   }
 
-  setPI(newPI: number) {
+  setPI(newPI: PI) {
     // set new PI
+    this.associatedPI = newPI;
   }
 }
 

@@ -5,7 +5,7 @@ import formatDate from "@/app/lib/formatDate";
 import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import { Text, Button, Stepper, Group, ScrollArea } from "@mantine/core";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, createContext } from "react";
 import AssessmentForm from "./(pages)/AssessmentForm";
 import PIsConfiguration from "./(pages)/PIsConfiguration";
 import axios from "axios";
@@ -25,6 +25,8 @@ const sampleScheme = {
   maximumScore: 50,
   type: "Individual",
 };
+
+export const SOsContext_createScheme = createContext<SO[]|null>(null);
 
 export interface AssessmentFormSection {
   name: string;
@@ -74,7 +76,7 @@ const Page = ({
         let programDetailsURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${targetProgram.id}/versions/${targetVersion.id}`;
         const response = await axios.get(programDetailsURL);
         const targetSOs = response.data.studentOutcomes;
-        console.log(targetSOs);
+        console.log("Loaded SOs:",targetSOs);
         setSOs(targetSOs.sort((a: SO, b: SO) => (a.name < b.name ? -1 : 1)));
       }
     };
@@ -83,6 +85,8 @@ const Page = ({
       fetchProgram();
     }
   });
+
+  
 
   // Stepper states & controllers
   const [active, setActive] = useState<number>(0); // current step
@@ -212,9 +216,11 @@ const Page = ({
             description="Create assessment form"
             allowStepSelect={active !== 0}
           >
-            <FormProvider1 form={form1}>
-              <AssessmentForm />
-            </FormProvider1>
+            <SOsContext_createScheme.Provider value={SOs}>
+              <FormProvider1 form={form1}>
+                <AssessmentForm />
+              </FormProvider1>
+            </SOsContext_createScheme.Provider>
           </Stepper.Step>
           <Stepper.Step
             label="Second step"

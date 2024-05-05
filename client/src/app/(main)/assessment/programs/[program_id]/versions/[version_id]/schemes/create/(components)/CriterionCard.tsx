@@ -27,6 +27,7 @@ import {
 import CriterionCardLevels from "./CriterionCardLevels";
 import { AssessmentFormSection, useFormContext1 } from "@/app/(main)/assessment/programs/[program_id]/versions/[version_id]/schemes/create/page";
 import { UseFormReturnType } from "@mantine/form";
+import PIselectModal from "./PIselectModal";
 
 interface CriterionCardProps {
   criterionObject: CriterionObject;
@@ -93,15 +94,7 @@ class CriterionCard extends React.Component<
             <Text size="sm" fw={500}>
               Corresponding PI
             </Text>
-            <Button
-              variant="transparent"
-              td={"underline"}
-              c={"blue"}
-              px={0}
-              onClick={() => {}}
-            >
-              Select a PI for this criterion
-            </Button>
+            <PIselectModal SOs={[]} targetCriterion={this.state.criterionObject} criterionNum={this.state.criterionNumber} />
           </div>
         </div>
 
