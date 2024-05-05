@@ -1,26 +1,19 @@
 import React from "react";
 import { Grid, Text } from "@mantine/core";
+import { UseFormReturnType } from "@mantine/form";
+import { AssessmentFormSection } from "../page";
+import { Criterion } from "@/app/interfaces/Criterion.interface";
 
 const FinalReview = ({
-  name,
-  description,
-  year,
-  semester,
-  criteriaCount,
-  maximumScore,
-  type,
+  form1,
 }: {
-  name: string;
-  description: string;
-  year: number;
-  semester: number;
-  criteriaCount: number;
-  maximumScore: number;
-  type: string;
+  form1: UseFormReturnType<AssessmentFormSection>;
 }) => {
   return (
     <div className="flex flex-col gap-3">
-      <Text size="xl" fw={600}>FinalReview</Text>
+      <Text size="xl" fw={600}>
+        FinalReview
+      </Text>
       <Grid>
         <Grid.Col span={4}>
           <Text size="md" fw={600}>
@@ -29,7 +22,7 @@ const FinalReview = ({
         </Grid.Col>
         <Grid.Col span={8}>
           <Text size="md" fw={400}>
-            {name}
+            {form1.values.name}
           </Text>
         </Grid.Col>
         <Grid.Col span={4}>
@@ -39,7 +32,7 @@ const FinalReview = ({
         </Grid.Col>
         <Grid.Col span={8}>
           <Text size="md" fw={400}>
-            {description}
+            {form1.values.description}
           </Text>
         </Grid.Col>
         <Grid.Col span={4}>
@@ -49,7 +42,7 @@ const FinalReview = ({
         </Grid.Col>
         <Grid.Col span={8}>
           <Text size="md" fw={400}>
-            Year {year} - Semester {semester}
+            Year {form1.values.year} - Semester {form1.values.semester}
           </Text>
         </Grid.Col>
         <Grid.Col span={4}>
@@ -59,17 +52,19 @@ const FinalReview = ({
         </Grid.Col>
         <Grid.Col span={8}>
           <Text size="md" fw={400}>
-            {criteriaCount}
+            {form1.values.criteriaCount}
           </Text>
         </Grid.Col>
         <Grid.Col span={4}>
           <Text size="md" fw={600}>
-            Assessment Type:
+            Maximum Score:
           </Text>
         </Grid.Col>
         <Grid.Col span={8}>
           <Text size="md" fw={400}>
-            {type}
+            {form1.values.criteria.reduce(function (sum, e: Criterion) {
+              return sum + e.assessment.getMaxScore();
+            }, 0)}
           </Text>
         </Grid.Col>
       </Grid>

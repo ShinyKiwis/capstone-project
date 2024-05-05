@@ -1,3 +1,4 @@
+import { BsTelephoneMinus } from "react-icons/bs";
 import { PI } from "./Program.interface";
 
 const index_levelMapping: { [key: number]: string } = {
@@ -52,7 +53,7 @@ export class CriterionObject implements Criterion {
         this.assessment = new CriterionLevels_multi();
         break;
       case "written":
-        this.assessment = { maximumScore: 3 };
+        this.assessment = new CriterionLevels_written();
         break;
       case "multiplechoice":
         this.assessment = new CriterionLevels_choice();
@@ -73,7 +74,7 @@ export class CriterionObject implements Criterion {
         break;
       case "written":
         this.type = "written";
-        this.assessment = { maximumScore: 3 };
+        this.assessment = new CriterionLevels_choice();
         break;
       case "multiplechoice":
         this.type = "multiplechoice";
@@ -131,6 +132,7 @@ export interface MultipleLevelCriterion {
   //Methods
   addLevel: () => void;
   removeLevel: (label: string) => void;
+  getMaxScore: () => number;
 }
 
 class CriterionLevels_multi implements MultipleLevelCriterion {
@@ -184,10 +186,33 @@ class CriterionLevels_multi implements MultipleLevelCriterion {
       (option, index) => (option.levelLabel = index_levelMapping[index]),
     );
   }
+
+  getMaxScore(){
+    let max = 0;
+    this.options.forEach(option => {
+      if (option.maxScore > max) max = option.maxScore
+    })
+    return max;
+  }
 }
 
 export interface WrittenResponseCriterion {
   maximumScore: number;
+
+  // Methods
+  getMaxScore: () => number;
+}
+
+class CriterionLevels_written implements WrittenResponseCriterion {
+  maximumScore: number;
+
+  constructor(){
+    this.maximumScore = 3;
+  }
+
+  getMaxScore(){
+    return this.maximumScore;
+  }
 }
 
 export interface MultipleChoiceOption {
@@ -206,6 +231,7 @@ export interface MultipleChoiceCriterion {
   removeLevel: (label: string) => void;
   changeSelection: (newOption: string) => void;
   getValue: () => string;
+  getMaxScore: () => number;
 }
 
 class CriterionLevels_choice implements MultipleChoiceCriterion {
@@ -273,5 +299,9 @@ class CriterionLevels_choice implements MultipleChoiceCriterion {
       }
     }
     return "";
+  }
+
+  getMaxScore(){
+    return this.score;
   }
 }

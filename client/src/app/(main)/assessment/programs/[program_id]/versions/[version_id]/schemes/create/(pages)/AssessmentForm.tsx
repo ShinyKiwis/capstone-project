@@ -131,7 +131,7 @@ const AssessmentForm = () => {
             px={0}
             justify="flex-start"
             onClick={() => {
-              let newCriterion = new CriterionObject("", "multilevel");
+              let newCriterion = new CriterionObject("", "written");
               form.setFieldValue("criteria", [...form.values.criteria, newCriterion]);
               form.values.criteriaCount += 1;
             }}

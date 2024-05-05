@@ -15,17 +15,6 @@ import { isNotEmpty, isEmail, isInRange, hasLength, matches } from '@mantine/for
 import { Criterion } from "@/app/interfaces/Criterion.interface";
 import { toggleNotification } from "@/app/lib/notification";
 
-const sampleScheme = {
-  name: "Foundation Test 2012_3",
-  description:
-    "Foundation test for CS students conducted before internship. Expected exam date: May 15th, 2012",
-  year: 2012,
-  semester: 3,
-  criteriaCount: 10,
-  maximumScore: 50,
-  type: "Individual",
-};
-
 export const SOsContext_createScheme = createContext<SO[]|null>(null);
 
 export interface AssessmentFormSection {
@@ -40,7 +29,7 @@ export interface AssessmentFormSection {
 export const [FormProvider1, useFormContext1, useForm1] = createFormContext<AssessmentFormSection>();
 
 export interface SchemeConfigs {
-  goal: number;
+  SOs: SO[];
 }
 
 export const [FormProvider2, useFormContext2, useForm2] = createFormContext<SchemeConfigs>();
@@ -101,7 +90,6 @@ const Page = ({
     ) {
       case 0:
         // Validate assessment form
-        console.log(form1.values);
         if (!form1.validate().hasErrors) {
           setActive(step);
         }
@@ -162,19 +150,27 @@ const Page = ({
     },
   });
 
-  useEffect(() => { // for testing
-    console.log("Form1:", form1.values)
-  }, [form1]);
+  // useEffect(() => { // for testing
+  //   console.log("Form1:", form1.values)
+  // }, [form1]);
 
   const form2 = useForm2({
     initialValues: {
-      goal: 50,
+      SOs: [],
     },
 
     validate: {
-      goal: (value) => (value !== 50 ? null : "Invalid number"),
+      SOs: {
+        performanceIndicators: {
+          expectedGoal: (value) => (value!==undefined && value.toString() === '' ? "Passing goal is required" : null)
+        }
+      }
     },
   });
+
+  // useEffect(() => { // for testing
+  //   console.log("Form2:", form2.values)
+  // }, [form2]);
 
   // Main return
   return program && version ? (
@@ -228,16 +224,18 @@ const Page = ({
             description="Configure PIs"
             allowStepSelect={active !== 1}
           >
+            <SOsContext_createScheme.Provider value={SOs}>
             <FormProvider2 form={form2}>
-              <PIsConfiguration form={form2} studentOutcomes={SOs} />
+              <PIsConfiguration form1={form1} form2={form2} />
             </FormProvider2>
+            </SOsContext_createScheme.Provider>
           </Stepper.Step>
           <Stepper.Step
             label="Final step"
             description="Review scheme"
             allowStepSelect={active !== 2}
           >
-            <FinalReview {...sampleScheme} />
+            <FinalReview form1 = {form1}/>
           </Stepper.Step>
         </Stepper>
 
