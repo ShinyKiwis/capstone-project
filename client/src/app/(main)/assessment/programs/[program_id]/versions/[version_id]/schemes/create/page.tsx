@@ -106,7 +106,8 @@ const Page = ({
           setActive(step);
         }
         else{
-          toggleNotification("Error", "Check unsatisfied fields", "danger")
+          toggleNotification("Error", "Check unsatisfied fields", "danger");
+          console.log("Form 1 errors:", form1.validate().errors)
         }
         break;
       case 1:
@@ -147,14 +148,14 @@ const Page = ({
       semester: (value) => (!value ? "Semester required" : null),
       criteria:{
         description: (value) => (value === "" ? "Criterion description required" : null),
-        // associatedPI: (value) => (!value ? "A PI is required" : null),
+        associatedPI: (value) => (value === null ? "A PI is required" : null),
         assessment: {
-          score: isNotEmpty("Score is required"),
-          maximumScore: isNotEmpty("Maximum score is required"),
+          score: (value) => (value!==undefined && value.toString() === '' ? "Score is required" : null),
+          maximumScore: (value) => (value!==undefined && value.toString() === '' ? "Maximum score is required" : null),
           options: {
             description: isNotEmpty("Description required"),
-            maxScore: isNotEmpty("Maximum score is required"),
-            minScore: isNotEmpty("Minimum score is required"),
+            maxScore: (value) => (value!==undefined && value.toString() === '' ? "Maximum score is required" : null),
+            minScore: (value) => (value!==undefined && value.toString() === '' ? "Minimum score is required" : null),
           }
         }
       }

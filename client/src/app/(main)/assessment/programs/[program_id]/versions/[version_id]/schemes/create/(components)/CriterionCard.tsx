@@ -1,31 +1,19 @@
 import {
-  Criterion,
   CriterionObject,
   CriterionType,
-  MultipleChoiceCriterion,
-  MultipleLevelCriterion,
-  WrittenResponseCriterion,
 } from "@/app/interfaces/Criterion.interface";
 import {
-  Card,
-  Group,
   Text,
-  Container,
   Button,
   Textarea,
-  Stack,
   Divider,
   Select,
-  NumberInput,
-  Radio,
+  InputWrapper,
 } from "@mantine/core";
-import React, { useContext, useState } from "react";
-import {
-  IoIosAddCircleOutline,
-  IoIosRemoveCircleOutline,
-} from "react-icons/io";
+import React from "react";
+import { IoIosRemoveCircleOutline } from "react-icons/io";
 import CriterionCardLevels from "./CriterionCardLevels";
-import { AssessmentFormSection, useFormContext1 } from "@/app/(main)/assessment/programs/[program_id]/versions/[version_id]/schemes/create/page";
+import { AssessmentFormSection } from "@/app/(main)/assessment/programs/[program_id]/versions/[version_id]/schemes/create/page";
 import { UseFormReturnType } from "@mantine/form";
 import PIselectModal from "./PIselectModal";
 
@@ -91,10 +79,21 @@ class CriterionCard extends React.Component<
             }
           />
           <div>
-            <Text size="sm" fw={500}>
-              Corresponding PI
-            </Text>
-            <PIselectModal SOs={[]} targetCriterion={this.state.criterionObject} criterionNum={this.state.criterionNumber} />
+            <InputWrapper
+              label="Corresponding PI"
+              required
+              error={
+                this.props.form.getInputProps(
+                  `criteria.${this.state.criterionNumber - 1}.associatedPI`,
+                ).error
+              }
+            >
+              <PIselectModal
+                SOs={[]}
+                targetCriterion={this.state.criterionObject}
+                criterionNum={this.state.criterionNumber}
+              />
+            </InputWrapper>
           </div>
         </div>
 
@@ -121,14 +120,13 @@ class CriterionCard extends React.Component<
               *Levels configurations will be discarded upon method change
             </Text>
           </div>
-          
+
           <CriterionCardLevels
             criterionObject={this.state.criterionObject}
             criterionNumber={this.state.criterionNumber}
             refreshFunction={this.props.refreshFunction}
             parentCriterionNum={this.props.criterionNumber}
           />
-          
         </div>
       </div>
     );
