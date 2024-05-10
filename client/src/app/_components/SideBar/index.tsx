@@ -35,7 +35,7 @@ const SideBar = () => {
           )}
         </button>
       </div>
-      <div className="overflow-auto m-0 p-0 w-full">
+      <div className={`overflow-auto p-0 ${toggleSidebar ? "w-full" : ''}`}>
         {sidebarItems.map((item) => {
           return (userResourcesIncludes(item.resource)
           ) ? (
