@@ -195,7 +195,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   return (
     <div className="h-full w-full bg-white">
       <PageHeader pageTitle="Edit Project" />
-      <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
+      <ScrollArea h={"90%"} type="scroll" offsetScrollbars>
         <form
           onSubmit={(e) => {
             e.preventDefault();
