@@ -129,7 +129,7 @@ const Project = () => {
                 >
                   Create project
                 </Button>
-                <UploadFileModal object="projects" setFileUploaded={setFileUploaded} />
+                <UploadFileModal object="project" setFileUploaded={setFileUploaded} />
               </div>
             ) : null}
 

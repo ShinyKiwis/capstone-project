@@ -94,13 +94,13 @@ const UploadFileModal = ({
     <>
       <Modal
         size="45%"
-        yOffset="8em"
+        yOffset="4em"
         centered
         opened={opened}
         onClose={close}
         title={
           <Text size="lg" c="blue" fw={600}>
-            Upload File
+            Upload {object} files
           </Text>
         }
       >
@@ -109,7 +109,7 @@ const UploadFileModal = ({
           leftSection={<MdFileDownload size={20} />}
           onClick={handleDownloadTemplateFile}
         >
-          Download {object.slice(0, -1)} template
+          Download {object} template
         </Button>
         <Dropzone
           onReject={(files) => console.log("rejected files", files)}

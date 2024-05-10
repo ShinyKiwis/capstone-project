@@ -35,18 +35,20 @@ const SideBar = () => {
           )}
         </button>
       </div>
-      {sidebarItems.map((item) => {
-        return (userResourcesIncludes(item.resource)
-        ) ? (
-          <SideBarItem
-            expand={toggleSidebar}
-            Icon={item.Icon}
-            title={item.title}
-            pages={item.pages}
-            key={item.title}
-          />
-        ) : null;
-      })}
+      <div className="overflow-auto m-0 p-0 w-full">
+        {sidebarItems.map((item) => {
+          return (userResourcesIncludes(item.resource)
+          ) ? (
+            <SideBarItem
+              expand={toggleSidebar}
+              Icon={item.Icon}
+              title={item.title}
+              pages={item.pages}
+              key={item.title}
+            />
+          ) : null;
+        })}
+      </div>
     </div>
   );
 };
