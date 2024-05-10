@@ -3,12 +3,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AssessmentScheme } from './assessment-scheme.entity';
 import { PerformanceIndicator } from './performance-indicator.entity';
+import { Level } from './level.entity';
 
 @Entity()
 export class Criterion {
@@ -30,12 +32,17 @@ export class Criterion {
   @Column()
   content: string;
 
-  @ManyToOne(() => PerformanceIndicator)
-  performanceIndicator: string;
+  @ManyToOne(() => PerformanceIndicator, { eager: true })
+  performanceIndicator: PerformanceIndicator;
 
-  @Column('decimal', { precision: 6, scale: 2 })
-  passingGoal: number;
+  @OneToMany(() => Level, (level) => level.criterion, {
+    eager: true
+  })
+  levels: Level[]
 
-  @Column('decimal', { precision: 6, scale: 2 })
-  passingThreshold: number;
+  // @Column('decimal', { precision: 6, scale: 2 })
+  // passingGoal: number;
+
+  // @Column('decimal', { precision: 6, scale: 2 })
+  // passingThreshold: number;
 }

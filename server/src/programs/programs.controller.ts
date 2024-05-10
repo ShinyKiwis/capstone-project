@@ -11,6 +11,7 @@ import { UpdateVersionDto } from './dto/update-version.dto';
 import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 import { CreateProgramEducationObjectiveDto } from './dto/create-program-education-objective.dto';
 import { UpdateProgramEducationObjectiveDto } from './dto/update-program-education-objective.dto';
+import { CreateAssessmentSchemeDto } from './dto/create-assessment-scheme.dto';
 
 @Controller('programs')
 export class ProgramsController {
@@ -240,5 +241,26 @@ export class ProgramsController {
   @Delete(':id')
   DeleteAProgram(@Param('id') id: string) {
     return this.programsService.deleteProgram(+id);
+  }
+
+  @Get(':programId/versions/:versionId/assessment-schemes')
+  getAllAssessmentScheme(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string
+  ) {
+    return this.programsService.getAllAssessmentSchemes(+programId, +versionId);
+  }
+
+  @Post(':programId/versions/:versionId/assessment-schemes')
+  createAnAssessmentScheme(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Body() createAssessmentSchemeDto: CreateAssessmentSchemeDto,
+  ) {
+    return this.programsService.createAnAssessmentScheme(
+      +programId,
+      +versionId,
+      createAssessmentSchemeDto,
+    );
   }
 }

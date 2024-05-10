@@ -16,6 +16,8 @@ import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 import { CreateProgramEducationObjectiveDto } from './dto/create-program-education-objective.dto';
 import { ProgramEducationObjectivesRepository } from './program-education-objectives.repository';
 import { UpdateProgramEducationObjectiveDto } from './dto/update-program-education-objective.dto';
+import { CreateAssessmentSchemeDto } from './dto/create-assessment-scheme.dto';
+import { AssessmentSchemesRepository } from './assessment-schemes.repository';
 
 @Injectable()
 export class ProgramsService {
@@ -25,7 +27,8 @@ export class ProgramsService {
     private versionsRepository: VersionsRepository,
     private studentOutcomesRepository: StudentOutcomesRepository,
     private performanceIndicatorsRepository: PerformanceIndicatorsRepository,
-    private programEducationObjectivesRepository: ProgramEducationObjectivesRepository
+    private programEducationObjectivesRepository: ProgramEducationObjectivesRepository,
+    private assessmentSchemesRepository: AssessmentSchemesRepository
   ) { }
 
   async createAProgram(createMajorDto: CreateProgramDto) {
@@ -243,5 +246,17 @@ export class ProgramsService {
     if (result.affected === 0) {
       throw new NotFoundException(`Project with Code "${id}" not found`);
     }
+  }
+
+  async createAnAssessmentScheme(
+    programId: number,
+    versionId: number,
+    createAssessmentSchemeDto: CreateAssessmentSchemeDto
+  ) {
+    return this.assessmentSchemesRepository.createAssessmentScheme(programId, versionId, createAssessmentSchemeDto);
+  }
+
+  async getAllAssessmentSchemes(programId: number, versionId: number) {
+    return this.assessmentSchemesRepository.getAllAssessmentSchemes(programId, versionId);
   }
 }

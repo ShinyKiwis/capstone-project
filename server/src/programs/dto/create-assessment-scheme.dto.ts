@@ -12,4 +12,29 @@ export class CreateAssessmentSchemeDto {
 
   @IsNotEmpty()
   description: string;
+
+  criteria: {
+    content: string;
+    performanceIndicator: {
+      id: number;
+      studentOutcomeId: number;
+      studentOutcomeVersionId: number;
+      studentOutcomeVersionProgramId: number;
+    }
+    levels: {
+      content: string;
+      maxScore: number;
+      minScore: number;
+    }[]
+  }[]
+
+  performanceIndicators: {
+    performanceIndicator: {
+      id: number;
+      studentOutcomeId: number;
+      studentOutcomeVersionId: number;
+      studentOutcomeVersionProgramId: number;
+    }
+    passingGoal: number;
+  }[]
 }
