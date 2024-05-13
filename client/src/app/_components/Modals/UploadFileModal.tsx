@@ -114,7 +114,7 @@ const UploadFileModal = ({
         <Dropzone
           onReject={(files) => console.log("rejected files", files)}
           maxSize={5 * 1024 ** 2}
-          accept={[MIME_TYPES.pdf, MIME_TYPES.doc, MIME_TYPES.docx]}
+          accept={[MIME_TYPES.pdf, MIME_TYPES.doc, MIME_TYPES.docx, MIME_TYPES.csv]}
           onDrop={(newFiles) => {
             setFiles((currentFiles) => [...currentFiles, ...newFiles]);
           }}
