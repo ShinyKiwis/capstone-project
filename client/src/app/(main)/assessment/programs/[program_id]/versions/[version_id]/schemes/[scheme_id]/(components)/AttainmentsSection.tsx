@@ -5,11 +5,11 @@ import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
 
 const AttainmentsSection = ({ schemeObject }: { schemeObject: any }) => {
   const fetchedData = [
-    { label: "A", quantity: 16, percentage: 2.1948 },
-    { label: "B", quantity: 44, percentage: 6.0357 },
-    { label: "C", quantity: 231, percentage: 31.6872 },
-    { label: "D", quantity: 435, percentage: 59.6708 },
-    { label: "N/A", quantity: 3, percentage: 0.4115 },
+    { label: "A", quantity: 2, percentage: 13.3333 },
+    { label: "B", quantity: 3, percentage: 20.0000 },
+    { label: "C", quantity: 4, percentage: 26.6667 },
+    { label: "D", quantity: 5, percentage: 33.3333 },
+    { label: "N/A", quantity: 1, percentage: 6.6667 },
   ];
 
   const [displayingData, setdisplayingData] = useState([
