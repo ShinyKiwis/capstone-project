@@ -175,7 +175,7 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
         yOffset="18vh"
         title={
           <Text size="lg" c="blue" fw={600}>
-            Create Role
+            {action[0].toLocaleUpperCase() + action.slice(1)} Role
           </Text>
         }
       >

@@ -9,7 +9,7 @@ const Roles = () => {
   return (
     <div className="flex h-full flex-col gap-3 items-start">
       <PageHeader pageTitle="Roles Management" />
-      <RoleModal Icon={IoMdAdd} action="Create role" />
+      <RoleModal Icon={IoMdAdd} action="Create" />
       <Text size="lg" fw={600} c="blue" className="mt-4">
         Roles
       </Text>

@@ -115,14 +115,14 @@ const EditUserModal = ({ user, users, setUsers }: EditUserModalProps) => {
             Roles
           </Text>
           <MultiSelect
-            placeholder="Select programs"
+            placeholder="Select roles"
             value={[]}
             onChange={handleSelectRoles}
             comboboxProps={{ withinPortal: false }}
             data={loadedRoles}
             searchable
           />
-          <div className="mt-2 flex w-1/2 flex-col gap-2">
+          <div className="mt-2 flex w-4/5 flex-col gap-2">
             {selectedRoles.map((selectedRole) => (
               <Badge
                 variant="light"
