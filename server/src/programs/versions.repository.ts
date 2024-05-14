@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Branch } from './entities/branch.entity';
 import { CreateBranchDto } from './dto/create-branch.dto';
@@ -32,17 +32,22 @@ export class VersionsRepository extends Repository<Version> {
         `Program with id ${programId} does not exist`,
       );
     }
-    const branch = this.create({
-      name,
-      description,
-      startDate,
-      endDate,
-      program,
-    });
 
-    await this.save(branch);
+    try {
+      const branch = this.create({
+        name,
+        description,
+        startDate,
+        endDate,
+        program,
+      });
 
-    return branch;
+      await this.save(branch);
+
+      return branch;
+    } catch (error) {
+      throw new BadRequestException();
+    }
   }
 
   async getAVersionOfAProgram(programId: number, versionid: number) {
