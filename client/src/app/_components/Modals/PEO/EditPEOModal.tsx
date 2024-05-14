@@ -99,7 +99,7 @@ const EditPEOModal = ({programId, versionId, PEO, setPEOs}: PEOModalPropTypes) =
         yOffset="8em"
         title={
           <Text size="lg" c="blue" fw={600}>
-            Update PEO "{PEO.name}"
+            Update PEO &quot{PEO.name}&quot
           </Text>
         }
       >

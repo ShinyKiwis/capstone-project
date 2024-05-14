@@ -110,7 +110,7 @@ const EditSOModal = ({ programId, versionId, SO, setSOs }: EditSOModalProps) => 
         yOffset="8em"
         title={
           <Text size="lg" c="blue" fw={600}>
-            Update SO "{SO.name}"
+            Update SO &quot{SO.name}&quot
           </Text>
         }
       >

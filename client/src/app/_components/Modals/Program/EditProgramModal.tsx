@@ -98,7 +98,7 @@ const EditProgramModal = ({ program }: { program: Program }) => {
         yOffset="8em"
         title={
           <Text size="lg" c="blue" fw={600}>
-            Update "{program.name}" program
+            Update &quot{program.name}&quot program
           </Text>
         }
       >
