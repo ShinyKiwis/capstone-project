@@ -32,7 +32,7 @@ const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =>
   const [index, setIndex] = useState(-1)
   const [deleteIds, setDeleteIds] = useState<number[]>([])
 
-  const handleUpdateSOs = () => {
+  const handleUpdateSOs = async () => {
     let hasError = false;
     inputs.forEach((input, index) => {
       const errors = {
@@ -64,8 +64,9 @@ const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =>
     }
     console.log(inputs)
     let length = 0;
-    inputs.forEach(async input => {
-      if(input.name !== "" && input.description != "") {
+    const newSOs = inputs.filter(input => !input.id && input.name !== "" && input.description != "")
+    inputs.filter(input => input.id).forEach(async input => {
+      if(input.id && input.name !== "" && input.description != "") {
         length++;
         const response = await axios.patch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes/${input.id}`,
@@ -83,11 +84,39 @@ const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =>
         }))
       }
     })
+
+    let newSOsLength = newSOs.length;
+    const responses = await Promise.all(
+      newSOs.map((input) => {
+        if (input.name !== "" && input.description !== "") {
+          return axios.post(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions/${versionId}/student-outcomes`,
+            {
+              name: input.name,
+              description: input.description
+            }
+          );
+        } else {
+          return null;
+        }
+      })
+    );
+
+    const successfulResponses = responses.filter((response) => response !== null);
+    setSOs((sos) => [...sos, ...successfulResponses.map((response) => response!.data)]);
+
     handleDeleteOperation();
     if(length > 0) {
       toggleNotification(
         `Update ${length} SOs successfully`,
         `Update ${length} SOs successfully.`,
+        "success",
+      );
+    }
+    if(newSOsLength > 0) {
+      toggleNotification(
+        `Create ${length} SOs successfully`,
+        `Create ${length} SOs successfully.`,
         "success",
       );
     }
@@ -191,12 +220,12 @@ const EditSOsModal = ({programId, versionId, SOs, setSOs} : SOModalPropTypes) =>
             <Table.Tbody>
               {
                 inputs.map((input, index) => (
-                  <Table.Tr key={input.name}>
+                  <Table.Tr key={index}>
                     <Table.Td>
                       <TextInput 
                         placeholder="SO code..." 
                         value={input.name} 
-                        onChange={(e) => handleChangeSO(index, "code", e.target.value)} 
+                        onChange={(e) => handleChangeSO(index, "name", e.target.value)} 
                         error={input.codeError}
                       />
                     </Table.Td>
