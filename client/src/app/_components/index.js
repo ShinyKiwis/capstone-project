@@ -8,6 +8,7 @@ export { default as MantineRichText } from "./UserAction/MantineRichText";
 export { default as ProfileSelector } from "./UserAction/ProfileSelector";
 export { default as StudentProfileSelector } from "./UserAction/StudentProfileSelector";
 export { default as PageHeader } from "./PageContent/PageHeader";
+export { default as NavigationContext } from "./NavigationContext";
 
 // Modals
 export { default as RemoveModal } from "./Modals/RemoveModal";

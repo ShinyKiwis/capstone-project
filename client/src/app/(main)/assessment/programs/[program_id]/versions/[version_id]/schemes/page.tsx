@@ -1,5 +1,5 @@
 "use client";
-import { PageHeader, UploadFileModal } from "@/app/_components";
+import { NavigationContext, PageHeader, UploadFileModal } from "@/app/_components";
 import Program, { Version } from "@/app/interfaces/Program.interface";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import React, { useEffect, useState } from "react";
@@ -67,31 +67,8 @@ const Page = ({
   return program && version ? (
     <div className="flex h-full flex-col gap-3">
       <PageHeader pageTitle="Assessment Schemes" />
-      <div className="flex gap-2">
-        <Text size="md" fw={600}>
-          Program:
-        </Text>
-        <Text size="md" fw={400}>
-          {program.name}
-        </Text>
-      </div>
-      <div className="flex gap-2">
-        <Text size="md" fw={600}>
-          Major:
-        </Text>
-        <Text size="md" fw={400}>
-          {program.major}
-        </Text>
-      </div>
-      <div className="flex gap-2">
-        <Text size="md" fw={600}>
-          Version:
-        </Text>
-        <Text size="md" fw={400}>
-          {version?.name} ({formatDate(version.startDate.toString())} -{" "}
-          {formatDate(version.endDate.toString())})
-        </Text>
-      </div>
+      <NavigationContext program={program} version={version} />
+
       <div className="mt-2 flex">
         <Button
           variant="filled"
