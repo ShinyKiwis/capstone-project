@@ -421,10 +421,17 @@ const RecordsSection = ({ schemeObject }: { schemeObject: any }) => {
             {
               accessor: "actions",
               title: "Actions",
-              render: (record) => {
+              render: (record, index) => {
                 return (
                   <Group gap={4} justify="center" wrap="nowrap">
-                    <Button variant="transparent" onClick={() => navigate(`${schemeObject.id}/edit/${record.id}`)}>
+                    <Button
+                      variant="transparent"
+                      onClick={() =>
+                        navigate(
+                          `${schemeObject.id}/edit/${record.id}`,
+                        )
+                      }
+                    >
                       <AiOutlineEdit size={25} />
                     </Button>
                     <Button variant="transparent" c={"red"}>

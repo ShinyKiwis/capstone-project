@@ -12,6 +12,7 @@ import {
 import axios from "axios";
 import Profile from "../Profile";
 import { CgClose } from "react-icons/cg";
+import { Student } from "@/app/interfaces/User.interface";
 
 interface StudentProfileSelectorProps {
   onChange: Dispatch<SetStateAction<string[]>>;
@@ -22,6 +23,7 @@ interface StudentProfileSelectorProps {
   error?: string;
   searchApi: string;
   limit?:number;
+  mode?: 'single' | 'multi'
 }
 
 function StudentProfileSelector({
@@ -32,7 +34,8 @@ function StudentProfileSelector({
   description,
   error,
   searchApi,
-  limit
+  limit,
+  mode = 'multi'
 }: StudentProfileSelectorProps) {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -86,11 +89,16 @@ function StudentProfileSelector({
   const handleValueSelect = (newVal: string) => {
     setSearch('');
     let availableIndex = valueIsSelected(newVal);
-    onChange((current) =>{  // current: currently selected values
-      return availableIndex !== -1
-        ? [...current.splice(availableIndex, 1)]   // click on already selected val remove that value from selected list
-        : [...current, newVal]
-    });
+    if (mode === 'single'){
+      onChange((current) =>{return [newVal]});
+      combobox.closeDropdown();
+    }
+    else
+      onChange((current) =>{  // current: currently selected values
+        return availableIndex !== -1
+          ? [...current.splice(availableIndex, 1)]   // click on already selected val remove that value from selected list
+          : [...current, newVal]
+      });
   };
 
   const handleRemove = (newVal: string) => {
@@ -170,6 +178,7 @@ function StudentProfileSelector({
             <InputBase
               onFocus={() => combobox.openDropdown()}
               onBlur={() => combobox.closeDropdown()}
+              onClick={() => combobox.openDropdown()}
               value={search}
               placeholder={placeholder}
               rightSection={
