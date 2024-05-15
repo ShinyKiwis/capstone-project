@@ -16,6 +16,7 @@ import {
   IconChevronCompactRight,
   IconChevronLeft,
 } from "@tabler/icons-react";
+import CriterionInput from "../../(components)/CriteriaInput";
 
 const RecordEdit = ({
   params,
@@ -69,7 +70,7 @@ const RecordEdit = ({
     });
   }, []);
 
-  if (!fetchedScheme) return <div>Fetching scheme data...</div>;
+  if (!fetchedScheme) return <div>Fetching scheme's critera...</div>;
   return (
     <div className="flex h-full w-full min-w-0 flex-col">
       <PageHeader pageTitle="Edit Assessment Record" />
@@ -148,10 +149,29 @@ const RecordEdit = ({
             />
           </div>
         </div>
-        <Text size="lg" fw={600}>
+
+        <Text size="lg" fw={600} mt={'1em'}>
           Criteria
         </Text>
-        <div></div>
+        <div className="px-3">
+          <div className="flex items-start my-3">
+            <Text size="xl" fw={600} w={'2em'}>1</Text>
+            <CriterionInput type="multilevel" variant="full" criterionObject={{}}/>
+          </div>
+          <div className="flex items-start my-3 w-full">
+            <Text size="xl" fw={600} w={'2em'}>2</Text>
+            <CriterionInput type="written" variant="full" criterionObject={{}}/>
+          </div>
+          <div className="flex items-start my-3">
+            <Text size="xl" fw={600} w={'2em'}>3</Text>
+            <CriterionInput type="multiplechoice" variant="full" criterionObject={{}}/>
+          </div>
+        </div>
+
+        {/* <div className="flex justify-end gap-4 w-full mr-3">
+          <Button variant="outline">Cancel</Button>
+          <Button>Input another record</Button>
+        </div> */}
       </ScrollArea>
     </div>
   );
