@@ -1,7 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Branch } from './entities/branch.entity';
-import { CreateBranchDto } from './dto/create-branch.dto';
 import { Version } from './entities/version.entity';
 import { CreateVersionDto } from './dto/create-version.dto';
 import { ProgramsRepository } from './programs.repository';
@@ -46,7 +44,7 @@ export class VersionsRepository extends Repository<Version> {
 
       return branch;
     } catch (error) {
-      throw new BadRequestException();
+      throw new UnprocessableEntityException("Version existed!");
     }
   }
 
