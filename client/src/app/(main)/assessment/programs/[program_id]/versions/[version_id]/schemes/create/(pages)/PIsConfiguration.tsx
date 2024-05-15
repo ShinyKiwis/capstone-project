@@ -58,14 +58,14 @@ const PIsConfiguration = ({
     // Expand all SOs on default
     if (SOnames.length < 1) {
       selectedSOs.forEach((SO) => {
-        if (!SOnames.includes(SO.name)){
+        if (!SOnames.includes(SO.name)) {
           setSOnames([...SOnames, SO.name]);
           setexpandedSOs([...SOnames, SO.name]);
         }
       });
     }
     // console.log("Extracted names:", SOnames);
-  },[]);
+  }, []);
 
   const [expandedSOs, setexpandedSOs] = useState<string[]>(SOnames);
   if (selectedSOs.length === 0)
@@ -105,9 +105,29 @@ const PIsConfiguration = ({
               <Accordion.Control>
                 <Text className="text-md" fw={500}>
                   SO {studentOutcome.name} - {studentOutcome.description}
+                  asdfasdf
                 </Text>
               </Accordion.Control>
               <Accordion.Panel>
+                <Text className="text-base" fw={500}>
+                  Bulk settings
+                </Text>
+                <div className="mb-3 flex items-end gap-3">
+                  <NumberInput
+                    label="Passing Goal"
+                    min={0}
+                    max={100}
+                    allowNegative={false}
+                    allowDecimal={false}
+                    clampBehavior="strict"
+                    placeholder="0 - 100"
+                    // value={record.passingThreshold}
+                    // {...form2.getInputProps(
+                    //   `SOs.${SOindex}.performanceIndicators.${PIindex}.expectedGoal`,
+                    // )}
+                  />
+                  <Button>Apply All</Button>
+                </div>
                 <DataTable
                   withTableBorder
                   columns={[
