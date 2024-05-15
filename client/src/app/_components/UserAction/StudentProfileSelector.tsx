@@ -24,6 +24,7 @@ interface StudentProfileSelectorProps {
   searchApi: string;
   limit?:number;
   mode?: 'single' | 'multi'
+  showCard?: boolean
 }
 
 function StudentProfileSelector({
@@ -35,7 +36,8 @@ function StudentProfileSelector({
   error,
   searchApi,
   limit,
-  mode = 'multi'
+  mode = 'multi',
+  showCard = true
 }: StudentProfileSelectorProps) {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -87,7 +89,7 @@ function StudentProfileSelector({
   };
 
   const handleValueSelect = (newVal: string) => {
-    setSearch('');
+    setSearch(showCard ? '' : `${JSON.parse(newVal).userId} - ${JSON.parse(newVal).user.name}`);
     let availableIndex = valueIsSelected(newVal);
     if (mode === 'single'){
       onChange((current) =>{return [newVal]});
@@ -213,7 +215,7 @@ function StudentProfileSelector({
     </Input.Wrapper>
 
       <div className="flex flex-1 flex-col items-center justify-center px-3">
-        {value.length > 0 &&
+        {value.length > 0 && showCard ?
           value.map((selectedVal) => {
             let selectedUsr: Student = JSON.parse(selectedVal);
             return (
@@ -224,7 +226,8 @@ function StudentProfileSelector({
                 key={selectedUsr.userId}
               />
             );
-          })}
+          }) : null
+        } 
       </div>
     </>
   );

@@ -14,7 +14,7 @@ import {
 interface CriterionInputProps {
   type: "multilevel" | "written" | "multiplechoice";
   variant: "minimal" | "full";
-  criterionObject: Criterion | {};
+  criterionObject: Criterion;
 }
 
 const MultilevelInput = ({
@@ -32,7 +32,7 @@ const MultilevelInput = ({
         // max={(criterionObject.assessment as MultipleLevelCriterion).getMaxScore()}
         allowNegative={false}
         allowDecimal={false}
-        w={"5em"}
+        w={"6em"}
       />
     );
 
@@ -130,14 +130,14 @@ const WrittenInput = ({
   if (variant === "minimal")
     return (
       <div className="flex w-full flex-col gap-2">
-        <TextInput placeholder="Written response" />
+        <TextInput placeholder="Written response" miw={'10em'} />
         <NumberInput
           placeholder="Score"
           min={0}
           // max={(criterionObject.assessment as MultipleLevelCriterion).getMaxScore()}
           allowNegative={false}
           allowDecimal={false}
-          w={"5em"}
+          w={"6em"}
         />
       </div>
     );
@@ -194,7 +194,7 @@ const MultipleChoiceInput = ({
       <Select
         placeholder="Select answer"
         data={["A", "B", "C", "D"]}
-        w={"5em"}
+        w={"6em"}
       />
     );
 
