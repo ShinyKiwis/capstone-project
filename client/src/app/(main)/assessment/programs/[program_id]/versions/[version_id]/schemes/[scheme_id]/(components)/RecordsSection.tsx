@@ -9,6 +9,7 @@ import { BiSearch } from "react-icons/bi";
 import { IoCreate } from "react-icons/io5";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { sortBy } from "lodash";
+import useNavigate from "@/app/hooks/useNavigate";
 
 interface MockAssessmentRecords {
   id: number;
@@ -254,9 +255,11 @@ for (let i = 0; i < mockCriteriaCount; i++) {
 const RecordsSection = ({ schemeObject }: { schemeObject: any }) => {
   const [displayingRecords, setDisplayingRecords] =
     useState<MockAssessmentRecords[]>(fetchedRecords);
-	const [searchedRecords, setSearchedRecords] =
-    useState<MockAssessmentRecords[]>([]);
+  const [searchedRecords, setSearchedRecords] = useState<
+    MockAssessmentRecords[]
+  >([]);
 
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const PAGE_SIZES = [5, 20, 50, 100];
   const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
@@ -269,10 +272,10 @@ const RecordsSection = ({ schemeObject }: { schemeObject: any }) => {
   });
 
   function handleSearchRecords(searchTerm?: string) {
-		setPage(1);
+    setPage(1);
     if (!searchTerm) searchTerm = searchQuery;
     if (searchTerm === "") {
-			setSearchedRecords([]);
+      setSearchedRecords([]);
       setDisplayingRecords(fetchedRecords);
       return;
     }
@@ -288,10 +291,10 @@ const RecordsSection = ({ schemeObject }: { schemeObject: any }) => {
     });
 
     setDisplayingRecords(results);
-		setSearchedRecords(results);
+    setSearchedRecords(results);
   }
 
-	// useEffect for sorting
+  // useEffect for sorting
   useEffect(() => {
     const data = sortBy(
       displayingRecords,
@@ -302,15 +305,19 @@ const RecordsSection = ({ schemeObject }: { schemeObject: any }) => {
     );
   }, [sortStatus]);
 
-	// useEffect for pagination
-	useEffect(() => {
+  // useEffect for pagination
+  useEffect(() => {
     setPage(1);
   }, [pageSize]);
 
   useEffect(() => {
     const from = (page - 1) * pageSize;
     const to = from + pageSize;
-    setDisplayingRecords(searchedRecords.length>0 ? searchedRecords.slice(from, to) : fetchedRecords.slice(from, to));
+    setDisplayingRecords(
+      searchedRecords.length > 0
+        ? searchedRecords.slice(from, to)
+        : fetchedRecords.slice(from, to),
+    );
   }, [page, pageSize]);
 
   return (
@@ -339,7 +346,12 @@ const RecordsSection = ({ schemeObject }: { schemeObject: any }) => {
       </table>
 
       <div className="my-4 flex justify-between">
-        <Button leftSection={<IoCreate size={18} />}>Input New Records</Button>
+        <Button
+          leftSection={<IoCreate size={18} />}
+          onClick={() => navigate(`${schemeObject.id}/input`)}
+        >
+          Input New Records
+        </Button>
         <TextInput
           placeholder="Search records by student id, name, project"
           className="w-5/12"
@@ -412,7 +424,7 @@ const RecordsSection = ({ schemeObject }: { schemeObject: any }) => {
               render: (record) => {
                 return (
                   <Group gap={4} justify="center" wrap="nowrap">
-                    <Button variant="transparent">
+                    <Button variant="transparent" onClick={() => navigate(`${schemeObject.id}/edit/${record.id}`)}>
                       <AiOutlineEdit size={25} />
                     </Button>
                     <Button variant="transparent" c={"red"}>
@@ -428,8 +440,11 @@ const RecordsSection = ({ schemeObject }: { schemeObject: any }) => {
           }
           sortStatus={sortStatus}
           onSortStatusChange={setSortStatus}
-
-          totalRecords={searchedRecords.length>0 ? searchedRecords.length : fetchedRecords.length}
+          totalRecords={
+            searchedRecords.length > 0
+              ? searchedRecords.length
+              : fetchedRecords.length
+          }
           recordsPerPage={pageSize}
           page={page}
           recordsPerPageOptions={PAGE_SIZES}

@@ -54,6 +54,7 @@ const SchemeDetail = ({
   useEffect(() => {
     // Retreive scheme data
     setFetchedScheme({
+      id: 12,
       name: "Foundation test - Sem2",
       description:
         "Used for assessing student in foundation test semester 2 - year 2014",
@@ -105,7 +106,6 @@ const SchemeDetail = ({
                 </Text>
               </Accordion.Control>
               <Accordion.Panel>
-                schemeID: {params.scheme_id}
                 <OverViewSection schemeObject={fetchedScheme} />
               </Accordion.Panel>
             </Accordion.Item>

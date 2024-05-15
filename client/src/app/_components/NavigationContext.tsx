@@ -6,9 +6,15 @@ interface NavigationContextProps {
   program?: Program;
   version?: Version;
   SO?: SO;
+  schemeName?: string;
 }
 
-function NavigationContext({ program, version, SO }: NavigationContextProps) {
+function NavigationContext({
+  program,
+  version,
+  SO,
+  schemeName,
+}: NavigationContextProps) {
   return (
     <div className="flex flex-col gap-0">
       {program ? (
@@ -51,6 +57,17 @@ function NavigationContext({ program, version, SO }: NavigationContextProps) {
           </Text>
           <Text size="sm" fw={400}>
             {SO.name} - {SO.description}
+          </Text>
+        </div>
+      ) : null}
+
+      {schemeName ? (
+        <div className="flex gap-2">
+          <Text size="sm" fw={600}>
+            Scheme:
+          </Text>
+          <Text size="sm" fw={400}>
+            {schemeName}
           </Text>
         </div>
       ) : null}
