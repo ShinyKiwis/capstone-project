@@ -16,6 +16,7 @@ import { reducer } from "./components/SettingsModal";
 import { User } from "./interface/User.interface";
 import DeleteModal from "@/app/_components/Modals/DeleteModal";
 import { PageHeader } from "@/app/_components";
+import CreateUserModal from "./components/CreateUserModal";
 
 const PAGE_SIZES = [10, 15, 20, 25, 30];
 
@@ -113,12 +114,13 @@ const Users = () => {
       <PageHeader pageTitle="Users Management"/>
       <div className="flex items-center">
         <div className="flex items-center gap-4">
-          <SettingsModal hideOptions={hideOptions} dispatch={dispatch} />
+          <CreateUserModal />
           <DeleteAllUsersModal
             users={users}
             setUsers={setUsers}
             selectedRecords={selectedRecords}
           />
+          <SettingsModal hideOptions={hideOptions} dispatch={dispatch} />
         </div>
         <TextInput
           placeholder="Search users"

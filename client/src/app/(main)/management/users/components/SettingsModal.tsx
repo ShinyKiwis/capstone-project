@@ -50,7 +50,7 @@ const SettingsModal = ({
   return (
     <Popover shadow="md" position="bottom">
       <Popover.Target>
-        <Button leftSection={<IconSettings size={16} />}>Settings</Button>
+        <Button leftSection={<IconSettings size={16}/>} variant="outline" >Table Settings</Button>
       </Popover.Target>
       <Popover.Dropdown>
         <Stack>
