@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryColumn,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { Program } from './program.entity';
 import { Semester } from 'src/semesters/entities/semester.entity';
@@ -14,6 +15,7 @@ import { StudentOutcome } from './student-outcome.entity';
 import { ProgramEducationObjective } from './program-education-objectives.entity';
 
 @Entity()
+@Unique(['programId', 'name'])
 export class Version {
   @PrimaryGeneratedColumn()
   id: number;

@@ -29,7 +29,7 @@ const isActivePath = (pathname: string, currentPathname: string) => {
   for (const sidebarItem of sidebarItems) {
     if (found) break;
     for (const subItem of sidebarItem.pages) {
-      if (subItem.href === currentPathname || currentPathname.includes(subItem.href)) {
+      if (subItem.href === currentPathname || currentPathname.startsWith(subItem.href)) {
         titles.push(sidebarItem.title);
         titles.push(subItem.title);
         found = true;

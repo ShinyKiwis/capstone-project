@@ -6,8 +6,4 @@ export class CreatePerformanceIndicatorDto {
 
   @IsNotEmpty()
   description: string;
-
-  expectedGoal: number;
-
-  passingThreshold: number;
 }

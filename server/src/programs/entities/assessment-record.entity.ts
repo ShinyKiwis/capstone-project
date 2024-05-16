@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Criterion } from './criterion.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity()
 export class AssessmentRecord {
@@ -29,4 +30,7 @@ export class AssessmentRecord {
 
   @Column()
   answer: string;
+
+  @ManyToOne(() => User)
+  user: User;
 }

@@ -22,7 +22,7 @@ const RoleCard: React.FC<RoleCardProps> = ({ role }) => {
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete {role?.roleName} ? This action can't
+          Are you sure you want to delete {role?.roleName} ? This action can&apost
           be undone.
         </Text>
       ),

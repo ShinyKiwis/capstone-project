@@ -21,10 +21,10 @@ const DeleteModal = <T extends DeleteObject>(
   const deleteModal = () =>
     modals.openConfirmModal({
       centered: true,
-      title: <Text fw={600}>Are you sure you want to delete {type} "{object.name}" ?</Text>,
+      title: <Text fw={600}>Are you sure you want to delete {type} &quot{object.name}&quot ?</Text>,
       children: (
         <Text size="sm">
-          {capitalize(type)} "{object.name}" will be deleted. This action can't be undone!
+          {capitalize(type)} &quot{object.name}&quot will be deleted. This action can&apost be undone!
         </Text>
       ),
       labels: { confirm: "Confirm", cancel: "Cancel" },
