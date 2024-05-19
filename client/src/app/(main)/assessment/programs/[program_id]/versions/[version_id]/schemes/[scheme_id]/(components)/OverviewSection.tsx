@@ -54,6 +54,18 @@ const OverViewSection = ({ schemeObject }: { schemeObject: any }) => {
           <tr>
             <td style={{ verticalAlign: "top" }}>
               <Text size="md" fw={500}>
+                Generation
+              </Text>
+            </td>
+            <td style={{ verticalAlign: "top" }}>
+              <Text size="md">
+                {schemeObject.generation}
+              </Text>
+            </td>
+          </tr>
+          <tr>
+            <td style={{ verticalAlign: "top" }}>
+              <Text size="md" fw={500}>
                 Assess Time
               </Text>
             </td>

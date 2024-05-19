@@ -16,18 +16,21 @@ import { IoDuplicateOutline } from "react-icons/io5";
 const mockSchemes:AssessScheme[] = [
   {
     name:"CS2008_Foundation",
+    generation: '2008',
     time:"Year 2008 - Semester 2",
     lastModified:"12/4/2008 12:32:00",
     description:"Foundation test for the year 2008",
   },
   {
     name:"Internship 2008",
+    generation: '2008',
     time:"Year 2008 - Semester 2",
     lastModified:"12/4/2008 12:32:00",
     description:"Internship assessment form for the year 2008",
   },
   {
     name:"CS2008_Foundation (Copy)",
+    generation: '2008',
     time:"Year 2008 - Semester 2",
     lastModified:"13/4/2008 09:32:00",
     description:"Foundation test for the year 2008",
@@ -110,6 +113,11 @@ const Page = ({
               sortable: true,
             },
             {
+              accessor: "generation",
+              title: "Generation",
+              sortable: true,
+            },
+            {
               accessor: "time",
               title: "Assessment Time",
               sortable: true,
@@ -128,17 +136,17 @@ const Page = ({
               title: "Actions",
               render: (record) => {
                 return (
-                  <Group gap={2} justify="center" wrap="nowrap">
-                    <Button variant="transparent">
+                  <Group gap={6} justify="center" wrap="nowrap">
+                    <Button variant="transparent" px={0}>
                       <AiOutlineEye size={20}/>
                     </Button>
-                    <Button variant="transparent">
+                    <Button variant="transparent" px={0}>
                       <AiOutlineEdit size={20} />
                     </Button>
-                    <Button variant="transparent">
+                    <Button variant="transparent" px={0}>
                       <IoDuplicateOutline size={20} />
                     </Button>
-                    <Button variant="transparent" c={"red"}>
+                    <Button variant="transparent" c={"red"} px={0}>
                       <AiOutlineDelete size={20} />
                     </Button>
                   </Group>

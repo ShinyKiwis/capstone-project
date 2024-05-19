@@ -58,6 +58,7 @@ const SchemeDetail = ({
       name: "Foundation test - Sem2",
       description:
         "Used for assessing student in foundation test semester 2 - year 2014",
+      generation: '2008',
       assessTime: { year: 2014, no: 2 },
       criteriaCount: 20,
       maxScore: 50,
