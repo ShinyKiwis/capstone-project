@@ -19,6 +19,7 @@ export const SOsContext_createScheme = createContext<SO[]|null>(null);
 
 export interface AssessmentFormSection {
   name: string;
+  generation: string;
   year: number;
   semester: string;
   description: string;
@@ -118,6 +119,7 @@ const Page = ({
   const form1 = useForm1({
     initialValues: {
       name: "default name",
+      generation: '2008',
       year: 2008,
       semester: "1",
       description: "",
@@ -127,6 +129,7 @@ const Page = ({
 
     validate: {
       name: isNotEmpty("Scheme name required"),
+      generation: isNotEmpty("Generation required"),
       year: (value) => {
         if (!value) return 'Year required'
         if (value < (new Date(version!.startDate)).getFullYear() ) return 'Year cannot be smaller than version start year';

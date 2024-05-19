@@ -37,6 +37,16 @@ const FinalReview = ({
         </Grid.Col>
         <Grid.Col span={4}>
           <Text size="md" fw={600}>
+            Generation:
+          </Text>
+        </Grid.Col>
+        <Grid.Col span={8}>
+          <Text size="md" fw={400}>
+            {form1.values.generation}
+          </Text>
+        </Grid.Col>
+        <Grid.Col span={4}>
+          <Text size="md" fw={600}>
             Assessment Time:
           </Text>
         </Grid.Col>

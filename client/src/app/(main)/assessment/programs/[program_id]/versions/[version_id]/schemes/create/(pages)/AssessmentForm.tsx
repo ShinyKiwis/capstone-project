@@ -67,6 +67,13 @@ const AssessmentForm = () => {
               {...form.getInputProps('name')}
             />
             <div className="flex gap-8">
+              <Select
+                label="Generation"
+                placeholder="Generation"
+                data={["2008", "2009","2010", "2011"]}
+                required
+                {...form.getInputProps('generation')}
+              />
               <NumberInput
                 label="Assess year"
                 placeholder="Year"
