@@ -2,11 +2,14 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Version } from './version.entity';
 import { Semester } from '../../semesters/entities/semester.entity';
+import { Criterion } from './criterion.entity';
+import { AssessmentSchemeToPerformanceIndicator } from './assessment-scheme-to-performance-indicator.entity';
 
 @Entity()
 export class AssessmentScheme {
@@ -33,4 +36,10 @@ export class AssessmentScheme {
 
   @Column({ nullable: true })
   description: string;
+
+  @OneToMany(() => Criterion, (criterion) => criterion.assessmentScheme, { eager: true })
+  criteria: Criterion[];
+
+  @OneToMany(() => AssessmentSchemeToPerformanceIndicator, (assessmentSchemeToPerformanceIndicator) => assessmentSchemeToPerformanceIndicator.assessmentScheme, { eager: true })
+  performanceIndicators: AssessmentSchemeToPerformanceIndicator[];
 }

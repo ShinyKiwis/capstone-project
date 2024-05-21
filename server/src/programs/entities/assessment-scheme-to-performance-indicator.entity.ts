@@ -13,6 +13,6 @@ export class AssessmentSchemeToPerformanceIndicator {
   @ManyToOne(() => AssessmentScheme, { onDelete: 'CASCADE' })
   assessmentScheme: AssessmentScheme;
 
-  @ManyToOne(() => PerformanceIndicator, { onDelete: 'CASCADE' })
+  @ManyToOne(() => PerformanceIndicator, { onDelete: 'CASCADE', eager: true})
   performanceIndicator: PerformanceIndicator;
 }
