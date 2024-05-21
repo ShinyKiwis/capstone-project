@@ -24,7 +24,7 @@ export class Level {
   @PrimaryColumn()
   criterionAssessmentSchemeVersionProgramId: number;
 
-  @ManyToOne(() => Criterion)
+  @ManyToOne(() => Criterion, { onDelete: 'CASCADE' })
   criterion: Criterion;
 
   @Column()
