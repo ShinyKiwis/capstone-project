@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import {
   Button,
@@ -134,28 +134,39 @@ const CreateProgramVersionModal = ({
       return;
     }
 
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions`,
-      {
-        name: versionId,
-        startDate: startsAt,
-        endDate: endsAt,
-        description: description,
-      },
-    );
-    setProgram({ ...program, versions: [...program.versions, response.data] });
-    setPrograms(
-      programs.map((p) =>
-        p.id === programId
-          ? { ...p, versions: [...p.versions, response.data] }
-          : p,
-      ),
-    );
-    toggleNotification(
-      `Create program version "${versionId}" of program "${program.name}"  successfully`,
-      `Create program version "${versionId}" of program "${program.name}" successfully.`,
-      "success",
-    );
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${programId}/versions`,
+        {
+          name: versionId,
+          startDate: startsAt,
+          endDate: endsAt,
+          description: description,
+        },
+      );
+      setProgram({
+        ...program,
+        versions: [...program.versions, response.data],
+      });
+      setPrograms(
+        programs.map((p) =>
+          p.id === programId
+            ? { ...p, versions: [...p.versions, response.data] }
+            : p,
+        ),
+      );
+      toggleNotification(
+        `Create program version "${versionId}" of program "${program.name}"  successfully`,
+        `Create program version "${versionId}" of program "${program.name}" successfully.`,
+        "success",
+      );
+    } catch (e) {
+      toggleNotification(
+        `Failed to create program version "${versionId}" of program "${program.name}"`,
+        `"${versionId}" of program "${program.name}" is already existed.`,
+        "danger",
+      );
+    }
     close();
   };
   return (

@@ -115,7 +115,7 @@ const EditUserModal = ({ user, users, setUsers }: EditUserModalProps) => {
             Roles
           </Text>
           <MultiSelect
-            placeholder="Select programs"
+            placeholder="Select roles"
             value={[]}
             onChange={handleSelectRoles}
             comboboxProps={{ withinPortal: false }}
