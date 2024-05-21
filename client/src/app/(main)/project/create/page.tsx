@@ -156,7 +156,7 @@ const CreateProject = () => {
   return userHasResource("create_projects") ? (
     <div className="h-full w-full bg-white">
       <PageHeader pageTitle="Create Project" />
-      <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
+      <ScrollArea h={"90%"} type="scroll" offsetScrollbars>
         <form
           onSubmit={(e) => {
             e.preventDefault();

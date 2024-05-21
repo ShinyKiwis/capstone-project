@@ -21,7 +21,7 @@ export interface SO {
   versionProgramId: number,
   name: string,
   description: string,
-  performanceIndicators: any[]
+  performanceIndicators: PI[]
 }
 
 export interface PEO {
@@ -34,13 +34,13 @@ export interface PEO {
 }
 
 export interface PI {
+  id: number,
+  name: string,
+  description: string,
+  expectedGoal: string,
+  studentOutcome: any, 
+  passingThreshold: string,
   studentOutcomeId: number,
   studentOutcomeVersionId: number,
   studentOutcomeVersionProgramId: number,
-  name: string,
-  description: string,
-  studentOutcome: any, 
-  id: number,
-  expectedGoal: string,
-  passingThreshold: string
 }

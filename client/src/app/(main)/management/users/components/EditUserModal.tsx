@@ -122,7 +122,7 @@ const EditUserModal = ({ user, users, setUsers }: EditUserModalProps) => {
             data={loadedRoles}
             searchable
           />
-          <div className="mt-2 flex w-1/2 flex-col gap-2">
+          <div className="mt-2 flex w-4/5 flex-col gap-2">
             {selectedRoles.map((selectedRole) => (
               <Badge
                 variant="light"

@@ -86,6 +86,7 @@ const Page = ({params}: { params: { id: string, version_id: string} }) => {
               accessor: "name",
               title: "PEO Name",
               width: "5%",
+              resizable: true
             },
             {
               accessor: "description",
