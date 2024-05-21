@@ -263,4 +263,17 @@ export class ProgramsController {
       createAssessmentSchemeDto,
     );
   }
+
+  @Delete(':programId/versions/:versionId/assessment-schemes/:assessmentSchemeId')
+  deleteAnAssessmentScheme(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('assessmentSchemeId') assessmentSchemeId: string,
+  ) {
+    return this.programsService.deleteAnAssessmentScheme(
+      +programId,
+      +versionId,
+      +assessmentSchemeId,
+    );
+  }
 }
