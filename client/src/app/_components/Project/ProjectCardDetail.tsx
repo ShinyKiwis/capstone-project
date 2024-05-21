@@ -75,12 +75,8 @@ const ProjectCardDetail = () => {
               <div>
                 <Text size="sm" c="dimmed">
                   Instructor
-                </Text>
-                <Text size="sm" fw={500}>
-                  {viewing.supervisors
-                    .map((supervisor) => supervisor.name)
-                    .join(", ")}
-                </Text>
+                </Text>   
+                {viewing.supervisors.map((supervisor) => <Text size="sm" fw={500}>{supervisor.name} ({supervisor.email})</Text>)} 
               </div>
             </div>
             <div className="flex flex-col gap-3">

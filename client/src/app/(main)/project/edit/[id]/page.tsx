@@ -22,9 +22,11 @@ import { useRouter } from "next/navigation";
 import { InputFieldTitle } from "../../ProjCEComponents";
 import { getBranchOptions } from "@/app/lib/getBranchOptions";
 import { toggleNotification } from "@/app/lib/notification";
+import { useAuth } from "@/app/providers/AuthProvider";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   // Background data initialization
+  const {user} = useAuth();
   const generalDataValues = useGeneralData();
   const { supervisorOpts, projectStages, programBranches } = generalDataValues;
   const programOptions = programBranches.map((progbranch) => {
@@ -195,7 +197,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
   return (
     <div className="h-full w-full bg-white">
       <PageHeader pageTitle="Edit Project" />
-      <ScrollArea h={"100%"} type="scroll" offsetScrollbars>
+      <ScrollArea h={"90%"} type="scroll" offsetScrollbars>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -221,7 +223,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
                 <TextInput
                   label="Project owner"
                   disabled
-                  value={"current user's name"}
+                  value={user?.name}
                 />
                 <NativeSelect
                   label="Project Stage"

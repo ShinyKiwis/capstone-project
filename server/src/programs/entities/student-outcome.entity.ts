@@ -26,7 +26,7 @@ export class StudentOutcome {
   @OneToMany(
     () => PerformanceIndicator,
     (performanceIndicator) => performanceIndicator.studentOutcome,
-    { onDelete: 'SET NULL', onUpdate: 'CASCADE' },
+    { eager: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' },
   )
   performanceIndicators: PerformanceIndicator[];
 

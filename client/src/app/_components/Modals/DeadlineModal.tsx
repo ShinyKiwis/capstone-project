@@ -132,7 +132,7 @@ const DeadlineModal = ({ Icon, action, deadline }: DeadlineModalProps) => {
         onClose={close}
         title={
           <Text size="lg" c="blue" fw={600}>
-            Create deadline
+            {action} deadline
           </Text>
         }
         centered

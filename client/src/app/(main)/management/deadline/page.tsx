@@ -52,7 +52,7 @@ const DeadlineCard = ({ deadline }: { deadline: Deadline }) => {
         {deadline.name}
       </Text>
       <Text>
-        <b>Opened:</b>{" "}
+        <b>Start:</b>{" "}
         {deadline.startsAt.toLocaleString(undefined, {
           weekday: "long",
           day: "numeric",
@@ -64,7 +64,7 @@ const DeadlineCard = ({ deadline }: { deadline: Deadline }) => {
         })}
       </Text>
       <Text>
-        <b>Due:</b>{" "}
+        <b>End:</b>{" "}
         {deadline.endsAt.toLocaleString(undefined, {
           weekday: "long",
           day: "numeric",
@@ -77,9 +77,9 @@ const DeadlineCard = ({ deadline }: { deadline: Deadline }) => {
       </Text>
       <Group justify="flex-end">
         <DeadlineModal deadline={deadline} Icon={AiOutlineEdit} action="Edit" />
-        <Button variant="filled" color="red" onClick={closeModal}>
+        {/* <Button variant="filled" color="red" onClick={closeModal}>
           Delete
-        </Button>
+        </Button> */}
       </Group>
     </Card>
   );
@@ -88,7 +88,7 @@ const DeadlineCard = ({ deadline }: { deadline: Deadline }) => {
 const Deadline = () => {
   const { deadlines } = useDeadlines();
   return (
-    <div className="flex h-full flex-col gap-3 items-start">
+    <div className="flex h-full flex-col gap-1 items-start">
       <PageHeader pageTitle="Deadline Management"/>
       <DeadlineModal Icon={IoMdAdd} action="Create deadline" />
       <Text size="lg" fw={600} c="blue" className="mt-4">
