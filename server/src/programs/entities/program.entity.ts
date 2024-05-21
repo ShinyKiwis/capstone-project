@@ -5,8 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Branch } from './branch.entity';
-import { Faculty } from 'src/faculties/entities/faculty.entity';
+import { Faculty } from '../../faculties/entities/faculty.entity';
 import { Version } from './version.entity';
 
 @Entity()

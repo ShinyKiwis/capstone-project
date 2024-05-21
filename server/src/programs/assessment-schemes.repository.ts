@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { VersionsRepository } from 'src/programs/versions.repository';
+import { VersionsRepository } from './versions.repository';
 import { AssessmentScheme } from './entities/assessment-scheme.entity';
 import { CreateAssessmentSchemeDto } from './dto/create-assessment-scheme.dto';
 import { CriteriaRepository } from './criteria.repository';

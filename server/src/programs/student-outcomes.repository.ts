@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { CreateStudentOutcomeDto } from './dto/create-student-outcome.dto';
-import { VersionsRepository } from 'src/programs/versions.repository';
+import { VersionsRepository } from './versions.repository';
 import { StudentOutcome } from './entities/student-outcome.entity';
 import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 

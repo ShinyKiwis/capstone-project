@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { VersionsRepository } from 'src/programs/versions.repository';
+import { VersionsRepository } from './versions.repository';
 import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 import { ProgramEducationObjective } from './entities/program-education-objectives.entity';
 import { CreateProgramEducationObjectiveDto } from './dto/create-program-education-objective.dto';

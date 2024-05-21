@@ -1,4 +1,4 @@
-import { Version } from 'src/programs/entities/version.entity';
+import { Version } from './version.entity';
 import {
   Column,
   Entity,

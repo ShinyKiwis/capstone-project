@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Version } from './version.entity';
-import { Semester } from 'src/semesters/entities/semester.entity';
+import { Semester } from '../../semesters/entities/semester.entity';
 
 @Entity()
 export class AssessmentScheme {
@@ -18,6 +18,9 @@ export class AssessmentScheme {
 
   @PrimaryColumn()
   versionProgramId: number;
+
+  @Column()
+  generation: number;
 
   @ManyToOne(() => Version, { onDelete: 'CASCADE' })
   version: Version;
