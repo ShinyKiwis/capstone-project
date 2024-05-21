@@ -9,10 +9,11 @@ export class CreateCriterionDto {
     studentOutcomeId: number;
     studentOutcomeVersionId: number;
     studentOutcomeVersionProgramId: number;
-  }
+  };
+  type: string;
   levels: {
     content: string;
     maxScore: number;
     minScore: number;
-  }[]
+  }[];
 }

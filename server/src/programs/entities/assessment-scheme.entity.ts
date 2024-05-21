@@ -20,7 +20,7 @@ export class AssessmentScheme {
   versionProgramId: number;
 
   @Column()
-  generation: number;
+  generation: string;
 
   @ManyToOne(() => Version, { onDelete: 'CASCADE' })
   version: Version;

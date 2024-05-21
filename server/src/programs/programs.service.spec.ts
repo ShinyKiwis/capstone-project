@@ -569,6 +569,7 @@ describe('ProgramsService', () => {
           year: 2023,
           no: 1,
         },
+        generation: '2020',
         criteria: [],
         performanceIndicators: [],
       };

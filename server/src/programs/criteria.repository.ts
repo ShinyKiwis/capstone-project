@@ -18,7 +18,7 @@ export class CriteriaRepository extends Repository<Criterion> {
   async createCriterion(
     createCriterionDto: CreateCriterionDto,
   ) {
-    const { assessmentScheme, content, performanceIndicator, levels } = createCriterionDto;
+    const { assessmentScheme, type, content, performanceIndicator, levels } = createCriterionDto;
     const PI = await this.performanceIndicatorsRepository.findOneBy(performanceIndicator);
     if (!PI) {
       throw new NotFoundException(
@@ -30,6 +30,7 @@ export class CriteriaRepository extends Repository<Criterion> {
       assessmentScheme,
       content,
       performanceIndicator: PI,
+      type
     });
 
     await this.save(criterion);

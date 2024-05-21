@@ -30,6 +30,9 @@ export class Criterion {
   assessmentScheme: AssessmentScheme;
 
   @Column()
+  type: string;
+
+  @Column()
   content: string;
 
   @ManyToOne(() => PerformanceIndicator, { eager: true })

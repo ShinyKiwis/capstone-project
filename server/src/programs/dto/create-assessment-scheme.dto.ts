@@ -11,9 +11,13 @@ export class CreateAssessmentSchemeDto {
   name: string;
 
   @IsNotEmpty()
+  generation: string;
+
+  @IsNotEmpty()
   description: string;
 
   criteria: {
+    type: string;
     content: string;
     performanceIndicator: {
       id: number;

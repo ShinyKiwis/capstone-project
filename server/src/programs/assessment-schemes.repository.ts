@@ -22,7 +22,7 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
     versionId: number,
     createAssessmentSchemeDto: CreateAssessmentSchemeDto,
   ) {
-    const { name, semester, description, criteria, performanceIndicators } = createAssessmentSchemeDto;
+    const { name, generation, semester, description, criteria, performanceIndicators } = createAssessmentSchemeDto;
     const version = await this.versionsRepository.findOneBy({
       id: versionId,
       programId,
@@ -38,6 +38,7 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
       name,
       description,
       semester,
+      generation
     });
 
     await this.save(assessmentScheme);
