@@ -25,7 +25,7 @@ interface User_ManageTable
 
 interface Supervisor extends Pick<User, "id" | "name" | "email" | "username"> {}
 
-type Student = {
+export type Student = {
   user: User;
   userId: number;
   credits: number;

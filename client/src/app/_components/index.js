@@ -2,12 +2,15 @@ export { default as SideBar } from "./SideBar";
 export { default as PageContent } from "./PageContent/PageContent";
 export { default as Profile } from "./Profile";
 export { default as ProjectCard } from "./Project/ProjectCard";
+export { default as ProjectCardMinimal } from "./Project/ProjectCardMinimal";
 export { default as ProjectCardDetail } from "./Project/ProjectCardDetail";
 export { default as RoleCard } from "./RoleCard";
 export { default as MantineRichText } from "./UserAction/MantineRichText";
 export { default as ProfileSelector } from "./UserAction/ProfileSelector";
 export { default as StudentProfileSelector } from "./UserAction/StudentProfileSelector";
+export { default as ProjectSelector } from "./UserAction/ProjectSelector";
 export { default as PageHeader } from "./PageContent/PageHeader";
+export { default as NavigationContext } from "./NavigationContext";
 
 // Modals
 export { default as RemoveModal } from "./Modals/RemoveModal";
