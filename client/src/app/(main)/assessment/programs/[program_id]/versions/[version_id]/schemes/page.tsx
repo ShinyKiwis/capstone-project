@@ -1,5 +1,9 @@
 "use client";
-import { NavigationContext, PageHeader, UploadFileModal } from "@/app/_components";
+import {
+  NavigationContext,
+  PageHeader,
+  UploadFileModal,
+} from "@/app/_components";
 import Program, { Version } from "@/app/interfaces/Program.interface";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import React, { useEffect, useState } from "react";
@@ -16,6 +20,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { sortBy } from "lodash";
 import useNavigate from "@/app/hooks/useNavigate";
+import { toggleNotification } from "@/app/lib/notification";
 
 // const mockSchemes:AssessSchemeListItem[] = [
 //   {
@@ -46,7 +51,6 @@ const Page = ({
 }: {
   params: { program_id: string; version_id: string };
 }) => {
-  const [displayingSchemes, setDisplayingSchemes] = useState<AssessSchemeListItem[]>([]);
   const [program, setProgram] = useState<Program | null>(null);
   const [version, setVersion] = useState<Version | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -61,7 +65,8 @@ const Page = ({
   // const {buildBreadCrumbs} = useBreadCrumbs();
   const { getProgram } = useProgram();
   const navigate = useNavigate();
-  
+  const queryClient = useQueryClient();
+
   // Get program, version info at page load to build context section
   useEffect(() => {
     const fetchProgram = async () => {
@@ -82,21 +87,22 @@ const Page = ({
   });
 
   // Fetch schemes
-  const {
-    data: fetchedSchemes = [],
-    isLoading: schemesIsLoading,
-  } = useQuery({
+  const { data: fetchedSchemes, isLoading: schemesIsLoading } = useQuery({
     queryFn: async () => {
       let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes`;
       let response = await (await axios.get(queryURL)).data;
       console.log("refetched schemes");
-      setDisplayingSchemes(response)
+      setDisplayingSchemes(response);
       return response;
     },
-    queryKey: ["scheme", program?.id, version?.id],
+    queryKey: ["scheme"],
     enabled: true,
     staleTime: Infinity,
   });
+
+  const [displayingSchemes, setDisplayingSchemes] = useState<
+    AssessSchemeListItem[]
+  >(fetchedSchemes);
 
   // useEffect for sorting
   useEffect(() => {
@@ -123,10 +129,10 @@ const Page = ({
         >
           Create scheme
         </Button>
-        <UploadFileModal
+        {/* <UploadFileModal
           object="assessment scheme"
           setFileUploaded={setFileUploaded}
-        />
+        /> */}
         <TextInput
           placeholder="Search scheme name, id, description"
           className="ms-auto w-96"
@@ -142,74 +148,113 @@ const Page = ({
         />
       </div>
       <DataTable
-          withTableBorder
-          borderRadius="md"
-          striped
-          fetching={schemesIsLoading}
-          highlightOnHover
-          records={displayingSchemes}
-          columns={[
-            {
-              accessor: "name",
-              title: "Scheme Name",
-              sortable: true,
+        withTableBorder
+        borderRadius="md"
+        striped
+        fetching={schemesIsLoading}
+        highlightOnHover
+        records={displayingSchemes}
+        columns={[
+          {
+            accessor: "name",
+            title: "Scheme Name",
+            sortable: true,
+          },
+          {
+            accessor: "generation",
+            title: "Generation",
+            sortable: true,
+          },
+          {
+            accessor: "semester",
+            title: "Assessment Time",
+            render: (record) =>
+              `${record.semester?.year || 2008} - Sem. ${record.semester?.no || 1}`,
+            sortable: true,
+          },
+          // {
+          //   accessor: "lastModified",
+          //   title: "Last Modified",
+          //   sortable: true,
+          // },
+          {
+            accessor: "description",
+            title: "Description",
+          },
+          {
+            accessor: "actions",
+            title: "Actions",
+            render: (record) => {
+              return (
+                <Group gap={6} justify="center" wrap="nowrap">
+                  <Button variant="transparent" px={0}>
+                    <AiOutlineEye
+                      size={20}
+                      onClick={() => {
+                        navigate(`schemes/${record.id}`);
+                      }}
+                    />
+                  </Button>
+                  <Button variant="transparent" px={0}>
+                    <AiOutlineEdit
+                      size={20}
+                      onClick={() => {
+                        navigate(`schemes/edit/${record.id}`);
+                      }}
+                    />
+                  </Button>
+                  <Button variant="transparent" px={0} onClick={() => {}}>
+                    <IoDuplicateOutline size={20} />
+                  </Button>
+                  <Button
+                    variant="transparent"
+                    c={"red"}
+                    px={0}
+                    onClick={async () => {
+                      axios
+                        .delete(
+                          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/assessment-schemes/${record.id}`,
+                        )
+                        .then(async (res) => {
+                          queryClient.invalidateQueries({
+                            queryKey: ["scheme"],
+                          });
+                          toggleNotification(
+                            "Success",
+                            `Removed scheme: ${record.name}`,
+                            "success",
+                          );
+                        })
+                        .catch((err) => {
+                          console.error("Error deactivating project:", err);
+                          toggleNotification(
+                            "Error",
+                            "Scheme deletion failed !",
+                            "danger",
+                          );
+                        });
+                    }}
+                  >
+                    <AiOutlineDelete size={20} />
+                  </Button>
+                </Group>
+              );
             },
-            {
-              accessor: "generation",
-              title: "Generation",
-              sortable: true,
-            },
-            {
-              accessor: "semester",
-              title: "Assessment Time",
-              render: (record) => `${record.semester?.year || 2008} - Sem. ${record.semester?.no || 1}`,
-              sortable: true,
-            },
-            // {
-            //   accessor: "lastModified",
-            //   title: "Last Modified",
-            //   sortable: true,
-            // },
-            {
-              accessor: "description",
-              title: "Description",
-            },
-            {
-              accessor: "actions",
-              title: "Actions",
-              render: (record) => {
-                return (
-                  <Group gap={6} justify="center" wrap="nowrap">
-                    <Button variant="transparent" px={0}>
-                      <AiOutlineEye size={20} onClick={() => {navigate(`schemes/${record.id}`)}}/>
-                    </Button>
-                    <Button variant="transparent" px={0}>
-                      <AiOutlineEdit size={20} onClick={() => {navigate(`schemes/edit/${record.id}`)}}/>
-                    </Button>
-                    <Button variant="transparent" px={0}>
-                      <IoDuplicateOutline size={20} />
-                    </Button>
-                    <Button variant="transparent" c={"red"} px={0}>
-                      <AiOutlineDelete size={20} />
-                    </Button>
-                  </Group>
-                );
-              },
-            },
-          ]}
-          // paginationText={({ from, to, totalRecords }) =>
-          //   `Showing ${from} - ${to} of ${totalRecords}`
-          // }
-          sortStatus={sortStatus}
-          onSortStatusChange={setSortStatus}
+          },
+        ]}
+        // paginationText={({ from, to, totalRecords }) =>
+        //   `Showing ${from} - ${to} of ${totalRecords}`
+        // }
+        sortStatus={sortStatus}
+        onSortStatusChange={setSortStatus}
 
-          // totalRecords={searchedRecords.length>0 ? searchedRecords.length : fetchedRecords.length}
-          // recordsPerPage={pageSize}
-          // page={page}
-          // recordsPerPageOptions={PAGE_SIZES}
-          // onRecordsPerPageChange={setPageSize}
-          // onPageChange={(p) => setPage(p)}
-        />
+        // totalRecords={searchedRecords.length>0 ? searchedRecords.length : fetchedRecords.length}
+        // recordsPerPage={pageSize}
+        // page={page}
+        // recordsPerPageOptions={PAGE_SIZES}
+        // onRecordsPerPageChange={setPageSize}
+        // onPageChange={(p) => setPage(p)}
+      />
     </div>
   ) : (
     <div>Program not found</div>
