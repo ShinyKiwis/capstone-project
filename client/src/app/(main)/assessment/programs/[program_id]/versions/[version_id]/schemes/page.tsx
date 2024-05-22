@@ -54,6 +54,9 @@ const Page = ({
   const [program, setProgram] = useState<Program | null>(null);
   const [version, setVersion] = useState<Version | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const PAGE_SIZES = [3, 10, 20, 50, 100];
+  const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
+  const [page, setPage] = useState(1);
   const [sortStatus, setSortStatus] = useState<
     DataTableSortStatus<AssessSchemeListItem>
   >({
@@ -93,6 +96,7 @@ const Page = ({
       let response = await (await axios.get(queryURL)).data;
       console.log("refetched schemes");
       setDisplayingSchemes(response);
+      dividePages(response);
       return response;
     },
     queryKey: ["scheme"],
@@ -100,9 +104,31 @@ const Page = ({
     staleTime: Infinity,
   });
 
-  const [displayingSchemes, setDisplayingSchemes] = useState<
-    AssessSchemeListItem[]
-  >(fetchedSchemes);
+  const [displayingSchemes, setDisplayingSchemes] =
+    useState<AssessSchemeListItem[]>(fetchedSchemes);
+  const [searchedRecords, setSearchedRecords] =
+    useState<AssessSchemeListItem[]>([]);
+
+  // Hanlde search
+  function handleSearchRecords(searchTerm?: string) {
+    if (!searchTerm) searchTerm = searchQuery;
+    if (searchTerm === "") {
+      setSearchedRecords([]);
+      dividePages(fetchedSchemes);
+      return;
+    }
+    
+    let results = fetchedSchemes.filter((record: AssessSchemeListItem) => {
+      return (
+        record.name.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
+        record.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+
+    setSearchedRecords(results);
+    dividePages(results);
+    setPage(1);
+  }
 
   // useEffect for sorting
   useEffect(() => {
@@ -114,6 +140,31 @@ const Page = ({
       sortStatus.direction === "desc" ? data.reverse() : data,
     );
   }, [sortStatus]);
+
+  // Funtion handling pagination
+  function dividePages(itemsList?: any[]){
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize;
+    if (itemsList){
+      setDisplayingSchemes(itemsList.slice(from, to));
+      return;
+    }
+
+    setDisplayingSchemes(
+      searchedRecords.length > 0
+        ? searchedRecords.slice(from, to)
+        : fetchedSchemes && fetchedSchemes.slice(from, to),
+    );
+  }
+
+  // useEffect for pagination
+  useEffect(() => {
+    setPage(1);
+  }, [pageSize]);
+
+  useEffect(() => {
+    dividePages();
+  }, [page, pageSize]);
 
   return program && version ? (
     <div className="flex h-full flex-col gap-3">
@@ -138,11 +189,17 @@ const Page = ({
           className="ms-auto w-96"
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.currentTarget.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter")
+              handleSearchRecords(event.currentTarget.value);
+          }}
           rightSection={
             <BiSearch
               size={20}
               className="group-focus-within:text-blue text-gray"
-              onClick={(e) => {}}
+              onClick={(e) => {
+                handleSearchRecords();
+              }}
             />
           }
         />
@@ -242,18 +299,18 @@ const Page = ({
             },
           },
         ]}
-        // paginationText={({ from, to, totalRecords }) =>
-        //   `Showing ${from} - ${to} of ${totalRecords}`
-        // }
+        paginationText={({ from, to, totalRecords }) =>
+          `Showing ${from} - ${to} of ${totalRecords}`
+        }
         sortStatus={sortStatus}
         onSortStatusChange={setSortStatus}
 
-        // totalRecords={searchedRecords.length>0 ? searchedRecords.length : fetchedRecords.length}
-        // recordsPerPage={pageSize}
-        // page={page}
-        // recordsPerPageOptions={PAGE_SIZES}
-        // onRecordsPerPageChange={setPageSize}
-        // onPageChange={(p) => setPage(p)}
+        totalRecords={searchedRecords.length>0 ? searchedRecords.length : fetchedSchemes && fetchedSchemes.length}
+        recordsPerPage={pageSize}
+        page={page}
+        recordsPerPageOptions={PAGE_SIZES}
+        onRecordsPerPageChange={setPageSize}
+        onPageChange={(p) => setPage(p)}
       />
     </div>
   ) : (
