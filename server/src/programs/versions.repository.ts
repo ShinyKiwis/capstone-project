@@ -4,12 +4,14 @@ import { Version } from './entities/version.entity';
 import { CreateVersionDto } from './dto/create-version.dto';
 import { ProgramsRepository } from './programs.repository';
 import { UpdateVersionDto } from './dto/update-version.dto';
+import { SemestersRepository } from 'src/semesters/semesters.repository';
 
 @Injectable()
 export class VersionsRepository extends Repository<Version> {
   constructor(
     private dataSource: DataSource,
     private programsRepository: ProgramsRepository,
+    private semestersRepository: SemestersRepository,
   ) {
     super(Version, dataSource.createEntityManager());
   }
@@ -32,7 +34,7 @@ export class VersionsRepository extends Repository<Version> {
     }
 
     try {
-      const branch = this.create({
+      const version = this.create({
         name,
         description,
         startDate,
@@ -40,10 +42,49 @@ export class VersionsRepository extends Repository<Version> {
         program,
       });
 
-      await this.save(branch);
+      const start = new Date(startDate);
+      const end = new Date(endDate);
 
-      return branch;
+      const startYear = start.getFullYear();
+      const endYear = end.getFullYear();
+
+      for (let i = startYear; i <= endYear; i++) {
+        const semester1 = await this.semestersRepository.findOneBy({
+          year: i,
+          no: 1
+        });
+
+        if (!semester1) {
+          const newSemester1 = this.semestersRepository.create({
+            year: i,
+            no: 1,
+            start: new Date(i, 7, 15),
+            end: new Date(i, 11, 31)
+          });
+          await this.semestersRepository.save(newSemester1);
+        }
+
+        const semester2 = await this.semestersRepository.findOneBy({
+          year: i,
+          no: 2
+        });
+
+        if (!semester2) {
+          const newSemester2 = this.semestersRepository.create({
+            year: i,
+            no: 2,
+            start: new Date(i + 1, 0, 1),
+            end: new Date(i + 1, 5, 1)
+          });
+          await this.semestersRepository.save(newSemester2);
+        }
+      }
+
+      await this.save(version);
+
+      return version;
     } catch (error) {
+      console.log(error);
       throw new UnprocessableEntityException("Version existed!");
     }
   }
