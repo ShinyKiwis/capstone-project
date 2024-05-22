@@ -75,7 +75,7 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
     return assessmentSchemes;
   }
 
-  async getAnAssessmentSchemeOfAVersion(
+  async getAnAssessmentScheme(
     programId: number,
     versionId: number,
     assessmentSchemeId: number,

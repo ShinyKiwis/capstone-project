@@ -272,4 +272,8 @@ export class ProgramsService {
       );
     }
   }
+
+  async getAnAssessmentScheme(programId: number, versionId: number, assessmentSchemeId: number) {
+    return this.assessmentSchemesRepository.getAnAssessmentScheme(programId, versionId, assessmentSchemeId);
+  }
 }
