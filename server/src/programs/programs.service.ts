@@ -259,4 +259,17 @@ export class ProgramsService {
   async getAllAssessmentSchemes(programId: number, versionId: number) {
     return this.assessmentSchemesRepository.getAllAssessmentSchemes(programId, versionId);
   }
+
+  async deleteAnAssessmentScheme(programId: number, versionId: number, assessmentSchemeId: number) {
+    const result = await this.assessmentSchemesRepository.delete({
+      versionProgramId: programId,
+      versionId,
+      id: assessmentSchemeId
+    });
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        `Assessment Scheme with id ${assessmentSchemeId} of version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
+  }
 }
