@@ -21,34 +21,23 @@ import React, { useEffect, useState } from "react";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { AssessmentFormSection } from "../page";
 import { useFormContext1 } from "../page";
+import { Version } from "@/app/interfaces/Program.interface";
 
-const AssessmentForm = () => {
-  // const generateCriterion = () => {
-  //   const generatedCriteria: Criterion[] = [];
-  //   Array.from({ length: +numberOfCriterion }).forEach((_) => {
-  //     generatedCriteria.push({
-  //       description: "",
-  //       associatedPI: null,
-  //       assessment: {
-  //         type: "MultipleLevelCriterion",
-  //         numberOfLevels: 1,
-  //         options: [
-  //           {
-  //             level: "A",
-  //             description: "",
-  //             minScore: 0,
-  //             maxScore: 10,
-  //           },
-  //         ],
-  //       },
-  //     });
-  //     setCriteria(generatedCriteria);
-  //   });
-  // };
+interface AssessmentFormProps {
+  currentVersion: Version;
+}
 
-  // useEffect(() => {
-  //   generateCriterion();
-  // }, [numberOfCriterion]);  
+const AssessmentForm = ({ currentVersion }: AssessmentFormProps) => {
+  let versionYears = Array.from(
+    {
+      length:
+        new Date(currentVersion.endDate).getFullYear() -
+        new Date(currentVersion.startDate).getFullYear() + 1,
+    },
+    (_, i) =>
+      new Date(currentVersion.startDate).getFullYear() + i,
+  ).map((yearNum) => yearNum.toString())
+ 
   const form = useFormContext1();
 
   return (
@@ -64,31 +53,29 @@ const AssessmentForm = () => {
               label="Scheme Name"
               placeholder="Input name of the assessment scheme"
               required
-              {...form.getInputProps('name')}
+              {...form.getInputProps("name")}
             />
             <div className="flex gap-8">
               <Select
                 label="Generation"
                 placeholder="Generation"
-                data={["2008", "2009","2010", "2011"]}
+                data={versionYears}
                 required
-                {...form.getInputProps('generation')}
+                {...form.getInputProps("generation")}
               />
-              <NumberInput
-                label="Assess year"
-                placeholder="Year"
-                clampBehavior="strict"
-                min={0}
-                max={9999}
+              <Select
+                label="Year"
+                placeholder="Assess Year"
+                data={versionYears}
                 required
-                {...form.getInputProps('year')}
+                {...form.getInputProps("year")}
               />
               <Select
                 label="Assess semester"
                 placeholder="Semester"
                 data={["1", "2"]}
                 required
-                {...form.getInputProps('semester')}
+                {...form.getInputProps("semester")}
               />
             </div>
             <Textarea
@@ -97,7 +84,7 @@ const AssessmentForm = () => {
               autosize
               minRows={4}
               maxRows={8}
-              {...form.getInputProps('description')}
+              {...form.getInputProps("description")}
             />
             {/* <Select
               label="Assessment type"
@@ -119,12 +106,16 @@ const AssessmentForm = () => {
 
           {form.values.criteria.map((criterion, index) => (
             <CriterionCard
-              key={index+Date.now().toString()}
+              key={index + Date.now().toString()}
               criterionObject={criterion}
               criterionNumber={index + 1}
-              refreshFunction={() => form.setFieldValue("criteria", [...form.values.criteria])}
+              refreshFunction={() =>
+                form.setFieldValue("criteria", [...form.values.criteria])
+              }
               removeFunction={() => {
-                form.setFieldValue("criteria", [...form.values.criteria.toSpliced(index, 1)]);
+                form.setFieldValue("criteria", [
+                  ...form.values.criteria.toSpliced(index, 1),
+                ]);
                 form.values.criteriaCount -= 1;
               }}
               form={form}
@@ -139,7 +130,10 @@ const AssessmentForm = () => {
             justify="flex-start"
             onClick={() => {
               let newCriterion = new CriterionObject("", "written");
-              form.setFieldValue("criteria", [...form.values.criteria, newCriterion]);
+              form.setFieldValue("criteria", [
+                ...form.values.criteria,
+                newCriterion,
+              ]);
               form.values.criteriaCount += 1;
             }}
             leftSection={<IoIosAddCircleOutline size={25} />}
@@ -169,6 +163,34 @@ const AssessmentForm = () => {
 export default AssessmentForm;
 
 {
+ // const generateCriterion = () => {
+  //   const generatedCriteria: Criterion[] = [];
+  //   Array.from({ length: +numberOfCriterion }).forEach((_) => {
+  //     generatedCriteria.push({
+  //       description: "",
+  //       associatedPI: null,
+  //       assessment: {
+  //         type: "MultipleLevelCriterion",
+  //         numberOfLevels: 1,
+  //         options: [
+  //           {
+  //             level: "A",
+  //             description: "",
+  //             minScore: 0,
+  //             maxScore: 10,
+  //           },
+  //         ],
+  //       },
+  //     });
+  //     setCriteria(generatedCriteria);
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   generateCriterion();
+  // }, [numberOfCriterion]);
+
+
   /* <NumberInput
 					label="Number of criterion"
 					placeholder="Number of criterion"

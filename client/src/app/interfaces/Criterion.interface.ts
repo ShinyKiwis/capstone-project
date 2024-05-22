@@ -74,7 +74,7 @@ export class CriterionObject implements Criterion {
         break;
       case "written":
         this.type = "written";
-        this.assessment = new CriterionLevels_choice();
+        this.assessment = new CriterionLevels_written();
         break;
       case "multiplechoice":
         this.type = "multiplechoice";
