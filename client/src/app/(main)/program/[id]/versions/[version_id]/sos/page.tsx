@@ -12,6 +12,7 @@ import { DataTable } from 'mantine-datatable';
 import Link from 'next/link';
 import { IconEye, IconTrash } from '@tabler/icons-react';
 import axios from 'axios';
+import {NavigationContext} from '@/app/_components';
 import DeleteModal from '@/app/_components/Modals/DeleteModal';
 import EditSOsModal from '@/app/_components/Modals/SO/EditSOsModal';
 import EditSOModal from '@/app/_components/Modals/SO/EditSOModal';
@@ -63,30 +64,8 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   return program && version ? (
     <div className='flex h-full flex-col gap-3'>
       <PageHeader pageTitle="Student Outcomes Management" />
-      <div className="flex gap-2">
-        <Text size="md" fw={600}>
-          Program:
-        </Text>
-        <Text size="md" fw={400}>
-          {program.name}
-        </Text>
-      </div>
-      <div className="flex gap-2">
-        <Text size="md" fw={600}> 
-          Major:
-        </Text>
-        <Text size="md" fw={400}>
-          {program.major}
-        </Text>
-      </div>
-      <div className="flex gap-2">
-        <Text size="md" fw={600}>
-          Version:
-        </Text>
-        <Text size="md" fw={400}>
-          {version.name} ({formatDate(version.startDate.toString())} - {formatDate(version.endDate.toString())})
-        </Text>
-      </div>
+      <NavigationContext program={program} version={version} />
+
       <div className="mt-2 flex">
         <CreateSOModal programId={program.id} versionId={version.id} setSOs={setSOs}/>
         <UploadFileModal

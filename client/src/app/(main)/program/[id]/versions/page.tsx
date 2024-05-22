@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import Program, { Version } from "@/app/interfaces/Program.interface";
-import { CreateProgramVersionModal, UploadFileModal, PageHeader } from "@/app/_components";
+import { CreateProgramVersionModal, UploadFileModal, PageHeader, NavigationContext } from "@/app/_components";
 import DeleteModal from "@/app/_components/Modals/DeleteModal";
 import EditProgramModal from "@/app/_components/Modals/Program/EditProgramModal";
 import { TextInput, Box, Group, ActionIcon, Anchor, Text } from "@mantine/core";
@@ -44,22 +44,8 @@ const Page = ({ params }: { params: { id: string } }) => {
   return program ? (
     <div className="flex h-full flex-col gap-3">
       <PageHeader pageTitle="Versions Management" />
-      <div className="flex gap-2">
-        <Text size="md" fw={600}>
-          Program:
-        </Text>
-        <Text size="md" fw={400}>
-          {program.name}
-        </Text>
-      </div>
-      <div className="flex gap-2">
-        <Text size="md" fw={600}>
-          Major:
-        </Text>
-        <Text size="md" fw={400}>
-          {program.major}
-        </Text>
-      </div>
+      <NavigationContext program={program}/>
+
       <div className="mt-2 flex">
         <CreateProgramVersionModal programId={program.id} program={program} setProgram={setProgram} />
         <UploadFileModal
