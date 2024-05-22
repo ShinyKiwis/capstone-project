@@ -28,7 +28,7 @@ export class AssessmentScheme {
   @ManyToOne(() => Version, { onDelete: 'CASCADE' })
   version: Version;
 
-  @ManyToOne(() => Semester, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Semester, { onDelete: 'CASCADE', eager: true })
   semester: Semester;
 
   @Column()
