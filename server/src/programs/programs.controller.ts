@@ -276,4 +276,17 @@ export class ProgramsController {
       +assessmentSchemeId,
     );
   }
+
+  @Get(':programId/versions/:versionId/assessment-schemes/:assessmentSchemeId')
+  getAnAssessmentScheme(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('assessmentSchemeId') assessmentSchemeId: string,
+  ) {
+    return this.programsService.getAnAssessmentScheme(
+      +programId,
+      +versionId,
+      +assessmentSchemeId,
+    );
+  }
 }
