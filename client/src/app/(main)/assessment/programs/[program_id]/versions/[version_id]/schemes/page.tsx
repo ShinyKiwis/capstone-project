@@ -8,47 +8,61 @@ import formatDate from "@/app/lib/formatDate";
 import { BiSearch } from "react-icons/bi";
 import { IoCreate } from "react-icons/io5";
 import Link from "next/link";
-import { AssessScheme } from "@/app/interfaces/Assessment.interface";
-import { DataTable } from "mantine-datatable";
+import { AssessSchemeListItem } from "@/app/interfaces/Assessment.interface";
+import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { AiOutlineEye, AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
 import { IoDuplicateOutline } from "react-icons/io5";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { sortBy } from "lodash";
+import useNavigate from "@/app/hooks/useNavigate";
 
-const mockSchemes:AssessScheme[] = [
-  {
-    name:"CS2008_Foundation",
-    generation: '2008',
-    time:"Year 2008 - Semester 2",
-    lastModified:"12/4/2008 12:32:00",
-    description:"Foundation test for the year 2008",
-  },
-  {
-    name:"Internship 2008",
-    generation: '2008',
-    time:"Year 2008 - Semester 2",
-    lastModified:"12/4/2008 12:32:00",
-    description:"Internship assessment form for the year 2008",
-  },
-  {
-    name:"CS2008_Foundation (Copy)",
-    generation: '2008',
-    time:"Year 2008 - Semester 2",
-    lastModified:"13/4/2008 09:32:00",
-    description:"Foundation test for the year 2008",
-  },
-];
+// const mockSchemes:AssessSchemeListItem[] = [
+//   {
+//     name:"CS2008_Foundation",
+//     generation: '2008',
+//     time:"Year 2008 - Semester 2",
+//     lastModified:"12/4/2008 12:32:00",
+//     description:"Foundation test for the year 2008",
+//   },
+//   {
+//     name:"Internship 2008",
+//     generation: '2008',
+//     time:"Year 2008 - Semester 2",
+//     lastModified:"12/4/2008 12:32:00",
+//     description:"Internship assessment form for the year 2008",
+//   },
+//   {
+//     name:"CS2008_Foundation (Copy)",
+//     generation: '2008',
+//     time:"Year 2008 - Semester 2",
+//     lastModified:"13/4/2008 09:32:00",
+//     description:"Foundation test for the year 2008",
+//   },
+// ];
 
 const Page = ({
   params,
 }: {
   params: { program_id: string; version_id: string };
 }) => {
-  const [displayingSchemes, setDisplayingSchemes] = useState<AssessScheme[]>(mockSchemes);
+  const [displayingSchemes, setDisplayingSchemes] = useState<AssessSchemeListItem[]>([]);
   const [program, setProgram] = useState<Program | null>(null);
   const [version, setVersion] = useState<Version | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sortStatus, setSortStatus] = useState<
+    DataTableSortStatus<AssessSchemeListItem>
+  >({
+    columnAccessor: "id",
+    direction: "asc",
+  });
   const [fileUploaded, setFileUploaded] = useState(false);
+
   // const {buildBreadCrumbs} = useBreadCrumbs();
   const { getProgram } = useProgram();
+  const navigate = useNavigate();
+  
+  // Get program, version info at page load to build context section
   useEffect(() => {
     const fetchProgram = async () => {
       const targetProgram = await getProgram(parseInt(params.program_id));
@@ -66,6 +80,34 @@ const Page = ({
       fetchProgram();
     }
   });
+
+  // Fetch schemes
+  const {
+    data: fetchedSchemes = [],
+    isLoading: schemesIsLoading,
+  } = useQuery({
+    queryFn: async () => {
+      let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes`;
+      let response = await (await axios.get(queryURL)).data;
+      console.log("refetched schemes");
+      setDisplayingSchemes(response)
+      return response;
+    },
+    queryKey: ["scheme", program?.id, version?.id],
+    enabled: true,
+    staleTime: Infinity,
+  });
+
+  // useEffect for sorting
+  useEffect(() => {
+    const data = sortBy(
+      displayingSchemes,
+      sortStatus.columnAccessor,
+    ) as AssessSchemeListItem[];
+    setDisplayingSchemes(
+      sortStatus.direction === "desc" ? data.reverse() : data,
+    );
+  }, [sortStatus]);
 
   return program && version ? (
     <div className="flex h-full flex-col gap-3">
@@ -103,7 +145,7 @@ const Page = ({
           withTableBorder
           borderRadius="md"
           striped
-          // fetching={fetching}
+          fetching={schemesIsLoading}
           highlightOnHover
           records={displayingSchemes}
           columns={[
@@ -118,15 +160,16 @@ const Page = ({
               sortable: true,
             },
             {
-              accessor: "time",
+              accessor: "semester",
               title: "Assessment Time",
+              render: (record) => `${record.semester?.year || 2008} - Sem. ${record.semester?.no || 1}`,
               sortable: true,
             },
-            {
-              accessor: "lastModified",
-              title: "Last Modified",
-              sortable: true,
-            },
+            // {
+            //   accessor: "lastModified",
+            //   title: "Last Modified",
+            //   sortable: true,
+            // },
             {
               accessor: "description",
               title: "Description",
@@ -138,10 +181,10 @@ const Page = ({
                 return (
                   <Group gap={6} justify="center" wrap="nowrap">
                     <Button variant="transparent" px={0}>
-                      <AiOutlineEye size={20}/>
+                      <AiOutlineEye size={20} onClick={() => {navigate(`schemes/${record.id}`)}}/>
                     </Button>
                     <Button variant="transparent" px={0}>
-                      <AiOutlineEdit size={20} />
+                      <AiOutlineEdit size={20} onClick={() => {navigate(`schemes/edit/${record.id}`)}}/>
                     </Button>
                     <Button variant="transparent" px={0}>
                       <IoDuplicateOutline size={20} />
@@ -157,8 +200,8 @@ const Page = ({
           // paginationText={({ from, to, totalRecords }) =>
           //   `Showing ${from} - ${to} of ${totalRecords}`
           // }
-          // sortStatus={sortStatus}
-          // onSortStatusChange={setSortStatus}
+          sortStatus={sortStatus}
+          onSortStatusChange={setSortStatus}
 
           // totalRecords={searchedRecords.length>0 ? searchedRecords.length : fetchedRecords.length}
           // recordsPerPage={pageSize}
