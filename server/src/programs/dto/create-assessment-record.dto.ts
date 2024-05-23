@@ -11,4 +11,6 @@ export class CreateAssessmentRecordDto {
   userId: number;
 
   projectId: number;
+
+  score: number;
 }

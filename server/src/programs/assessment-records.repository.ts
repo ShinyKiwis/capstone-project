@@ -58,6 +58,7 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
           criterion,
           answer: record.answer,
           user: { id: record.userId },
+          score: record.score,
           project,
         });
 
