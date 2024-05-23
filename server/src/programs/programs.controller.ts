@@ -339,4 +339,17 @@ export class ProgramsController {
       getAssessmentRecordsFilterDto
     );
   }
+
+  @Post(':programId/versions/:versionId/assessment-schemes/:assessmentSchemeId/duplicate')
+  duplicateAssessmentScheme(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('assessmentSchemeId') assessmentSchemeId: string,
+  ) {
+    return this.programsService.duplicateAssessmentScheme(
+      +programId,
+      +versionId,
+      +assessmentSchemeId,
+    );
+  }
 }

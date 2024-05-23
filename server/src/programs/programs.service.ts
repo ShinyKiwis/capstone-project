@@ -293,4 +293,12 @@ export class ProgramsService {
   async getAssessmentRecordsOfAScheme(programId: number, versionId: number, assessmentSchemeId: number, getAssessmentRecordsFilterDto: GetAssessmentRecordsFilterDto) {
     return this.assessmentRecordsRepository.getAssessmentRecordsOfAScheme(programId, versionId, assessmentSchemeId, getAssessmentRecordsFilterDto);
   }
+
+  async duplicateAssessmentScheme(
+    programId: number,
+    versionId: number,
+    assessmentSchemeId: number,
+  ) {
+    return this.assessmentSchemesRepository.duplicateAssessmentScheme(programId, versionId, assessmentSchemeId);
+  }
 }
