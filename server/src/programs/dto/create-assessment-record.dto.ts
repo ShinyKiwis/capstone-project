@@ -9,4 +9,6 @@ export class CreateAssessmentRecordDto {
 
   @IsNotEmpty()
   userId: number;
+
+  projectId: number;
 }

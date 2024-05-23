@@ -25,10 +25,14 @@ import { LevelsRepository } from './levels.repository';
 import { AssessmentSchemesToPerformanceIndicatorsRepository } from './assessment-scheme-to-performance-indicator.repository';
 import { SemestersRepository } from 'src/semesters/semesters.repository';
 import { AssessmentRecordsRepository } from './assessment-records.repository';
+import { ProjectsRepository } from 'src/projects/projects.repository';
+import { RequirementRepository } from 'src/projects/requirements.repository';
+import { UsersRepository } from 'src/users/users.repository';
+import { StudentsRepository } from 'src/students/students.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Branch, Program, Version, ProgramEducationObjective,StudentOutcome, PerformanceIndicator, AssessmentScheme, Criterion, Level, AssessmentRecord, AssessmentSchemeToPerformanceIndicator])],
   controllers: [ProgramsController],
-  providers: [ProgramsService, BranchesRepository, ProgramsRepository, VersionsRepository, ProgramEducationObjectivesRepository, StudentOutcomesRepository, PerformanceIndicatorsRepository, AssessmentSchemesRepository, CriteriaRepository, LevelsRepository, AssessmentSchemesToPerformanceIndicatorsRepository, SemestersRepository, AssessmentRecordsRepository]
+  providers: [ProgramsService, BranchesRepository, ProgramsRepository, VersionsRepository, ProgramEducationObjectivesRepository, StudentOutcomesRepository, PerformanceIndicatorsRepository, AssessmentSchemesRepository, CriteriaRepository, LevelsRepository, AssessmentSchemesToPerformanceIndicatorsRepository, SemestersRepository, AssessmentRecordsRepository, ProjectsRepository, RequirementRepository, UsersRepository, StudentsRepository]
 })
 export class ProgramsModule {}

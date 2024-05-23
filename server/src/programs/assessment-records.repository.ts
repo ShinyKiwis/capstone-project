@@ -4,12 +4,14 @@ import { CriteriaRepository } from './criteria.repository';
 import { AssessmentRecord } from './entities/assessment-record.entity';
 import { CreateAssessmentRecordDto } from './dto/create-assessment-record.dto';
 import { CreateAssessmentRecordsDto } from './dto/create-assessment-records.dto';
+import { ProjectsRepository } from 'src/projects/projects.repository';
 
 @Injectable()
 export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
   constructor(
     private dataSource: DataSource,
     private criterionRepository: CriteriaRepository,
+    private projectsRepository: ProjectsRepository,
   ) {
     super(AssessmentRecord, dataSource.createEntityManager());
   }
@@ -39,14 +41,28 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
           `Criterion not found`,
         );
       }
+      let project = null;
 
-      const assessmentRecord = this.create({
-        criterion,
-        answer: record.answer,
-        user: { id: record.userId },
-      });
+      if (record.projectId) {
+        project = await this.projectsRepository.findOneBy({
+          code: record.projectId,
+        });
 
-      await this.save(assessmentRecord);
+        if (!project) {
+          throw new NotFoundException(
+            `Project not found`,
+          );
+        }
+
+        const assessmentRecord = this.create({
+          criterion,
+          answer: record.answer,
+          user: { id: record.userId },
+          project,
+        });
+
+        await this.save(assessmentRecord);
+      }
     }
   }
 
