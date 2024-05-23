@@ -1,9 +1,10 @@
+import { AssessSchemeDetail } from "@/app/interfaces/Assessment.interface";
 import { Group, Button } from "@mantine/core";
 import { DataTable } from "mantine-datatable";
 import { useState } from "react";
 import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
 
-const AttainmentsSection = ({ schemeObject }: { schemeObject: any }) => {
+const AttainmentsSection = ({ schemeObject }: { schemeObject: AssessSchemeDetail }) => {
   const fetchedData = [
     { label: "A", quantity: 2, percentage: 13.3333 },
     { label: "B", quantity: 3, percentage: 20.0000 },

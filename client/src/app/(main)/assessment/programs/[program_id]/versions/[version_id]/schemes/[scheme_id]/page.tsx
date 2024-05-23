@@ -9,6 +9,8 @@ import { Version } from "@/app/interfaces/Program.interface";
 import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import Program from "@/app/interfaces/Program.interface";
+import axios from "axios";
+import { AssessSchemeDetail } from "@/app/interfaces/Assessment.interface";
 
 const SchemeDetail = ({
   params,
@@ -27,7 +29,7 @@ const SchemeDetail = ({
   ]);
   const [program, setProgram] = useState<Program | null>(null);
   const [version, setVersion] = useState<Version | null>(null);
-  const [fetchedScheme, setFetchedScheme] = useState<any>();
+  const [fetchedScheme, setFetchedScheme] = useState<AssessSchemeDetail>();
 
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
@@ -53,18 +55,18 @@ const SchemeDetail = ({
 
   useEffect(() => {
     // Retreive scheme data
-    setFetchedScheme({
-      id: 12,
-      name: "Foundation test - Sem2",
-      description:
-        "Used for assessing student in foundation test semester 2 - year 2014",
-      generation: '2008',
-      assessTime: { year: 2014, no: 2 },
-      criteriaCount: 20,
-      maxScore: 50,
-      lastModified: "12/12/2013",
-    });
-  }, []);
+    if (program){
+      axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}`)
+      .then(res => {
+        console.log("fetch response", res.data)
+        setFetchedScheme(res.data)
+      })
+      .catch(err => {
+        console.log("Err fetching scheme:", err.response)
+        return <div>{err.response}</div>;
+      })
+    }
+  }, [program]);
 
   if (!fetchedScheme) return <div>Fetching scheme data...</div>;
   return (

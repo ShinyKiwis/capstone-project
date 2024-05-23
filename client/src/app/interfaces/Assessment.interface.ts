@@ -1,25 +1,25 @@
 import { CriterionType } from "./Criterion.interface";
 
 interface FetchedCriterionLevel_written {
-	"id": number;
-	"criterionId": number;
-	"criterionAssessmentSchemeId": number;
-	"criterionAssessmentSchemeVersionId": number;
-	"criterionAssessmentSchemeVersionProgramId": number;
-	"content": string;
-	"maxScore": number;
-	"minScore": number;
+  id: number;
+  criterionId: number;
+  criterionAssessmentSchemeId: number;
+  criterionAssessmentSchemeVersionId: number;
+  criterionAssessmentSchemeVersionProgramId: number;
+  content: string;
+  maxScore: number;
+  minScore: number;
 }
 
-interface FetchedCriterionLevel_level{
-	"id": number;
-	"criterionId": number;
-	"criterionAssessmentSchemeId": number;
-	"criterionAssessmentSchemeVersionId": number;
-	"criterionAssessmentSchemeVersionProgramId": number;
-	"content": string;
-	"maxScore": number;
-	"minScore": number;
+interface FetchedCriterionLevel_level {
+  id: number;
+  criterionId: number;
+  criterionAssessmentSchemeId: number;
+  criterionAssessmentSchemeVersionId: number;
+  criterionAssessmentSchemeVersionProgramId: number;
+  content: string;
+  maxScore: number;
+  minScore: number;
 }
 
 interface FetchedCriterion {
@@ -39,7 +39,7 @@ interface FetchedCriterion {
     description: string;
   }[];
   levels: FetchedCriterionLevel_level[] | FetchedCriterionLevel_written[];
-	records: any[];
+  records: any[];
 }
 
 export interface AssessSchemeListItem {
@@ -52,4 +52,19 @@ export interface AssessSchemeListItem {
   description: string;
   // lastModified: string;
   criteria: FetchedCriterion[];
+}
+
+export interface AssessSchemeDetail extends AssessSchemeListItem {
+  performanceIndicators: {
+    assessmentSchemeToPerformanceIndicatorId: number;
+    passingGoal: number;
+    performanceIndicator: {
+      id: number;
+      studentOutcomeId: number;
+      studentOutcomeVersionId: number;
+      studentOutcomeVersionProgramId: number;
+      name: string;
+      description: string;
+    };
+  }[];
 }

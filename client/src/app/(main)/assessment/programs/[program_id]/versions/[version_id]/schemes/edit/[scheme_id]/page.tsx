@@ -6,10 +6,10 @@ import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import { Text, Button, Stepper, Group, ScrollArea } from "@mantine/core";
 import React, { useEffect, useState, createContext } from "react";
-import AssessmentForm from "./(pages)/AssessmentForm";
-import PIsConfiguration from "./(pages)/PIsConfiguration";
+import AssessmentForm from "../../create/(pages)/AssessmentForm";
+import PIsConfiguration from "../../create/(pages)/PIsConfiguration";
 import axios from "axios";
-import FinalReview from "./(pages)/FinalReview";
+import FinalReview from "../../create/(pages)/FinalReview";
 import { createFormContext, useForm } from "@mantine/form";
 import {
   isNotEmpty,
@@ -26,7 +26,6 @@ import {
 } from "@/app/interfaces/Criterion.interface";
 import { toggleNotification } from "@/app/lib/notification";
 import useNavigate from "@/app/hooks/useNavigate";
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
 
 export const SOsContext_createScheme = createContext<SO[] | null>(null);
 
@@ -66,7 +65,6 @@ const Page = ({
 
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
-  const queryClient = useQueryClient()
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -231,7 +229,6 @@ const Page = ({
           "success",
         );
         console.log("Created scheme:", res.data);
-        queryClient.invalidateQueries({queryKey: ["scheme"]})
         navigate(
           `http://localhost:3000/assessment/programs/${program?.id}/versions/${version?.id}/schemes`,
         );
