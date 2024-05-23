@@ -24,10 +24,11 @@ import { CriteriaRepository } from './criteria.repository';
 import { LevelsRepository } from './levels.repository';
 import { AssessmentSchemesToPerformanceIndicatorsRepository } from './assessment-scheme-to-performance-indicator.repository';
 import { SemestersRepository } from 'src/semesters/semesters.repository';
+import { AssessmentRecordsRepository } from './assessment-records.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Branch, Program, Version, ProgramEducationObjective,StudentOutcome, PerformanceIndicator, AssessmentScheme, Criterion, Level, AssessmentRecord, AssessmentSchemeToPerformanceIndicator])],
   controllers: [ProgramsController],
-  providers: [ProgramsService, BranchesRepository, ProgramsRepository, VersionsRepository, ProgramEducationObjectivesRepository, StudentOutcomesRepository, PerformanceIndicatorsRepository, AssessmentSchemesRepository, CriteriaRepository, LevelsRepository, AssessmentSchemesToPerformanceIndicatorsRepository, SemestersRepository]
+  providers: [ProgramsService, BranchesRepository, ProgramsRepository, VersionsRepository, ProgramEducationObjectivesRepository, StudentOutcomesRepository, PerformanceIndicatorsRepository, AssessmentSchemesRepository, CriteriaRepository, LevelsRepository, AssessmentSchemesToPerformanceIndicatorsRepository, SemestersRepository, AssessmentRecordsRepository]
 })
 export class ProgramsModule {}

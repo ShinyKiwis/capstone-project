@@ -12,6 +12,8 @@ import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 import { CreateProgramEducationObjectiveDto } from './dto/create-program-education-objective.dto';
 import { UpdateProgramEducationObjectiveDto } from './dto/update-program-education-objective.dto';
 import { CreateAssessmentSchemeDto } from './dto/create-assessment-scheme.dto';
+import { CreateAssessmentRecordDto } from './dto/create-assessment-record.dto';
+import { CreateAssessmentRecordsDto } from './dto/create-assessment-records.dto';
 
 @Controller('programs')
 export class ProgramsController {
@@ -287,6 +289,36 @@ export class ProgramsController {
       +programId,
       +versionId,
       +assessmentSchemeId,
+    );
+  }
+
+  @Get(':programId/versions/:versionId/assessment-schemes/:assessmentSchemeId/criteria/:criterionId/assessment-records')
+  getAllAssessmentRecords(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('assessmentSchemeId') assessmentSchemeId: string,
+    @Param('criterionId') criterionId: string,
+  ) {
+    return this.programsService.getAllAssessmentRecords(
+      +programId,
+      +versionId,
+      +assessmentSchemeId,
+      +criterionId,
+    );
+  }
+
+  @Post(':programId/versions/:versionId/assessment-schemes/:assessmentSchemeId/assessment-records')
+  createAssessmentRecord(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('assessmentSchemeId') assessmentSchemeId: string,
+    @Body() createAssessmentRecordsDto: CreateAssessmentRecordsDto,
+  ) {
+    return this.programsService.createAssessmentRecord(
+      +programId,
+      +versionId,
+      +assessmentSchemeId,
+      createAssessmentRecordsDto,
     );
   }
 }
