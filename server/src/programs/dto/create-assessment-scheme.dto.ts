@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNotEmptyObject } from "class-validator";
+import { IsNotEmpty, IsNotEmptyObject, IsOptional } from "class-validator";
 
 export class CreateAssessmentSchemeDto {
   @IsNotEmptyObject()
@@ -13,7 +13,7 @@ export class CreateAssessmentSchemeDto {
   @IsNotEmpty()
   generation: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   description: string;
 
   criteria: {
