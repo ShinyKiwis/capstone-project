@@ -10,6 +10,7 @@ import { IoCreate } from "react-icons/io5";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { sortBy } from "lodash";
 import useNavigate from "@/app/hooks/useNavigate";
+import { AssessSchemeDetail } from "@/app/interfaces/Assessment.interface";
 
 interface MockAssessmentRecords {
   id: number;
@@ -252,7 +253,7 @@ for (let i = 0; i < mockCriteriaCount; i++) {
   });
 }
 
-const RecordsSection = ({ schemeObject }: { schemeObject: any }) => {
+const RecordsSection = ({ schemeObject }: { schemeObject: AssessSchemeDetail }) => {
   const [displayingRecords, setDisplayingRecords] =
     useState<MockAssessmentRecords[]>(fetchedRecords);
   const [searchedRecords, setSearchedRecords] = useState<
@@ -330,7 +331,7 @@ const RecordsSection = ({ schemeObject }: { schemeObject: any }) => {
             </Text>
           </td>
           <td style={{ verticalAlign: "top" }}>
-            <Text size="md">{schemeObject.maxScore}</Text>
+            <Text size="md">{'need max score for db'}</Text>
           </td>
         </tr>
         <tr>
@@ -340,7 +341,7 @@ const RecordsSection = ({ schemeObject }: { schemeObject: any }) => {
             </Text>
           </td>
           <td>
-            <Text size="md">{schemeObject.maxScore}</Text>
+            <Text size="md">{'avg calculate from records'}</Text>
           </td>
         </tr>
       </table>
