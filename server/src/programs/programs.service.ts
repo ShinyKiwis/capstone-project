@@ -21,6 +21,7 @@ import { AssessmentSchemesRepository } from './assessment-schemes.repository';
 import { CreateAssessmentRecordDto } from './dto/create-assessment-record.dto';
 import { AssessmentRecordsRepository } from './assessment-records.repository';
 import { CreateAssessmentRecordsDto } from './dto/create-assessment-records.dto';
+import { GetAssessmentRecordsFilterDto } from './dto/get-assessment-records-filter.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -285,7 +286,11 @@ export class ProgramsService {
     return this.assessmentRecordsRepository.createAssessmentRecords(programId, versionId, assessmentSchemeId, createAssessmentRecordsDto);
   }
 
-  async getAllAssessmentRecords(programId: number, versionId: number, assessmentSchemeId: number, criterionId: number) {
-    return this.assessmentRecordsRepository.getAllAssessmentRecords(programId, versionId, assessmentSchemeId, criterionId);
+  async getAllAssessmentRecords(programId: number, versionId: number, assessmentSchemeId: number, criterionId: number, getAssessmentRecordsFilterDto: GetAssessmentRecordsFilterDto) {
+    return this.assessmentRecordsRepository.getAllAssessmentRecords(programId, versionId, assessmentSchemeId, criterionId, getAssessmentRecordsFilterDto);
+  }
+
+  async getAssessmentRecordsOfAScheme(programId: number, versionId: number, assessmentSchemeId: number, getAssessmentRecordsFilterDto: GetAssessmentRecordsFilterDto) {
+    return this.assessmentRecordsRepository.getAssessmentRecordsOfAScheme(programId, versionId, assessmentSchemeId, getAssessmentRecordsFilterDto);
   }
 }

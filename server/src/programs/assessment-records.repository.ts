@@ -5,6 +5,8 @@ import { AssessmentRecord } from './entities/assessment-record.entity';
 import { CreateAssessmentRecordDto } from './dto/create-assessment-record.dto';
 import { CreateAssessmentRecordsDto } from './dto/create-assessment-records.dto';
 import { ProjectsRepository } from 'src/projects/projects.repository';
+import { GetAssessmentRecordsFilterDto } from './dto/get-assessment-records-filter.dto';
+import { AssessmentSchemesRepository } from './assessment-schemes.repository';
 
 @Injectable()
 export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
@@ -12,6 +14,7 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
     private dataSource: DataSource,
     private criterionRepository: CriteriaRepository,
     private projectsRepository: ProjectsRepository,
+    private assessmentSchemesRepository: AssessmentSchemesRepository
   ) {
     super(AssessmentRecord, dataSource.createEntityManager());
   }
@@ -72,6 +75,7 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
     versionId: number,
     assessmentSchemeId: number,
     criterionId: number,
+    getAssessmentRecordsFilterDto: GetAssessmentRecordsFilterDto
   ) {
     const criterion = await this.criterionRepository.findOneBy({
       id: criterionId,
@@ -86,9 +90,70 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
       );
     }
 
+    const { projectId, userId } = getAssessmentRecordsFilterDto;
+
+    // const assessmentRecords = await this.find({
+    //   where: {
+    //     criterion
+    //   },
+    // });
+
+    const search = {}
+
+    if (projectId) {
+      search['project'] = { code: projectId };
+    }
+
+    if (userId) {
+      search['user'] = { id: userId };
+    }
+
     const assessmentRecords = await this.find({
       where: {
-        criterion
+        criterion,
+        ...search
+      },
+    });
+
+    return assessmentRecords;
+  }
+
+  async getAssessmentRecordsOfAScheme(
+    programId: number,
+    versionId: number,
+    assessmentSchemeId: number,
+    getAssessmentRecordsFilterDto: GetAssessmentRecordsFilterDto
+  ) {
+    const { projectId, userId } = getAssessmentRecordsFilterDto;
+
+    const assessmentScheme = await this.assessmentSchemesRepository.findOneBy({
+      id: assessmentSchemeId,
+      versionId,
+      versionProgramId: programId,
+    });
+
+    if (!assessmentScheme) {
+      throw new NotFoundException(
+        `Assessment Scheme not found`,
+      );
+    }
+
+    const search = {}
+
+    if (projectId) {
+      search['project'] = { code: projectId };
+    }
+
+    if (userId) {
+      search['user'] = { id: userId };
+    }
+
+    const assessmentRecords = await this.find({
+      where: {
+        criterion: {
+          assessmentScheme,
+        },
+        ...search
       },
     });
 

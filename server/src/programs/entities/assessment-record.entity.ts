@@ -38,6 +38,6 @@ export class AssessmentRecord {
   @Column({ nullable: true })
   score: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { eager: true })
   user: User;
 }
