@@ -22,6 +22,9 @@ import { CreateAssessmentRecordDto } from './dto/create-assessment-record.dto';
 import { AssessmentRecordsRepository } from './assessment-records.repository';
 import { CreateAssessmentRecordsDto } from './dto/create-assessment-records.dto';
 import { GetAssessmentRecordsFilterDto } from './dto/get-assessment-records-filter.dto';
+import * as XLSX from 'xlsx';
+import { fstat } from 'fs';
+import * as fs from 'fs';
 
 @Injectable()
 export class ProgramsService {
@@ -300,5 +303,21 @@ export class ProgramsService {
     assessmentSchemeId: number,
   ) {
     return this.assessmentSchemesRepository.duplicateAssessmentScheme(programId, versionId, assessmentSchemeId);
+  }
+
+  async extractPerformanceIndicators(programId: number, versionId: number, studentOutcomeId: number, file: Express.Multer.File) {
+    const workbook = XLSX.readFile(file.path);
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
+    const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    for(let i = 1; i < data.length; i++) {
+      const performanceIndicator: CreatePerformanceIndicatorDto = {
+        name: data[i][0],
+        description: data[i][1],
+      }
+      await this.performanceIndicatorsRepository.createAPerformanceIndicator(programId, versionId, studentOutcomeId, performanceIndicator);
+    }
+    fs.unlinkSync(file.path)
+    return data;
   }
 }
