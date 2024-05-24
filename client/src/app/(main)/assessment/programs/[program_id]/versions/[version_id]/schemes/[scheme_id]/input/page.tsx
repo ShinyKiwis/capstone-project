@@ -23,6 +23,16 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import { Student } from "@/app/interfaces/User.interface";
 import useNavigate from "@/app/hooks/useNavigate";
 
+interface InputtedRecord {
+  userObj: string[];
+  project: string;
+  criteria: {
+    criterionId: number;
+    answer: string;
+    score: number | null;
+  }[];
+}
+
 const RecordInput = ({
   params,
 }: {
@@ -36,12 +46,13 @@ const RecordInput = ({
   const [program, setProgram] = useState<Program | null>(null);
   const [version, setVersion] = useState<Version | null>(null);
   const [fetchedScheme, setFetchedScheme] = useState<AssessSchemeDetail>();
-  const criterionColumns = fetchedScheme
-    ? Array.from(
-        { length: fetchedScheme.criteria.length },
-        (_, index) => index + 1,
-      )
-    : []; // create array of numbers from 1 to criteria count
+  // const criterionColumns = fetchedScheme
+  //   ? Array.from(
+  //       { length: fetchedScheme.criteria.length },
+  //       (_, index) => index + 1,
+  //     )
+  //   : []; // create array of numbers from 1 to criteria count
+  const [displayingRecords, setDisplayingRecords] = useState<InputtedRecord[]>([]);
   const [targetError, setTargetError] = useState<(string | undefined)[]>([
     undefined,
     undefined,
@@ -52,7 +63,7 @@ const RecordInput = ({
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
   const navigate = useNavigate();
-  const form = useForm({
+  const form = useForm<{rows: InputtedRecord[]}>({
     initialValues: {
       rows: [
         {
@@ -171,6 +182,7 @@ const RecordInput = ({
               // },
             ],
           });
+          setDisplayingRecords(form.values.rows);
         })
         .catch((err) => {
           console.log("Err fetching scheme:", err.response);
@@ -181,54 +193,73 @@ const RecordInput = ({
 
   // Handle submit
   function handleRecordsSubmit() {
+    // Cleanup unused rows
+
+
+    // Check empty
+    if (form.values.rows.length < 1){
+      toggleNotification("Error", "Must have at least 1 record", "danger");
+      return;
+    }
+
     // Validate fields
     let errFlag = false;
     form.values.rows.forEach((row, index) => {
-      if (
-        row.criteria[0].score != null &&
-        row.userObj.length === 0 &&
-        row.project === ""
-      ) {
-        let newErr: (string | undefined)[] = [...targetError];
+      let newErr: (string | undefined)[] = [...targetError];
+
+      // Check the condition and update newErr accordingly
+      if (row.criteria[0].score != null && row.userObj.length === 0 && row.project === "") {
         newErr[index] = "Target student or project required";
-        setTargetError(newErr);
         errFlag = true;
+      } else {
+        newErr[index] = undefined;
       }
+
+      setTargetError(newErr);
     });
     if (form.validate().hasErrors) {
       toggleNotification("Error", "Check missing fields", "danger");
-      console.log('Form errors:',form.validate().errors)
+      console.log("Form errors:", form.validate().errors);
       errFlag = true;
     }
     if (errFlag) return;
 
     // Extract all answers to submit
     let submittedRecords = {
-      records: form.values.rows.map(row => {
-        return row.criteria.map(criterion => {
-          return {
-            criterionId: criterion.criterionId,
-            answer: criterion.answer,
-            userId: row.userObj.length > 0 ? (JSON.parse(row.userObj[0]) as Student).userId : null,
-            score: criterion.score,
-            projectId: row.project
-          }
+      records: form.values.rows
+        .map((row) => {
+          return row.criteria.map((criterion) => {
+            return {
+              criterionId: criterion.criterionId,
+              answer: criterion.answer,
+              userId:
+                row.userObj.length > 0
+                  ? (JSON.parse(row.userObj[0]) as Student).userId
+                  : null,
+              score: criterion.score,
+              projectId: row.project,
+            };
+          });
         })
-      }).flat()
-    }
+        .flat(),
+    };
 
     // Submit records
     console.log("Submitting records:", submittedRecords);
-    axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}/assessment-records`, submittedRecords)
-    .then(res => {
-      console.log("Submit response", res.data);
-      toggleNotification("Success", "Records submitted !", "success");
-      navigate('./');
-    })
-    .catch(err => {
-      console.log("Err fetching scheme:", err.response);
-      toggleNotification("Error", "Records submission failed !", "danger");
-    })
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}/assessment-records`,
+        submittedRecords,
+      )
+      .then((res) => {
+        console.log("Submit response", res.data);
+        toggleNotification("Success", "Records submitted !", "success");
+        navigate("./");
+      })
+      .catch((err) => {
+        console.log("Err fetching scheme:", err.response);
+        toggleNotification("Error", "Records submission failed !", "danger");
+      });
   }
 
   if (!fetchedScheme) return <div>Fetching scheme data...</div>;
@@ -249,7 +280,7 @@ const RecordInput = ({
         pinFirstColumn
         my={"2em"}
         h={"fit-content"}
-        records={form.values.rows}
+        records={displayingRecords}
         columns={[
           {
             accessor: "#",
@@ -258,7 +289,10 @@ const RecordInput = ({
             cellsStyle: () => ({ alignItems: "start" }),
             render: (record: any, index) => (
               <div className="z-50 flex items-center gap-3">
-                <Button variant="transparent" c={"red"} px={0} py={0} m={0}>
+                <Button variant="transparent" c={"red"} px={0} py={0} m={0} onClick={() => {
+                  form.values.rows.splice(index, 1);
+                  setDisplayingRecords([...displayingRecords.toSpliced(index, 1)]);
+                }}>
                   <AiOutlineDelete size={25} />
                 </Button>
                 <Text c={"gray"}>{index + 1}.</Text>
@@ -319,7 +353,7 @@ const RecordInput = ({
         px={0}
         justify="flex-start"
         onClick={() => {
-          form.values.rows.push({
+          let newRec = {
             userObj: [],
             project: "",
             criteria: (fetchedScheme as AssessSchemeDetail).criteria.map(
@@ -331,7 +365,9 @@ const RecordInput = ({
                 };
               },
             ),
-          });
+          }
+          form.values.rows.push(newRec);
+          setDisplayingRecords([...displayingRecords, newRec]);
         }}
         leftSection={<IoIosAddCircleOutline size={25} />}
       >
@@ -339,9 +375,14 @@ const RecordInput = ({
       </Button>
 
       <div className="mr-3 flex w-full justify-end gap-4">
-        <Button variant="outline" onClick={()=> {
-          navigate('./')
-        }}>Cancel</Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            navigate("./");
+          }}
+        >
+          Cancel
+        </Button>
         <Button onClick={handleRecordsSubmit}>Add records</Button>
       </div>
     </div>
