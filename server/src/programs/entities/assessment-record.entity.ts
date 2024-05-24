@@ -29,7 +29,7 @@ export class AssessmentRecord {
   @ManyToOne(() => Criterion)
   criterion: Criterion;
 
-  @ManyToOne(() => Project)
+  @ManyToOne(() => Project, { eager: true })
   project: Project;
 
   @Column()
