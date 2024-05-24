@@ -349,4 +349,118 @@ export class ProgramsService {
     fs.unlinkSync(file.path)
     return data;
   }
+
+  async extractProgramEducationObjectives(programId: number, versionId: number, file: Express.Multer.File) {
+    const workbook = XLSX.readFile(file.path);
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
+    const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    for (let i = 1; i < data.length; i++) {
+      const programEducationObjective: CreateProgramEducationObjectiveDto = {
+        name: data[i][0],
+        description: data[i][1],
+      }
+      await this.programEducationObjectivesRepository.createProgramEducationObjective(programId, versionId, programEducationObjective);
+    }
+    fs.unlinkSync(file.path)
+    return data;
+  }
+
+  async extractProgramVersion(programId: number, file: Express.Multer.File) {
+    const workbook = XLSX.readFile(file.path);
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
+    const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    let currentVersion = null;
+    let currentSO = null;
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] !== undefined && data[i][0] != currentVersion?.name) {
+        const version: CreateVersionDto = {
+          name: data[i][0],
+          description: data[i][1],
+          startDate: new Date(data[i][2]),
+          endDate: new Date(data[i][3]),
+        }
+        currentVersion = await this.versionsRepository.createAVersionForAProgram(programId, version);
+      }
+      if (data[i][4] !== undefined) {
+        const programEducationObjective: CreateProgramEducationObjectiveDto = {
+          name: data[i][4],
+          description: data[i][5],
+        }
+        await this.programEducationObjectivesRepository.createProgramEducationObjective(programId, currentVersion.id, programEducationObjective);
+      }
+      if (data[i][6] !== undefined && data[i][6] != currentSO?.name) {
+        const studentOutcome: CreateStudentOutcomeDto = {
+          name: data[i][6],
+          description: data[i][7],
+          expectedGoal: 0,
+          passingThreshold: 0,
+        }
+        currentSO = await this.studentOutcomesRepository.createStudentOutcome(programId, currentVersion.id, studentOutcome);
+      }
+      if (data[i][8] !== undefined && data[i][9] !== undefined) {
+        const performanceIndicator: CreatePerformanceIndicatorDto = {
+          name: data[i][8],
+          description: data[i][9],
+        }
+        await this.performanceIndicatorsRepository.createAPerformanceIndicator(programId, currentVersion.id, currentSO.id, performanceIndicator);
+      }
+    }
+    fs.unlinkSync(file.path)
+    return data;
+  }
+
+  async extractProgram(file: Express.Multer.File) {
+    const workbook = XLSX.readFile(file.path);
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
+    const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    let currentProgram = null;
+    let currentVersion = null;
+    let currentSO = null;
+
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] !== undefined && data[i][0] != currentProgram?.name) {
+        const program: CreateProgramDto = {
+          name: data[i][0],
+          major: data[i][1],
+          description: data[i][2],
+        }
+        currentProgram = await this.programsRepository.createAProgram(program);
+      }
+      if (data[i][3] !== undefined && data[i][3] != currentVersion?.name) {
+        const version: CreateVersionDto = {
+          name: data[i][3],
+          description: data[i][4],
+          startDate: new Date(data[i][5]),
+          endDate: new Date(data[i][6]),
+        }
+        currentVersion = await this.versionsRepository.createAVersionForAProgram(currentProgram.id, version);
+      }
+      if (data[i][7] !== undefined) {
+        const programEducationObjective: CreateProgramEducationObjectiveDto = {
+          name: data[i][7],
+          description: data[i][8],
+        }
+        await this.programEducationObjectivesRepository.createProgramEducationObjective(currentProgram.id, currentVersion.id, programEducationObjective);
+      }
+      if (data[i][9] !== undefined && data[i][9] != currentSO?.name) {
+        const studentOutcome: CreateStudentOutcomeDto = {
+          name: data[i][9],
+          description: data[i][10],
+          expectedGoal: 0,
+          passingThreshold: 0,
+        }
+        currentSO = await this.studentOutcomesRepository.createStudentOutcome(currentProgram.id, currentVersion.id, studentOutcome);
+      }
+      if (data[i][11] !== undefined && data[i][12] !== undefined) {
+        const performanceIndicator: CreatePerformanceIndicatorDto = {
+          name: data[i][11],
+          description: data[i][12],
+        }
+        await this.performanceIndicatorsRepository.createAPerformanceIndicator(currentProgram.id, currentVersion.id, currentSO.id, performanceIndicator);
+      }
+    }
+  }
 }
