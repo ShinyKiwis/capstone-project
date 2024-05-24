@@ -1,5 +1,16 @@
 import { CriterionType } from "./Criterion.interface";
 
+interface FetchedRecordUser {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  roles: Role[];
+  project?: {
+    code: number;
+  };
+}
+
 interface FetchedCriterionLevel_written {
   id: number;
   criterionId: number;
@@ -20,6 +31,22 @@ interface FetchedCriterionLevel_level {
   content: string;
   maxScore: number;
   minScore: number;
+}
+
+export interface FetchedCriterionRecord{
+  id: number;
+  criterionId: number;
+  criterionAssessmentSchemeId: number;
+  criterionAssessmentSchemeVersionId: number;
+  criterionAssessmentSchemeVersionProgramId: number;
+  answer: string;
+  score: number;
+  user: FetchedRecordUser | null;
+  project: null | {
+    id: number,
+    name: string,
+    [key:string]: any
+  }
 }
 
 export interface FetchedCriterion {

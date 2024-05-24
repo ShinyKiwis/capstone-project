@@ -10,7 +10,7 @@ import { IoCreate } from "react-icons/io5";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { sortBy } from "lodash";
 import useNavigate from "@/app/hooks/useNavigate";
-import { AssessSchemeDetail } from "@/app/interfaces/Assessment.interface";
+import { AssessSchemeDetail, FetchedCriterion, FetchedCriterionRecord } from "@/app/interfaces/Assessment.interface";
 
 interface MockAssessmentRecords {
   id: number;
@@ -26,223 +26,334 @@ interface MockAssessmentRecords {
   score: number;
 }
 
-const fetchedRecords: MockAssessmentRecords[] = [
+const fetchedRecords: FetchedCriterionRecord[] = [
   {
-    id: 1,
-    student: { id: 101, name: "Nguyen Hua Hoang Van A" },
-    project: {
-      id: 201,
-      name: "Creating an automated system using AI and blockchain for validating used goods quality and sources in e-commerce settings",
+    id: 23,
+    criterionId: 5,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "Nam answer",
+    score: 2,
+    project: null,
+    user: {
+      id: 1,
+      email: "daonam@hcmut.edu.vn",
+      username: "daonam",
+      name: "Đào Nam",
+      roles: [
+        {
+          id: 1,
+          name: "Student",
+          resources: [
+            {
+              id: 5,
+              name: "view_projects",
+            },
+            {
+              id: 6,
+              name: "enroll_projects",
+            },
+          ],
+        },
+      ],
     },
-    critera: [
-      { number: 1, level: "A" },
-      { number: 2, level: "B" },
-      { number: 3, level: "C" },
-      { number: 4, level: "D" },
-      { number: 5, level: "A" },
-      { number: 6, level: "B" },
-    ],
-    score: 85,
   },
   {
-    id: 2,
-    student: { id: 102, name: "Jane Smith" },
-    project: { id: 202, name: "Project B" },
-    critera: [
-      { number: 1, level: "B" },
-      { number: 2, level: "C" },
-      { number: 3, level: "D" },
-      { number: 4, level: "A" },
-      { number: 5, level: "B" },
-      { number: 6, level: "C" },
-    ],
-    score: 78,
+    id: 32,
+    criterionId: 5,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "Vi own answer",
+    project: null,
+    score: 3,
+    user: {
+      id: 2,
+      email: "danvi@hcmut.edu.vn",
+      username: "danvi",
+      name: "Dân Vĩ",
+      roles: [
+        {
+          id: 1,
+          name: "Student",
+          resources: [
+            {
+              id: 5,
+              name: "view_projects",
+            },
+            {
+              id: 6,
+              name: "enroll_projects",
+            },
+          ],
+        },
+      ],
+    },
   },
   {
-    id: 3,
-    student: { id: 103, name: "Alice Johnson" },
-    project: { id: 203, name: "Project C" },
-    critera: [
-      { number: 1, level: "C" },
-      { number: 2, level: "D" },
-      { number: 3, level: "A" },
-      { number: 4, level: "B" },
-      { number: 5, level: "C" },
-      { number: 6, level: "D" },
-    ],
-    score: 92,
+    id: 29,
+    criterionId: 5,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "Vi in group answer",
+    project: {id:2, name:'Developing id2'},
+    score: 6,
+    user: {
+      id: 2,
+      email: "danvi@hcmut.edu.vn",
+      username: "danvi",
+      name: "Dân Vĩ",
+      roles: [
+        {
+          id: 1,
+          name: "Student",
+          resources: [
+            {
+              id: 5,
+              name: "view_projects",
+            },
+            {
+              id: 6,
+              name: "enroll_projects",
+            },
+          ],
+        },
+      ],
+    },
   },
   {
-    id: 4,
-    student: { id: 104, name: "Michael Brown" },
-    project: { id: 204, name: "Project D" },
-    critera: [
-      { number: 1, level: "D" },
-      { number: 2, level: "A" },
-      { number: 3, level: "B" },
-      { number: 4, level: "C" },
-      { number: 5, level: "D" },
-      { number: 6, level: "A" },
-    ],
-    score: 87,
+    id: 26,
+    criterionId: 5,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "Group answer",
+    score: 10,
+    project: {id:2, name:'Developing id2'},
+    user: null,
   },
   {
-    id: 5,
-    student: { id: 105, name: "Emily Wilson" },
-    project: { id: 205, name: "Project E" },
-    critera: [
-      { number: 1, level: "A" },
-      { number: 2, level: "B" },
-      { number: 3, level: "C" },
-      { number: 4, level: "D" },
-      { number: 5, level: "A" },
-      { number: 6, level: "B" },
-    ],
-    score: 80,
+    id: 24,
+    criterionId: 6,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "C",
+    score: 2,
+    project: null,
+    user: {
+      id: 1,
+      email: "daonam@hcmut.edu.vn",
+      username: "daonam",
+      name: "Đào Nam",
+      roles: [
+        {
+          id: 1,
+          name: "Student",
+          resources: [
+            {
+              id: 5,
+              name: "view_projects",
+            },
+            {
+              id: 6,
+              name: "enroll_projects",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  {
+    id: 33,
+    criterionId: 6,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "B",
+    score: 1,
+    project: null,
+    user: {
+      id: 2,
+      email: "danvi@hcmut.edu.vn",
+      username: "danvi",
+      name: "Dân Vĩ",
+      roles: [
+        {
+          id: 1,
+          name: "Student",
+          resources: [
+            {
+              id: 5,
+              name: "view_projects",
+            },
+            {
+              id: 6,
+              name: "enroll_projects",
+            },
+          ],
+        },
+      ],
+    },
   },
   {
-    id: 6,
-    student: { id: 106, name: "David Lee" },
-    project: { id: 206, name: "Project F" },
-    critera: [
-      { number: 1, level: "B" },
-      { number: 2, level: "C" },
-      { number: 3, level: "D" },
-      { number: 4, level: "A" },
-      { number: 5, level: "B" },
-      { number: 6, level: "C" },
-    ],
-    score: 75,
+    id: 30,
+    criterionId: 6,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "A",
+    score: 0,
+    project: {id:2, name:'Developing id2'},
+    user: {
+      id: 2,
+      email: "danvi@hcmut.edu.vn",
+      username: "danvi",
+      name: "Dân Vĩ",
+      roles: [
+        {
+          id: 1,
+          name: "Student",
+          resources: [
+            {
+              id: 5,
+              name: "view_projects",
+            },
+            {
+              id: 6,
+              name: "enroll_projects",
+            },
+          ],
+        },
+      ],
+    },
   },
   {
-    id: 7,
-    student: { id: 107, name: "Sophia Martinez" },
-    project: { id: 207, name: "Project G" },
-    critera: [
-      { number: 1, level: "C" },
-      { number: 2, level: "D" },
-      { number: 3, level: "A" },
-      { number: 4, level: "B" },
-      { number: 5, level: "C" },
-      { number: 6, level: "D" },
-    ],
-    score: 89,
+    id: 27,
+    criterionId: 6,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "D",
+    score: 4,
+    project: {id:2, name:'Developing id2'},
+    user: null,
+  },
+
+  {
+    id: 25,
+    criterionId: 7,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "A",
+    score: 0,
+    project: null,
+    user: {
+      id: 1,
+      email: "daonam@hcmut.edu.vn",
+      username: "daonam",
+      name: "Đào Nam",
+      roles: [
+        {
+          id: 1,
+          name: "Student",
+          resources: [
+            {
+              id: 5,
+              name: "view_projects",
+            },
+            {
+              id: 6,
+              name: "enroll_projects",
+            },
+          ],
+        },
+      ],
+    },
   },
   {
-    id: 8,
-    student: { id: 108, name: "Daniel Garcia" },
-    project: { id: 208, name: "Project H" },
-    critera: [
-      { number: 1, level: "D" },
-      { number: 2, level: "A" },
-      { number: 3, level: "B" },
-      { number: 4, level: "C" },
-      { number: 5, level: "D" },
-      { number: 6, level: "A" },
-    ],
-    score: 82,
+    id: 34,
+    criterionId: 7,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "D",
+    score: 0,
+    project: null,
+    user: {
+      id: 2,
+      email: "danvi@hcmut.edu.vn",
+      username: "danvi",
+      name: "Dân Vĩ",
+      roles: [
+        {
+          id: 1,
+          name: "Student",
+          resources: [
+            {
+              id: 5,
+              name: "view_projects",
+            },
+            {
+              id: 6,
+              name: "enroll_projects",
+            },
+          ],
+        },
+      ],
+    },
   },
   {
-    id: 9,
-    student: { id: 109, name: "Olivia Brown" },
-    project: { id: 209, name: "Project I" },
-    critera: [
-      { number: 1, level: "A" },
-      { number: 2, level: "B" },
-      { number: 3, level: "C" },
-      { number: 4, level: "D" },
-      { number: 5, level: "A" },
-      { number: 6, level: "B" },
-    ],
-    score: 93,
+    id: 31,
+    criterionId: 7,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "C",
+    score: 0,
+    project: {id:2, name:'Developing id2'},
+
+    user: {
+      id: 2,
+      email: "danvi@hcmut.edu.vn",
+      username: "danvi",
+      name: "Dân Vĩ",
+      roles: [
+        {
+          id: 1,
+          name: "Student",
+          resources: [
+            {
+              id: 5,
+              name: "view_projects",
+            },
+            {
+              id: 6,
+              name: "enroll_projects",
+            },
+          ],
+        },
+      ],
+    },
   },
   {
-    id: 10,
-    student: { id: 110, name: "James Rodriguez" },
-    project: { id: 210, name: "Project J" },
-    critera: [
-      { number: 1, level: "B" },
-      { number: 2, level: "C" },
-      { number: 3, level: "D" },
-      { number: 4, level: "A" },
-      { number: 5, level: "B" },
-      { number: 6, level: "C" },
-    ],
-    score: 79,
-  },
-  {
-    id: 11,
-    student: { id: 111, name: "Emma Johnson" },
-    project: { id: 211, name: "Project K" },
-    critera: [
-      { number: 1, level: "C" },
-      { number: 2, level: "D" },
-      { number: 3, level: "A" },
-      { number: 4, level: "B" },
-      { number: 5, level: "C" },
-      { number: 6, level: "D" },
-    ],
-    score: 88,
-  },
-  {
-    id: 12,
-    student: { id: 112, name: "Alexander Lee" },
-    project: { id: 212, name: "Project L" },
-    critera: [
-      { number: 1, level: "D" },
-      { number: 2, level: "A" },
-      { number: 3, level: "B" },
-      { number: 4, level: "C" },
-      { number: 5, level: "D" },
-      { number: 6, level: "A" },
-    ],
-    score: 84,
-  },
-  {
-    id: 13,
-    student: { id: 113, name: "Mia Martinez" },
-    project: { id: 213, name: "Project M" },
-    critera: [
-      { number: 1, level: "A" },
-      { number: 2, level: "B" },
-      { number: 3, level: "C" },
-      { number: 4, level: "D" },
-      { number: 5, level: "A" },
-      { number: 6, level: "B" },
-    ],
-    score: 91,
-  },
-  {
-    id: 14,
-    student: { id: 114, name: "Ethan Wilson" },
-    project: { id: 214, name: "Project N" },
-    critera: [
-      { number: 1, level: "B" },
-      { number: 2, level: "C" },
-      { number: 3, level: "D" },
-      { number: 4, level: "A" },
-      { number: 5, level: "B" },
-      { number: 6, level: "C" },
-    ],
-    score: 77,
-  },
-  {
-    id: 15,
-    student: { id: 115, name: "Ava Garcia" },
-    project: { id: 215, name: "Project O" },
-    critera: [
-      { number: 1, level: "C" },
-      { number: 2, level: "D" },
-      { number: 3, level: "A" },
-      { number: 4, level: "B" },
-      { number: 5, level: "C" },
-      { number: 6, level: "D" },
-    ],
-    score: 90,
+    id: 28,
+    criterionId: 7,
+    criterionAssessmentSchemeId: 6,
+    criterionAssessmentSchemeVersionId: 1,
+    criterionAssessmentSchemeVersionProgramId: 1,
+    answer: "E",
+    score: 5,
+    project: {id:2, name:'Developing id2'},
+    user: null,
   },
 ];
 
-const mockCriteriaCount = 6;
+const mockCriteriaCount = 3;
 const criteraColumns: DataTableColumn<MockAssessmentRecords>[] = [];
 for (let i = 0; i < mockCriteriaCount; i++) {
   criteraColumns.push({
@@ -253,9 +364,13 @@ for (let i = 0; i < mockCriteriaCount; i++) {
   });
 }
 
-const RecordsSection = ({ schemeObject }: { schemeObject: AssessSchemeDetail }) => {
+const RecordsSection = ({
+  schemeObject,
+}: {
+  schemeObject: AssessSchemeDetail;
+}) => {
   const [displayingRecords, setDisplayingRecords] =
-    useState<MockAssessmentRecords[]>(fetchedRecords);
+    useState<MockAssessmentRecords[]>([]);
   const [searchedRecords, setSearchedRecords] = useState<
     MockAssessmentRecords[]
   >([]);
@@ -272,28 +387,55 @@ const RecordsSection = ({ schemeObject }: { schemeObject: AssessSchemeDetail }) 
     direction: "asc",
   });
 
-  function handleSearchRecords(searchTerm?: string) {
-    setPage(1);
-    if (!searchTerm) searchTerm = searchQuery;
-    if (searchTerm === "") {
-      setSearchedRecords([]);
-      setDisplayingRecords(fetchedRecords);
-      return;
-    }
+  function groupBy(data: FetchedCriterionRecord[]) {
+    const groups = {};
 
-    let results = fetchedRecords.filter((record) => {
-      const { student, project } = record;
-      return (
-        student.id.toString().includes(searchTerm) ||
-        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        project.id.toString().includes(searchTerm) ||
-        project.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    data.forEach((item) => {
+      let key = "";
+
+      if (item.project && item.user) {
+        key = `project-${item.project.id}-user-${item.user.id}`;
+      } else if (item.user) {
+        key = `user-${item.user.id}`;
+      } else if (item.project) {
+        key = `project-${item.project.id}`;
+      }
+
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+
+      groups[key].push(item);
     });
 
-    setDisplayingRecords(results);
-    setSearchedRecords(results);
+    return Object.values(groups);
   }
+
+  const groupedData = groupBy(data);
+  console.log(groupedData);
+
+  // function handleSearchRecords(searchTerm?: string) {
+  //   setPage(1);
+  //   if (!searchTerm) searchTerm = searchQuery;
+  //   if (searchTerm === "") {
+  //     setSearchedRecords([]);
+  //     setDisplayingRecords(fetchedRecords);
+  //     return;
+  //   }
+
+  //   let results = fetchedRecords.filter((record) => {
+  //     const { student, project } = record;
+  //     return (
+  //       student.id.toString().includes(searchTerm) ||
+  //       student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       project.id.toString().includes(searchTerm) ||
+  //       project.name.toLowerCase().includes(searchTerm.toLowerCase())
+  //     );
+  //   });
+
+  //   setDisplayingRecords(results);
+  //   setSearchedRecords(results);
+  // }
 
   // useEffect for sorting
   useEffect(() => {
@@ -311,15 +453,15 @@ const RecordsSection = ({ schemeObject }: { schemeObject: AssessSchemeDetail }) 
     setPage(1);
   }, [pageSize]);
 
-  useEffect(() => {
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize;
-    setDisplayingRecords(
-      searchedRecords.length > 0
-        ? searchedRecords.slice(from, to)
-        : fetchedRecords.slice(from, to),
-    );
-  }, [page, pageSize]);
+  // useEffect(() => {
+  //   const from = (page - 1) * pageSize;
+  //   const to = from + pageSize;
+  //   setDisplayingRecords(
+  //     searchedRecords.length > 0
+  //       ? searchedRecords.slice(from, to)
+  //       : fetchedRecords.slice(from, to),
+  //   );
+  // }, [page, pageSize]);
 
   return (
     <div style={{ maxWidth: "74vw" }}>
@@ -331,7 +473,7 @@ const RecordsSection = ({ schemeObject }: { schemeObject: AssessSchemeDetail }) 
             </Text>
           </td>
           <td style={{ verticalAlign: "top" }}>
-            <Text size="md">{'need max score for db'}</Text>
+            <Text size="md">{"need max score for db"}</Text>
           </td>
         </tr>
         <tr>
@@ -341,7 +483,7 @@ const RecordsSection = ({ schemeObject }: { schemeObject: AssessSchemeDetail }) 
             </Text>
           </td>
           <td>
-            <Text size="md">{'avg calculate from records'}</Text>
+            <Text size="md">{"avg calculate from records"}</Text>
           </td>
         </tr>
       </table>
@@ -363,13 +505,13 @@ const RecordsSection = ({ schemeObject }: { schemeObject: AssessSchemeDetail }) 
               size={20}
               className="group-focus-within:text-blue text-gray"
               onClick={(e) => {
-                handleSearchRecords();
+                // handleSearchRecords();
               }}
             />
           }
           onKeyDown={(event) => {
             if (event.key === "Enter") {
-              handleSearchRecords();
+              // handleSearchRecords();
             }
           }}
         />
@@ -428,9 +570,7 @@ const RecordsSection = ({ schemeObject }: { schemeObject: AssessSchemeDetail }) 
                     <Button
                       variant="transparent"
                       onClick={() =>
-                        navigate(
-                          `${schemeObject.id}/edit/${record.id}`,
-                        )
+                        navigate(`${schemeObject.id}/edit/${record.id}`)
                       }
                     >
                       <AiOutlineEdit size={25} />
