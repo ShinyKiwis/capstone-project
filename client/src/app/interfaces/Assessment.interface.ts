@@ -22,7 +22,7 @@ interface FetchedCriterionLevel_level {
   minScore: number;
 }
 
-interface FetchedCriterion {
+export interface FetchedCriterion {
   // Criterion as fetched from API
   id: number;
   assessmentSchemeId: number;

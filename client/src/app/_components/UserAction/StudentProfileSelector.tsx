@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Dispatch, SetStateAction, useState } from "react";
 import {
   CheckIcon,
@@ -22,9 +22,9 @@ interface StudentProfileSelectorProps {
   description?: string;
   error?: string;
   searchApi: string;
-  limit?:number;
-  mode?: 'single' | 'multi'
-  showCard?: boolean
+  limit?: number;
+  mode?: "single" | "multi";
+  showCard?: boolean;
 }
 
 function StudentProfileSelector({
@@ -36,19 +36,24 @@ function StudentProfileSelector({
   error,
   searchApi,
   limit,
-  mode = 'multi',
-  showCard = true
+  mode = "multi",
+  showCard = true,
 }: StudentProfileSelectorProps) {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Student[]>([]); // Retreived Student objects from search API
   const [currentTimeout, setCurrentTimeout] = useState<NodeJS.Timeout>();
 
-  const parsedValues:Student[] = value.map((valueString) => JSON.parse(valueString));
-  function valueIsSelected(newVal:string): number {
+  const parsedValues: Student[] = value.map((valueString) =>
+    JSON.parse(valueString),
+  );
+  function valueIsSelected(newVal: string): number {
     // Return index of value if it is already selected, else -1
-    let parsedNewValue:Student = JSON.parse(newVal)
-    return parsedValues.findIndex((selectedValue:Student) => selectedValue.userId === parsedNewValue.userId)
+    let parsedNewValue: Student = JSON.parse(newVal);
+    return parsedValues.findIndex(
+      (selectedValue: Student) =>
+        selectedValue.userId === parsedNewValue.userId,
+    );
   }
 
   const combobox = useCombobox({
@@ -89,17 +94,23 @@ function StudentProfileSelector({
   };
 
   const handleValueSelect = (newVal: string) => {
-    setSearch(showCard ? '' : `${JSON.parse(newVal).userId} - ${JSON.parse(newVal).user.name}`);
+    setSearch(
+      showCard
+        ? ""
+        : `${JSON.parse(newVal).userId} - ${JSON.parse(newVal).user.name}`,
+    );
     let availableIndex = valueIsSelected(newVal);
-    if (mode === 'single'){
-      onChange((current) =>{return [newVal]});
+    if (mode === "single") {
+      onChange((current) => {
+        return [newVal];
+      });
       combobox.closeDropdown();
-    }
-    else
-      onChange((current) =>{  // current: currently selected values
+    } else
+      onChange((current) => {
+        // current: currently selected values
         return availableIndex !== -1
-          ? [...current.splice(availableIndex, 1)]   // click on already selected val remove that value from selected list
-          : [...current, newVal]
+          ? [...current.splice(availableIndex, 1)] // click on already selected val remove that value from selected list
+          : [...current, newVal];
       });
   };
 
@@ -138,7 +149,8 @@ function StudentProfileSelector({
               if (value.length > 0) {
                 // value is string[] of stringyfied selected Student objects
                 targetIndex = value.findIndex(
-                  (selectedOpt) => JSON.parse(selectedOpt).userId.toString() === id,
+                  (selectedOpt) =>
+                    JSON.parse(selectedOpt).userId.toString() === id,
                 );
               }
               // console.log("Found index:", targetIndex)
@@ -157,66 +169,68 @@ function StudentProfileSelector({
     let renderedOptions = data;
     if (limit && data.length > limit) renderedOptions = data.toSpliced(limit);
 
-    return renderedOptions.map((item:Student) => (
+    return renderedOptions.map((item: Student) => (
       <Combobox.Option value={JSON.stringify(item)} key={item.userId}>
-      <Group gap="sm">
-        {valueIsSelected(JSON.stringify(item)) !== -1 ? <CheckIcon size={12} /> : null}
-        <span>{`${item.userId} - ${item.user.name}`}</span>
-      </Group>
-    </Combobox.Option>
+        <Group gap="sm">
+          {valueIsSelected(JSON.stringify(item)) !== -1 ? (
+            <CheckIcon size={12} />
+          ) : null}
+          <span>{`${item.userId} - ${item.user.name}`}</span>
+        </Group>
+      </Combobox.Option>
     ));
-  }
+  };
 
   return (
     <>
-    <Input.Wrapper label={label} description={description} error={error}>
-      <Combobox
-        store={combobox}
-        // withinPortal={false}
-        onOptionSubmit={handleValueSelect}
-      >
-        <Combobox.DropdownTarget>
-          <Combobox.EventsTarget>
-            <InputBase
-              onFocus={() => combobox.openDropdown()}
-              onBlur={() => combobox.closeDropdown()}
-              onClick={() => combobox.openDropdown()}
-              value={search}
-              placeholder={placeholder}
-              rightSection={
-                loading ? <Loader size={18} /> : <Combobox.Chevron />
-              }
-              onChange={(event) => {
-                combobox.updateSelectedOptionIndex();
-                setSearch(event.currentTarget.value);
-                handleSearch(event.currentTarget.value);
-              }}
-              // onKeyDown={(event) => {
-              //   if (event.key === "Backspace" && search.length === 0 && value.length>0) {
-              //     event.preventDefault();
-              //     handleValueRemove(value[value.length - 1]);
-              //   }
-              // }}
-            />
-          </Combobox.EventsTarget>
-        </Combobox.DropdownTarget>
-        <Combobox.Dropdown>
-          <Combobox.Options>
-            {loading ? (
-              <Combobox.Empty>Loading....</Combobox.Empty>
-            ) : data.length === 0 ? (
-              <Combobox.Empty>No options</Combobox.Empty>
-            ) : (
-              <SelectOptions/>
-            )}
-          </Combobox.Options>
-        </Combobox.Dropdown>
-      </Combobox>
-    </Input.Wrapper>
-
-      <div className="flex flex-1 flex-col items-center justify-center px-3">
-        {value.length > 0 && showCard ?
-          value.map((selectedVal) => {
+      <Input.Wrapper label={label} description={description} error={error}>
+        <Combobox
+          store={combobox}
+          // withinPortal={false}
+          onOptionSubmit={handleValueSelect}
+        >
+          <Combobox.DropdownTarget>
+            <Combobox.EventsTarget>
+              <InputBase
+                onFocus={() => combobox.openDropdown()}
+                onBlur={() => combobox.closeDropdown()}
+                onClick={() => combobox.openDropdown()}
+                value={search}
+                placeholder={placeholder}
+                rightSection={
+                  loading ? <Loader size={18} /> : <Combobox.Chevron />
+                }
+                onChange={(event) => {
+                  combobox.updateSelectedOptionIndex();
+                  setSearch(event.currentTarget.value);
+                  handleSearch(event.currentTarget.value);
+                }}
+                // onKeyDown={(event) => {
+                //   if (event.key === "Backspace" && search.length === 0 && value.length>0) {
+                //     event.preventDefault();
+                //     handleValueRemove(value[value.length - 1]);
+                //   }
+                // }}
+              />
+            </Combobox.EventsTarget>
+          </Combobox.DropdownTarget>
+          <Combobox.Dropdown>
+            <Combobox.Options>
+              {loading ? (
+                <Combobox.Empty>Loading....</Combobox.Empty>
+              ) : data.length === 0 ? (
+                <Combobox.Empty>No options</Combobox.Empty>
+              ) : (
+                <SelectOptions />
+              )}
+            </Combobox.Options>
+          </Combobox.Dropdown>
+        </Combobox>
+      </Input.Wrapper>
+      
+      {value.length > 0 && showCard ? (
+        <div className="flex flex-1 flex-col items-center justify-center px-3">
+          {value.map((selectedVal) => {
             let selectedUsr: Student = JSON.parse(selectedVal);
             return (
               <ProfileItemsMultiMode
@@ -226,9 +240,9 @@ function StudentProfileSelector({
                 key={selectedUsr.userId}
               />
             );
-          }) : null
-        } 
-      </div>
+          })}
+        </div>
+      ) : null}
     </>
   );
 }
