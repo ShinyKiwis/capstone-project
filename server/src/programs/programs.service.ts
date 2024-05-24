@@ -18,6 +18,10 @@ import { ProgramEducationObjectivesRepository } from './program-education-object
 import { UpdateProgramEducationObjectiveDto } from './dto/update-program-education-objective.dto';
 import { CreateAssessmentSchemeDto } from './dto/create-assessment-scheme.dto';
 import { AssessmentSchemesRepository } from './assessment-schemes.repository';
+import { CreateAssessmentRecordDto } from './dto/create-assessment-record.dto';
+import { AssessmentRecordsRepository } from './assessment-records.repository';
+import { CreateAssessmentRecordsDto } from './dto/create-assessment-records.dto';
+import { GetAssessmentRecordsFilterDto } from './dto/get-assessment-records-filter.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -28,7 +32,8 @@ export class ProgramsService {
     private studentOutcomesRepository: StudentOutcomesRepository,
     private performanceIndicatorsRepository: PerformanceIndicatorsRepository,
     private programEducationObjectivesRepository: ProgramEducationObjectivesRepository,
-    private assessmentSchemesRepository: AssessmentSchemesRepository
+    private assessmentSchemesRepository: AssessmentSchemesRepository,
+    private assessmentRecordsRepository: AssessmentRecordsRepository,
   ) { }
 
   async createAProgram(createMajorDto: CreateProgramDto) {
@@ -275,5 +280,25 @@ export class ProgramsService {
 
   async getAnAssessmentScheme(programId: number, versionId: number, assessmentSchemeId: number) {
     return this.assessmentSchemesRepository.getAnAssessmentScheme(programId, versionId, assessmentSchemeId);
+  }
+
+  async createAssessmentRecord(programId: number, versionId: number, assessmentSchemeId: number, createAssessmentRecordsDto: CreateAssessmentRecordsDto) {
+    return this.assessmentRecordsRepository.createAssessmentRecords(programId, versionId, assessmentSchemeId, createAssessmentRecordsDto);
+  }
+
+  async getAllAssessmentRecords(programId: number, versionId: number, assessmentSchemeId: number, criterionId: number, getAssessmentRecordsFilterDto: GetAssessmentRecordsFilterDto) {
+    return this.assessmentRecordsRepository.getAllAssessmentRecords(programId, versionId, assessmentSchemeId, criterionId, getAssessmentRecordsFilterDto);
+  }
+
+  async getAssessmentRecordsOfAScheme(programId: number, versionId: number, assessmentSchemeId: number, getAssessmentRecordsFilterDto: GetAssessmentRecordsFilterDto) {
+    return this.assessmentRecordsRepository.getAssessmentRecordsOfAScheme(programId, versionId, assessmentSchemeId, getAssessmentRecordsFilterDto);
+  }
+
+  async duplicateAssessmentScheme(
+    programId: number,
+    versionId: number,
+    assessmentSchemeId: number,
+  ) {
+    return this.assessmentSchemesRepository.duplicateAssessmentScheme(programId, versionId, assessmentSchemeId);
   }
 }

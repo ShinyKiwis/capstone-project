@@ -10,6 +10,7 @@ import { ProgramEducationObjectivesRepository } from "./program-education-object
 import { AssessmentSchemesRepository } from "./assessment-schemes.repository";
 import { DataSource } from "typeorm";
 import { NotFoundException } from "@nestjs/common";
+import { ProjectsRepository } from "src/projects/projects.repository";
 
 const mockProgramsRepository = () => ({
   getAllPrograms: jest.fn(),
@@ -56,6 +57,10 @@ const mockProgramEducationObjectivesRepository = () => ({
   delete: jest.fn(),
 });
 
+const mockProjectsRepository = () => ({
+  findOneBy: jest.fn(),
+});
+
 const mockAssessmentSchemesRepository = () => ({
   createAssessmentScheme: jest.fn(),
   getAllAssessmentSchemes: jest.fn(),
@@ -72,6 +77,7 @@ describe('ProgramsService', () => {
   let performanceIndicatorsRepository;
   let programEducationObjectivesRepository;
   let assessmentSchemesRepository;
+  let projectsRepository;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -84,6 +90,7 @@ describe('ProgramsService', () => {
         { provide: PerformanceIndicatorsRepository, useFactory: mockPerformanceIndicatorsRepository },
         { provide: ProgramEducationObjectivesRepository, useFactory: mockProgramEducationObjectivesRepository },
         { provide: AssessmentSchemesRepository, useFactory: mockAssessmentSchemesRepository },
+        { provide: ProjectsRepository, useFactory: mockProjectsRepository },
         { provide: DataSource, useValue: {} },
       ],
     }).compile();
@@ -96,6 +103,7 @@ describe('ProgramsService', () => {
     performanceIndicatorsRepository = module.get(PerformanceIndicatorsRepository);
     programEducationObjectivesRepository = module.get(ProgramEducationObjectivesRepository);
     assessmentSchemesRepository = module.get(AssessmentSchemesRepository);
+    programsService = module.get(ProjectsRepository);
   });
 
   describe('getPrograms', () => {

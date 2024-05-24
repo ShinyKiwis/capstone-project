@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Criterion } from './criterion.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Project } from 'src/projects/entities/project.entity';
 
 @Entity()
 export class AssessmentRecord {
@@ -28,9 +29,15 @@ export class AssessmentRecord {
   @ManyToOne(() => Criterion)
   criterion: Criterion;
 
+  @ManyToOne(() => Project)
+  project: Project;
+
   @Column()
   answer: string;
 
-  @ManyToOne(() => User)
+  @Column({ nullable: true })
+  score: number;
+
+  @ManyToOne(() => User, { eager: true })
   user: User;
 }

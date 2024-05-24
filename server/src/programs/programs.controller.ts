@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ProgramsService } from './programs.service';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { CreateProgramDto } from './dto/create-program.dto';
@@ -12,6 +12,9 @@ import { UpdateStudentOutcomeDto } from './dto/update-student-outcome.dto';
 import { CreateProgramEducationObjectiveDto } from './dto/create-program-education-objective.dto';
 import { UpdateProgramEducationObjectiveDto } from './dto/update-program-education-objective.dto';
 import { CreateAssessmentSchemeDto } from './dto/create-assessment-scheme.dto';
+import { CreateAssessmentRecordDto } from './dto/create-assessment-record.dto';
+import { CreateAssessmentRecordsDto } from './dto/create-assessment-records.dto';
+import { GetAssessmentRecordsFilterDto } from './dto/get-assessment-records-filter.dto';
 
 @Controller('programs')
 export class ProgramsController {
@@ -284,6 +287,66 @@ export class ProgramsController {
     @Param('assessmentSchemeId') assessmentSchemeId: string,
   ) {
     return this.programsService.getAnAssessmentScheme(
+      +programId,
+      +versionId,
+      +assessmentSchemeId,
+    );
+  }
+
+  @Get(':programId/versions/:versionId/assessment-schemes/:assessmentSchemeId/criteria/:criterionId/assessment-records')
+  getAllAssessmentRecords(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('assessmentSchemeId') assessmentSchemeId: string,
+    @Param('criterionId') criterionId: string,
+    @Query() getAssessmentRecordsFilterDto: GetAssessmentRecordsFilterDto
+  ) {
+    return this.programsService.getAllAssessmentRecords(
+      +programId,
+      +versionId,
+      +assessmentSchemeId,
+      +criterionId,
+      getAssessmentRecordsFilterDto
+    );
+  }
+
+  @Post(':programId/versions/:versionId/assessment-schemes/:assessmentSchemeId/assessment-records')
+  createAssessmentRecord(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('assessmentSchemeId') assessmentSchemeId: string,
+    @Body() createAssessmentRecordsDto: CreateAssessmentRecordsDto,
+  ) {
+    return this.programsService.createAssessmentRecord(
+      +programId,
+      +versionId,
+      +assessmentSchemeId,
+      createAssessmentRecordsDto,
+    );
+  }
+
+  @Get(':programId/versions/:versionId/assessment-schemes/:assessmentSchemeId/assessment-records')
+  getAllAssessmentRecordsOfAnAssessmentScheme(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('assessmentSchemeId') assessmentSchemeId: string,
+    @Query() getAssessmentRecordsFilterDto: GetAssessmentRecordsFilterDto
+  ) {
+    return this.programsService.getAssessmentRecordsOfAScheme(
+      +programId,
+      +versionId,
+      +assessmentSchemeId,
+      getAssessmentRecordsFilterDto
+    );
+  }
+
+  @Post(':programId/versions/:versionId/assessment-schemes/:assessmentSchemeId/duplicate')
+  duplicateAssessmentScheme(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('assessmentSchemeId') assessmentSchemeId: string,
+  ) {
+    return this.programsService.duplicateAssessmentScheme(
       +programId,
       +versionId,
       +assessmentSchemeId,

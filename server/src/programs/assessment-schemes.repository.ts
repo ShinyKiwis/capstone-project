@@ -107,4 +107,56 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
 
     return assessmentScheme;
   }
+
+  async duplicateAssessmentScheme(
+    programId: number,
+    versionId: number,
+    assessmentSchemeId: number,
+  ) {
+    const version = await this.versionsRepository.findOneBy({
+      id: versionId,
+      programId,
+    });
+    if (!version) {
+      throw new NotFoundException(
+        `Version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
+    const assessmentScheme = await this.findOne({
+      where: {
+        version,
+        id: assessmentSchemeId,
+      },
+      relations: {
+        criteria: true,
+        performanceIndicators: true
+      },
+    });
+
+    if (!assessmentScheme) {
+      throw new NotFoundException(
+        `Student Outcome with id ${assessmentSchemeId} of version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
+
+    const newAssessmentScheme = this.create({
+      version,
+      name: assessmentScheme.name + ' (Copy)',
+      description: assessmentScheme.description,
+      semester: assessmentScheme.semester,
+      generation: assessmentScheme.generation
+    });
+
+    await this.save(newAssessmentScheme);
+
+    for (let criterion of assessmentScheme.criteria) {
+      const {id, ...criterionData} = criterion;
+      this.criterionRepository.createCriterion({assessmentScheme: newAssessmentScheme, ...criterionData});
+    }
+
+    for (let performanceIndicator of assessmentScheme.performanceIndicators) {
+      await this.assessmentSchemesToPerformanceIndicatorsRepository.createAssessmentSchemeToPerformanceIndicator({assessmentScheme: newAssessmentScheme, ...performanceIndicator})
+    }
+    return newAssessmentScheme;
+  }
 }
