@@ -105,7 +105,14 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
       );
     }
 
-    return assessmentScheme;
+    const records = [];
+
+    for(let criterion of assessmentScheme.criteria) {
+      const criterionRecords = criterion.records;
+      records.push(...criterionRecords);
+    }
+
+    return {...assessmentScheme, records};
   }
 
   async duplicateAssessmentScheme(
