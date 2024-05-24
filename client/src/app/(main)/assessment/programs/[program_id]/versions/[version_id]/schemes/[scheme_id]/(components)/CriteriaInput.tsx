@@ -1,5 +1,5 @@
+import { FetchedCriterion } from "@/app/interfaces/Assessment.interface";
 import {
-  Criterion,
   MultipleLevelCriterion,
 } from "@/app/interfaces/Criterion.interface";
 import {
@@ -14,7 +14,7 @@ import {
 interface CriterionInputProps {
   type: "multilevel" | "written" | "multiplechoice";
   variant: "minimal" | "full";
-  criterionObject: Criterion;
+  criterionObject: FetchedCriterion;
 }
 
 const MultilevelInput = ({
@@ -22,7 +22,7 @@ const MultilevelInput = ({
   criterionObject,
 }: {
   variant: "minimal" | "full";
-  criterionObject: Criterion;
+  criterionObject: FetchedCriterion;
 }) => {
   if (variant === "minimal")
     return (
@@ -33,6 +33,7 @@ const MultilevelInput = ({
         allowNegative={false}
         allowDecimal={false}
         w={"6em"}
+        className="z-0 relative"
       />
     );
 
@@ -114,6 +115,7 @@ const MultilevelInput = ({
           // max={(criterionObject.assessment as MultipleLevelCriterion).getMaxScore()}
           allowNegative={false}
           allowDecimal={false}
+          className="z-0 relative"
         />
       </div>
     </div>
@@ -125,7 +127,7 @@ const WrittenInput = ({
   criterionObject,
 }: {
   variant: "minimal" | "full";
-  criterionObject: Criterion;
+  criterionObject: FetchedCriterion;
 }) => {
   if (variant === "minimal")
     return (
@@ -138,6 +140,7 @@ const WrittenInput = ({
           allowNegative={false}
           allowDecimal={false}
           w={"6em"}
+          className="z-0 relative"
         />
       </div>
     );
@@ -176,6 +179,7 @@ const WrittenInput = ({
           // max={(criterionObject.assessment as MultipleLevelCriterion).getMaxScore()}
           allowNegative={false}
           allowDecimal={false}
+          className="z-0 relative"
         />
       </div>
     </div>
@@ -187,7 +191,7 @@ const MultipleChoiceInput = ({
   criterionObject,
 }: {
   variant: "minimal" | "full";
-  criterionObject: Criterion;
+  criterionObject: FetchedCriterion;
 }) => {
   if (variant === "minimal")
     return (
@@ -195,6 +199,7 @@ const MultipleChoiceInput = ({
         placeholder="Select answer"
         data={["A", "B", "C", "D"]}
         w={"6em"}
+        className="z-0 relative"
       />
     );
 
