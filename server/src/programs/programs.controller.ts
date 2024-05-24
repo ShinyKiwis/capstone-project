@@ -377,5 +377,21 @@ export class ProgramsController {
     return this.programsService.extractPerformanceIndicators(+programId, +versionId, +studentOutcomeId, file);
   }
 
+  @Post(':programId/versions/:versionId/student-outcomes/file')
+  @UseInterceptors(
+    ProgramFileInterceptor({
+      fieldName: 'file',
+      path: '/programs/studentoutcomes',
+    }),
+  )
+  async uploadStudentOutcomesFile(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    console.log(file);
+    return this.programsService.extractStudentOutcomes(+programId, +versionId, file);
+  }
+
 }
 

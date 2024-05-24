@@ -310,12 +310,41 @@ export class ProgramsService {
     const firstSheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[firstSheetName];
     const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-    for(let i = 1; i < data.length; i++) {
+    for (let i = 1; i < data.length; i++) {
       const performanceIndicator: CreatePerformanceIndicatorDto = {
         name: data[i][0],
         description: data[i][1],
       }
       await this.performanceIndicatorsRepository.createAPerformanceIndicator(programId, versionId, studentOutcomeId, performanceIndicator);
+    }
+    fs.unlinkSync(file.path)
+    return data;
+  }
+
+  async extractStudentOutcomes(programId: number, versionId: number, file: Express.Multer.File) {
+    const workbook = XLSX.readFile(file.path);
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
+    const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    let currentSO = null;
+    for (let i = 1; i < data.length; i++) {
+      console.log(data[i])
+      if (data[i][0] !== undefined && data[i][0] != currentSO?.name) {
+        const studentOutcome: CreateStudentOutcomeDto = {
+          name: data[i][0],
+          description: data[i][1],
+          expectedGoal: 0,
+          passingThreshold: 0,
+        }
+        console.log(studentOutcome);
+        await this.studentOutcomesRepository.createStudentOutcome(programId, versionId, studentOutcome);
+        currentSO = studentOutcome;
+      }
+      const performanceIndicator: CreatePerformanceIndicatorDto = {
+        name: data[i][2],
+        description: data[i][3],
+      }
+      await this.performanceIndicatorsRepository.createAPerformanceIndicator(programId, versionId, currentSO.id, performanceIndicator);
     }
     fs.unlinkSync(file.path)
     return data;
