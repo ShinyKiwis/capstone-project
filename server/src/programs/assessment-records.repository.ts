@@ -30,6 +30,7 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
     //   id: versionId,
     //   programId,
     // });
+    const createdRecords = [];
 
     for (let record of records) {
       const criterion = await this.criterionRepository.findOneBy({
@@ -56,18 +57,22 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
             `Project not found`,
           );
         }
-
-        const assessmentRecord = this.create({
-          criterion,
-          answer: record.answer,
-          user: { id: record.userId },
-          score: record.score,
-          project,
-        });
-
-        await this.save(assessmentRecord);
       }
+
+      const assessmentRecord = this.create({
+        criterion,
+        answer: record.answer,
+        user: { id: record.userId },
+        score: record.score,
+        project,
+      });
+
+      createdRecords.push(assessmentRecord);
+
+      await this.save(assessmentRecord);
     }
+
+    return createdRecords;
   }
 
   async getAllAssessmentRecords(
