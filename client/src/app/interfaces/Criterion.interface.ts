@@ -1,7 +1,7 @@
 import { BsTelephoneMinus } from "react-icons/bs";
 import { PI } from "./Program.interface";
 
-const index_levelMapping: { [key: number]: string } = {
+export const index_levelMapping: { [key: number]: string } = {
   0: "A",
   1: "B",
   2: "C",

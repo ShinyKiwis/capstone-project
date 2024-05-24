@@ -1,6 +1,8 @@
 import { FetchedCriterion } from "@/app/interfaces/Assessment.interface";
 import {
   MultipleLevelCriterion,
+  index_levelMapping,
+  level_indexMapping,
 } from "@/app/interfaces/Criterion.interface";
 import {
   NumberInput,
@@ -11,29 +13,53 @@ import {
   Textarea,
 } from "@mantine/core";
 
+interface FormInputPropsHandlers{
+  value? :any;
+  onChange?: any;
+  error?: string | undefined;
+  onFocus?: any;
+  onBlur?: any;
+}
+
 interface CriterionInputProps {
   type: "multilevel" | "written" | "multiplechoice";
   variant: "minimal" | "full";
   criterionObject: FetchedCriterion;
+  scoreInputProps: FormInputPropsHandlers;
+  answerInputProps: FormInputPropsHandlers;
 }
 
 const MultilevelInput = ({
   variant,
   criterionObject,
+  scoreInputProps,
+  answerInputProps
 }: {
   variant: "minimal" | "full";
   criterionObject: FetchedCriterion;
+  scoreInputProps: FormInputPropsHandlers;
+  answerInputProps: FormInputPropsHandlers;
 }) => {
   if (variant === "minimal")
     return (
       <NumberInput
         placeholder="Score"
         min={0}
-        // max={(criterionObject.assessment as MultipleLevelCriterion).getMaxScore()}
+        max={(criterionObject.levels[3].maxScore)}
         allowNegative={false}
         allowDecimal={false}
         w={"6em"}
         className="z-0 relative"
+        {...scoreInputProps}
+        onChange={(newVal) => {
+          scoreInputProps.onChange(newVal);
+          if (newVal.toString() !== ''){
+            let matchingIdx = criterionObject.levels.findIndex(level => newVal as number >= level.minScore && newVal as number <= level.maxScore)
+            let newLevel = index_levelMapping[matchingIdx];
+            answerInputProps.onChange(newLevel);
+          }
+          else answerInputProps.onChange('');
+        }}
       />
     );
 
@@ -125,22 +151,27 @@ const MultilevelInput = ({
 const WrittenInput = ({
   variant,
   criterionObject,
+  answerInputProps,
+  scoreInputProps
 }: {
   variant: "minimal" | "full";
   criterionObject: FetchedCriterion;
+  answerInputProps: FormInputPropsHandlers;
+  scoreInputProps: FormInputPropsHandlers;
 }) => {
   if (variant === "minimal")
     return (
       <div className="flex w-full flex-col gap-2">
-        <TextInput placeholder="Written response" miw={'10em'} />
+        <TextInput placeholder="Written response" miw={'10em'} {...answerInputProps} />
         <NumberInput
           placeholder="Score"
           min={0}
-          // max={(criterionObject.assessment as MultipleLevelCriterion).getMaxScore()}
+          max={(criterionObject.levels[0].maxScore)}
           allowNegative={false}
           allowDecimal={false}
           w={"6em"}
           className="z-0 relative"
+          {...scoreInputProps}
         />
       </div>
     );
@@ -189,17 +220,30 @@ const WrittenInput = ({
 const MultipleChoiceInput = ({
   variant,
   criterionObject,
+  scoreInputProps,
+  answerInputProps
 }: {
   variant: "minimal" | "full";
   criterionObject: FetchedCriterion;
+  answerInputProps: FormInputPropsHandlers;
+  scoreInputProps: FormInputPropsHandlers;
 }) => {
   if (variant === "minimal")
     return (
       <Select
         placeholder="Select answer"
-        data={["A", "B", "C", "D"]}
+        data={criterionObject.levels.length === 5 ? ["A", "B", "C", "D", "E"] : ["A", "B", "C", "D"]}
         w={"6em"}
         className="z-0 relative"
+        {...answerInputProps}
+        onChange={(newVal) => {
+          answerInputProps.onChange(newVal);
+          if (newVal){
+            let achievedScore = criterionObject.levels[level_indexMapping[newVal]].maxScore;
+            scoreInputProps.onChange(achievedScore);
+          }
+          else scoreInputProps.onChange(null);
+        }}
       />
     );
 
@@ -285,21 +329,25 @@ function CriterionInput({
   type,
   variant,
   criterionObject,
+  scoreInputProps,
+  answerInputProps
 }: CriterionInputProps) {
   switch (type) {
     case "multilevel":
       return (
-        <MultilevelInput variant={variant} criterionObject={criterionObject} />
+        <MultilevelInput variant={variant} criterionObject={criterionObject} scoreInputProps={scoreInputProps} answerInputProps={answerInputProps} />
       );
     case "written":
       return (
-        <WrittenInput variant={variant} criterionObject={criterionObject} />
+        <WrittenInput variant={variant} criterionObject={criterionObject} answerInputProps={answerInputProps} scoreInputProps={scoreInputProps} />
       );
     case "multiplechoice":
       return (
         <MultipleChoiceInput
           variant={variant}
           criterionObject={criterionObject}
+          answerInputProps={answerInputProps}
+          scoreInputProps={scoreInputProps}
         />
       );
     default:
