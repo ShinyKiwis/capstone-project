@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ProgramsService } from './programs.service';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { CreateProgramDto } from './dto/create-program.dto';
@@ -15,6 +15,8 @@ import { CreateAssessmentSchemeDto } from './dto/create-assessment-scheme.dto';
 import { CreateAssessmentRecordDto } from './dto/create-assessment-record.dto';
 import { CreateAssessmentRecordsDto } from './dto/create-assessment-records.dto';
 import { GetAssessmentRecordsFilterDto } from './dto/get-assessment-records-filter.dto';
+import ProgramFileInterceptor from './programFile.interceptor';
+import { promises } from 'fs';
 
 @Controller('programs')
 export class ProgramsController {
@@ -352,4 +354,44 @@ export class ProgramsController {
       +assessmentSchemeId,
     );
   }
+
+  @Post(':programId/versions/:versionId/student-outcomes/:studentOutcomeId/performance-indicators/file')
+  @UseInterceptors(
+    ProgramFileInterceptor({
+      fieldName: 'file',
+      path: '/programs',
+    }),
+  )
+  async uploadPerformanceIndicatorsFile(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('studentOutcomeId') studentOutcomeId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    // let response = {
+    //   originalname: file.originalname,
+    //   fileName: file.filename,
+    //   path: file.path,
+    // }
+    console.log(file);
+    return this.programsService.extractPerformanceIndicators(+programId, +versionId, +studentOutcomeId, file);
+  }
+
+  @Post(':programId/versions/:versionId/student-outcomes/file')
+  @UseInterceptors(
+    ProgramFileInterceptor({
+      fieldName: 'file',
+      path: '/programs/studentoutcomes',
+    }),
+  )
+  async uploadStudentOutcomesFile(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    console.log(file);
+    return this.programsService.extractStudentOutcomes(+programId, +versionId, file);
+  }
+
 }
+
