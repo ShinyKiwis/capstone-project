@@ -11,6 +11,7 @@ import { useProgram } from "@/app/providers/ProgramProvider";
 import Program from "@/app/interfaces/Program.interface";
 import axios from "axios";
 import { AssessSchemeDetail } from "@/app/interfaces/Assessment.interface";
+import { useQuery } from "@tanstack/react-query";
 
 const SchemeDetail = ({
   params,
@@ -53,20 +54,20 @@ const SchemeDetail = ({
     }
   });
 
-  useEffect(() => {
-    // Retreive scheme data
-    if (program){
-      axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}`)
-      .then(res => {
-        console.log("fetch response", res.data)
-        setFetchedScheme(res.data)
-      })
-      .catch(err => {
-        console.log("Err fetching scheme:", err.response)
-        return <div>{err.response}</div>;
-      })
-    }
-  }, [program]);
+  // Fetch schemes
+  const { data: fetchedSchemes, isLoading: schemesIsLoading } = useQuery({
+    queryFn: async () => {
+      let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}`;
+      let response = await (await axios.get(queryURL)).data;
+      console.log("refetched scheme detail");
+      setFetchedScheme(response);
+      return response;
+    },
+    queryKey: ["schemeDetail"],
+    enabled: true,
+    staleTime: Infinity,
+  });
+
 
   if (!fetchedScheme) return <div>Fetching scheme data...</div>;
   return (
