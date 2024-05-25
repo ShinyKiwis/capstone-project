@@ -89,11 +89,26 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
         `Version with id ${versionId} of program with id ${programId} not found`,
       );
     }
+
+    // const query = this.createQueryBuilder('assessmentScheme').leftJoinAndSelect('assessmentScheme.criteria', 'criteria').leftJoinAndSelect('assessmentScheme.version', 'version').where('assessmentScheme.id = :assessmentSchemeId', {assessmentSchemeId});
+
+    // const assessmentScheme = await query.getMany();
+
+
     const assessmentScheme = await this.findOne({
       where: {
         version,
         id: assessmentSchemeId,
       },
+      order: {
+        criteria: {
+          id: 'ASC',
+          records: {
+            criterionId: 'ASC',
+            id: 'ASC'
+          }
+        }
+      }
       // relations: {
       //   : true,
       // },
