@@ -1,6 +1,6 @@
 import { CriterionType } from "./Criterion.interface";
 
-interface FetchedRecordUser {
+export interface FetchedRecordUser {
   id: number;
   name: string;
   username: string;
@@ -43,7 +43,7 @@ export interface FetchedCriterionRecord{
   score: number;
   user: FetchedRecordUser | null;
   project: null | {
-    id: number,
+    code: number,
     name: string,
     [key:string]: any
   }
@@ -66,7 +66,6 @@ export interface FetchedCriterion {
     description: string;
   }[];
   levels: FetchedCriterionLevel_level[] | FetchedCriterionLevel_written[];
-  records: any[];
 }
 
 export interface AssessSchemeListItem {
@@ -94,4 +93,5 @@ export interface AssessSchemeDetail extends AssessSchemeListItem {
       description: string;
     };
   }[];
+  records: FetchedCriterionRecord[];
 }

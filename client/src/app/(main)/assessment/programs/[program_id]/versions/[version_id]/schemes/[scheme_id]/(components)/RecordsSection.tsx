@@ -10,358 +10,48 @@ import { IoCreate } from "react-icons/io5";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { sortBy } from "lodash";
 import useNavigate from "@/app/hooks/useNavigate";
-import { AssessSchemeDetail, FetchedCriterion, FetchedCriterionRecord } from "@/app/interfaces/Assessment.interface";
+import {
+  AssessSchemeDetail,
+  FetchedCriterion,
+  FetchedCriterionRecord,
+  FetchedRecordUser,
+} from "@/app/interfaces/Assessment.interface";
 
-interface MockAssessmentRecords {
-  id: number;
-  student: {
-    id: number;
-    name: string;
-  };
-  project: {
-    id: number;
-    name: string;
-  };
-  critera: { number: number; level: string }[];
-  score: number;
+interface AssessmentRecordRow {
+  user: FetchedRecordUser | null;
+  project: FetchedCriterionRecord["project"];
+  answers: FetchedCriterionRecord[];
+  totalScore: number;
 }
 
-const fetchedRecords: FetchedCriterionRecord[] = [
-  {
-    id: 23,
-    criterionId: 5,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "Nam answer",
-    score: 2,
-    project: null,
-    user: {
-      id: 1,
-      email: "daonam@hcmut.edu.vn",
-      username: "daonam",
-      name: "Đào Nam",
-      roles: [
-        {
-          id: 1,
-          name: "Student",
-          resources: [
-            {
-              id: 5,
-              name: "view_projects",
-            },
-            {
-              id: 6,
-              name: "enroll_projects",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: 32,
-    criterionId: 5,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "Vi own answer",
-    project: null,
-    score: 3,
-    user: {
-      id: 2,
-      email: "danvi@hcmut.edu.vn",
-      username: "danvi",
-      name: "Dân Vĩ",
-      roles: [
-        {
-          id: 1,
-          name: "Student",
-          resources: [
-            {
-              id: 5,
-              name: "view_projects",
-            },
-            {
-              id: 6,
-              name: "enroll_projects",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: 29,
-    criterionId: 5,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "Vi in group answer",
-    project: {id:2, name:'Developing id2'},
-    score: 6,
-    user: {
-      id: 2,
-      email: "danvi@hcmut.edu.vn",
-      username: "danvi",
-      name: "Dân Vĩ",
-      roles: [
-        {
-          id: 1,
-          name: "Student",
-          resources: [
-            {
-              id: 5,
-              name: "view_projects",
-            },
-            {
-              id: 6,
-              name: "enroll_projects",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: 26,
-    criterionId: 5,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "Group answer",
-    score: 10,
-    project: {id:2, name:'Developing id2'},
-    user: null,
-  },
-  {
-    id: 24,
-    criterionId: 6,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "C",
-    score: 2,
-    project: null,
-    user: {
-      id: 1,
-      email: "daonam@hcmut.edu.vn",
-      username: "daonam",
-      name: "Đào Nam",
-      roles: [
-        {
-          id: 1,
-          name: "Student",
-          resources: [
-            {
-              id: 5,
-              name: "view_projects",
-            },
-            {
-              id: 6,
-              name: "enroll_projects",
-            },
-          ],
-        },
-      ],
-    },
-  },
+function groupRecords(data: FetchedCriterionRecord[]) {
+  const groups: {[key: string]: AssessmentRecordRow} = {};
 
-  {
-    id: 33,
-    criterionId: 6,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "B",
-    score: 1,
-    project: null,
-    user: {
-      id: 2,
-      email: "danvi@hcmut.edu.vn",
-      username: "danvi",
-      name: "Dân Vĩ",
-      roles: [
-        {
-          id: 1,
-          name: "Student",
-          resources: [
-            {
-              id: 5,
-              name: "view_projects",
-            },
-            {
-              id: 6,
-              name: "enroll_projects",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: 30,
-    criterionId: 6,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "A",
-    score: 0,
-    project: {id:2, name:'Developing id2'},
-    user: {
-      id: 2,
-      email: "danvi@hcmut.edu.vn",
-      username: "danvi",
-      name: "Dân Vĩ",
-      roles: [
-        {
-          id: 1,
-          name: "Student",
-          resources: [
-            {
-              id: 5,
-              name: "view_projects",
-            },
-            {
-              id: 6,
-              name: "enroll_projects",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: 27,
-    criterionId: 6,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "D",
-    score: 4,
-    project: {id:2, name:'Developing id2'},
-    user: null,
-  },
+  data.forEach((item) => {
+    let key = "";
 
-  {
-    id: 25,
-    criterionId: 7,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "A",
-    score: 0,
-    project: null,
-    user: {
-      id: 1,
-      email: "daonam@hcmut.edu.vn",
-      username: "daonam",
-      name: "Đào Nam",
-      roles: [
-        {
-          id: 1,
-          name: "Student",
-          resources: [
-            {
-              id: 5,
-              name: "view_projects",
-            },
-            {
-              id: 6,
-              name: "enroll_projects",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: 34,
-    criterionId: 7,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "D",
-    score: 0,
-    project: null,
-    user: {
-      id: 2,
-      email: "danvi@hcmut.edu.vn",
-      username: "danvi",
-      name: "Dân Vĩ",
-      roles: [
-        {
-          id: 1,
-          name: "Student",
-          resources: [
-            {
-              id: 5,
-              name: "view_projects",
-            },
-            {
-              id: 6,
-              name: "enroll_projects",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: 31,
-    criterionId: 7,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "C",
-    score: 0,
-    project: {id:2, name:'Developing id2'},
+    if (item.project && item.user) {
+      key = `project-${item.project.code}-user-${item.user.id}`;
+    } else if (item.user) {
+      key = `user-${item.user.id}`;
+    } else if (item.project) {
+      key = `project-${item.project.code}`;
+    }
 
-    user: {
-      id: 2,
-      email: "danvi@hcmut.edu.vn",
-      username: "danvi",
-      name: "Dân Vĩ",
-      roles: [
-        {
-          id: 1,
-          name: "Student",
-          resources: [
-            {
-              id: 5,
-              name: "view_projects",
-            },
-            {
-              id: 6,
-              name: "enroll_projects",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: 28,
-    criterionId: 7,
-    criterionAssessmentSchemeId: 6,
-    criterionAssessmentSchemeVersionId: 1,
-    criterionAssessmentSchemeVersionProgramId: 1,
-    answer: "E",
-    score: 5,
-    project: {id:2, name:'Developing id2'},
-    user: null,
-  },
-];
+    if (!groups[key]) {
+      groups[key] = {
+        user: item.user,
+        project: item.project,
+        answers: [],
+        totalScore: 0,
+      };
+    }
 
-const mockCriteriaCount = 3;
-const criteraColumns: DataTableColumn<MockAssessmentRecords>[] = [];
-for (let i = 0; i < mockCriteriaCount; i++) {
-  criteraColumns.push({
-    accessor: "criterion",
-    title: i + 1,
-    width: "5%",
-    render: (record: MockAssessmentRecords) => record.critera[i].level,
+    groups[key].answers.push(item);
+    groups[key].totalScore += item.score;
   });
+
+  return Object.values(groups);
 }
 
 const RecordsSection = ({
@@ -369,11 +59,11 @@ const RecordsSection = ({
 }: {
   schemeObject: AssessSchemeDetail;
 }) => {
-  const [displayingRecords, setDisplayingRecords] =
-    useState<MockAssessmentRecords[]>([]);
-  const [searchedRecords, setSearchedRecords] = useState<
-    MockAssessmentRecords[]
-  >([]);
+  const allRecords = groupRecords(schemeObject.records);
+  var avgScore = allRecords.reduce((total, next) => total + next.totalScore, 0) / allRecords.length;
+  const [displayingRecords, setDisplayingRecords] = useState<AssessmentRecordRow[]>(allRecords);
+  const [searchedRecords, setSearchedRecords] = useState<AssessmentRecordRow[]>([],
+  );
 
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -381,68 +71,42 @@ const RecordsSection = ({
   const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
   const [page, setPage] = useState(1);
   const [sortStatus, setSortStatus] = useState<
-    DataTableSortStatus<MockAssessmentRecords>
+    DataTableSortStatus<AssessmentRecordRow>
   >({
-    columnAccessor: "id",
+    columnAccessor: "user.id",
     direction: "asc",
   });
 
-  function groupBy(data: FetchedCriterionRecord[]) {
-    const groups = {};
 
-    data.forEach((item) => {
-      let key = "";
+  function handleSearchRecords(searchTerm?: string) {
+    setPage(1);
+    if (!searchTerm) searchTerm = searchQuery;
+    if (searchTerm === "") {
+      setSearchedRecords([]);
+      setDisplayingRecords(allRecords);
+      return;
+    }
 
-      if (item.project && item.user) {
-        key = `project-${item.project.id}-user-${item.user.id}`;
-      } else if (item.user) {
-        key = `user-${item.user.id}`;
-      } else if (item.project) {
-        key = `project-${item.project.id}`;
-      }
-
-      if (!groups[key]) {
-        groups[key] = [];
-      }
-
-      groups[key].push(item);
+    let results = allRecords.filter((record) => {
+      const { user, project } = record;
+      return (
+        user?.id.toString().includes(searchTerm) ||
+        user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        project?.code.toString().includes(searchTerm) ||
+        project?.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     });
 
-    return Object.values(groups);
+    setDisplayingRecords(results);
+    setSearchedRecords(results);
   }
-
-  const groupedData = groupBy(data);
-  console.log(groupedData);
-
-  // function handleSearchRecords(searchTerm?: string) {
-  //   setPage(1);
-  //   if (!searchTerm) searchTerm = searchQuery;
-  //   if (searchTerm === "") {
-  //     setSearchedRecords([]);
-  //     setDisplayingRecords(fetchedRecords);
-  //     return;
-  //   }
-
-  //   let results = fetchedRecords.filter((record) => {
-  //     const { student, project } = record;
-  //     return (
-  //       student.id.toString().includes(searchTerm) ||
-  //       student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //       project.id.toString().includes(searchTerm) ||
-  //       project.name.toLowerCase().includes(searchTerm.toLowerCase())
-  //     );
-  //   });
-
-  //   setDisplayingRecords(results);
-  //   setSearchedRecords(results);
-  // }
 
   // useEffect for sorting
   useEffect(() => {
     const data = sortBy(
       displayingRecords,
       sortStatus.columnAccessor,
-    ) as MockAssessmentRecords[];
+    ) as AssessmentRecordRow[];
     setDisplayingRecords(
       sortStatus.direction === "desc" ? data.reverse() : data,
     );
@@ -453,15 +117,24 @@ const RecordsSection = ({
     setPage(1);
   }, [pageSize]);
 
-  // useEffect(() => {
-  //   const from = (page - 1) * pageSize;
-  //   const to = from + pageSize;
-  //   setDisplayingRecords(
-  //     searchedRecords.length > 0
-  //       ? searchedRecords.slice(from, to)
-  //       : fetchedRecords.slice(from, to),
-  //   );
-  // }, [page, pageSize]);
+  useEffect(() => {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize;
+    setDisplayingRecords(
+      searchedRecords.length > 0
+        ? searchedRecords.slice(from, to)
+        : allRecords.slice(from, to),
+    );
+  }, [page, pageSize]);
+
+  const criteraColumns: DataTableColumn<AssessmentRecordRow>[] = [];
+  for (let i = 0; i < schemeObject.criteria.length; i++) {
+    criteraColumns.push({
+      accessor: "criterion",
+      title: `Criterion ${i + 1}`,
+      render: (record: AssessmentRecordRow) => <div className="w-fit max-w-56 overflow-hidden">{record.answers[i].answer}</div>,
+    });
+  }
 
   return (
     <div style={{ maxWidth: "74vw" }}>
@@ -473,7 +146,7 @@ const RecordsSection = ({
             </Text>
           </td>
           <td style={{ verticalAlign: "top" }}>
-            <Text size="md">{"need max score for db"}</Text>
+            <Text size="md">{allRecords.length}</Text>
           </td>
         </tr>
         <tr>
@@ -483,7 +156,7 @@ const RecordsSection = ({
             </Text>
           </td>
           <td>
-            <Text size="md">{"avg calculate from records"}</Text>
+            <Text size="md">{avgScore}</Text>
           </td>
         </tr>
       </table>
@@ -505,22 +178,25 @@ const RecordsSection = ({
               size={20}
               className="group-focus-within:text-blue text-gray"
               onClick={(e) => {
-                // handleSearchRecords();
+                handleSearchRecords();
               }}
             />
           }
           onKeyDown={(event) => {
             if (event.key === "Enter") {
-              // handleSearchRecords();
+              handleSearchRecords();
             }
           }}
         />
       </div>
+            
+      {/* <Button onClick={()=>{setDisplayingRecords(groupRecords(schemeObject.records))}}>Refresh table</Button> */}
 
       <div>
         <DataTable
           height={500}
           withTableBorder
+          withColumnBorders
           borderRadius="md"
           striped
           // fetching={fetching}
@@ -530,19 +206,19 @@ const RecordsSection = ({
           records={displayingRecords}
           columns={[
             {
-              accessor: "student.id",
+              accessor: "user.id",
               title: "Student ID",
               width: "10%",
               sortable: true,
             },
             {
-              accessor: "student.name",
+              accessor: "user.name",
               title: "Student Full Name",
               width: "20%",
               sortable: true,
             },
             {
-              accessor: "project.id",
+              accessor: "project.code",
               title: "Project ID",
               width: "10%",
               sortable: true,
@@ -554,7 +230,7 @@ const RecordsSection = ({
               sortable: true,
             },
             {
-              accessor: "score",
+              accessor: "totalScore",
               title: "Score",
               sortable: true,
             },
@@ -570,7 +246,7 @@ const RecordsSection = ({
                     <Button
                       variant="transparent"
                       onClick={() =>
-                        navigate(`${schemeObject.id}/edit/${record.id}`)
+                        navigate(`${schemeObject.id}/edit/${record.user?.id}`)
                       }
                     >
                       <AiOutlineEdit size={25} />
@@ -591,7 +267,7 @@ const RecordsSection = ({
           totalRecords={
             searchedRecords.length > 0
               ? searchedRecords.length
-              : fetchedRecords.length
+              : allRecords.length
           }
           recordsPerPage={pageSize}
           page={page}
