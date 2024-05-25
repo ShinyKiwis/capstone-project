@@ -1,4 +1,4 @@
-import { Button, Group, Text, TextInput } from "@mantine/core";
+import { Button, Group, Modal, Text, TextInput } from "@mantine/core";
 import {
   DataTable,
   DataTableSortStatus,
@@ -16,6 +16,9 @@ import {
   FetchedCriterionRecord,
   FetchedRecordUser,
 } from "@/app/interfaces/Assessment.interface";
+import { useQueryClient } from "@tanstack/react-query";
+import { useDisclosure } from "@mantine/hooks";
+import { toggleNotification } from "@/app/lib/notification";
 
 interface AssessmentRecordRow {
   user: FetchedRecordUser | null;
@@ -25,7 +28,7 @@ interface AssessmentRecordRow {
 }
 
 function groupRecords(data: FetchedCriterionRecord[]) {
-  const groups: {[key: string]: AssessmentRecordRow} = {};
+  const groups: { [key: string]: AssessmentRecordRow } = {};
 
   data.forEach((item) => {
     let key = "";
@@ -60,12 +63,21 @@ const RecordsSection = ({
   schemeObject: AssessSchemeDetail;
 }) => {
   const allRecords = groupRecords(schemeObject.records);
-  var avgScore = allRecords.reduce((total, next) => total + next.totalScore, 0) / allRecords.length;
-  const [displayingRecords, setDisplayingRecords] = useState<AssessmentRecordRow[]>(allRecords);
-  const [searchedRecords, setSearchedRecords] = useState<AssessmentRecordRow[]>([],
+  var avgScore =
+    Math.round(
+      (allRecords.reduce((total, next) => total + next.totalScore, 0) /
+        allRecords.length) *
+        100,
+    ) / 100;
+  const [displayingRecords, setDisplayingRecords] =
+    useState<AssessmentRecordRow[]>(allRecords);
+  const [searchedRecords, setSearchedRecords] = useState<AssessmentRecordRow[]>(
+    [],
   );
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const [searchQuery, setSearchQuery] = useState("");
   const PAGE_SIZES = [5, 20, 50, 100];
   const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
@@ -76,7 +88,6 @@ const RecordsSection = ({
     columnAccessor: "user.id",
     direction: "asc",
   });
-
 
   function handleSearchRecords(searchTerm?: string) {
     setPage(1);
@@ -130,9 +141,18 @@ const RecordsSection = ({
   const criteraColumns: DataTableColumn<AssessmentRecordRow>[] = [];
   for (let i = 0; i < schemeObject.criteria.length; i++) {
     criteraColumns.push({
-      accessor: "criterion",
+      accessor: `answers.${i}.score`,
       title: `Criterion ${i + 1}`,
-      render: (record: AssessmentRecordRow) => <div className="w-fit max-w-56 overflow-hidden">{record.answers[i].answer}</div>,
+      sortable: true,
+      render: (record: AssessmentRecordRow) => (
+        <div className="w-fit max-w-56 overflow-hidden">
+          {record.answers[i].score} (
+          {record.answers[i].answer.length > 20
+            ? record.answers[i].answer.slice(0, 19) + "..."
+            : record.answers[i].answer}
+          )
+        </div>
+      ),
     });
   }
 
@@ -189,7 +209,7 @@ const RecordsSection = ({
           }}
         />
       </div>
-            
+
       {/* <Button onClick={()=>{setDisplayingRecords(groupRecords(schemeObject.records))}}>Refresh table</Button> */}
 
       <div>
@@ -241,6 +261,7 @@ const RecordsSection = ({
               accessor: "actions",
               title: "Actions",
               render: (record, index) => {
+                const [delModalOpened, { open, close }] = useDisclosure(false);
                 return (
                   <Group gap={4} justify="center" wrap="nowrap">
                     <Button
@@ -251,9 +272,60 @@ const RecordsSection = ({
                     >
                       <AiOutlineEdit size={25} />
                     </Button>
-                    <Button variant="transparent" c={"red"}>
+                    <Button
+                      variant="transparent"
+                      c={"red"}
+                      onClick={open}
+                    >
                       <AiOutlineDelete size={25} />
                     </Button>
+                    <Modal
+                      key={index}
+                      opened={delModalOpened}
+                      onClose={() => {
+                        close();
+                      }}
+                      centered
+                      size="45%"
+                      padding="md"
+                      yOffset="8em"
+                      title={
+                        <Text size="lg" c="gray" fw={600}>
+                          Please confirm deletion
+                        </Text>
+                      }
+                    >
+                      <Text size="sm">
+                        Are you sure you want to delete this record? This cannot
+                        be undone!
+                      </Text>
+                      <Group justify="flex-end" gap="xs" mt="md">
+                        <Button
+                          onClick={() => {
+                            close();
+                          }}
+                          variant="outline"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          c={"red"}
+                          onClick={() => {
+                            // send API to delete
+                            setDisplayingRecords(
+                              displayingRecords.toSpliced(index, 1),
+                            );
+                            queryClient.invalidateQueries({
+                              queryKey: ["schemeDetail"],
+                            });
+                            toggleNotification("Success", `Record deleted`, 'success');
+                            close();
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </Group>
+                    </Modal>
                   </Group>
                 );
               },
