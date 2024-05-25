@@ -11,6 +11,7 @@ import {
   InputBase,
   useCombobox,
 } from "@mantine/core";
+import { UserOptType } from "@/app/interfaces/User.interface";
 
 interface ProfileSelectorProps {
   onChange: Dispatch<SetStateAction<string[]>>;

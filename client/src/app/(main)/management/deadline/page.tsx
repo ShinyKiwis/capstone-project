@@ -23,7 +23,7 @@ const DeadlineCard = ({ deadline }: { deadline: Deadline }) => {
       children: (
         <Text size="sm">
           Are you sure you want to delete {deadline?.name} for semester{" "}
-          {deadline?.semester} ? This action can't be undone.
+          {deadline?.semester} ? This action can`&apos;`t be undone.
         </Text>
       ),
       labels: { confirm: "Delete", cancel: "Cancel" },
@@ -98,7 +98,7 @@ const DeadlinesManagement = () => {
         Deadlines
       </Text> */}
       {deadlines.map((deadline) => (
-        <DeadlineCard deadline={deadline} />
+        <DeadlineCard deadline={deadline} key={deadline.startsAt.toString()}/>
       ))}
     </div>
   );

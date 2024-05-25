@@ -29,9 +29,9 @@ const SideBar = () => {
           onClick={() => setToggleSidebar(!toggleSidebar)}
         >
           {toggleSidebar ? (
-            <IconSquareChevronLeft size={30} />
+            <IconSquareChevronLeft size={30} aria-label="sidebar-expand-button" />
           ) : (
-            <IconSquareChevronRight size={35} />
+            <IconSquareChevronRight size={35} aria-label="sidebar-expand-button" />
           )}
         </button>
       </div>

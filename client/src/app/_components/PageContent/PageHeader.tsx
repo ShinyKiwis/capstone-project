@@ -2,9 +2,7 @@
 
 import React, { useContext, useEffect } from "react";
 import { Profile } from "..";
-import { FaBell } from "react-icons/fa";
 import { MdArrowDropDown } from "react-icons/md";
-import { usePageTitleContext } from "@/app/providers/PageTitleProvider";
 import { Avatar, Button, Popover, Stack, Text } from "@mantine/core";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { getShortUserName } from "@/app/lib/getShortName";
@@ -37,6 +35,12 @@ const PageHeader = ({pageTitle}: {pageTitle: string}) => {
         {pageTitle}
       </Text>
       <div className="ms-auto flex gap-4">
+<<<<<<< HEAD
+=======
+        {/* <button className="w-fit">
+          <FaBell size={20} />
+        </button> */}
+>>>>>>> 207703b (commit for slide preparation)
         <Popover position="bottom-end" shadow="md" width={200}>
           <Popover.Target>
             <div className="flex items-center gap-2">

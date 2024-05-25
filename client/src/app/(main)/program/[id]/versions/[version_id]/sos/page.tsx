@@ -3,11 +3,10 @@ import { useEffect, useState } from 'react'
 import Program, { SO, Version } from '@/app/interfaces/Program.interface';
 import { useBreadCrumbs } from '@/app/providers/BreadCrumbProvider';
 import { useProgram } from '@/app/providers/ProgramProvider';
-import { ActionIcon, Anchor, Box, Group, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Box, Group, Text } from '@mantine/core';
 import formatDate from '@/app/lib/formatDate';
 import CreateSOModal from '@/app/_components/Modals/SO/CreateSOModal';
 import { PageHeader, UploadFileModal } from '@/app/_components';
-import { BiSearch } from 'react-icons/bi';
 import { DataTable } from 'mantine-datatable';
 import Link from 'next/link';
 import { IconEye, IconTrash } from '@tabler/icons-react';

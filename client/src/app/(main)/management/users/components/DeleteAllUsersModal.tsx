@@ -36,7 +36,7 @@ const DeleteAllUsersModal = ({
         <Text size="sm">
           The following users will be deleted:
           {selectedRecords.map((record) => (
-            <Text>{record.name}</Text>
+            <Text key={record.id}>{record.name}</Text>
           ))}
         </Text>
       ),
