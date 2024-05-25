@@ -60,7 +60,7 @@ const RecordsSection = ({
   schemeObject: AssessSchemeDetail;
 }) => {
   const allRecords = groupRecords(schemeObject.records);
-  var avgScore = allRecords.reduce((total, next) => total + next.totalScore, 0) / allRecords.length;
+  var avgScore = Math.round(allRecords.reduce((total, next) => total + next.totalScore, 0) / allRecords.length*100)/100;
   const [displayingRecords, setDisplayingRecords] = useState<AssessmentRecordRow[]>(allRecords);
   const [searchedRecords, setSearchedRecords] = useState<AssessmentRecordRow[]>([],
   );
