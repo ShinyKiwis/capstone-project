@@ -362,7 +362,7 @@ export class ProgramsController {
       path: '/programs',
     }),
   )
-  async uploadPerformanceIndicatorsFile(
+  uploadPerformanceIndicatorsFile(
     @Param('programId') programId: string,
     @Param('versionId') versionId: string,
     @Param('studentOutcomeId') studentOutcomeId: string,
@@ -384,13 +384,30 @@ export class ProgramsController {
       path: '/programs/studentoutcomes',
     }),
   )
-  async uploadStudentOutcomesFile(
+  uploadStudentOutcomesFile(
     @Param('programId') programId: string,
     @Param('versionId') versionId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
     console.log(file);
     return this.programsService.extractStudentOutcomes(+programId, +versionId, file);
+  }
+
+  @Delete(':programId/versions/:versionId/assessment-schemes/:assessmentSchemeId/criteria/:criterionId/assessment-records/:assessmentRecordId')
+  deleteAnAssessmentRecord(
+    @Param('programId') programId: string,
+    @Param('versionId') versionId: string,
+    @Param('assessmentSchemeId') assessmentSchemeId: string,
+    @Param('criterionId') criterionId: string,
+    @Param('assessmentRecordId') assessmentRecordId: string,
+  ) {
+    return this.programsService.deleteAnAssessmentRecord(
+      +programId,
+      +versionId,
+      +assessmentSchemeId,
+      +criterionId,
+      +assessmentRecordId,
+    );
   }
 
 }

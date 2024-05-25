@@ -463,4 +463,19 @@ export class ProgramsService {
       }
     }
   }
+
+  async deleteAnAssessmentRecord(programId: number, versionId: number, assessmentSchemeId: number, criterionId: number, assessmentRecordId: number) {
+    const result = await this.assessmentRecordsRepository.delete({
+      criterionAssessmentSchemeVersionProgramId: programId,
+      criterionAssessmentSchemeVersionId: versionId,
+      criterionAssessmentSchemeId: assessmentSchemeId,
+      criterionId,
+      id: assessmentRecordId
+    });
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        `Assessment Record with id ${assessmentRecordId} of Assessment Scheme with id ${assessmentSchemeId} of version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
+  }
 }

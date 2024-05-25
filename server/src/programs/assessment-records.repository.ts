@@ -164,4 +164,38 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
 
     return assessmentRecords;
   }
+
+  async deleteAnAssessmentRecord(
+    programId: number,
+    versionId: number,
+    assessmentSchemeId: number,
+    criterionId: number,
+    assessmentRecordId: number,
+  ) {
+    const criterion = await this.criterionRepository.findOneBy({
+      id: criterionId,
+      assessmentSchemeId,
+      assessmentSchemeVersionId: versionId,
+      assessmentSchemeVersionProgramId: programId,
+    });
+
+    if (!criterion) {
+      throw new NotFoundException(
+        `Criterion not found`,
+      );
+    }
+
+    const assessmentRecord = await this.findOneBy({
+      id: assessmentRecordId,
+      criterion,
+    });
+
+    if (!assessmentRecord) {
+      throw new NotFoundException(
+        `Assessment Record not found`,
+      );
+    }
+
+    await this.delete(assessmentRecord);
+  }
 }
