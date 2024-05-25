@@ -106,6 +106,9 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
           records: {
             criterionId: 'ASC',
             id: 'ASC'
+          },
+          levels: {
+            id: 'ASC'
           }
         }
       }
