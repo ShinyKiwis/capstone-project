@@ -64,8 +64,9 @@ export interface FetchedCriterion {
     studentOutcomeVersionProgramId: number;
     name: string;
     description: string;
-  }[];
+  };
   levels: FetchedCriterionLevel_level[] | FetchedCriterionLevel_written[];
+  records: FetchedCriterionRecord[];
 }
 
 export interface AssessSchemeListItem {

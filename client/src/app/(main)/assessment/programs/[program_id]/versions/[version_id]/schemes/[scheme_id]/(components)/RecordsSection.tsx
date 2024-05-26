@@ -248,6 +248,13 @@ const RecordsSection = ({
               title: "Project Name",
               width: "30%",
               sortable: true,
+              render: (record) => {
+                if (record.project)
+                  return record.project?.name.length > 40
+                    ? record.project?.name.slice(0, 39) + "..."
+                    : record.project?.name;
+                else return "";
+              },
             },
             {
               accessor: "totalScore",
@@ -272,11 +279,7 @@ const RecordsSection = ({
                     >
                       <AiOutlineEdit size={25} />
                     </Button>
-                    <Button
-                      variant="transparent"
-                      c={"red"}
-                      onClick={open}
-                    >
+                    <Button variant="transparent" c={"red"} onClick={open}>
                       <AiOutlineDelete size={25} />
                     </Button>
                     <Modal
@@ -318,7 +321,11 @@ const RecordsSection = ({
                             queryClient.invalidateQueries({
                               queryKey: ["schemeDetail"],
                             });
-                            toggleNotification("Success", `Record deleted`, 'success');
+                            toggleNotification(
+                              "Success",
+                              `Record deleted`,
+                              "success",
+                            );
                             close();
                           }}
                         >

@@ -26,6 +26,23 @@ const OverViewSection = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const totalScore = schemeObject.criteria.reduce(
+    (accumulator, currentCriterion) => {
+      if (currentCriterion.type === "written")
+        return accumulator + currentCriterion.levels[0].maxScore;
+      else
+        return (
+          accumulator +
+          (currentCriterion.levels.length === 5 &&
+          currentCriterion.levels[3].maxScore <
+            currentCriterion.levels[4].maxScore
+            ? currentCriterion.levels[4].maxScore
+            : currentCriterion.levels[3].maxScore)
+        );
+    },
+    0,
+  );
+
   return (
     <div>
       <div className="w-10/12">
@@ -90,7 +107,7 @@ const OverViewSection = ({
               </Text>
             </td>
             <td>
-              <Text size="md">{"backend update needed"}</Text>
+              <Text size="md">{totalScore}</Text>
             </td>
           </tr>
           {/* <tr>
