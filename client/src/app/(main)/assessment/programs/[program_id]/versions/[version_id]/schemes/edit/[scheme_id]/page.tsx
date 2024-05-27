@@ -6,28 +6,27 @@ import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import { Text, Button, Stepper, Group, ScrollArea } from "@mantine/core";
 import React, { useEffect, useState, createContext } from "react";
-import AssessmentForm from "../../create/(pages)/AssessmentForm";
-import PIsConfiguration from "../../create/(pages)/PIsConfiguration";
-import axios from "axios";
+import AssessmentForm from "./(pages)/AssessmentForm";
 import FinalReview from "../../create/(pages)/FinalReview";
-import { createFormContext, useForm } from "@mantine/form";
-import {
-  isNotEmpty,
-  isEmail,
-  isInRange,
-  hasLength,
-  matches,
-} from "@mantine/form";
+import { createFormContext } from "@mantine/form";
+import { isNotEmpty } from "@mantine/form";
 import {
   Criterion,
+  CriterionObject,
   MultipleChoiceCriterion,
   MultipleLevelCriterion,
   WrittenResponseCriterion,
 } from "@/app/interfaces/Criterion.interface";
 import { toggleNotification } from "@/app/lib/notification";
 import useNavigate from "@/app/hooks/useNavigate";
+import axios from "axios";
+import {
+  AssessSchemeDetail,
+  FetchedCriterion,
+} from "@/app/interfaces/Assessment.interface";
+import PIsConfigurationEdit from "./(pages)/PIsConfigurationEdit";
 
-export const SOsContext_createScheme = createContext<SO[] | null>(null);
+export const SOsContext_editScheme = createContext<SO[] | null>(null);
 
 export interface AssessmentFormSection {
   name: string;
@@ -39,14 +38,14 @@ export interface AssessmentFormSection {
   criteria: Criterion[];
 }
 
-export const [FormProvider1, useFormContext1, useForm1] =
+export const [FormProviderE1, useFormContextE1, useFormE1] =
   createFormContext<AssessmentFormSection>();
 
 export interface SchemeConfigs {
   SOs: SO[];
 }
 
-export const [FormProvider2, useFormContext2, useForm2] =
+export const [FormProviderE2, useFormContextE2, useFormE2] =
   createFormContext<SchemeConfigs>();
 
 const Page = ({
@@ -56,12 +55,14 @@ const Page = ({
     id(id: any): any;
     program_id: string;
     version_id: string;
+    scheme_id: string;
   };
 }) => {
   // Build context section
   const [program, setProgram] = useState<Program | null>(null);
   const [version, setVersion] = useState<Version | null>(null);
   const [SOs, setSOs] = useState<SO[]>([]);
+  const [fetchedScheme, setFetchedScheme] = useState<AssessSchemeDetail>();
 
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
@@ -91,6 +92,79 @@ const Page = ({
       fetchProgram();
     }
   });
+
+  useEffect(() => {
+    let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}`;
+    axios
+      .get(queryURL)
+      .then((response) => {
+        console.log("Fetched scheme:", response.data);
+        setFetchedScheme(response.data);
+
+        // Map scheme criteria back to criterion objects
+        let mappedCriteria: Criterion[] = (
+          response.data as AssessSchemeDetail
+        ).criteria.map((fetchedCriterion: FetchedCriterion) => {
+          let mappedCriterion = new CriterionObject(
+            fetchedCriterion.content,
+            fetchedCriterion.type,
+          );
+          mappedCriterion.setPI(fetchedCriterion.performanceIndicator);
+          if (fetchedCriterion.type === "written") {
+            (
+              mappedCriterion.assessment as WrittenResponseCriterion
+            ).maximumScore = fetchedCriterion.levels[0].maxScore;
+          } else if (fetchedCriterion.type === "multilevel") {
+            fetchedCriterion.levels.forEach((level, index) => {
+              if (index > 3) 
+                (mappedCriterion.assessment as MultipleLevelCriterion).addLevel(
+                  level.content,
+                  level.maxScore,
+                  level.minScore
+                )
+              else{
+                (mappedCriterion.assessment as MultipleLevelCriterion).options[index].description = level.content;
+                (mappedCriterion.assessment as MultipleLevelCriterion).options[index].minScore = level.minScore;
+                (mappedCriterion.assessment as MultipleLevelCriterion).options[index].maxScore = level.maxScore;
+              }
+                
+            });
+          } else {
+            fetchedCriterion.levels.forEach((level, index) => {
+              if (level.maxScore !== 0){
+                (mappedCriterion.assessment as MultipleChoiceCriterion).score = level.maxScore;
+              };
+              if (index > 3) 
+                (mappedCriterion.assessment as MultipleChoiceCriterion).addLevel(
+                  level.content,
+                  level.maxScore !== 0
+                );
+              else{
+                (mappedCriterion.assessment as MultipleChoiceCriterion).options[index].description = level.content;
+                (mappedCriterion.assessment as MultipleChoiceCriterion).options[index].is_correct = level.maxScore !== 0;
+              }
+            });
+          }
+          return mappedCriterion;
+        });
+        // Initialize scheme's form
+        form1.setValues({
+          name: response.data.name,
+          generation: response.data.generation,
+          year: response.data.semester.year.toString(),
+          semester: response.data.semester.no.toString(),
+          description: response.data.description,
+          criteriaCount: response.data.criteria.length,
+          criteria: mappedCriteria,
+        });
+      })
+      .catch((error) => {
+        console.log("Err fetching scheme: ", error.response);
+        return;
+      });
+
+    // Intiialize scheme's configs
+  }, [program]);
 
   // Stepper states & controllers
   const [active, setActive] = useState<number>(0); // current step
@@ -209,7 +283,7 @@ const Page = ({
                 studentOutcomeVersionProgramId:
                   PI.studentOutcomeVersionProgramId,
               },
-              passingGoal: PI.expectedGoal,
+              passingGoal: PI.passingGoal,
             };
           })
           .flat();
@@ -217,30 +291,30 @@ const Page = ({
     };
 
     console.log("Scheme data:", schemeData);
-    axios
-      .post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes`,
-        schemeData,
-      )
-      .then(res => {
-        toggleNotification(
-          "Success",
-          "The new assessment scheme is created successfully !",
-          "success",
-        );
-        console.log("Created scheme:", res.data);
-        navigate(
-          `http://localhost:3000/assessment/programs/${program?.id}/versions/${version?.id}/schemes`,
-        );
-      })
-      .catch((err) => {
-        console.log("Error creating scheme:", err.response);
-        toggleNotification("Error", "Scheme creation failed !", "danger");
-      });
+    // axios
+    //   .post(
+    //     `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes`,
+    //     schemeData,
+    //   )
+    //   .then((res) => {
+    //     toggleNotification(
+    //       "Success",
+    //       "The new assessment scheme is created successfully !",
+    //       "success",
+    //     );
+    //     console.log("Created scheme:", res.data);
+    //     navigate(
+    //       `http://localhost:3000/assessment/programs/${program?.id}/versions/${version?.id}/schemes`,
+    //     );
+    //   })
+    //   .catch((err) => {
+    //     console.log("Error creating scheme:", err.response);
+    //     toggleNotification("Error", "Scheme creation failed !", "danger");
+    //   });
   };
 
   // Forms
-  const form1 = useForm1({
+  const form1 = useFormE1({
     initialValues: {
       name: "",
       generation: "",
@@ -285,12 +359,12 @@ const Page = ({
     },
   });
 
-  // useEffect(() => {
-  //   // for testing
-  //   console.log("Form1:", form1.values);
-  // }, [form1]);
+  useEffect(() => {
+    // for testing
+    console.log("Form1:", form1.values);
+  }, [form1]);
 
-  const form2 = useForm2({
+  const form2 = useFormE2({
     initialValues: {
       SOs: [],
     },
@@ -298,8 +372,8 @@ const Page = ({
     validate: {
       SOs: {
         performanceIndicators: {
-          expectedGoal: (value) =>
-            value !== undefined && value.toString() === ""
+          passingGoal: (value) =>
+            value === undefined || value.toString() === ""
               ? "Passing goal is required"
               : null,
         },
@@ -307,12 +381,13 @@ const Page = ({
     },
   });
 
-  // useEffect(() => {
-  //   // for testing
-  //   console.log("Form2:", form2.values);
-  // }, [form2]);
+  useEffect(() => {
+    // for testing
+    console.log("Form2:", form2.values);
+  }, [form2]);
 
   // Main return
+  if (!fetchedScheme) return <div>Fetching scheme...</div>;
   return program && version ? (
     <div className="flex h-full flex-col">
       <PageHeader pageTitle="Create Assessment Scheme" />
@@ -353,22 +428,22 @@ const Page = ({
             description="Create assessment form"
             allowStepSelect={active !== 0}
           >
-            <SOsContext_createScheme.Provider value={SOs}>
-              <FormProvider1 form={form1}>
+            <SOsContext_editScheme.Provider value={SOs}>
+              <FormProviderE1 form={form1}>
                 <AssessmentForm currentVersion={version} />
-              </FormProvider1>
-            </SOsContext_createScheme.Provider>
+              </FormProviderE1>
+            </SOsContext_editScheme.Provider>
           </Stepper.Step>
           <Stepper.Step
             label="Second step"
             description="Configure PIs"
             allowStepSelect={active !== 1}
           >
-            <SOsContext_createScheme.Provider value={SOs}>
-              <FormProvider2 form={form2}>
-                <PIsConfiguration form1={form1} form2={form2} />
-              </FormProvider2>
-            </SOsContext_createScheme.Provider>
+            <SOsContext_editScheme.Provider value={SOs}>
+              <FormProviderE2 form={form2}>
+                <PIsConfigurationEdit form1={form1} form2={form2} schemeObject={fetchedScheme} />
+              </FormProviderE2>
+            </SOsContext_editScheme.Provider>
           </Stepper.Step>
           <Stepper.Step
             label="Final step"
@@ -389,7 +464,7 @@ const Page = ({
           {active === 2 ? (
             <Button
               onClick={() => {
-                console.log("Submitting scheme...");
+                console.log("Saving scheme...");
                 handleSchemeSubmit();
               }}
             >

@@ -34,13 +34,13 @@ export interface PEO {
 }
 
 export interface PI {
-  id: number,
+  id?: number,
   name: string,
   description: string,
-  expectedGoal: string,
-  studentOutcome: any, 
-  passingThreshold: string,
   studentOutcomeId: number,
   studentOutcomeVersionId: number,
   studentOutcomeVersionProgramId: number,
+  passingThreshold?: string,
+  passingGoal?: string,
+  studentOutcome?: any, 
 }
