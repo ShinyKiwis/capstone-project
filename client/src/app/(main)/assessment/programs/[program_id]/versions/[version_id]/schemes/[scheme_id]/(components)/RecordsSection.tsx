@@ -274,7 +274,7 @@ const RecordsSection = ({
                     <Button
                       variant="transparent"
                       onClick={() =>
-                        navigate(`${schemeObject.id}/edit/${record.user?.id}`)
+                        navigate(`${schemeObject.id}/edit/${record.user ? record.user.id : ''}_p${record.project ? record.project.code : ''}`)
                       }
                     >
                       <AiOutlineEdit size={25} />

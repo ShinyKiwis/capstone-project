@@ -1,5 +1,5 @@
 "use client";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   CheckIcon,
   Combobox,
@@ -41,30 +41,10 @@ function ProjectSelector({
   const [currentTimeout, setCurrentTimeout] = useState<NodeJS.Timeout>();
 
   const searchApi = "http://localhost:3500/projects?page=1&limit=5";
-  // const parsedValues:Student[] = value.map((valueString) => JSON.parse(valueString));
-  // function valueIsSelected(newVal:string): number {
-  //   // Return index of value if it is already selected, else -1
-  //   let parsedNewValue:Student = JSON.parse(newVal)
-  //   return parsedValues.findIndex((selectedValue:Student) => selectedValue.userId === parsedNewValue.userId)
-  // }
 
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
-    onDropdownOpen: () => {
-      if (data.length === 0 && !loading) {
-        setLoading(true);
-        axios
-          .get("http://localhost:3500/projects?page=1&limit=5")
-          .then((res) => {
-            setData(res.data.projects);
-            setLoading(false);
-            combobox.resetSelectedOption();
-          })
-          .catch((err) =>
-            console.error("Error getting initial projects list:", err),
-          );
-      }
-    },
+    onDropdownOpen: () => {},
   });
 
   const handleSearch = (query: string) => {
@@ -85,14 +65,34 @@ function ProjectSelector({
     setCurrentTimeout(newTimeout);
   };
 
+  useEffect(() => {
+    if (data.length === 0 && !loading) {
+      setLoading(true);
+      axios
+        .get("http://localhost:3500/projects?page=1&limit=5")
+        .then((res) => {
+          setData(res.data.projects);
+          setLoading(false);
+          combobox.resetSelectedOption();
+          if (value != "") {
+            let selectedProject = res.data.projects.find(
+              (item: Project) => item.code.toString() === value,
+            );
+            setDisplayingProject(selectedProject);
+          }
+        })
+        .catch((err) =>
+          console.error("Error getting initial projects list:", err),
+        );
+    }
+  }, []);
+
   const handleValueSelect = (newVal: string) => {
     onChange(newVal);
     let selectedProject = data.find((item) => item.code.toString() === newVal);
     setDisplayingProject(selectedProject);
-    if (showCard)
-      setSearch('');
-    else
-      setSearch(`${selectedProject?.code} - ${selectedProject?.name}`);
+    if (showCard) setSearch("");
+    else setSearch(`${selectedProject?.code} - ${selectedProject?.name}`);
     combobox.closeDropdown();
   };
 
@@ -208,7 +208,7 @@ function ProjectSelector({
       </Input.Wrapper>
       {displayingProject && showCard ? (
         <ProjectCardMinimal projectObject={displayingProject} />
-        ) : null}
+      ) : null}
     </>
   );
 }

@@ -23,7 +23,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import { Student } from "@/app/interfaces/User.interface";
 import useNavigate from "@/app/hooks/useNavigate";
 
-interface InputtedRecord {
+export interface InputtedRecord {
   userObj: string[];
   project: string;
   criteria: {

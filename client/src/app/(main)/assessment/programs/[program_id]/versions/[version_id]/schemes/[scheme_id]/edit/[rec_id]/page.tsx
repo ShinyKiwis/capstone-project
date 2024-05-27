@@ -17,6 +17,16 @@ import {
   IconChevronLeft,
 } from "@tabler/icons-react";
 import CriterionInput from "../../(components)/CriteriaInput";
+import axios from "axios";
+import {
+  AssessSchemeDetail,
+  FetchedCriterionRecord,
+} from "@/app/interfaces/Assessment.interface";
+import { useForm } from "@mantine/form";
+import { InputtedRecord } from "../../input/page";
+import useNavigate from "@/app/hooks/useNavigate";
+import { toggleNotification } from "@/app/lib/notification";
+import { Student } from "@/app/interfaces/User.interface";
 
 const RecordEdit = ({
   params,
@@ -31,12 +41,16 @@ const RecordEdit = ({
 }) => {
   const [program, setProgram] = useState<Program | null>(null);
   const [version, setVersion] = useState<Version | null>(null);
-  const [fetchedScheme, setFetchedScheme] = useState<any>();
+  const [fetchedScheme, setFetchedScheme] = useState<AssessSchemeDetail>();
+  let studentId: string;
+  let projectId: string;
+  const [answersFetched, setAnswersFetched] = useState(false);
   const [selectedStudent, setselectedStudent] = useState<string[]>([]);
-  const [selectedProject, setselectedProject] = useState('');
+  const [selectedProject, setselectedProject] = useState("");
 
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch current program to set context
@@ -59,18 +73,149 @@ const RecordEdit = ({
 
   useEffect(() => {
     // Retreive scheme data
-    setFetchedScheme({
-      name: "Foundation test - Sem2",
-      description:
-        "Used for assessing student in foundation test semester 2 - year 2014",
-      assessTime: { year: 2014, no: 2 },
-      criteriaCount: 20,
-      maxScore: 50,
-      lastModified: "12/12/2013",
-    });
-  }, []);
+    if (program && version) {
+      // Fetch scheme's criteriaa
+      axios
+        .get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/assessment-schemes/${params.scheme_id}`,
+        )
+        .then((res) => {
+          console.log("SCheme detail response", res.data);
+          setFetchedScheme(res.data);
+        })
+        .catch((err) => {
+          console.log("Err fetching scheme:", err.response);
+          return <div>{err.response}</div>;
+        });
+
+      // Fetch answers
+      [studentId, projectId] = params.rec_id.split("_p");
+      let answersURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/assessment-schemes/${params.scheme_id}/assessment-records?${studentId ? `&userId=${studentId}` : ""}${projectId ? `&projectId=${projectId}` : ""}`;
+      // console.log("Fetching answers:", answersURL)
+      axios
+        .get(answersURL)
+        .then((res) => {
+          // console.log("Fetched answers", res.data);
+          let schemeAnswers = (res.data as FetchedCriterionRecord[]).filter(
+            (record) => {
+              if (!studentId && record.user === null) return true;
+              if (!projectId && record.project === null) return true;
+              if (
+                record.user &&
+                studentId === record.user.id.toString() &&
+                record.project &&
+                projectId === record.project.code.toString()
+              )
+                return true;
+              return false;
+            },
+          );
+          // setFetchedAnswers(res.data);
+          console.log("Filtered records", schemeAnswers);
+          form.setValues({
+            userObj: studentId
+              ? [
+                  JSON.stringify({
+                    user: schemeAnswers[0].user,
+                    userId: schemeAnswers[0].user?.id,
+                    credits: 0,
+                    generation: 0,
+                    GPA: 0,
+                    enrolledAt: "",
+                  }),
+                ]
+              : [],
+            project: projectId,
+            criteria: schemeAnswers.map((ans) => {
+              return {
+                criterionId: ans.criterionId,
+                answer: ans.answer,
+                score: ans.score,
+              };
+            }),
+          });
+          setAnswersFetched(true);
+        })
+        .catch((err) => {
+          console.log("Err fetching answers:", err);
+        });
+    }
+  }, [program]);
+
+  const form = useForm<InputtedRecord>({
+    initialValues: {
+      userObj: [],
+      project: "",
+      criteria: [],
+    },
+    validate: {
+      userObj: (value, values) =>
+        value.length === 0 && values.project === ""
+          ? "Select a target student or project"
+          : null,
+      project: (value, values) =>
+        values.userObj.length === 0 && value === ""
+          ? "Select a target student or project"
+          : null,
+      criteria: {
+        answer: (value) => (value === "" ? "Required" : null),
+        score: (value) =>
+          value === null || (value as number).toString() === ""
+            ? "Required"
+            : null,
+      },
+    },
+  });
+
+  // Logging
+  useEffect(() => {
+    console.log("Form values:", form.values);
+  }, [form]);
+
+  async function handleSaveRecord() {
+    // Validate fields
+    if (form.validate().hasErrors) {
+      toggleNotification("Error", "Check missing fields", "danger");
+      console.log("Form errors:", form.validate().errors);
+      return;
+    }
+
+    // Extract all answers to submit
+    let submittedRecords = {
+      records: form.values.criteria.map((criterion) => {
+        return {
+          criterionId: criterion.criterionId,
+          answer: criterion.answer,
+          userId:
+            form.values.userObj.length > 0
+              ? (JSON.parse(form.values.userObj[0]) as Student).userId
+              : null,
+          score: criterion.score,
+          projectId: form.values.project || '',
+        };
+      }),
+    };
+
+    // Submit records
+    console.log("Submitting records:", submittedRecords);
+    // axios
+    //   .post(
+    //     `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}/assessment-records`,
+    //     submittedRecords,
+    //   )
+    //   .then((res) => {
+    //     console.log("Patch response", res.data);
+    //     toggleNotification("Success", "Record saved !", "success");
+    //     navigate("./");
+    //   })
+    //   .catch((err) => {
+    //     console.log("Err saving record:", err.response);
+    //     toggleNotification("Error", "Records modifying failed !", "danger");
+    //   });
+  }
 
   if (!fetchedScheme) return <div>Fetching scheme's critera...</div>;
+  if (!answersFetched) return <div>Fetching record details...</div>;
   return (
     <div className="flex h-full w-full min-w-0 flex-col">
       <PageHeader pageTitle="Edit Assessment Record" />
@@ -121,57 +266,73 @@ const RecordEdit = ({
 
       <ScrollArea type="auto" scrollbarSize={8} className="flex min-w-0 flex-1">
         <div className="flex items-start">
-          <div className="w-1/2 pr-3 py-2">
+          <div className="w-1/2 py-2 pr-3">
             <Text size="lg" fw={600}>
               Student
             </Text>
             <StudentProfileSelector
-              // onChange={form.getInputProps("students").onChange}
-              // value={form.getInputProps("students").value}
-              // error={form.getInputProps("students").error}
-              onChange={setselectedStudent}
-              value={selectedStudent}
+              onChange={form.getInputProps("userObj").onChange}
+              value={form.getInputProps("userObj").value}
+              error={form.getInputProps("userObj").error}
+              // onChange={setselectedStudent}
+              // value={selectedStudent}
               placeholder="Search student name, id"
               searchApi="http://localhost:3500/users/students"
               limit={7}
               mode="single"
             />
           </div>
-          <div className="w-1/2 pr-3 py-2">
+          <div className="w-1/2 py-2 pr-3">
             <Text size="lg" fw={600}>
               Project
             </Text>
-            <ProjectSelector 
-              onChange={setselectedProject}
-              value={selectedProject}
+            <ProjectSelector
               placeholder="Search project name, id, description"
               showCard
+              value={form.getInputProps("project").value}
+              onChange={form.getInputProps("project").onChange}
+              error={form.getInputProps("project").error}
             />
           </div>
         </div>
 
-        <Text size="lg" fw={600} mt={'1em'}>
+        <Text size="lg" fw={600} mt={"1em"}>
           Criteria
         </Text>
         <div className="px-3">
-          <div className="flex items-start my-3">
-            <Text size="xl" fw={600} w={'2em'}>1</Text>
-            <CriterionInput type="multilevel" variant="full" criterionObject={{}}/>
-          </div>
-          <div className="flex items-start my-3 w-full">
-            <Text size="xl" fw={600} w={'2em'}>2</Text>
-            <CriterionInput type="written" variant="full" criterionObject={{}}/>
-          </div>
-          <div className="flex items-start my-3">
-            <Text size="xl" fw={600} w={'2em'}>3</Text>
-            <CriterionInput type="multiplechoice" variant="full" criterionObject={{}}/>
-          </div>
+          {fetchedScheme.criteria.map((criterion, index) => {
+            return (
+              <div className="my-3 flex items-start">
+                <Text size="xl" fw={600} w={"2em"}>
+                  {index + 1}
+                </Text>
+                <CriterionInput
+                  type={criterion.type}
+                  variant="full"
+                  criterionObject={criterion}
+                  scoreInputProps={form.getInputProps(
+                    `criteria.${index}.score`,
+                  )}
+                  answerInputProps={form.getInputProps(
+                    `criteria.${index}.answer`,
+                  )}
+                />
+              </div>
+            );
+          })}
         </div>
 
-        {/* <div className="flex justify-end gap-4 w-full mr-3">
-          <Button variant="outline">Cancel</Button>
-          <Button>Input another record</Button>
-        </div> */}
+        <div className="mr-3 mb-3 flex w-full justify-end gap-4">
+          <Button
+            variant="outline"
+            onClick={() => {
+              navigate("../");
+            }}
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleSaveRecord}>Save</Button>
+        </div>
       </ScrollArea>
     </div>
   );
