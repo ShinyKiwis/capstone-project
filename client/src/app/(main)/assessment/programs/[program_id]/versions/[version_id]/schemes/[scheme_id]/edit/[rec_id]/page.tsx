@@ -27,6 +27,7 @@ import { InputtedRecord } from "../../input/page";
 import useNavigate from "@/app/hooks/useNavigate";
 import { toggleNotification } from "@/app/lib/notification";
 import { Student } from "@/app/interfaces/User.interface";
+import { useQueryClient } from "@tanstack/react-query";
 
 const RecordEdit = ({
   params,
@@ -51,6 +52,7 @@ const RecordEdit = ({
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     // Fetch current program to set context
@@ -73,74 +75,77 @@ const RecordEdit = ({
 
   useEffect(() => {
     // Retreive scheme data
-    if (program && version) {
-      // Fetch scheme's criteriaa
+    let schemeData: AssessSchemeDetail | undefined = undefined;
+    if (queryClient.getQueryData(["schemeDetail"]) != undefined) {
+      schemeData = queryClient.getQueryData(["schemeDetail"]);
+    } else {
       axios
         .get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/assessment-schemes/${params.scheme_id}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}`,
         )
         .then((res) => {
           console.log("SCheme detail response", res.data);
-          setFetchedScheme(res.data);
+          schemeData = res.data;
         })
         .catch((err) => {
           console.log("Err fetching scheme:", err.response);
           return <div>{err.response}</div>;
         });
-
-      // Fetch answers
-      [studentId, projectId] = params.rec_id.split("_p");
-      let answersURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/assessment-schemes/${params.scheme_id}/assessment-records?${studentId ? `&userId=${studentId}` : ""}${projectId ? `&projectId=${projectId}` : ""}`;
-      // console.log("Fetching answers:", answersURL)
-      axios
-        .get(answersURL)
-        .then((res) => {
-          // console.log("Fetched answers", res.data);
-          let schemeAnswers = (res.data as FetchedCriterionRecord[]).filter(
-            (record) => {
-              if (!studentId && record.user === null) return true;
-              if (!projectId && record.project === null) return true;
-              if (
-                record.user &&
-                studentId === record.user.id.toString() &&
-                record.project &&
-                projectId === record.project.code.toString()
-              )
-                return true;
-              return false;
-            },
-          );
-          // setFetchedAnswers(res.data);
-          console.log("Filtered records", schemeAnswers);
-          form.setValues({
-            userObj: studentId
-              ? [
-                  JSON.stringify({
-                    user: schemeAnswers[0].user,
-                    userId: schemeAnswers[0].user?.id,
-                    credits: 0,
-                    generation: 0,
-                    GPA: 0,
-                    enrolledAt: "",
-                  }),
-                ]
-              : [],
-            project: projectId,
-            criteria: schemeAnswers.map((ans) => {
-              return {
-                criterionId: ans.criterionId,
-                answer: ans.answer,
-                score: ans.score,
-              };
-            }),
-          });
-          setAnswersFetched(true);
-        })
-        .catch((err) => {
-          console.log("Err fetching answers:", err);
-        });
     }
-  }, [program]);
+    setFetchedScheme(schemeData);
+
+    // Fetch answers
+    [studentId, projectId] = params.rec_id.split("_p");
+    let answersURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}/assessment-records?${studentId ? `&userId=${studentId}` : ""}${projectId ? `&projectId=${projectId}` : ""}`;
+    // console.log("Fetching answers:", answersURL)
+    axios
+      .get(answersURL)
+      .then((res) => {
+        // console.log("Fetched answers", res.data);
+        let schemeAnswers = (res.data as FetchedCriterionRecord[]).filter(
+          (record) => {
+            if (!studentId && record.user === null) return true;
+            if (!projectId && record.project === null) return true;
+            if (
+              record.user &&
+              studentId === record.user.id.toString() &&
+              record.project &&
+              projectId === record.project.code.toString()
+            )
+              return true;
+            return false;
+          },
+        );
+        // setFetchedAnswers(res.data);
+        console.log("Filtered records", schemeAnswers);
+        form.setValues({
+          userObj: studentId
+            ? [
+                JSON.stringify({
+                  user: schemeAnswers[0].user,
+                  userId: schemeAnswers[0].user?.id,
+                  credits: 0,
+                  generation: 0,
+                  GPA: 0,
+                  enrolledAt: "",
+                }),
+              ]
+            : [],
+          project: projectId,
+          criteria: schemeAnswers.map((ans) => {
+            return {
+              criterionId: ans.criterionId,
+              answer: ans.answer,
+              score: ans.score,
+            };
+          }),
+        });
+        setAnswersFetched(true);
+      })
+      .catch((err) => {
+        console.log("Err fetching answers:", err);
+      });
+  }, []);
 
   const form = useForm<InputtedRecord>({
     initialValues: {
@@ -191,18 +196,17 @@ const RecordEdit = ({
               ? (JSON.parse(form.values.userObj[0]) as Student).userId
               : null,
           score: criterion.score,
-          projectId: form.values.project || '',
+          projectId: form.values.project || "",
         };
       }),
     };
 
     // Submit records
     console.log("Submitting records:", submittedRecords);
-    // axios
-    //   .post(
-    //     `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}/assessment-records`,
-    //     submittedRecords,
-    //   )
+    axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}/assessment-records`,
+      submittedRecords,
+    );
     //   .then((res) => {
     //     console.log("Patch response", res.data);
     //     toggleNotification("Success", "Record saved !", "success");
@@ -322,7 +326,7 @@ const RecordEdit = ({
           })}
         </div>
 
-        <div className="mr-3 mb-3 flex w-full justify-end gap-4">
+        <div className="mb-3 mr-3 flex w-full justify-end gap-4">
           <Button
             variant="outline"
             onClick={() => {

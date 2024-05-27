@@ -25,6 +25,7 @@ import {
   FetchedCriterion,
 } from "@/app/interfaces/Assessment.interface";
 import PIsConfigurationEdit from "./(pages)/PIsConfigurationEdit";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const SOsContext_editScheme = createContext<SO[] | null>(null);
 
@@ -67,6 +68,7 @@ const Page = ({
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const fetchProgram = async () => {
@@ -93,78 +95,94 @@ const Page = ({
     }
   });
 
+  // retreive scheme data
   useEffect(() => {
-    let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}`;
-    axios
-      .get(queryURL)
-      .then((response) => {
-        console.log("Fetched scheme:", response.data);
-        setFetchedScheme(response.data);
+    let schemeData: AssessSchemeDetail | undefined = undefined;
+    if (queryClient.getQueryData(["schemeDetail"]) != undefined) {
+      schemeData = queryClient.getQueryData(["schemeDetail"]);
+    } else {
+      let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}`;
+      axios
+        .get(queryURL)
+        .then((response) => {
+          console.log("Fetched scheme:", response.data);
+          schemeData = response.data;
+        })
+        .catch((error) => {
+          console.log("Err fetching scheme: ", error.response);
+          return;
+        });
+    }
+    if (!schemeData) return;
 
-        // Map scheme criteria back to criterion objects
-        let mappedCriteria: Criterion[] = (
-          response.data as AssessSchemeDetail
-        ).criteria.map((fetchedCriterion: FetchedCriterion) => {
-          let mappedCriterion = new CriterionObject(
-            fetchedCriterion.content,
-            fetchedCriterion.type,
-          );
-          mappedCriterion.setPI(fetchedCriterion.performanceIndicator);
-          if (fetchedCriterion.type === "written") {
-            (
-              mappedCriterion.assessment as WrittenResponseCriterion
-            ).maximumScore = fetchedCriterion.levels[0].maxScore;
-          } else if (fetchedCriterion.type === "multilevel") {
-            fetchedCriterion.levels.forEach((level, index) => {
-              if (index > 3) 
-                (mappedCriterion.assessment as MultipleLevelCriterion).addLevel(
-                  level.content,
-                  level.maxScore,
-                  level.minScore
-                )
-              else{
-                (mappedCriterion.assessment as MultipleLevelCriterion).options[index].description = level.content;
-                (mappedCriterion.assessment as MultipleLevelCriterion).options[index].minScore = level.minScore;
-                (mappedCriterion.assessment as MultipleLevelCriterion).options[index].maxScore = level.maxScore;
-              }
-                
-            });
-          } else {
-            fetchedCriterion.levels.forEach((level, index) => {
-              if (level.maxScore !== 0){
-                (mappedCriterion.assessment as MultipleChoiceCriterion).score = level.maxScore;
-              };
-              if (index > 3) 
-                (mappedCriterion.assessment as MultipleChoiceCriterion).addLevel(
-                  level.content,
-                  level.maxScore !== 0
-                );
-              else{
-                (mappedCriterion.assessment as MultipleChoiceCriterion).options[index].description = level.content;
-                (mappedCriterion.assessment as MultipleChoiceCriterion).options[index].is_correct = level.maxScore !== 0;
-              }
-            });
+    setFetchedScheme(schemeData);
+
+    // Map scheme criteria back to criterion objects
+    let mappedCriteria: Criterion[] = (
+      schemeData as AssessSchemeDetail
+    ).criteria.map((fetchedCriterion: FetchedCriterion) => {
+      let mappedCriterion = new CriterionObject(
+        fetchedCriterion.content,
+        fetchedCriterion.type,
+      );
+      mappedCriterion.setPI(fetchedCriterion.performanceIndicator);
+      if (fetchedCriterion.type === "written") {
+        (mappedCriterion.assessment as WrittenResponseCriterion).maximumScore =
+          fetchedCriterion.levels[0].maxScore;
+      } else if (fetchedCriterion.type === "multilevel") {
+        fetchedCriterion.levels.forEach((level, index) => {
+          if (index > 3)
+            (mappedCriterion.assessment as MultipleLevelCriterion).addLevel(
+              level.content,
+              level.maxScore,
+              level.minScore,
+            );
+          else {
+            (mappedCriterion.assessment as MultipleLevelCriterion).options[
+              index
+            ].description = level.content;
+            (mappedCriterion.assessment as MultipleLevelCriterion).options[
+              index
+            ].minScore = level.minScore;
+            (mappedCriterion.assessment as MultipleLevelCriterion).options[
+              index
+            ].maxScore = level.maxScore;
           }
-          return mappedCriterion;
         });
-        // Initialize scheme's form
-        form1.setValues({
-          name: response.data.name,
-          generation: response.data.generation,
-          year: response.data.semester.year.toString(),
-          semester: response.data.semester.no.toString(),
-          description: response.data.description,
-          criteriaCount: response.data.criteria.length,
-          criteria: mappedCriteria,
+      } else {
+        fetchedCriterion.levels.forEach((level, index) => {
+          if (level.maxScore !== 0) {
+            (mappedCriterion.assessment as MultipleChoiceCriterion).score =
+              level.maxScore;
+          }
+          if (index > 3)
+            (mappedCriterion.assessment as MultipleChoiceCriterion).addLevel(
+              level.content,
+              level.maxScore !== 0,
+            );
+          else {
+            (mappedCriterion.assessment as MultipleChoiceCriterion).options[
+              index
+            ].description = level.content;
+            (mappedCriterion.assessment as MultipleChoiceCriterion).options[
+              index
+            ].is_correct = level.maxScore !== 0;
+          }
         });
-      })
-      .catch((error) => {
-        console.log("Err fetching scheme: ", error.response);
-        return;
-      });
-
-    // Intiialize scheme's configs
-  }, [program]);
+      }
+      return mappedCriterion;
+    });
+    // Initialize scheme's form
+    form1.setValues({
+      name: schemeData.name,
+      generation: schemeData.generation,
+      year: schemeData.semester.year.toString(),
+      semester: schemeData.semester.no.toString(),
+      description: schemeData.description,
+      criteriaCount: schemeData.criteria.length,
+      criteria: mappedCriteria,
+    });
+  }, []);
 
   // Stepper states & controllers
   const [active, setActive] = useState<number>(0); // current step
@@ -293,7 +311,7 @@ const Page = ({
     console.log("Scheme data:", schemeData);
     // axios
     //   .post(
-    //     `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes`,
+    //     `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes`,
     //     schemeData,
     //   )
     //   .then((res) => {
@@ -304,7 +322,7 @@ const Page = ({
     //     );
     //     console.log("Created scheme:", res.data);
     //     navigate(
-    //       `http://localhost:3000/assessment/programs/${program?.id}/versions/${version?.id}/schemes`,
+    //       `http://localhost:3000/assessment/programs/${params.program_id}/versions/${params.version_id}/schemes`,
     //     );
     //   })
     //   .catch((err) => {
@@ -441,7 +459,11 @@ const Page = ({
           >
             <SOsContext_editScheme.Provider value={SOs}>
               <FormProviderE2 form={form2}>
-                <PIsConfigurationEdit form1={form1} form2={form2} schemeObject={fetchedScheme} />
+                <PIsConfigurationEdit
+                  form1={form1}
+                  form2={form2}
+                  schemeObject={fetchedScheme}
+                />
               </FormProviderE2>
             </SOsContext_editScheme.Provider>
           </Stepper.Step>
@@ -455,12 +477,24 @@ const Page = ({
         </Stepper>
 
         <Group justify="end" mt="xl">
-          <Button
-            variant="default"
-            onClick={() => handleStepChange(active > 0 ? active - 1 : active)}
-          >
-            Back
-          </Button>
+          {active === 0 ? (
+            <Button
+              variant="outline"
+              onClick={() => {
+                navigate("../");
+              }}
+            >
+              Cancel
+            </Button>
+          ) : (
+            <Button
+              variant="default"
+              onClick={() => handleStepChange(active > 0 ? active - 1 : active)}
+            >
+              Back
+            </Button>
+          )}
+
           {active === 2 ? (
             <Button
               onClick={() => {

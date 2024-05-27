@@ -56,9 +56,9 @@ const SchemeDetail = ({
   });
 
   // Fetch schemes
-  const { data: fetchedSchemes, isLoading: schemesIsLoading } = useQuery({
+  const { data: cachedScheme, isLoading: schemeIsLoading } = useQuery({
     queryFn: async () => {
-      let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}`;
+      let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}`;
       let response = await (await axios.get(queryURL)).data;
       console.log("refetched scheme detail");
       setFetchedScheme(response);
@@ -69,9 +69,19 @@ const SchemeDetail = ({
     staleTime: Infinity,
   });
   useEffect(() => {
-    queryClient.invalidateQueries({queryKey:["schemeDetail"]});
+    if (!queryClient.getQueryData(["schemeDetail"])) {
+      queryClient.invalidateQueries({ queryKey: ["schemeDetail"] });
+      return;
+    }
+    if (
+      params.scheme_id !=
+      (
+        queryClient.getQueryData(["schemeDetail"]) as AssessSchemeDetail
+      ).id.toString()
+    )
+      queryClient.invalidateQueries({ queryKey: ["schemeDetail"] });
+    else setFetchedScheme(queryClient.getQueryData(["schemeDetail"]));
   }, []);
-
 
   if (!fetchedScheme) return <div>Fetching scheme data...</div>;
   return (

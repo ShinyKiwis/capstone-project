@@ -92,7 +92,7 @@ const Page = ({
   // Fetch schemes
   const { data: fetchedSchemes, isLoading: schemesIsLoading } = useQuery({
     queryFn: async () => {
-      let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes`;
+      let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes`;
       let response = await (await axios.get(queryURL)).data;
       console.log("refetched schemes");
       setDisplayingSchemes(response);
