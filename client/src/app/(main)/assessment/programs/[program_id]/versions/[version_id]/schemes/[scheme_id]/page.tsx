@@ -11,7 +11,7 @@ import { useProgram } from "@/app/providers/ProgramProvider";
 import Program from "@/app/interfaces/Program.interface";
 import axios from "axios";
 import { AssessSchemeDetail } from "@/app/interfaces/Assessment.interface";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const SchemeDetail = ({
   params,
@@ -34,6 +34,7 @@ const SchemeDetail = ({
 
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     // Fetch current program to set context
@@ -67,6 +68,9 @@ const SchemeDetail = ({
     enabled: true,
     staleTime: Infinity,
   });
+  useEffect(() => {
+    queryClient.invalidateQueries({queryKey:["schemeDetail"]});
+  }, []);
 
 
   if (!fetchedScheme) return <div>Fetching scheme data...</div>;
