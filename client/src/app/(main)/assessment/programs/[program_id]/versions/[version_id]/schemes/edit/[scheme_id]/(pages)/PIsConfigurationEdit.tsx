@@ -4,7 +4,8 @@ import { DataTable } from "mantine-datatable";
 import React, { useContext, useState, useEffect } from "react";
 import { AssessmentFormSection, SchemeConfigs } from "../page";
 import { UseFormReturnType } from "@mantine/form";
-import { SOsContext_createScheme } from "../page";
+import { SOsContext_editScheme } from "../page";
+import { AssessSchemeDetail } from "@/app/interfaces/Assessment.interface";
 
 function compare(a: any, b: any) {
   if (a.name < b.name) {
@@ -16,21 +17,30 @@ function compare(a: any, b: any) {
   return 0;
 }
 
-const PIsConfiguration = ({
+const PIsConfigurationEdit = ({
   form1,
   form2,
+  schemeObject,
 }: {
   form1: UseFormReturnType<AssessmentFormSection>;
   form2: UseFormReturnType<SchemeConfigs>;
+  schemeObject: AssessSchemeDetail;
 }) => {
-  const allSOs = useContext(SOsContext_createScheme);
+  const allSOs = useContext(SOsContext_editScheme);
   var selectedSOs: SO[] = form2.values.SOs;
   if (!allSOs) return <div className="red">SOs not loaded</div>;
 
   const [SOnames, setSOnames] = useState<string[]>([]);
+
   useEffect(() => {
     // Extract selected SOs and PIs from stage 1
     form1.values.criteria.forEach((criterion) => {
+      criterion.associatedPI!.passingGoal = schemeObject.performanceIndicators
+        .find(
+          (PIConfigItem) =>
+            PIConfigItem.performanceIndicator.id === criterion.associatedPI!.id,
+        )
+        ?.passingGoal.toString();
       let parentSO = allSOs.find(
         (SO) => SO.id === criterion.associatedPI?.studentOutcomeId,
       );
@@ -40,6 +50,7 @@ const PIsConfiguration = ({
         let foundIndex = selectedSOs.findIndex(
           (selectedSO) => selectedSO.id === parentSO.id,
         );
+
         if (foundIndex !== -1) {
           // Avoid adding duplicated PIs
           // console.log("SO already added, adding new PI", selectedSOs)
@@ -145,26 +156,15 @@ const PIsConfiguration = ({
                       clampBehavior="strict"
                       placeholder="0 - 100"
                       value={bulkGoal}
-                      onChange={(newval) => {
-                        bulkGoal =
-                          newval.toString() !== "" ? (newval as number) : 0;
-                      }}
+                      onChange={(newval) => {bulkGoal = newval.toString() !== '' ? newval as number : 0 }}
                     />
-                    <Button
-                      onClick={() => {
-                        studentOutcome.performanceIndicators.forEach(
-                          (item, piIdx) => {
-                            form2
-                              .getInputProps(
-                                `SOs.${SOindex}.performanceIndicators.${piIdx}.passingGoal`,
-                              )
-                              .onChange(bulkGoal);
-                          },
-                        );
-                      }}
-                    >
-                      Apply All
-                    </Button>
+                    <Button onClick={()=>{
+                      studentOutcome.performanceIndicators.forEach((item, piIdx) => {
+                        form2.getInputProps(
+                          `SOs.${SOindex}.performanceIndicators.${piIdx}.passingGoal`,
+                        ).onChange(bulkGoal)
+                      })
+                    }}>Apply All</Button>
                   </div>
                   <DataTable
                     withTableBorder
@@ -220,4 +220,4 @@ const PIsConfiguration = ({
   );
 };
 
-export default PIsConfiguration;
+export default PIsConfigurationEdit;

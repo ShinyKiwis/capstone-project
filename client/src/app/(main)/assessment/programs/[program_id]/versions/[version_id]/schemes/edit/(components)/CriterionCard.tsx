@@ -15,7 +15,8 @@ import { IoIosRemoveCircleOutline } from "react-icons/io";
 import CriterionCardLevels from "./CriterionCardLevels";
 import { AssessmentFormSection } from "@/app/(main)/assessment/programs/[program_id]/versions/[version_id]/schemes/create/page";
 import { UseFormReturnType } from "@mantine/form";
-import PIselectModal from "./PIselectModal";
+import PIselectModal from "../../create/(components)/PIselectModal";
+import PIselectEditModal from "./PIselectEditModal";
 
 interface CriterionCardProps {
   criterionObject: CriterionObject;
@@ -88,7 +89,7 @@ class CriterionCard extends React.Component<
                 ).error
               }
             >
-              <PIselectModal
+              <PIselectEditModal
                 SOs={[]}
                 targetCriterion={this.state.criterionObject}
                 criterionNum={this.state.criterionNumber}

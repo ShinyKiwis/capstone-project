@@ -129,11 +129,11 @@ const SchemeDetail = ({
               <Accordion.Control style={{ borderBottom: "2px black solid" }}>
                 <div className="flex items-center gap-2">
                   <Text size="lg" fw={500}>
-                    PI Attainments
+                    Attainments
                   </Text>
-                  <Text size="md" c="gray" fs="italic">
+                  {/* <Text size="md" c="gray" fs="italic">
                     *Error records are omitted
-                  </Text>
+                  </Text> */}
                 </div>
               </Accordion.Control>
               <Accordion.Panel>

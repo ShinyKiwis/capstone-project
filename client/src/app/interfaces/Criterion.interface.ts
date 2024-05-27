@@ -63,7 +63,7 @@ export class CriterionObject implements Criterion {
         this.assessment = new CriterionLevels_multi();
         break;
     }
-  }
+  };
 
   // Methods
   changeType(newtype: CriterionType | null) {
@@ -130,7 +130,7 @@ export interface MultipleLevelCriterion {
   options: MultiLevelOption[];
 
   //Methods
-  addLevel: () => void;
+  addLevel: (desc?:string, max?: number, min?:number) => void;
   removeLevel: (label: string) => void;
   getMaxScore: () => number;
 }
@@ -169,13 +169,13 @@ class CriterionLevels_multi implements MultipleLevelCriterion {
     ];
   }
 
-  addLevel() {
+  addLevel(desc?:string, max?: number, min?:number) {
     this.numberOfLevels += 1;
     this.options.push({
       levelLabel: index_levelMapping[this.numberOfLevels - 1],
-      description: "",
-      minScore: this.numberOfLevels - 1,
-      maxScore: this.numberOfLevels - 1,
+      description: desc || "",
+      minScore: min || this.numberOfLevels - 1,
+      maxScore: max || this.numberOfLevels - 1,
     });
   }
 
@@ -227,7 +227,7 @@ export interface MultipleChoiceCriterion {
   options: MultipleChoiceOption[];
 
   //Methods
-  addLevel: () => void;
+  addLevel: (desc?:string, isCorrect?:boolean) => void;
   removeLevel: (label: string) => void;
   changeSelection: (newOption: string) => void;
   getValue: () => string;
@@ -267,12 +267,12 @@ class CriterionLevels_choice implements MultipleChoiceCriterion {
   }
 
   // Methods
-  addLevel() {
+  addLevel(desc?:string, isCorrect?:boolean) {
     this.numberOfLevels += 1;
     this.options.push({
       levelLabel: index_levelMapping[this.numberOfLevels - 1],
-      description: "",
-      is_correct: true,
+      description: desc || "",
+      is_correct: isCorrect || false,
     });
   }
 

@@ -211,7 +211,7 @@ const Page = ({
                 studentOutcomeVersionProgramId:
                   PI.studentOutcomeVersionProgramId,
               },
-              passingGoal: PI.expectedGoal,
+              passingGoal: PI.passingGoal,
             };
           })
           .flat();
@@ -301,7 +301,7 @@ const Page = ({
     validate: {
       SOs: {
         performanceIndicators: {
-          expectedGoal: (value) =>
+          passingGoal: (value) =>
             value !== undefined && value.toString() === ""
               ? "Passing goal is required"
               : null,
