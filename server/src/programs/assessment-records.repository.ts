@@ -145,13 +145,8 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
 
     const search = {}
 
-    if (projectId) {
-      search['project'] = { code: projectId };
-    }
-
-    if (userId) {
-      search['user'] = { id: userId };
-    }
+    search['project'] = { code: projectId };
+    search['user'] = { id: userId };
 
     const assessmentRecords = await this.find({
       where: {
@@ -160,6 +155,10 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
         },
         ...search
       },
+      order: {
+        criterionId: 'ASC',
+        id: 'ASC',
+      }
     });
 
     return assessmentRecords;
