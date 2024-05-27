@@ -106,8 +106,9 @@ const Page = ({
 
   const [displayingSchemes, setDisplayingSchemes] =
     useState<AssessSchemeListItem[]>(fetchedSchemes);
-  const [searchedRecords, setSearchedRecords] =
-    useState<AssessSchemeListItem[]>([]);
+  const [searchedRecords, setSearchedRecords] = useState<
+    AssessSchemeListItem[]
+  >([]);
 
   // Hanlde search
   function handleSearchRecords(searchTerm?: string) {
@@ -117,7 +118,7 @@ const Page = ({
       dividePages(fetchedSchemes);
       return;
     }
-    
+
     let results = fetchedSchemes.filter((record: AssessSchemeListItem) => {
       return (
         record.name.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
@@ -142,10 +143,10 @@ const Page = ({
   }, [sortStatus]);
 
   // Funtion handling pagination
-  function dividePages(itemsList?: any[]){
+  function dividePages(itemsList?: any[]) {
     const from = (page - 1) * pageSize;
     const to = from + pageSize;
-    if (itemsList){
+    if (itemsList) {
       setDisplayingSchemes(itemsList.slice(from, to));
       return;
     }
@@ -223,7 +224,7 @@ const Page = ({
             sortable: true,
           },
           {
-            accessor: "semester",
+            accessor: "semester.year",
             title: "Assessment Time",
             render: (record) =>
               `${record.semester?.year || 2008} - Sem. ${record.semester?.no || 1}`,
@@ -241,6 +242,7 @@ const Page = ({
           {
             accessor: "actions",
             title: "Actions",
+            textAlign: "left",
             render: (record) => {
               return (
                 <Group gap={6} justify="center" wrap="nowrap">
@@ -260,7 +262,34 @@ const Page = ({
                       }}
                     />
                   </Button>
-                  <Button variant="transparent" px={0} onClick={() => {}}>
+                  <Button
+                    variant="transparent"
+                    px={0}
+                    onClick={async () => {
+                      axios
+                        .post(
+                          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/assessment-schemes/${record.id}/duplicate`,
+                        )
+                        .then(async (res) => {
+                          queryClient.invalidateQueries({
+                            queryKey: ["scheme"],
+                          });
+                          toggleNotification(
+                            "Success",
+                            `Scheme duplicated!`,
+                            "success",
+                          );
+                        })
+                        .catch((err) => {
+                          console.error("Error duplicating scheme:", err);
+                          toggleNotification(
+                            "Error",
+                            "Scheme duplication failed !",
+                            "danger",
+                          );
+                        });
+                    }}
+                  >
                     <IoDuplicateOutline size={20} />
                   </Button>
                   <Button
@@ -283,7 +312,7 @@ const Page = ({
                           );
                         })
                         .catch((err) => {
-                          console.error("Error deactivating project:", err);
+                          console.error("Error deleting scheme:", err);
                           toggleNotification(
                             "Error",
                             "Scheme deletion failed !",
@@ -304,8 +333,11 @@ const Page = ({
         }
         sortStatus={sortStatus}
         onSortStatusChange={setSortStatus}
-
-        totalRecords={searchedRecords.length>0 ? searchedRecords.length : fetchedSchemes && fetchedSchemes.length}
+        totalRecords={
+          searchedRecords.length > 0
+            ? searchedRecords.length
+            : fetchedSchemes && fetchedSchemes.length
+        }
         recordsPerPage={pageSize}
         page={page}
         recordsPerPageOptions={PAGE_SIZES}

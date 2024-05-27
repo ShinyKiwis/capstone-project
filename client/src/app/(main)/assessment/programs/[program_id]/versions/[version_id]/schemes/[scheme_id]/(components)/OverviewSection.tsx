@@ -145,6 +145,31 @@ const OverViewSection = ({
               w={"20rem"}
               leftSection={<IoDuplicateOutline size={20} />}
               classNames={{ inner: "justify-start px-2" }}
+              onClick={async () => {
+                axios
+                  .post(
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${schemeObject.versionProgramId}/versions/${schemeObject.versionId}/assessment-schemes/${schemeObject.id}/duplicate`,
+                  )
+                  .then(async (res) => {
+                    queryClient.invalidateQueries({
+                      queryKey: ["scheme"],
+                    });
+                    toggleNotification(
+                      "Success",
+                      `Scheme duplicated!`,
+                      "success",
+                    );
+                    navigate('./');
+                  })
+                  .catch((err) => {
+                    console.error("Error duplicating scheme:", err);
+                    toggleNotification(
+                      "Error",
+                      "Scheme duplication failed !",
+                      "danger",
+                    );
+                  });
+              }}
             >
               Duplicate Scheme
             </Button>
