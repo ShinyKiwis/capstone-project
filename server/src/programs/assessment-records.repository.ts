@@ -160,6 +160,10 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
         },
         ...search
       },
+      order: {
+        criterionId: 'ASC',
+        id: 'ASC',
+      }
     });
 
     return assessmentRecords;
