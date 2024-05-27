@@ -146,10 +146,7 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
     const search = {}
 
     search['project'] = { code: projectId };
-
-    if (userId) {
-      search['user'] = { id: userId };
-    }
+    search['user'] = { id: userId };
 
     const assessmentRecords = await this.find({
       where: {
