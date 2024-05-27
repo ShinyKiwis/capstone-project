@@ -145,9 +145,7 @@ export class AssessmentRecordsRepository extends Repository<AssessmentRecord> {
 
     const search = {}
 
-    if (projectId) {
-      search['project'] = { code: projectId };
-    }
+    search['project'] = { code: projectId };
 
     if (userId) {
       search['user'] = { id: userId };
