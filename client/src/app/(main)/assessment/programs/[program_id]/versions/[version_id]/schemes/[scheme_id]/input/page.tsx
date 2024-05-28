@@ -228,6 +228,7 @@ const RecordInput = ({
       .then((res) => {
         console.log("Submit response", res.data);
         toggleNotification("Success", "Records submitted !", "success");
+        queryClient.invalidateQueries({queryKey: ['schemeDetail']});
         navigate("./");
       })
       .catch((err) => {

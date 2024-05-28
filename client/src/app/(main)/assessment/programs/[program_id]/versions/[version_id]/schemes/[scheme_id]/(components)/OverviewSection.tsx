@@ -3,6 +3,7 @@ import {
   Divider,
   Grid,
   Group,
+  Modal,
   SimpleGrid,
   Stack,
   Text,
@@ -17,12 +18,14 @@ import { AssessSchemeDetail } from "@/app/interfaces/Assessment.interface";
 import useNavigate from "@/app/hooks/useNavigate";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useDisclosure } from "@mantine/hooks";
 
 const OverViewSection = ({
   schemeObject,
 }: {
   schemeObject: AssessSchemeDetail;
 }) => {
+  const [delModalOpened, { open, close }] = useDisclosure(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -159,7 +162,7 @@ const OverViewSection = ({
                       `Scheme duplicated!`,
                       "success",
                     );
-                    navigate('./');
+                    navigate("./");
                   })
                   .catch((err) => {
                     console.error("Error duplicating scheme:", err);
@@ -179,35 +182,74 @@ const OverViewSection = ({
               w={"20rem"}
               leftSection={<AiOutlineDelete size={20} />}
               classNames={{ inner: "justify-start px-2" }}
-              onClick={async () => {
-                axios
-                  .delete(
-                    `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${schemeObject.versionProgramId}/versions/${schemeObject.versionId}/assessment-schemes/${schemeObject.id}`,
-                  )
-                  .then(async (res) => {
-                    queryClient.invalidateQueries({
-                      queryKey: ["scheme"],
-                    });
-                    toggleNotification(
-                      "Success",
-                      `Removed scheme: ${schemeObject.name}`,
-                      "success",
-                    );
-                    navigate(`./`);
-                  })
-                  .catch((err) => {
-                    console.error("Error deleteing scheme:", err);
-                    toggleNotification(
-                      "Error",
-                      "Scheme deletion failed !",
-                      "danger",
-                    );
-                  });
-              }}
+              onClick={open}
             >
               Delete Scheme
             </Button>
           </Stack>
+          <Modal
+            opened={delModalOpened}
+            onClose={() => {
+              close();
+            }}
+            centered
+            size="45%"
+            padding="md"
+            yOffset="8em"
+            title={
+              <Text size="lg" c="gray" fw={600}>
+                Please confirm deletion
+              </Text>
+            }
+          >
+            <Text size="sm">
+              Are you sure you want to delete this assessment scheme? This
+              cannot be undone!
+            </Text>
+            <Group justify="flex-end" gap="xs" mt="md">
+              <Button
+                onClick={() => {
+                  close();
+                }}
+                variant="outline"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="filled"
+                color="red"
+                onClick={() => {
+                  // send API to delete
+                  axios
+                    .delete(
+                      `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${schemeObject.versionProgramId}/versions/${schemeObject.versionId}/assessment-schemes/${schemeObject.id}`,
+                    )
+                    .then(async (res) => {
+                      queryClient.invalidateQueries({
+                        queryKey: ["scheme"],
+                      });
+                      toggleNotification(
+                        "Success",
+                        `Removed scheme: ${schemeObject.name}`,
+                        "success",
+                      );
+                      close();
+                      navigate(`./`);
+                    })
+                    .catch((err) => {
+                      console.error("Error deleteing scheme:", err);
+                      toggleNotification(
+                        "Error",
+                        "Scheme deletion failed !",
+                        "danger",
+                      );
+                    });
+                }}
+              >
+                Delete
+              </Button>
+            </Group>
+          </Modal>
           <Stack>
             <FormExportModal targetScheme={schemeObject} />
             <Button
@@ -222,11 +264,12 @@ const OverViewSection = ({
                 );
               }}
             >
-              <a href={`data:text/json;charset=utf-8,${encodeURIComponent(
-                  JSON.stringify(schemeObject)
+              <a
+                href={`data:text/json;charset=utf-8,${encodeURIComponent(
+                  JSON.stringify(schemeObject),
                 )}`}
                 download={`${schemeObject.name}_exported.json`}
-                style={{width:'100%'}}
+                style={{ width: "100%" }}
               >
                 Export Scheme
               </a>

@@ -19,6 +19,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useDisclosure } from "@mantine/hooks";
 import { toggleNotification } from "@/app/lib/notification";
+import axios from "axios";
 
 interface AssessmentRecordRow {
   user: FetchedRecordUser | null;
@@ -53,7 +54,6 @@ function groupRecords(data: FetchedCriterionRecord[]) {
     groups[key].answers.push(item);
     groups[key].totalScore += item.score;
   });
-
   return Object.values(groups);
 }
 
@@ -62,7 +62,7 @@ const RecordsSection = ({
 }: {
   schemeObject: AssessSchemeDetail;
 }) => {
-  const allRecords = groupRecords(schemeObject.records);
+  var allRecords = groupRecords(schemeObject.records);
   var avgScore =
     Math.round(
       (allRecords.reduce((total, next) => total + next.totalScore, 0) /
@@ -74,6 +74,16 @@ const RecordsSection = ({
   const [searchedRecords, setSearchedRecords] = useState<AssessmentRecordRow[]>(
     [],
   );
+
+  useEffect(() => {
+    allRecords = groupRecords(schemeObject.records);
+    avgScore =
+      Math.round(
+        (allRecords.reduce((total, next) => total + next.totalScore, 0) /
+          allRecords.length) *
+          100,
+      ) / 100;
+  }, [schemeObject]);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -274,7 +284,9 @@ const RecordsSection = ({
                     <Button
                       variant="transparent"
                       onClick={() =>
-                        navigate(`${schemeObject.id}/edit/${record.user ? record.user.id : ''}_p${record.project ? record.project.code : ''}`)
+                        navigate(
+                          `${schemeObject.id}/edit/${record.user ? record.user.id : ""}_p${record.project ? record.project.code : ""}`,
+                        )
                       }
                     >
                       <AiOutlineEdit size={25} />
@@ -312,15 +324,24 @@ const RecordsSection = ({
                           Cancel
                         </Button>
                         <Button
-                          c={"red"}
+                          variant="filled"
+                          color="red"
                           onClick={() => {
                             // send API to delete
-                            setDisplayingRecords(
-                              displayingRecords.toSpliced(index, 1),
-                            );
+                            record.answers.forEach(answer => {
+                              axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${schemeObject.versionProgramId}/versions/${schemeObject.versionId}/assessment-schemes/${schemeObject.id}/criteria/${answer.criterionId}/assessment-records/${answer.id}`)
+                              .then(res => {
+                                console.log("Deleted answer with record id:", answer.id)
+                              })
+                            });
                             queryClient.invalidateQueries({
                               queryKey: ["schemeDetail"],
                             });
+                            // Remove answers from frontend table
+                            const from = (page - 1) * pageSize;
+                            const to = from + pageSize;
+                            setDisplayingRecords(displayingRecords.toSpliced(index, 1).slice(from, to));
+                            setPage(1);
                             toggleNotification(
                               "Success",
                               `Record deleted`,

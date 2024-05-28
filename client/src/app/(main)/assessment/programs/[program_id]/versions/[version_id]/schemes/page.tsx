@@ -7,7 +7,7 @@ import {
 import Program, { Version } from "@/app/interfaces/Program.interface";
 import { useProgram } from "@/app/providers/ProgramProvider";
 import React, { useEffect, useState } from "react";
-import { Button, Group, Text, TextInput } from "@mantine/core";
+import { Button, Group, Modal, Text, TextInput } from "@mantine/core";
 import formatDate from "@/app/lib/formatDate";
 import { BiSearch } from "react-icons/bi";
 import { IoCreate } from "react-icons/io5";
@@ -21,6 +21,7 @@ import axios from "axios";
 import { sortBy } from "lodash";
 import useNavigate from "@/app/hooks/useNavigate";
 import { toggleNotification } from "@/app/lib/notification";
+import { useDisclosure } from "@mantine/hooks";
 
 // const mockSchemes:AssessSchemeListItem[] = [
 //   {
@@ -243,7 +244,8 @@ const Page = ({
             accessor: "actions",
             title: "Actions",
             textAlign: "left",
-            render: (record) => {
+            render: (record, index) => {
+              const [delModalOpened, { open, close }] = useDisclosure(false);
               return (
                 <Group gap={6} justify="center" wrap="nowrap">
                   <Button variant="transparent" px={0}>
@@ -292,37 +294,72 @@ const Page = ({
                   >
                     <IoDuplicateOutline size={20} />
                   </Button>
-                  <Button
-                    variant="transparent"
-                    c={"red"}
-                    px={0}
-                    onClick={async () => {
-                      axios
-                        .delete(
-                          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/assessment-schemes/${record.id}`,
-                        )
-                        .then(async (res) => {
-                          queryClient.invalidateQueries({
-                            queryKey: ["scheme"],
-                          });
-                          toggleNotification(
-                            "Success",
-                            `Removed scheme: ${record.name}`,
-                            "success",
-                          );
-                        })
-                        .catch((err) => {
-                          console.error("Error deleting scheme:", err);
-                          toggleNotification(
-                            "Error",
-                            "Scheme deletion failed !",
-                            "danger",
-                          );
-                        });
-                    }}
-                  >
+                  <Button variant="transparent" c={"red"} px={0} onClick={open}>
                     <AiOutlineDelete size={20} />
                   </Button>
+                  <Modal
+                    key={index}
+                    opened={delModalOpened}
+                    onClose={() => {
+                      close();
+                    }}
+                    centered
+                    size="45%"
+                    padding="md"
+                    yOffset="8em"
+                    title={
+                      <Text size="lg" c="gray" fw={600}>
+                        Please confirm deletion
+                      </Text>
+                    }
+                  >
+                    <Text size="sm">
+                      Are you sure you want to delete scheme: {record.name}?
+                      This cannot be undone!
+                    </Text>
+                    <Group justify="flex-end" gap="xs" mt="md">
+                      <Button
+                        onClick={() => {
+                          close();
+                        }}
+                        variant="outline"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="filled"
+                        color="red"
+                        onClick={() => {
+                          // send API to delete
+                          axios
+                            .delete(
+                              `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/assessment-schemes/${record.id}`,
+                            )
+                            .then(async (res) => {
+                              queryClient.invalidateQueries({
+                                queryKey: ["scheme"],
+                              });
+                              close();
+                              toggleNotification(
+                                "Success",
+                                `Removed scheme: ${record.name}`,
+                                "success",
+                              );
+                            })
+                            .catch((err) => {
+                              console.error("Error deleting scheme:", err);
+                              toggleNotification(
+                                "Error",
+                                "Scheme deletion failed !",
+                                "danger",
+                              );
+                            });
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </Group>
+                  </Modal>
                 </Group>
               );
             },
