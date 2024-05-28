@@ -4,8 +4,9 @@ import React, { SyntheticEvent, useRef, useState } from "react";
 import { toggleNotification } from "@/app/lib/notification";
 import { AiOutlineFileWord } from "react-icons/ai";
 import { useDisclosure } from "@mantine/hooks";
+import { AssessSchemeDetail } from "@/app/interfaces/Assessment.interface";
 
-const FormExportModal = ({ targetScheme }: { targetScheme: any }) => {
+const FormExportModal = ({ targetScheme }: { targetScheme: AssessSchemeDetail }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedOptions, setSelectedOptions] = useState([
     "pi",
@@ -56,7 +57,7 @@ const FormExportModal = ({ targetScheme }: { targetScheme: any }) => {
             Cancel
           </Button>
           <Button variant="filled" onClick={handleExport}>
-            Export
+              Export
           </Button>
         </Group>
       </Modal>

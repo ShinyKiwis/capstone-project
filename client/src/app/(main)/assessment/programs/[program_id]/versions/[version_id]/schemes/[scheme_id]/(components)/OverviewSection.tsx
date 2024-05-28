@@ -222,7 +222,14 @@ const OverViewSection = ({
                 );
               }}
             >
-              Export Scheme
+              <a href={`data:text/json;charset=utf-8,${encodeURIComponent(
+                  JSON.stringify(schemeObject)
+                )}`}
+                download={`${schemeObject.name}_exported.json`}
+                style={{width:'100%'}}
+              >
+                Export Scheme
+              </a>
             </Button>
           </Stack>
         </div>
