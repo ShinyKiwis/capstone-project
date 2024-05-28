@@ -24,7 +24,7 @@ export class RegistrationsService {
   }
 
   update(id: number, updateRegistrationDto: UpdateRegistrationDto) {
-    return `This action updates a #${id} registration`;
+    return this.registrationsRepository.updateRegistration(id, updateRegistrationDto);
   }
 
   remove(id: number) {
