@@ -66,7 +66,7 @@ const Page = ({
 
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -221,19 +221,19 @@ const Page = ({
     console.log("Scheme data:", schemeData);
     axios
       .post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes`,
         schemeData,
       )
-      .then(res => {
+      .then((res) => {
         toggleNotification(
           "Success",
           "The new assessment scheme is created successfully !",
           "success",
         );
         console.log("Created scheme:", res.data);
-        queryClient.invalidateQueries({queryKey: ["scheme"]})
+        queryClient.invalidateQueries({ queryKey: ["scheme"] });
         navigate(
-          `http://localhost:3000/assessment/programs/${program?.id}/versions/${version?.id}/schemes`,
+          `http://localhost:3000/assessment/programs/${params.program_id}/versions/${params.version_id}/schemes`,
         );
       })
       .catch((err) => {
@@ -383,12 +383,23 @@ const Page = ({
         </Stepper>
 
         <Group justify="end" mt="xl">
-          <Button
-            variant="default"
-            onClick={() => handleStepChange(active > 0 ? active - 1 : active)}
-          >
-            Back
-          </Button>
+          {active === 0 ? (
+            <Button
+              variant="outline"
+              onClick={() => {
+                navigate("../");
+              }}
+            >
+              Cancel
+            </Button>
+          ) : (
+            <Button
+              variant="default"
+              onClick={() => handleStepChange(active > 0 ? active - 1 : active)}
+            >
+              Back
+            </Button>
+          )}
           {active === 2 ? (
             <Button
               onClick={() => {

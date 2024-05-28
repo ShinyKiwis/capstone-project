@@ -22,8 +22,9 @@ import { toggleNotification } from "@/app/lib/notification";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { Student } from "@/app/interfaces/User.interface";
 import useNavigate from "@/app/hooks/useNavigate";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 
-interface InputtedRecord {
+export interface InputtedRecord {
   userObj: string[];
   project: string;
   criteria: {
@@ -52,7 +53,9 @@ const RecordInput = ({
   //       (_, index) => index + 1,
   //     )
   //   : []; // create array of numbers from 1 to criteria count
-  const [displayingRecords, setDisplayingRecords] = useState<InputtedRecord[]>([]);
+  const [displayingRecords, setDisplayingRecords] = useState<InputtedRecord[]>(
+    [],
+  );
   const [targetError, setTargetError] = useState<(string | undefined)[]>([
     undefined,
     undefined,
@@ -62,8 +65,10 @@ const RecordInput = ({
 
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const form = useForm<{rows: InputtedRecord[]}>({
+
+  const form = useForm<{ rows: InputtedRecord[] }>({
     initialValues: {
       rows: [
         {
@@ -118,86 +123,51 @@ const RecordInput = ({
 
   useEffect(() => {
     // Retreive scheme data
-    if (program && version) {
+    let schemeData: AssessSchemeDetail | undefined = undefined;
+    if (queryClient.getQueryData(["schemeDetail"]) != undefined) {
+      schemeData = queryClient.getQueryData(["schemeDetail"]);
+    } else {
       axios
         .get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/assessment-schemes/${params.scheme_id}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}`,
         )
         .then((res) => {
-          console.log("fetch response", res.data);
-          setFetchedScheme(res.data);
-          form.setValues({
-            rows: [
-              {
-                userObj: [],
-                project: "",
-                criteria: (res.data as AssessSchemeDetail).criteria.map(
-                  (criterion) => {
-                    return {
-                      criterionId: criterion.id,
-                      answer: "",
-                      score: null,
-                    };
-                  },
-                ),
-              },
-              // {
-              //   userObj: [],
-              //   project: "",
-              //   criteria: (res.data as AssessSchemeDetail).criteria.map(
-              //     (criterion) => {
-              //       return {
-              //         criterionId: criterion.id,
-              //         answer: "",
-              //         score: null,
-              //       };
-              //     },
-              //   ),
-              // },
-              // {
-              //   userObj: [],
-              //   project: "",
-              //   criteria: (res.data as AssessSchemeDetail).criteria.map(
-              //     (criterion) => {
-              //       return {
-              //         criterionId: criterion.id,
-              //         answer: "",
-              //         score: null,
-              //       };
-              //     },
-              //   ),
-              // },
-              // {
-              //   userObj: [],
-              //   project: "",
-              //   criteria: (res.data as AssessSchemeDetail).criteria.map(
-              //     (criterion) => {
-              //       return {
-              //         criterionId: criterion.id,
-              //         answer: "",
-              //         score: null,
-              //       };
-              //     },
-              //   ),
-              // },
-            ],
-          });
-          setDisplayingRecords(form.values.rows);
+          console.log("Scheme detail response", res.data);
+          schemeData = res.data;
         })
         .catch((err) => {
           console.log("Err fetching scheme:", err.response);
-          return <div>{err.response}</div>;
+          return;
         });
     }
-  }, [program]);
+    if (!schemeData) return;
+    setFetchedScheme(schemeData);
+    form.setValues({
+      rows: [
+        {
+          userObj: [],
+          project: "",
+          criteria: (schemeData as AssessSchemeDetail).criteria.map(
+            (criterion) => {
+              return {
+                criterionId: criterion.id,
+                answer: "",
+                score: null,
+              };
+            },
+          ),
+        },
+      ],
+    });
+    setDisplayingRecords(form.values.rows);
+  }, []);
 
   // Handle submit
   function handleRecordsSubmit() {
     // Cleanup unused rows
 
-
     // Check empty
-    if (form.values.rows.length < 1){
+    if (form.values.rows.length < 1) {
       toggleNotification("Error", "Must have at least 1 record", "danger");
       return;
     }
@@ -208,7 +178,11 @@ const RecordInput = ({
       let newErr: (string | undefined)[] = [...targetError];
 
       // Check the condition and update newErr accordingly
-      if (row.criteria[0].score != null && row.userObj.length === 0 && row.project === "") {
+      if (
+        row.criteria[0].score != null &&
+        row.userObj.length === 0 &&
+        row.project === ""
+      ) {
         newErr[index] = "Target student or project required";
         errFlag = true;
       } else {
@@ -248,12 +222,13 @@ const RecordInput = ({
     console.log("Submitting records:", submittedRecords);
     axios
       .post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}/assessment-records`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}/assessment-records`,
         submittedRecords,
       )
       .then((res) => {
         console.log("Submit response", res.data);
         toggleNotification("Success", "Records submitted !", "success");
+        queryClient.invalidateQueries({queryKey: ['schemeDetail']});
         navigate("./");
       })
       .catch((err) => {
@@ -289,10 +264,19 @@ const RecordInput = ({
             cellsStyle: () => ({ alignItems: "start" }),
             render: (record: any, index) => (
               <div className="z-50 flex items-center gap-3">
-                <Button variant="transparent" c={"red"} px={0} py={0} m={0} onClick={() => {
-                  form.values.rows.splice(index, 1);
-                  setDisplayingRecords([...displayingRecords.toSpliced(index, 1)]);
-                }}>
+                <Button
+                  variant="transparent"
+                  c={"red"}
+                  px={0}
+                  py={0}
+                  m={0}
+                  onClick={() => {
+                    form.values.rows.splice(index, 1);
+                    setDisplayingRecords([
+                      ...displayingRecords.toSpliced(index, 1),
+                    ]);
+                  }}
+                >
                   <AiOutlineDelete size={25} />
                 </Button>
                 <Text c={"gray"}>{index + 1}.</Text>
@@ -365,7 +349,7 @@ const RecordInput = ({
                 };
               },
             ),
-          }
+          };
           form.values.rows.push(newRec);
           setDisplayingRecords([...displayingRecords, newRec]);
         }}

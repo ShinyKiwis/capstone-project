@@ -11,7 +11,7 @@ import { useProgram } from "@/app/providers/ProgramProvider";
 import Program from "@/app/interfaces/Program.interface";
 import axios from "axios";
 import { AssessSchemeDetail } from "@/app/interfaces/Assessment.interface";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const SchemeDetail = ({
   params,
@@ -34,6 +34,7 @@ const SchemeDetail = ({
 
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     // Fetch current program to set context
@@ -55,9 +56,9 @@ const SchemeDetail = ({
   });
 
   // Fetch schemes
-  const { data: fetchedSchemes, isLoading: schemesIsLoading } = useQuery({
+  const { data: cachedScheme, isLoading: schemeIsLoading } = useQuery({
     queryFn: async () => {
-      let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program?.id}/versions/${version?.id}/assessment-schemes/${params.scheme_id}`;
+      let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}`;
       let response = await (await axios.get(queryURL)).data;
       console.log("refetched scheme detail");
       setFetchedScheme(response);
@@ -67,7 +68,20 @@ const SchemeDetail = ({
     enabled: true,
     staleTime: Infinity,
   });
-
+  useEffect(() => {
+    if (!queryClient.getQueryData(["schemeDetail"])) {
+      queryClient.invalidateQueries({ queryKey: ["schemeDetail"] });
+      return;
+    }
+    if (
+      params.scheme_id !=
+      (
+        queryClient.getQueryData(["schemeDetail"]) as AssessSchemeDetail
+      ).id.toString()
+    )
+      queryClient.invalidateQueries({ queryKey: ["schemeDetail"] });
+    else setFetchedScheme(queryClient.getQueryData(["schemeDetail"]));
+  }, []);
 
   if (!fetchedScheme) return <div>Fetching scheme data...</div>;
   return (

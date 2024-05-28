@@ -5,7 +5,10 @@ const useNavigate = () => {
   const router = useRouter()
 
   const navigate = (path:string)  => {
-    router.push(path)
+    if (path === '../')
+      router.back()
+    else
+      router.push(path)
   }
 
   return navigate
