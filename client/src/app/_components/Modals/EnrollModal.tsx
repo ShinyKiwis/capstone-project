@@ -7,10 +7,14 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import React, { SyntheticEvent } from "react";
 import { toggleNotification } from "@/app/lib/notification";
+import { useDeadlines } from "@/app/providers/DeadlinesProvider";
 
 const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
   const { user, handleUserEnrollProject } = useAuth();
   const { invalidateAndRefresh } = useProjects();
+  const {deadlines} = useDeadlines();
+  let today = new Date();
+  let withinDeadline = deadlines[0].startsAt < today && deadlines[0].endsAt > today;
 
   async function submitEnroll() {
     axios
@@ -76,6 +80,7 @@ const EnrollModal = ({ targetProject }: { targetProject: Project }) => {
 
   return user ? (
     <Button
+      disabled={!withinDeadline}
       onClick={(e) => {
         if (user.project?.code && user.project.code !== -1)
           openModal(e, user.project.code);

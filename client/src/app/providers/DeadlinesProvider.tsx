@@ -16,7 +16,12 @@ interface DeadlineContextType {
 export const DeadlineContext = createContext<DeadlineContextType | null>(null);
 
 const DeadlinesProvider = ({ children }: { children: React.ReactNode }) => {
-  const [deadlines, setDeadlines] = useState<Deadline[]>([]);
+  const [deadlines, setDeadlines] = useState<Deadline[]>([{
+    name:"Projects registration",
+    semester:'241',
+    startsAt: new Date("March 01, 2024 00:00:00"),
+    endsAt: new Date("March 30, 2024 11:59:59"),
+  }]);
   return (
     <DeadlineContext.Provider value={{ deadlines, setDeadlines }}>
       {children}

@@ -25,6 +25,7 @@ import { useAuth } from "@/app/providers/AuthProvider";
 import { usePathname, useSearchParams } from "next/navigation";
 import { isStudent } from "@/app/lib/isStudent";
 import { userHasResource, userHasRole } from "@/app/lib/userHasResource";
+import { useDeadlines } from "@/app/providers/DeadlinesProvider";
 
 interface ProjectCardProps {
   projectObject: Project;
@@ -54,7 +55,7 @@ const ProjectCardStudentList = ({
               <Avatar color="blue" radius="xl">
                 {student.user.name
                   .split(" ")
-                  .map((word) => word[0].toUpperCase())}
+                  .map((word:string) => word[0].toUpperCase())}
               </Avatar>
             </Tooltip>
           ))}
@@ -68,7 +69,6 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
   console.log("PROJECT", projectObject)
   const projectContextValues = useProjects();
   const { user } = useAuth();
-  const searchParams = useSearchParams();
   const pathname = usePathname();
   // console.log("here's the user");
   // console.log(user);
@@ -163,8 +163,8 @@ const ProjectCard = ({ projectObject }: ProjectCardProps) => {
               <ApproveModal targetProject={projectObject} />
             </>
           ) : null}
-          {!pathname.includes("approve") &&
-          userHasResource("enroll_projects") ? (
+          {!pathname.includes("approve") && userHasResource("enroll_projects") ? 
+          (
             <>
               {user?.project?.code === projectObject.code ? (
                 <UnenrollModal targetProject={projectObject} />

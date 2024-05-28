@@ -85,15 +85,15 @@ const DeadlineCard = ({ deadline }: { deadline: Deadline }) => {
   );
 };
 
-const Deadline = () => {
+const DeadlinesManagement = () => {
   const { deadlines } = useDeadlines();
   return (
     <div className="flex h-full flex-col gap-1 items-start">
       <PageHeader pageTitle="Deadline Management"/>
-      <DeadlineModal Icon={IoMdAdd} action="Create deadline" />
-      <Text size="lg" fw={600} c="blue" className="mt-4">
+      {/* <DeadlineModal Icon={IoMdAdd} action="Create deadline" /> */}
+      {/* <Text size="lg" fw={600} c="blue" className="mt-4">
         Deadlines
-      </Text>
+      </Text> */}
       {deadlines.map((deadline) => (
         <DeadlineCard deadline={deadline} />
       ))}
@@ -101,4 +101,4 @@ const Deadline = () => {
   );
 };
 
-export default Deadline;
+export default DeadlinesManagement;

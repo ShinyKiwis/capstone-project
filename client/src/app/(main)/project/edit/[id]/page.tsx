@@ -23,6 +23,8 @@ import { InputFieldTitle } from "../../ProjCEComponents";
 import { getBranchOptions } from "@/app/lib/getBranchOptions";
 import { toggleNotification } from "@/app/lib/notification";
 import { useAuth } from "@/app/providers/AuthProvider";
+import { useDeadlines } from "@/app/providers/DeadlinesProvider";
+import { Student, Supervisor } from "@/app/interfaces/User.interface";
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   // Background data initialization
@@ -35,6 +37,9 @@ const EditProject = ({ params }: { params: { id: string } }) => {
       value: progbranch.id.toString(),
     };
   });
+  const {deadlines} = useDeadlines();
+  let today = new Date();
+  let withinDeadline = deadlines[0].startsAt < today && deadlines[0].endsAt > today;
 
   const form = useForm({
     initialValues: {
@@ -384,6 +389,7 @@ const EditProject = ({ params }: { params: { id: string } }) => {
               onClick={(e) => {
                 handleActionButton(e, "submit");
               }}
+              disabled={!withinDeadline}
             >
               Submit for approval
             </Button>

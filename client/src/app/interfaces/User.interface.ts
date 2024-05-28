@@ -23,7 +23,7 @@ type UserOptType = {
 interface User_ManageTable
   extends Pick<User, "id" | "name" | "email" | "roles"> {}
 
-interface Supervisor extends Pick<User, "id" | "name" | "email" | "username"> {}
+export interface Supervisor extends Pick<User, "id" | "name" | "email" | "username"> {}
 
 export type Student = {
   user: User;
