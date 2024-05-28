@@ -24,25 +24,31 @@ import useNavigate from "@/app/hooks/useNavigate";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { userHasResource } from "@/app/lib/userHasResource";
+import { useDeadlines } from "@/app/providers/DeadlinesProvider";
+import { formatDateTime } from "@/app/lib/formatDate";
 
 const Project = () => {
   const searchParams = useSearchParams();
-  const pathName = usePathname()
+  const pathName = usePathname();
   const navigate = useNavigate();
-  const { user } = useAuth();
+
+  const { deadlines } = useDeadlines();
+  let today = new Date();
+  let deadlineStatus = 0;
+  if (today < deadlines[0].startsAt) deadlineStatus = -1;
+  else if (today > deadlines[0].endsAt) deadlineStatus = 1;
+  else deadlineStatus = 0;
+
   const {
     projects,
     projectsAreFetching,
-    setRenderingProjectsKey,
     getProjects,
-    refreshProjects,
     invalidateAndRefresh,
     handleSearchProjects,
     paginationSize,
     setPaginationSize,
     currentPage,
     setCurrentPage,
-    setCurrMaxPages,
     currMaxPages,
   } = useProjects();
 
@@ -54,7 +60,7 @@ const Project = () => {
     if (projects.length <= 0) getProjects(searchParams.get("project"));
   }, [projectsAreFetching]);
 
-  useEffect(() => {    
+  useEffect(() => {
     setSearch("");
     getProjects(searchParams.get("project"));
   }, [searchParams.get("project"), pathName]);
@@ -87,8 +93,13 @@ const Project = () => {
   if (userHasResource("view_projects")) {
     return (
       <div className="flex h-full flex-col gap-3">
-        {/* <PageTitle title={searchParams.get("project") === "specialized" ? "Specialized Projects" : "Capstone Projects"}/> */}
-      <PageHeader pageTitle={searchParams.get("project") === "specialized" ? "Specialized Projects" : "Capstone Projects"}/>
+        <PageHeader
+          pageTitle={
+            searchParams.get("project") === "specialized"
+              ? "Specialized Projects"
+              : "Capstone Projects"
+          }
+        />
         <div className="w-full">
           <div className="flex w-3/5 gap-4">
             <TextInput
@@ -97,7 +108,7 @@ const Project = () => {
                 <BiSearch
                   size={20}
                   className="group-focus-within:text-blue text-gray cursor-pointer"
-                  onClick={(e) => {
+                  onClick={() => {
                     handleSearchProjects(
                       search,
                       searchParams.get("project") || "",
@@ -119,17 +130,23 @@ const Project = () => {
             <FilterModal />
           </div>
 
-          <div className="mt-4 w-full flex">
+          <div className="mt-4 flex w-full">
             {userHasResource("create_projects") ? (
               <div className="mr-4">
                 <Button
                   variant="filled"
                   leftSection={<IoCreate size={20} />}
                   onClick={() => navigate("/project/create")}
+                  disabled={deadlineStatus !== 0}
                 >
                   Create project
                 </Button>
-                <UploadFileModal object="project" setFileUploaded={setFileUploaded} />
+                {deadlineStatus === 0 ? (
+                  <UploadFileModal
+                    object="project"
+                    setFileUploaded={setFileUploaded}
+                  />
+                ) : null}
               </div>
             ) : null}
 
@@ -147,8 +164,27 @@ const Project = () => {
             ) : null}
           </div>
 
+          {deadlineStatus === -1 ? (
+            <Text pt={"sm"} c={"gray"} fw={500}>
+              Projects
+              {userHasResource("create_projects")
+                ? " submission"
+                : " enrollment"}{" "}
+              period starts on {formatDateTime(deadlines[0].startsAt)}
+            </Text>
+          ) : null}
+          {deadlineStatus === 1 ? (
+            <Text pt={"sm"} c={"red"} fw={500}>
+              Projects
+              {userHasResource("create_projects")
+                ? " submission"
+                : " enrollment"}{" "}
+              period has ended on {formatDateTime(deadlines[0].endsAt)}
+            </Text>
+          ) : null}
+
           <div
-            className={`mt-4 w-full flex gap-8 ${projects.length < 1 ? "hidden" : ""}`}
+            className={`mt-4 flex w-full gap-8 ${projects.length < 1 ? "hidden" : ""}`}
           >
             <div className="flex items-center gap-2">
               <NativeSelect
@@ -183,7 +219,7 @@ const Project = () => {
                 h="100%"
                 scrollbars="y"
                 scrollbarSize={4}
-                offsetScrollbars='y'
+                offsetScrollbars="y"
               >
                 {projects.map((project: Project) => (
                   <ProjectCard projectObject={project} key={project.code} />

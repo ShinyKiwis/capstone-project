@@ -87,40 +87,40 @@ const DeadlineModal = ({ Icon, action, deadline }: DeadlineModalProps) => {
     }
 
     if (!hasError) {
-      if (
-        deadlines.some(
-          (deadline) =>
-            deadline.name === name && deadline.semester === semester,
-        )
-      ) {
-        toggleNotification(
-          `Deadline ${name} existed in semester ${semester}`,
-          `The deadline ${name} is existed in semester ${semester}. Please try another.`,
-          "danger",
-        );
-      } else {
-        setDeadlines(
-          deadlines.map((updateDeadline) => {
-            if (
-              updateDeadline.name == deadline?.name &&
-              updateDeadline.semester == deadline?.semester
-            ) {
-              return {
-                name,
-                semester,
-                startsAt,
-                endsAt,
-              };
-            }
-            return updateDeadline;
-          }),
-        );
-        toggleNotification(
-          `Update ${name} in semester ${semester} successfully`,
-          `The deadline for event ${name} in semester ${semester} has been updated successfully.`,
-          "success",
-        );
-      }
+      // if (
+      //   deadlines.some(
+      //     (deadline) =>
+      //       deadline.name === name && deadline.semester === semester,
+      //   )
+      // ) {
+      //   toggleNotification(
+      //     `Deadline ${name} existed in semester ${semester}`,
+      //     `The deadline ${name} is existed in semester ${semester}. Please try another.`,
+      //     "danger",
+      //   );
+      // } else {
+      setDeadlines(
+        deadlines.map((updateDeadline) => {
+          if (
+            updateDeadline.name == deadline?.name &&
+            updateDeadline.semester == deadline?.semester
+          ) {
+            return {
+              name,
+              semester,
+              startsAt,
+              endsAt,
+            };
+          }
+          return updateDeadline;
+        }),
+      );
+      toggleNotification(
+        `Update ${name} in semester ${semester} successfully`,
+        `The deadline for event ${name} in semester ${semester} has been updated successfully.`,
+        "success",
+      );
+      // }
       close();
     }
   };

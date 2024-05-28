@@ -6,12 +6,17 @@ import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import React, { SyntheticEvent } from "react";
 import { toggleNotification } from "@/app/lib/notification";
+import { useDeadlines } from "@/app/providers/DeadlinesProvider";
 
 const UnenrollModal = ({ targetProject }: { targetProject: Project }) => {
   const { user, handleUserEnrollProject } = useAuth();
-  const {invalidateAndRefresh} = useProjects();
+  const { invalidateAndRefresh } = useProjects();
+  const { deadlines } = useDeadlines();
+  let today = new Date();
+  let withinDeadline =
+    deadlines[0].startsAt < today && deadlines[0].endsAt > today;
 
-  const openDeleteModal = (e:SyntheticEvent) =>{
+  const openDeleteModal = (e: SyntheticEvent) => {
     e.stopPropagation();
     modals.openConfirmModal({
       title: (
@@ -25,7 +30,7 @@ const UnenrollModal = ({ targetProject }: { targetProject: Project }) => {
           <Text size="sm">
             Are you sure you want to unenroll from this project?
           </Text>
-          <Text size="sm" c='blue'>
+          <Text size="sm" c="blue">
             {targetProject.code} - {targetProject.name}
           </Text>
         </>
@@ -34,25 +39,30 @@ const UnenrollModal = ({ targetProject }: { targetProject: Project }) => {
       confirmProps: { color: "red" },
       onCancel: () => {},
       onConfirm: async () => {
-        axios.post("http://localhost:3500/users/student/unenroll", {
-          studentId: user?.id
-        })
-        .then(async (res) =>{
-          handleUserEnrollProject(-1);
-          invalidateAndRefresh();
-          toggleNotification('Success', `Successfully unenroll from project ${targetProject.name}`, 'success')
-          console.log(`Unenrolled`)
-        })
-        .catch((err) => {
-          console.error("Error unenrolling project:", err);
-          toggleNotification("Error","Unenrollment failed!", 'danger')
-        })
+        axios
+          .post("http://localhost:3500/users/student/unenroll", {
+            studentId: user?.id,
+          })
+          .then(async (res) => {
+            handleUserEnrollProject(-1);
+            invalidateAndRefresh();
+            toggleNotification(
+              "Success",
+              `Successfully unenroll from project ${targetProject.name}`,
+              "success",
+            );
+            console.log(`Unenrolled`);
+          })
+          .catch((err) => {
+            console.error("Error unenrolling project:", err);
+            toggleNotification("Error", "Unenrollment failed!", "danger");
+          });
       },
     });
-  }
+  };
 
   return (
-    <Button onClick={openDeleteModal} color="red">
+    <Button onClick={openDeleteModal} color="red" disabled={!withinDeadline}>
       Unenroll
     </Button>
   );
