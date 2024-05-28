@@ -22,8 +22,6 @@ const DeadlinesProvider = ({ children }: { children: React.ReactNode }) => {
     axios
       .get(`${process.env.NEXT_PUBLIC_BASE_URL}/registrations`)
       .then((response) => {
-        console.log('Fetched deadlines', response.data)
-        console.log("Converted date", new Date(response.data[0].startDate))
         setDeadlines([{
           id: response.data[0].id,
           name: response.data[0].name,

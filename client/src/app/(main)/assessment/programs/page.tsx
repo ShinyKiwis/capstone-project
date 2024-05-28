@@ -15,17 +15,25 @@ import { DataTable } from "mantine-datatable";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { BiSearch } from "react-icons/bi";
+import { userHasResource } from "@/app/lib/userHasResource";
+import useNavigate from "@/app/hooks/useNavigate";
 
 const Assessment = () => {
   const { programs } = useProgram();
   const [loadedPrograms, setLoadedPrograms] = useState<Program[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoadedPrograms(programs);
   }, [programs]);
 
   console.log(programs);
+
+  if (!userHasResource("manage_assessments_schemes")){
+    return navigate("/forbidden");
+  }
+
   return (
     <div className="flex h-full flex-col gap-3">
       <PageHeader pageTitle="Available Programs" />

@@ -63,9 +63,12 @@ export const assessmentInitialValues = [
     checked: false,
     key: "manage_assessments_schemes"
   },
+]
+
+export const evaluationInitialValues = [
   {
-    label: "Manage assessments",
+    label: "Evaluate programs",
     checked: false,
-    key: "manage_assessments"
-  }
+    key: "evaluate_programs"
+  },
 ]
