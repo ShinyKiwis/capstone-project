@@ -19,9 +19,9 @@ const PageHeader = ({pageTitle}: {pageTitle: string}) => {
 
   const openModal = () =>
     modals.openConfirmModal({
-      title: <Text fw={600}>Are you sure you want to logout ?</Text>,
+      title: <Text fw={600}>Confirm logout</Text>,
       centered: true,
-      children: <Text size="sm">You will be logged out of this user.</Text>,
+      children: <Text size="sm">Are you sure you want to logout ?</Text>,
       labels: { confirm: "Logout", cancel: "Cancel" },
       confirmProps: { color: "red" },
       onCancel: () => {},

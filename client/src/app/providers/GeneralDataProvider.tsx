@@ -6,6 +6,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
+import { Supervisor, UserOptType } from "../interfaces/User.interface";
 // import { useUser } from "../hooks";
 
 interface GeneralDataContextProps {
