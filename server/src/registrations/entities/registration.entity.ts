@@ -21,7 +21,7 @@ export class Registration {
   @ManyToOne(() => Semester)
   semester: Semester;
 
-  @Column()
+  @Column({nullable: true})
   name: string;
 
   @Column()
