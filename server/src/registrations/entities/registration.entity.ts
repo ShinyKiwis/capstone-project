@@ -22,6 +22,9 @@ export class Registration {
   semester: Semester;
 
   @Column()
+  name: string;
+
+  @Column()
   startDate: Date;
 
   @Column()

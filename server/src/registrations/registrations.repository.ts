@@ -12,9 +12,10 @@ export class RegistrationsRepository extends Repository<Registration> {
   }
 
   async createRegistration(createRequirementDto: CreateRegistrationDto) {
-    const { semester, startDate, endDate } = createRequirementDto;
+    const { semester, name, startDate, endDate } = createRequirementDto;
     const requirement = this.create({
       semester,
+      name,
       startDate,
       endDate
     });
@@ -24,12 +25,13 @@ export class RegistrationsRepository extends Repository<Registration> {
   }
 
   async updateRegistration(id: number, updateRequirementDto: UpdateRegistrationDto) {
-    const { semester, startDate, endDate } = updateRequirementDto;
+    const { semester, name, startDate, endDate } = updateRequirementDto;
     const requirement = await this.findOneBy({id});
     const getSemester = await this.semestersRepository.findOneBy(semester);
     requirement.semester = getSemester;
     requirement.startDate = startDate;
     requirement.endDate = endDate;
+    requirement.name = name;
 
     await this.save(requirement);
     return requirement;
