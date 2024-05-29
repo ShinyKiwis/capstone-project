@@ -107,11 +107,11 @@ const sidebarItems = [
   {
     Icon: VscGraph,
     title: "Evaluation",
-    resource: "evaluation",
+    resource: "evaluate",
     pages: [
       {
         title: "Programs Evaluation",
-        href: "/evaluate",
+        href: "/evaluate/programs",
         resource: "evaluate_programs",
         display: true,
       },

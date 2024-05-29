@@ -66,7 +66,7 @@ const Users = () => {
       fetchUsers();
     } else {
       // console.log("USERS MANAGEMENT: ", users);
-      setRecords(users);
+      setRecords(users.slice(0, 10));
       setFetching(false);
     }
   }, [users]);
@@ -114,13 +114,13 @@ const Users = () => {
       <PageHeader pageTitle="Users Management"/>
       <div className="flex items-center">
         <div className="flex items-center gap-4">
-          <CreateUserModal />
+          {/* <CreateUserModal /> */}
+          <SettingsModal hideOptions={hideOptions} dispatch={dispatch} />
           <DeleteAllUsersModal
             users={users}
             setUsers={setUsers}
             selectedRecords={selectedRecords}
           />
-          <SettingsModal hideOptions={hideOptions} dispatch={dispatch} />
         </div>
         <TextInput
           placeholder="Search users"
@@ -158,7 +158,7 @@ const Users = () => {
               hidden: hideOptions.email,
             },
             {
-              accessor: "roles",
+              accessor: "roles.0.roleName",
               title: "Roles",
               width: "40%",
               hidden: hideOptions.roles,
