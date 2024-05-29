@@ -17,15 +17,18 @@ import { useState, useEffect } from "react";
 import { BiSearch } from "react-icons/bi";
 import { userHasResource } from "@/app/lib/userHasResource";
 import useNavigate from "@/app/hooks/useNavigate";
+import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 
 const Assessment = () => {
   const { programs } = useProgram();
   const [loadedPrograms, setLoadedPrograms] = useState<Program[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const navigate = useNavigate();
+  const {buildBreadCrumbs} = useBreadCrumbs();
 
   useEffect(() => {
     setLoadedPrograms(programs);
+    buildBreadCrumbs();
   }, [programs]);
 
   console.log(programs);

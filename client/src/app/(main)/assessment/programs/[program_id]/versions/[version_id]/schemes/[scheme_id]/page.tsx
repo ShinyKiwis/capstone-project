@@ -44,9 +44,9 @@ const SchemeDetail = ({
         const targetVersion = targetProgram.versions.filter(
           (existedVersion) => existedVersion.id == parseInt(params.version_id),
         )[0];
-        buildBreadCrumbs(targetProgram, targetVersion);
         setProgram(targetProgram);
         setVersion(targetVersion);
+        buildBreadCrumbs(targetProgram, targetVersion, null, null, {id: params.scheme_id, name: 'Scheme Details'});
       }
     };
 
@@ -81,6 +81,7 @@ const SchemeDetail = ({
     )
       queryClient.invalidateQueries({ queryKey: ["schemeDetail"] });
     else setFetchedScheme(queryClient.getQueryData(["schemeDetail"]));
+
   }, []);
 
   if (!fetchedScheme) return <div>Fetching scheme data...</div>;

@@ -46,8 +46,6 @@ const RecordEdit = ({
   let studentId: string;
   let projectId: string;
   const [answersFetched, setAnswersFetched] = useState(false);
-  const [selectedStudent, setselectedStudent] = useState<string[]>([]);
-  const [selectedProject, setselectedProject] = useState("");
 
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
@@ -62,7 +60,7 @@ const RecordEdit = ({
         const targetVersion = targetProgram.versions.filter(
           (existedVersion) => existedVersion.id == parseInt(params.version_id),
         )[0];
-        buildBreadCrumbs(targetProgram, targetVersion);
+        buildBreadCrumbs(targetProgram, targetVersion, null, null, {id: params.scheme_id, name: 'Scheme Details'});
         setProgram(targetProgram);
         setVersion(targetVersion);
       }
@@ -231,7 +229,7 @@ const RecordEdit = ({
         />
       ) : null}
 
-      <div className="flex justify-between">
+      {/* <div className="flex justify-between">
         <NavLink
           href={`${parseInt(params.rec_id) - 1}`}
           label="Previous Record"
@@ -266,7 +264,7 @@ const RecordEdit = ({
             />
           }
         />
-      </div>
+      </div> */}
 
       <ScrollArea type="auto" scrollbarSize={8} className="flex min-w-0 flex-1">
         <div className="flex items-start">
