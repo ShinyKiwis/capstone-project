@@ -30,11 +30,10 @@ const BreadCrumbProvider = ({ children }: { children: React.ReactNode }) => {
 
   const buildBreadCrumbs = (program?: Program, version?: Version, so?: SO, piName?:string, scheme?: PassedScheme) => {
     const path = window.location.pathname;
-    if (currentModulePath === 'nonincluded'){
-      if (path.includes('/assessment/')) setCurrentModulePath('/assessment')
-      else if (path.includes('/program')) setCurrentModulePath('/program')
-      else setCurrentModulePath('nonincluded');
-    }
+    if (path.includes('/assessment/')) setCurrentModulePath('/assessment')
+    else if (path.includes('/program')) setCurrentModulePath('/program')
+    else setCurrentModulePath('nonincluded');
+    
     if (!path.includes(currentModulePath)) {
       setBreadCrumbs([]);
     }

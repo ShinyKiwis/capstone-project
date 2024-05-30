@@ -17,6 +17,7 @@ import { User } from "./interface/User.interface";
 import DeleteModal from "@/app/_components/Modals/DeleteModal";
 import { PageHeader } from "@/app/_components";
 import CreateUserModal from "./components/CreateUserModal";
+import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 
 const PAGE_SIZES = [10, 15, 20, 25, 30];
 
@@ -38,10 +39,15 @@ const Users = () => {
   });
   const [selectedRecords, setSelectedRecords] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const {buildBreadCrumbs} = useBreadCrumbs();
 
   const handleDeleteUser = (user: User) => {
     setUsers(users.filter((existedUser) => existedUser.id !== user.id));
   }
+
+  useEffect(() => {
+    buildBreadCrumbs();
+  }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {

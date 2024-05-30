@@ -2,6 +2,7 @@
 import { PageHeader } from "@/app/_components";
 import DeadlineModal from "@/app/_components/Modals/DeadlineModal";
 import { toggleNotification } from "@/app/lib/notification";
+import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 import { Deadline, useDeadlines } from "@/app/providers/DeadlinesProvider";
 import { Badge, Button, Card, Group, Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
@@ -87,6 +88,8 @@ const DeadlineCard = ({ deadline }: { deadline: Deadline }) => {
 
 const DeadlinesManagement = () => {
   const { deadlines } = useDeadlines();
+  const {buildBreadCrumbs} = useBreadCrumbs();
+	buildBreadCrumbs();
   return (
     <div className="flex h-full flex-col gap-1 items-start">
       <PageHeader pageTitle="Deadline Management"/>

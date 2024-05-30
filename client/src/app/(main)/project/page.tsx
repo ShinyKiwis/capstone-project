@@ -26,19 +26,22 @@ import { useAuth } from "@/app/providers/AuthProvider";
 import { userHasResource } from "@/app/lib/userHasResource";
 import { useDeadlines } from "@/app/providers/DeadlinesProvider";
 import { formatDateTime } from "@/app/lib/formatDate";
+import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 
 const Project = () => {
   const searchParams = useSearchParams();
   const pathName = usePathname();
   const navigate = useNavigate();
-
+  const {buildBreadCrumbs} = useBreadCrumbs();
+  
+  
   const { deadlines } = useDeadlines();
   let today = new Date();
   let deadlineStatus = 0;
   if (today < deadlines[0].startsAt) deadlineStatus = -1;
   else if (today > deadlines[0].endsAt) deadlineStatus = 1;
   else deadlineStatus = 0;
-
+  
   const {
     projects,
     projectsAreFetching,
@@ -51,10 +54,14 @@ const Project = () => {
     setCurrentPage,
     currMaxPages,
   } = useProjects();
-
+  
   const [search, setSearch] = useState("");
   const [fileUploaded, setFileUploaded] = useState(false);
-
+  
+  useEffect(() => {
+    buildBreadCrumbs();
+  }, []);
+  
   useEffect(() => {
     // Initial render of projects list
     if (projects.length <= 0) getProjects(searchParams.get("project"));

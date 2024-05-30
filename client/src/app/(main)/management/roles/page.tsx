@@ -1,11 +1,14 @@
 "use client";
 import { RoleModal, RoleCard, PageHeader } from "@/app/_components";
+import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 import { useRoles } from "@/app/providers/RolesProvider";
 import { Grid, Text } from "@mantine/core";
 import { IoMdAdd } from "react-icons/io";
 
 const Roles = () => {
   const { roles } = useRoles();
+  const {buildBreadCrumbs} = useBreadCrumbs();
+	buildBreadCrumbs();
   return (
     <div className="flex h-full flex-col gap-3 items-start">
       <PageHeader pageTitle="Roles Management" />
