@@ -44,7 +44,7 @@ const DeleteModal = <T extends DeleteObject>(
           toggleNotification(
             `${capitalize(type)} deletion failed`,
             `Can not delete ${capitalize(type)} ${object.name}`,
-            "success",
+            "danger",
           );
           console.log(`Err deleting ${type}`, err);
         })

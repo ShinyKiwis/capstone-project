@@ -15,6 +15,7 @@ import {NavigationContext} from '@/app/_components';
 import DeleteModal from '@/app/_components/Modals/DeleteModal';
 import EditSOsModal from '@/app/_components/Modals/SO/EditSOsModal';
 import EditSOModal from '@/app/_components/Modals/SO/EditSOModal';
+import DeleteSOsModal from '@/app/_components/Modals/SO/DeleteSOsModal';
 
 const Page = ({ params }: { params: { id: string, version_id: string } }) => {
   const [program, setProgram] = useState<Program | null>(null);
@@ -79,7 +80,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
       <PageHeader pageTitle="Student Outcomes Management" />
       <NavigationContext program={program} version={version} />
 
-      <div className="mt-2 flex">
+      <div className="mt-2 flex gap-3">
         <CreateSOModal programId={program.id} versionId={version.id} setSOs={setSOs}/>
         <UploadFileModal
           object="SOs"
@@ -87,15 +88,16 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
           setFileUploaded={setFileUploaded}
         />
         <EditSOsModal programId={program.id} versionId ={version.id} SOs={selectedRecords} setSOs={setSOs} />
+        <DeleteSOsModal selectedRecords={selectedRecords} SOs={SOs} setSOs={setSOs} programId={params.id} versionId={params.version_id} />
       </div>
       <div className="mt-4 h-full overflow-auto pb-4">
         <DataTable
           withTableBorder
           columns={[
             {
-              accessor: "code",
-              title: "SO Code",
-              width: "5%",
+              accessor: "id",
+              title: "SO Name",
+              width: "15%",
               sortable: true,
               render: (record) => {
                 return (
