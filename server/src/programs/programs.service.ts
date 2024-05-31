@@ -328,7 +328,7 @@ export class ProgramsService {
     const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
     let currentSO = null;
     for (let i = 1; i < data.length; i++) {
-      console.log(data[i])
+      console.log(data[i][0])
       if (data[i][0] !== undefined && data[i][0] != currentSO?.name) {
         const studentOutcome: CreateStudentOutcomeDto = {
           name: data[i][0],
@@ -337,8 +337,7 @@ export class ProgramsService {
           passingThreshold: 0,
         }
         console.log(studentOutcome);
-        await this.studentOutcomesRepository.createStudentOutcome(programId, versionId, studentOutcome);
-        currentSO = studentOutcome;
+        currentSO = await this.studentOutcomesRepository.createStudentOutcome(programId, versionId, studentOutcome);
       }
       const performanceIndicator: CreatePerformanceIndicatorDto = {
         name: data[i][2],
