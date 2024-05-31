@@ -1,0 +1,46 @@
+version: '3.9'
+services:
+  metabase:
+    image: metabase/metabase:latest
+    container_name: eduva_metabase
+    hostname: metabase
+    volumes:
+    - /dev/urandom:/dev/random:ro
+    ports:
+      - 3000:3000
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: eduva_metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: eduva
+      MB_DB_PASS: eduva
+      MB_DB_HOST: db
+    networks:
+      - metanet1
+    healthcheck:
+      test: curl --fail -I http://localhost:3000/api/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  db:
+    image: postgres:latest
+    container_name: eduva_postgres_db
+    restart: always
+    hostname: localhost
+    environment:
+      POSTGRES_USER: eduva
+      POSTGRES_PASSWORD: eduva
+      POSTGRES_DB: eduva_metabase
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - metanet1
+
+volumes:
+  pgdata:
+networks:
+  metanet1:
+    driver: bridge
+
