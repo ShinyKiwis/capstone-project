@@ -5,6 +5,8 @@ import { AssessmentScheme } from './entities/assessment-scheme.entity';
 import { CreateAssessmentSchemeDto } from './dto/create-assessment-scheme.dto';
 import { CriteriaRepository } from './criteria.repository';
 import { AssessmentSchemesToPerformanceIndicatorsRepository } from './assessment-scheme-to-performance-indicator.repository';
+import { SemestersRepository } from 'src/semesters/semesters.repository';
+import { UpdateAssessmentSchemeDto } from './dto/update-assessment-scheme.dto';
 
 @Injectable()
 export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
@@ -12,7 +14,8 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
     private dataSource: DataSource,
     private versionsRepository: VersionsRepository,
     private criterionRepository: CriteriaRepository,
-    private assessmentSchemesToPerformanceIndicatorsRepository: AssessmentSchemesToPerformanceIndicatorsRepository
+    private assessmentSchemesToPerformanceIndicatorsRepository: AssessmentSchemesToPerformanceIndicatorsRepository,
+    private semestersRepository: SemestersRepository
   ) {
     super(AssessmentScheme, dataSource.createEntityManager());
   }
@@ -44,11 +47,11 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
     await this.save(assessmentScheme);
 
     for (let criterion of criteria) {
-      this.criterionRepository.createCriterion({assessmentScheme, ...criterion});
+      this.criterionRepository.createCriterion({ assessmentScheme, ...criterion });
     }
 
     for (let performanceIndicator of performanceIndicators) {
-      await this.assessmentSchemesToPerformanceIndicatorsRepository.createAssessmentSchemeToPerformanceIndicator({assessmentScheme, ...performanceIndicator})
+      await this.assessmentSchemesToPerformanceIndicatorsRepository.createAssessmentSchemeToPerformanceIndicator({ assessmentScheme, ...performanceIndicator })
     }
     return assessmentScheme;
   }
@@ -125,12 +128,12 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
 
     const records = [];
 
-    for(let criterion of assessmentScheme.criteria) {
+    for (let criterion of assessmentScheme.criteria) {
       const criterionRecords = criterion.records;
       records.push(...criterionRecords);
     }
 
-    return {...assessmentScheme, records};
+    return { ...assessmentScheme, records };
   }
 
   async duplicateAssessmentScheme(
@@ -175,13 +178,74 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
     await this.save(newAssessmentScheme);
 
     for (let criterion of assessmentScheme.criteria) {
-      const {id, ...criterionData} = criterion;
-      this.criterionRepository.createCriterion({assessmentScheme: newAssessmentScheme, ...criterionData});
+      const { id, ...criterionData } = criterion;
+      this.criterionRepository.createCriterion({ assessmentScheme: newAssessmentScheme, ...criterionData });
     }
 
     for (let performanceIndicator of assessmentScheme.performanceIndicators) {
-      await this.assessmentSchemesToPerformanceIndicatorsRepository.createAssessmentSchemeToPerformanceIndicator({assessmentScheme: newAssessmentScheme, ...performanceIndicator})
+      await this.assessmentSchemesToPerformanceIndicatorsRepository.createAssessmentSchemeToPerformanceIndicator({ assessmentScheme: newAssessmentScheme, ...performanceIndicator })
     }
     return newAssessmentScheme;
+  }
+
+  async updateAssessmentScheme(
+    programId: number,
+    versionId: number,
+    assessmentSchemeId: number,
+    updateAssessmentSchemeDto: UpdateAssessmentSchemeDto,
+  ) {
+    const { name, generation, semester, description, criteria, performanceIndicators } = updateAssessmentSchemeDto;
+    const version = await this.versionsRepository.findOneBy({
+      id: versionId,
+      programId,
+    });
+    if (!version) {
+      throw new NotFoundException(
+        `Version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
+
+    const assessmentScheme = await this.findOne({
+      where: {
+        version,
+        id: assessmentSchemeId,
+      },
+      relations: {
+        criteria: true,
+        performanceIndicators: true
+      },
+    });
+
+    if (!assessmentScheme) {
+      throw new NotFoundException(
+        `Student Outcome with id ${assessmentSchemeId} of version with id ${versionId} of program with id ${programId} not found`,
+      );
+    }
+
+    const newSemester = await this.semestersRepository.findOneBy(semester);
+
+    assessmentScheme.name = name;
+    assessmentScheme.generation = generation;
+    assessmentScheme.semester = newSemester;
+    assessmentScheme.description = description;
+
+    await this.save(assessmentScheme);
+
+    for (let criterion of criteria) {
+      if (criterion.id) {
+        const existingCriterion = assessmentScheme.criteria.find(c => c.id === criterion.id);
+        if (existingCriterion) {
+          this.criterionRepository.updateCriterion(assessmentScheme ,criterion.id, criterion);
+        }
+      } else {
+        this.criterionRepository.createCriterion({ assessmentScheme, ...criterion });
+      }
+    }
+
+    for (let performanceIndicator of performanceIndicators) {
+      await this.assessmentSchemesToPerformanceIndicatorsRepository.updateAssessmentSchemeToPerformanceIndicator(assessmentScheme, performanceIndicator)
+    }
+
+    return assessmentScheme;
   }
 }
