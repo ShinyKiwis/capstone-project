@@ -49,7 +49,8 @@ const Page = ({ params }: { params: { id: string } }) => {
       <div className="mt-2 flex">
         <CreateProgramVersionModal programId={program.id} program={program} setProgram={setProgram} />
         <UploadFileModal
-          object="program versions"
+          object="program version"
+          uploadPath={`undefined`}
           setFileUploaded={setFileUploaded}
         />
         <TextInput

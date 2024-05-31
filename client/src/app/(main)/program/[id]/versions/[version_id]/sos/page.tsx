@@ -60,6 +60,20 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
     }));
   }, [SOs])
 
+  useEffect(() => {
+    const refetchSOs = async () => {
+      // refetch SOs after import
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.id}/versions/${params.version_id}`)
+      const targetSOs = response.data.studentOutcomes;
+      setSOs(targetSOs);
+    }
+
+    if (fileUploaded){
+      refetchSOs();
+      setFileUploaded(false);
+    }
+  }, [fileUploaded]);
+
   return program && version ? (
     <div className='flex h-full flex-col gap-3'>
       <PageHeader pageTitle="Student Outcomes Management" />
@@ -69,6 +83,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
         <CreateSOModal programId={program.id} versionId={version.id} setSOs={setSOs}/>
         <UploadFileModal
           object="SOs"
+          uploadPath={`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.id}/versions/${params.version_id}/student-outcomes/file`}
           setFileUploaded={setFileUploaded}
         />
         <EditSOsModal programId={program.id} versionId ={version.id} SOs={selectedRecords} setSOs={setSOs} />
@@ -118,7 +133,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
                         "SO", 
                         record, 
                         handleDeleteSO, 
-                        `${process.env.NEXT_PUBLIC_DELETE_PROGRAM_URL!}/${program.id}/versions/${version.id}/student-outcomes/${record.id}`
+                        `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/student-outcomes/${record.id}`
                       )}
                     >
                       <IconTrash size={16} />

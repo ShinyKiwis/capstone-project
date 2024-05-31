@@ -17,7 +17,7 @@ import { FiUpload } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
 import { FiFileText } from "react-icons/fi";
 import { useState } from "react";
-import { FaFileWord, FaFilePdf } from "react-icons/fa";
+import { FaFileWord, FaFilePdf, FaFileExcel } from "react-icons/fa";
 import axios from "axios";
 import { toggleNotification } from "@/app/lib/notification";
 
@@ -26,15 +26,19 @@ const getFileIcon = (fileType: string) => {
     return <FaFileWord size={20} />;
   } else if (fileType.includes("pdf")) {
     return <FaFilePdf size={20} />;
+  } else if (fileType.includes("xls")) {
+    return <FaFileExcel size={20} />;
   }
   return <FiFileText size={20} />;
 };
 
 const UploadFileModal = ({
   object,
+  uploadPath,
   setFileUploaded,
 }: {
   object: string;
+  uploadPath: string;
   setFileUploaded: (arg: boolean) => void;
 }) => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -47,10 +51,10 @@ const UploadFileModal = ({
   const handleUploadFiles = async () => {
     const formData = new FormData();
     files.forEach((file) => {
-      formData.append("files", file);
+      formData.append("file", file);
     });
     const response = await axios.post(
-      process.env.NEXT_PUBLIC_UPLOAD_FILES_URL!,
+      uploadPath,
       formData,
       {
         headers: {
@@ -58,34 +62,50 @@ const UploadFileModal = ({
         },
       },
     );
-    const { success, failure } = response.data;
-    if (failure) {
+    console.log("Upload response:", response)
+    const { failure, error } = response.data;
+    if (failure || error) {
       toggleNotification(
-        `${failure} files uploaded unsucessfully`,
-        "Try to contact admin and check the template format",
+        `Upload unsucessful`,
+        "Check file format and data",
         "danger",
       );
     }
-    if (success) {
+    else {
       toggleNotification(
-        `${success} files uploaded sucessfully`,
-        `${success} files are uploaded and created successfully`,
+        `Uploaded sucessfully`,
+        `New ${object} added to the system`,
         "success",
       );
+      setFileUploaded(true);
     }
-    setFileUploaded(true);
     close();
   };
 
   const handleDownloadTemplateFile = async () => {
-    const response = await fetch("ProjectTemplate.docx");
+    var response = null;
+    switch (object) {
+      case 'project':      
+        response = await fetch("ProjectTemplate.docx");
+        break;
+      case 'SOs':     
+        console.log("SOs case") 
+        response = await fetch("SOs_template.xlsx");
+        break;
+      case 'PIs':      
+        response = await fetch("PIs_template.xlsx");
+        break;
+      default:
+        response = await fetch("ProjectTemplate.docx");
+        break;
+    }
     const blob = await response.blob();
 
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
     // Update later with switch case for different objects
-    link.download = "Project Template.docx";
+    link.download = `${object}_template.xlsx`;
     link.click();
     window.URL.revokeObjectURL(url);
   };
@@ -114,7 +134,7 @@ const UploadFileModal = ({
         <Dropzone
           onReject={(files) => console.log("rejected files", files)}
           maxSize={5 * 1024 ** 2}
-          accept={[MIME_TYPES.pdf, MIME_TYPES.doc, MIME_TYPES.docx, MIME_TYPES.csv]}
+          accept={[MIME_TYPES.doc, MIME_TYPES.docx, MIME_TYPES.csv, MIME_TYPES.xls, MIME_TYPES.xlsx]}
           onDrop={(newFiles) => {
             setFiles((currentFiles) => [...currentFiles, ...newFiles]);
           }}
@@ -165,6 +185,7 @@ const UploadFileModal = ({
             </div>
           </Group>
         </Dropzone>
+        <Text size="sm" my='sm'>Accepted types: .xls, .xlsx, .csv</Text>
         <Container px={0} className="my-4">
           <ScrollArea.Autosize mah={250}>
             {files.map((file) => (

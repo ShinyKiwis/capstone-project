@@ -151,6 +151,7 @@ const Project = () => {
                 {deadlineStatus === 0 ? (
                   <UploadFileModal
                     object="project"
+                    uploadPath={process.env.NEXT_PUBLIC_UPLOAD_FILES_URL!}
                     setFileUploaded={setFileUploaded}
                   />
                 ) : null}
