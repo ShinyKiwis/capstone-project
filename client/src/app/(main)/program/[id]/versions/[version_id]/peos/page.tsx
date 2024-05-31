@@ -49,10 +49,11 @@ const Page = ({params}: { params: { id: string, version_id: string} }) => {
       <PageHeader pageTitle="Program Education Objectives Management" />
       <NavigationContext program={program} version={version} />
       
-      <div className="mt-2 flex">
+      <div className="mt-2 flex gap-3">
         <CreatePEOModal programId={program.id} versionId={version.id} setPEOs={setPEOs}/>
         <UploadFileModal
           object="PEOs"
+          uploadPath='undefined'
           setFileUploaded={setFileUploaded}
         />
       </div>
@@ -63,8 +64,7 @@ const Page = ({params}: { params: { id: string, version_id: string} }) => {
             {
               accessor: "name",
               title: "PEO Name",
-              width: "5%",
-              resizable: true
+              width: "15%",
             },
             {
               accessor: "description",
