@@ -35,12 +35,9 @@ const PageHeader = ({pageTitle}: {pageTitle: string}) => {
         {pageTitle}
       </Text>
       <div className="ms-auto flex gap-4">
-<<<<<<< HEAD
-=======
         {/* <button className="w-fit">
           <FaBell size={20} />
         </button> */}
->>>>>>> 207703b (commit for slide preparation)
         <Popover position="bottom-end" shadow="md" width={200}>
           <Popover.Target>
             <div className="flex items-center gap-2">

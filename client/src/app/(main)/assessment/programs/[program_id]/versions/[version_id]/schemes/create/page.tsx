@@ -233,7 +233,7 @@ const Page = ({
         console.log("Created scheme:", res.data);
         queryClient.invalidateQueries({ queryKey: ["scheme"] });
         navigate(
-          `http://localhost:3000/assessment/programs/${params.program_id}/versions/${params.version_id}/schemes`,
+          `/assessment/programs/${params.program_id}/versions/${params.version_id}/schemes`,
         );
       })
       .catch((err) => {
