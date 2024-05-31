@@ -1,20 +1,39 @@
 "use client";
-import { userHasResource } from "@/app/lib/userHasResource";
 import useNavigate from "@/app/hooks/useNavigate";
+import { userHasResource } from "@/app/lib/userHasResource";
+import { useAuth } from "@/app/providers/AuthProvider";
 import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useCookies } from "react-cookie";
+
 function EvaluatePrograms() {
-	const navigate = useNavigate();
-	const {buildBreadCrumbs} = useBreadCrumbs();
-	buildBreadCrumbs();
+  const [cookies, setCookie, removeCookie] = useCookies(["permitted"]);
+  const { buildBreadCrumbs } = useBreadCrumbs();
+  const navigate = useNavigate();
+  const currentUser = useAuth().user;
 
-	if (!userHasResource("evaluate_programs")){
-    return navigate("/forbidden");
-  }
+  useEffect(() => {
+    buildBreadCrumbs();
+    if (!userHasResource("evaluate_programs", currentUser)) return navigate("/forbidden");
+	setCookieHandler();
+  }, []);
 
-	return (
-		<div>Redirect to metabase pages...</div>
-	);
+  const setCookieHandler = () => {
+    setCookie("permitted", true, {
+      path: "/",
+    });
+  };
+
+  
+
+  return (
+    <div>
+      <div>Redirect to metabase pages...</div>
+      {/* <button onClick={setCookieHandler}>Set cookie</button> */}
+    </div>
+  );
 }
 
 export default EvaluatePrograms;

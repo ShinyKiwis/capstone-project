@@ -20,6 +20,7 @@ import BreadCrumbProvider, {
   useBreadCrumbs,
 } from "../providers/BreadCrumbProvider";
 import { ProgramProvider } from "../providers/ProgramProvider";
+import { CookiesProvider } from 'react-cookie';
 
 export default function RootLayout({
   children,
@@ -44,17 +45,19 @@ export default function RootLayout({
   return user ? (
     <QueryClientProvider client={queryClient}>
       {
-        <ProgramProvider>
-          <BreadCrumbProvider>
-            <DeadlinesProvider>
-              <RolesProvider>
-                <ProjectProvider>
-                  <App>{children}</App>
-                </ProjectProvider>
-              </RolesProvider>
-            </DeadlinesProvider>
-          </BreadCrumbProvider>
-        </ProgramProvider>
+        <CookiesProvider>
+          <ProgramProvider>
+            <BreadCrumbProvider>
+              <DeadlinesProvider>
+                <RolesProvider>
+                  <ProjectProvider>
+                    <App>{children}</App>
+                  </ProjectProvider>
+                </RolesProvider>
+              </DeadlinesProvider>
+            </BreadCrumbProvider>
+          </ProgramProvider>
+        </CookiesProvider>
       }
       {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>

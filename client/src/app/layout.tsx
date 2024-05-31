@@ -20,7 +20,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Eduva",
-  description: "An application for outcome-based assessment",
+  description: "An application for outcome-based evaluation",
 };
 
 export default function RootLayout({
