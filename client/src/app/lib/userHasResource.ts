@@ -2,6 +2,7 @@ import { useAuth } from "../providers/AuthProvider";
 
 export function userHasResource(targetResource: string, currentUser?: User|null) {
   if (!currentUser){
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     currentUser = useAuth().user;
   }
   if (!currentUser) return false;
@@ -14,6 +15,7 @@ export function userHasResource(targetResource: string, currentUser?: User|null)
 
 export function userResourcesIncludes(resourceStr: string, currentUser?: User|null) {
   if (!currentUser){
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     currentUser = useAuth().user;
   }
   if (!currentUser) return false;
@@ -26,6 +28,7 @@ export function userResourcesIncludes(resourceStr: string, currentUser?: User|nu
 
 export function userHasRole(roleName?: string, roleId?: number, currentUser?: User|null){
   if (!currentUser){
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     currentUser = useAuth().user;
   }
   if (!currentUser) return false;

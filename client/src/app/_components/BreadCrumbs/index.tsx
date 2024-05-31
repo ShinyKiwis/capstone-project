@@ -8,6 +8,7 @@ import Link from "next/link";
 const BreadCrumbs = () => {
   const { breadCrumbs } = useBreadCrumbs();
 
+  if (breadCrumbs.length === 0) return null;
   return (
     <Breadcrumbs
       separator={<FaAngleRight color="#228BE6" />}

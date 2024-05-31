@@ -82,7 +82,7 @@ export const ProjectProvider = ({
     queryFn: async () => {
       let queryURL = `http://localhost:3500/projects?stage=1${userRoleParams}&page=${currentPage}&limit=${paginationSize}`;
       let response = await (await axios.get(queryURL)).data;
-      console.log("refetched specialized projects");
+      // console.log("refetched specialized projects");
       // if (renderingProjectsKey.includes('specialized') && !renderingProjectsKey.includes('searched'))
       //   setCurrMaxPages(response.total)
       // setSpecializedPages(response.total)
@@ -102,7 +102,7 @@ export const ProjectProvider = ({
             `http://localhost:3500/projects?stage=2${userRoleParams}&page=${currentPage}&limit=${paginationSize}`,
           )
         ).data;
-        console.log("refetch capstone projects");
+        // console.log("refetch capstone projects");
         // if (renderingProjectsKey.includes('capstone') && !renderingProjectsKey.includes('searched'))
         //   setCurrMaxPages(response.total)
         // setCapstonePages(response.total);
@@ -119,8 +119,8 @@ export const ProjectProvider = ({
       queryFn: async () => {
         let searchURL = `http://localhost:3500/projects?stage=${renderingProjectsKey[1] === "specialized" ? 1 : 2}${userRoleParams}&page=${currentPage}&limit=${paginationSize}&search=${savedSearch}`;
         let response = await (await axios.get(searchURL)).data;
-        console.log("refetch searched projects");
-        console.log("Search URL:", searchURL);
+        // console.log("refetch searched projects");
+        // console.log("Search URL:", searchURL);
         // if (renderingProjectsKey.includes('searched'))
         //   setCurrMaxPages(response.total)
         // setSearchedPages(response.total);

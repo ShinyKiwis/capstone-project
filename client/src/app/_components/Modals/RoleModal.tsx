@@ -20,6 +20,7 @@ import {
   programInitialValues,
   projectInitialValues,
   assessmentInitialValues,
+  evaluationInitialValues,
 } from "./roleData";
 import { Role, useRoles } from "@/app/providers/RolesProvider";
 import { toggleNotification } from "@/app/lib/notification";
@@ -37,6 +38,22 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
   const [roleName, setRoleName] = useState(role?.roleName || "");
   const [error, setError] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
+
+  const [evaluationValues, setEvaluationValues] = useListState(
+    evaluationInitialValues.map((value) => ({
+      ...value,
+      checked: role?.resources.includes(value.key) ?? false,
+    })),
+  );
+
+  const allEvaluationValuesChecked = evaluationValues.every(
+    (value) => value.checked,
+  );
+
+  const indeterminateEvaluation =
+    evaluationValues.some((value) => value.checked) &&
+    !allEvaluationValuesChecked;
+  
 
   const [assessmentValues, setAssessmentValues] = useListState(
     assessmentInitialValues.map((value) => ({
@@ -92,6 +109,8 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
   const indeterminateProgram =
     programValues.some((value) => value.checked) && !allProgramValuesChecked;
 
+
+
   const handleCreateRole = async () => {
     if (roleName.length === 0) {
       setError("Role name is required");
@@ -140,6 +159,7 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
         projectValues,
         programValues,
         assessmentValues,
+        evaluationValues,
       ].flatMap((array) =>
         array.filter((item) => item.checked == true).map((item) => item.key),
       );
@@ -349,6 +369,16 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
             </Grid.Col>
             <Grid.Col span={4}>
               <Checkbox
+                checked={allEvaluationValuesChecked}
+                indeterminate={indeterminateEvaluation}
+                onChange={() =>
+                  setEvaluationValues.setState((current) =>
+                    current.map((value) => ({
+                      ...value,
+                      checked: !allEvaluationValuesChecked,
+                    })),
+                  )
+                }
                 label={
                   <div className="flex items-center gap-2">
                     <VscGraph size={25} />
@@ -356,6 +386,22 @@ const RoleModal = ({ Icon, action, role }: RoleModalProps) => {
                   </div>
                 }
               />
+              {evaluationValues.map((value, index) => (
+                <Checkbox
+                  mt="xs"
+                  ml={33}
+                  label={value.label}
+                  key={value.key}
+                  checked={value.checked}
+                  onChange={(e) =>
+                    setEvaluationValues.setItemProp(
+                      index,
+                      "checked",
+                      e.currentTarget.checked,
+                    )
+                  }
+                />
+              ))}
             </Grid.Col>
           </Grid>
           <Group justify="flex-end" gap="xs">

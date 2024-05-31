@@ -57,6 +57,21 @@ const Page = ({
     }
   });
 
+  useEffect(() => {
+    const refetchPIs = async () => {
+      // refetch SOs after import
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.id}/versions/${params.version_id}/student-outcomes/${params.so_id}`)
+      const fetchedPIs = response.data.performanceIndicators;
+      setPIs(fetchedPIs);
+    }
+
+    if (fileUploaded){
+      refetchPIs();
+      setFileUploaded(false);
+    }
+  }, [fileUploaded]);
+
+
   return program && version && SO ? (
     <div className="flex h-full flex-col gap-3">
       <PageHeader pageTitle="Student Outcome Detail" />
@@ -68,9 +83,13 @@ const Page = ({
           soId={SO.id}
           setPIs={setPIs}
         />
-        <UploadFileModal object="PIs" setFileUploaded={setFileUploaded} />
+        <UploadFileModal
+          object="PIs"
+          uploadPath={`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.id}/versions/${params.version_id}/student-outcomes/${params.so_id}/performance-indicators/file`}
+          setFileUploaded={setFileUploaded}
+        />
       </div>
-      
+
       <div className="mt-4 h-full overflow-auto pb-4">
         <DataTable
           withTableBorder
@@ -106,7 +125,7 @@ const Page = ({
                         "PI",
                         record,
                         handleDeletePI,
-                        `${process.env.NEXT_PUBLIC_DELETE_PROGRAM_URL!}/${program.id}/versions/${version.id}/student-outcomes/${SO.id}/performance-indicators/${record.id}`,
+                        `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/student-outcomes/${SO.id}/performance-indicators/${record.id}`,
                       )}
                     >
                       <IconTrash size={16} />

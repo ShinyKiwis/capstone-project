@@ -3,11 +3,10 @@ import { useEffect, useState } from 'react'
 import Program, { SO, Version } from '@/app/interfaces/Program.interface';
 import { useBreadCrumbs } from '@/app/providers/BreadCrumbProvider';
 import { useProgram } from '@/app/providers/ProgramProvider';
-import { ActionIcon, Anchor, Box, Group, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Box, Group, Text } from '@mantine/core';
 import formatDate from '@/app/lib/formatDate';
 import CreateSOModal from '@/app/_components/Modals/SO/CreateSOModal';
 import { PageHeader, UploadFileModal } from '@/app/_components';
-import { BiSearch } from 'react-icons/bi';
 import { DataTable } from 'mantine-datatable';
 import Link from 'next/link';
 import { IconEye, IconTrash } from '@tabler/icons-react';
@@ -61,6 +60,20 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
     }));
   }, [SOs])
 
+  useEffect(() => {
+    const refetchSOs = async () => {
+      // refetch SOs after import
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.id}/versions/${params.version_id}`)
+      const targetSOs = response.data.studentOutcomes;
+      setSOs(targetSOs);
+    }
+
+    if (fileUploaded){
+      refetchSOs();
+      setFileUploaded(false);
+    }
+  }, [fileUploaded]);
+
   return program && version ? (
     <div className='flex h-full flex-col gap-3'>
       <PageHeader pageTitle="Student Outcomes Management" />
@@ -70,6 +83,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
         <CreateSOModal programId={program.id} versionId={version.id} setSOs={setSOs}/>
         <UploadFileModal
           object="SOs"
+          uploadPath={`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.id}/versions/${params.version_id}/student-outcomes/file`}
           setFileUploaded={setFileUploaded}
         />
         <EditSOsModal programId={program.id} versionId ={version.id} SOs={selectedRecords} setSOs={setSOs} />
@@ -119,7 +133,7 @@ const Page = ({ params }: { params: { id: string, version_id: string } }) => {
                         "SO", 
                         record, 
                         handleDeleteSO, 
-                        `${process.env.NEXT_PUBLIC_DELETE_PROGRAM_URL!}/${program.id}/versions/${version.id}/student-outcomes/${record.id}`
+                        `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${program.id}/versions/${version.id}/student-outcomes/${record.id}`
                       )}
                     >
                       <IconTrash size={16} />

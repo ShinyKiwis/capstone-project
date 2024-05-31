@@ -4,7 +4,6 @@ import {
   Button,
   Group,
   Modal,
-  MultiSelect,
   Text,
   TextInput,
   Textarea,
@@ -13,7 +12,6 @@ import { DateInput } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import axios from "axios";
 import React, { useReducer, useState } from "react";
-import { IoCreate } from "react-icons/io5";
 import { IoMdCalendar } from "react-icons/io";
 import Program, { Version } from "@/app/interfaces/Program.interface";
 import { toggleNotification } from "@/app/lib/notification";

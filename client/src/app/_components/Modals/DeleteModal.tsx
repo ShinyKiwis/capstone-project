@@ -21,23 +21,33 @@ const DeleteModal = <T extends DeleteObject>(
   const deleteModal = () =>
     modals.openConfirmModal({
       centered: true,
-      title: <Text fw={600}>Are you sure you want to delete {type} &quot{object.name}&quot ?</Text>,
+      title: <Text fw={600}>Confirm deletion</Text>,
       children: (
         <Text size="sm">
-          {capitalize(type)} &quot{object.name}&quot will be deleted. This action can&apost be undone!
+          Are you sure you want to delete {type} "{object.name}"?. This action can not be undone!
         </Text>
       ),
       labels: { confirm: "Confirm", cancel: "Cancel" },
       confirmProps: { color: "red" },
       onCancel: () => {},
       onConfirm: async () => {
-        toggleNotification(
-          `${capitalize(type)} "${object.name}" deleted successfully`,
-          `${capitalize(type)} ${object.name} is deleted from database. This can't be undone`,
-          "success",
-        );
-        handleDelete(object)
-        await axios.delete(deleteUrl);
+        axios.delete(deleteUrl)
+        .then(res => {
+          toggleNotification(
+            `${capitalize(type)} deleted successfully`,
+            `${capitalize(type)} ${object.name} is deleted from database.`,
+            "success",
+          );
+          handleDelete(object)
+        })
+        .catch(err => {
+          toggleNotification(
+            `${capitalize(type)} deletion failed`,
+            `Can not delete ${capitalize(type)} ${object.name}`,
+            "success",
+          );
+          console.log(`Err deleting ${type}`, err);
+        })
       },
     });
   return deleteModal;

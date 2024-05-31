@@ -11,14 +11,10 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { AiOutlineProject } from "react-icons/ai";
 import { IoMdAdd } from "react-icons/io";
-import { FaChalkboardTeacher } from "react-icons/fa";
-import { PiExam } from "react-icons/pi";
-import { MdManageAccounts } from "react-icons/md";
-import { VscGraph } from "react-icons/vsc";
+
 import { useEffect, useState } from "react";
-import { useDisclosure, useListState } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import {
   managementInitialValues,
   programInitialValues,

@@ -37,10 +37,10 @@ const Page = () => {
       
       <div className="flex">
         <CreateProgramModal />
-        <UploadFileModal
+        {/* <UploadFileModal
           object="general programs"
           setFileUploaded={setFileUploaded}
-        />
+        /> */}
         <TextInput
           placeholder="Search general program..."
           className="ms-auto w-72"

@@ -13,7 +13,7 @@ export interface User {
 
 
 
-type UserOptType = {
+export type UserOptType = {
   name: string;
   id: string;
   email: string;

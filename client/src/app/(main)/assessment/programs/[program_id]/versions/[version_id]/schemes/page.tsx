@@ -22,6 +22,7 @@ import { sortBy } from "lodash";
 import useNavigate from "@/app/hooks/useNavigate";
 import { toggleNotification } from "@/app/lib/notification";
 import { useDisclosure } from "@mantine/hooks";
+import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 
 // const mockSchemes:AssessSchemeListItem[] = [
 //   {
@@ -66,7 +67,7 @@ const Page = ({
   });
   const [fileUploaded, setFileUploaded] = useState(false);
 
-  // const {buildBreadCrumbs} = useBreadCrumbs();
+  const {buildBreadCrumbs} = useBreadCrumbs();
   const { getProgram } = useProgram();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -79,7 +80,7 @@ const Page = ({
         const targetVersion = targetProgram.versions.filter(
           (existedVersion) => existedVersion.id == parseInt(params.version_id),
         )[0];
-        // buildBreadCrumbs(targetProgram, targetVersion);
+        buildBreadCrumbs(targetProgram, targetVersion);
         setProgram(targetProgram);
         setVersion(targetVersion);
       }

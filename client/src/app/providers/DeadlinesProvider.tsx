@@ -1,7 +1,9 @@
 "use client"
-import { createContext, useState, useContext } from "react";
+import axios from "axios";
+import { createContext, useState, useContext, useEffect } from "react";
 
 export interface Deadline {
+  id: number;
   name: string;
   semester: string;
   startsAt: Date;
@@ -16,11 +18,29 @@ interface DeadlineContextType {
 export const DeadlineContext = createContext<DeadlineContextType | null>(null);
 
 const DeadlinesProvider = ({ children }: { children: React.ReactNode }) => {
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BASE_URL}/registrations`)
+      .then((response) => {
+        setDeadlines([{
+          id: response.data[0].id,
+          name: response.data[0].name,
+          semester: '241',
+          startsAt: new Date(response.data[0].startDate),
+          endsAt: new Date(response.data[0].endDate)
+        }]);
+      })
+      .catch((error) => {
+        console.error("Error fetching deadlines:", error);
+      });
+  }, []);
+
   const [deadlines, setDeadlines] = useState<Deadline[]>([{
-    name:"Projects registration",
-    semester:'241',
-    startsAt: new Date("March 01, 2024 00:00:00"),
-    endsAt: new Date("March 30, 2024 11:59:59"),
+    id: 0,
+    name: "Loading",
+    semester: "loading",
+    startsAt: new Date('2014-1-1'),
+    endsAt: new Date('2014-1-1')
   }]);
   return (
     <DeadlineContext.Provider value={{ deadlines, setDeadlines }}>

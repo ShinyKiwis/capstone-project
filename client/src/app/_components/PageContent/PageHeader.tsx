@@ -2,9 +2,7 @@
 
 import React, { useContext, useEffect } from "react";
 import { Profile } from "..";
-import { FaBell } from "react-icons/fa";
 import { MdArrowDropDown } from "react-icons/md";
-import { usePageTitleContext } from "@/app/providers/PageTitleProvider";
 import { Avatar, Button, Popover, Stack, Text } from "@mantine/core";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { getShortUserName } from "@/app/lib/getShortName";
@@ -19,9 +17,9 @@ const PageHeader = ({pageTitle}: {pageTitle: string}) => {
 
   const openModal = () =>
     modals.openConfirmModal({
-      title: <Text fw={600}>Are you sure you want to logout ?</Text>,
+      title: <Text fw={600}>Confirm logout</Text>,
       centered: true,
-      children: <Text size="sm">You will be logged out of this user.</Text>,
+      children: <Text size="sm">Are you sure you want to logout ?</Text>,
       labels: { confirm: "Logout", cancel: "Cancel" },
       confirmProps: { color: "red" },
       onCancel: () => {},
@@ -37,6 +35,9 @@ const PageHeader = ({pageTitle}: {pageTitle: string}) => {
         {pageTitle}
       </Text>
       <div className="ms-auto flex gap-4">
+        {/* <button className="w-fit">
+          <FaBell size={20} />
+        </button> */}
         <Popover position="bottom-end" shadow="md" width={200}>
           <Popover.Target>
             <div className="flex items-center gap-2">

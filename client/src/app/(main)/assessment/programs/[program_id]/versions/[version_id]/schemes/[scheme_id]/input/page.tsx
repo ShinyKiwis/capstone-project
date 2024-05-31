@@ -110,7 +110,7 @@ const RecordInput = ({
         const targetVersion = targetProgram.versions.filter(
           (existedVersion) => existedVersion.id == parseInt(params.version_id),
         )[0];
-        buildBreadCrumbs(targetProgram, targetVersion);
+        buildBreadCrumbs(targetProgram, targetVersion, null, null, {id: params.scheme_id, name: 'Scheme Details'});
         setProgram(targetProgram);
         setVersion(targetVersion);
       }

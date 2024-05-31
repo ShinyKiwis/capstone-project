@@ -2,6 +2,7 @@
 import { PageHeader } from "@/app/_components";
 import DeadlineModal from "@/app/_components/Modals/DeadlineModal";
 import { toggleNotification } from "@/app/lib/notification";
+import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
 import { Deadline, useDeadlines } from "@/app/providers/DeadlinesProvider";
 import { Badge, Button, Card, Group, Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
@@ -22,7 +23,7 @@ const DeadlineCard = ({ deadline }: { deadline: Deadline }) => {
       children: (
         <Text size="sm">
           Are you sure you want to delete {deadline?.name} for semester{" "}
-          {deadline?.semester} ? This action can't be undone.
+          {deadline?.semester} ? This action can`&apos;`t be undone.
         </Text>
       ),
       labels: { confirm: "Delete", cancel: "Cancel" },
@@ -87,6 +88,8 @@ const DeadlineCard = ({ deadline }: { deadline: Deadline }) => {
 
 const DeadlinesManagement = () => {
   const { deadlines } = useDeadlines();
+  const {buildBreadCrumbs} = useBreadCrumbs();
+	buildBreadCrumbs();
   return (
     <div className="flex h-full flex-col gap-1 items-start">
       <PageHeader pageTitle="Deadline Management"/>
@@ -95,7 +98,7 @@ const DeadlinesManagement = () => {
         Deadlines
       </Text> */}
       {deadlines.map((deadline) => (
-        <DeadlineCard deadline={deadline} />
+        <DeadlineCard deadline={deadline} key={deadline.startsAt.toString()}/>
       ))}
     </div>
   );

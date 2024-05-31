@@ -56,7 +56,7 @@ export default function RootLayout({
           </BreadCrumbProvider>
         </ProgramProvider>
       }
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>
   ) : (
     navigate("/login")

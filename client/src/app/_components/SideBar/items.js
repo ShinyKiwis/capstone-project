@@ -102,29 +102,17 @@ const sidebarItems = [
         resource: "manage_assessments_schemes",
         display: true,
       },
-      {
-        title: "Assessment Management",
-        href: "/assessment/",
-        resource: "manage_assessments",
-        display: true,
-      },
     ],
   },
   {
     Icon: VscGraph,
     title: "Evaluation",
-    resource: "",
+    resource: "evaluate",
     pages: [
       {
-        title: "Evaluation Setup",
-        href: "",
-        resource: "",
-        display: true,
-      },
-      {
-        title: "Feedback Management",
-        href: "",
-        resource: "",
+        title: "Programs Evaluation",
+        href: "/evaluate/programs",
+        resource: "evaluate_programs",
         display: true,
       },
     ],

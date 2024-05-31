@@ -5,6 +5,7 @@ import { Deadline, useDeadlines } from "@/app/providers/DeadlinesProvider";
 import { DateTimePicker } from "@mantine/dates";
 import React, { useState } from "react";
 import { toggleNotification } from "@/app/lib/notification";
+import axios from "axios";
 
 interface DeadlineModalProps {
   deadline?: Deadline;
@@ -24,55 +25,55 @@ const DeadlineModal = ({ Icon, action, deadline }: DeadlineModalProps) => {
   const [nameError, setNameError] = useState("");
   const [semesterError, setSemesterError] = useState("");
 
-  const handleCreateDeadline = () => {
-    let hasError = false;
-    if (name.length === 0) {
-      hasError = true;
-      setNameError("Name is required");
-    }
+  // const handleCreateDeadline = () => {
+  //   let hasError = false;
+  //   if (name.length === 0) {
+  //     hasError = true;
+  //     setNameError("Name is required");
+  //   }
 
-    if (semester.length === 0) {
-      hasError = true;
-      setSemesterError("Semester is required");
-    }
+  //   if (semester.length === 0) {
+  //     hasError = true;
+  //     setSemesterError("Semester is required");
+  //   }
 
-    if (!hasError) {
-      if (
-        deadlines.some(
-          (deadline) =>
-            deadline.name === name && deadline.semester === semester,
-        )
-      ) {
-        toggleNotification(
-          `Deadline ${name} existed in semester ${semester}`,
-          `The deadline ${name} is existed in semester ${semester}. Please try another.`,
-          "danger",
-        );
-      } else {
-        setDeadlines([
-          ...deadlines,
-          {
-            name,
-            semester,
-            startsAt,
-            endsAt,
-          },
-        ]);
-        toggleNotification(
-          `Create ${name} in semester ${semester} successfully`,
-          `The deadline for event ${name} in semester ${semester} has been created successfully.`,
-          "success",
-        );
-      }
-      setNameError("");
-      setSemesterError("");
-      setName("");
-      setSemester("");
-      setStartsAt(new Date());
-      setEndsAt(new Date());
-      close();
-    }
-  };
+  //   if (!hasError) {
+  //     if (
+  //       deadlines.some(
+  //         (deadline) =>
+  //           deadline.name === name && deadline.semester === semester,
+  //       )
+  //     ) {
+  //       toggleNotification(
+  //         `Deadline ${name} existed in semester ${semester}`,
+  //         `The deadline ${name} is existed in semester ${semester}. Please try another.`,
+  //         "danger",
+  //       );
+  //     } else {
+  //       setDeadlines([
+  //         ...deadlines,
+  //         {
+  //           name,
+  //           semester,
+  //           startsAt,
+  //           endsAt,
+  //         },
+  //       ]);
+  //       toggleNotification(
+  //         `Create ${name} in semester ${semester} successfully`,
+  //         `The deadline for event ${name} in semester ${semester} has been created successfully.`,
+  //         "success",
+  //       );
+  //     }
+  //     setNameError("");
+  //     setSemesterError("");
+  //     setName("");
+  //     setSemester("");
+  //     setStartsAt(new Date());
+  //     setEndsAt(new Date());
+  //     close();
+  //   }
+  // };
 
   const handleUpdateDeadline = () => {
     let hasError = false;
@@ -105,7 +106,33 @@ const DeadlineModal = ({ Icon, action, deadline }: DeadlineModalProps) => {
             updateDeadline.name == deadline?.name &&
             updateDeadline.semester == deadline?.semester
           ) {
+            axios.patch(`${process.env.NEXT_PUBLIC_BASE_URL}/registrations/${deadline.id}`,{
+              semester: {
+                year: 2023,
+                no: 1
+              },
+              name: name,
+              startDate: startsAt,
+              endDate: endsAt
+            })
+            .then(res => {
+              toggleNotification(
+                `Update ${name} in semester ${semester} successfully`,
+                `The deadline for event ${name} in semester ${semester} has been updated successfully.`,
+                "success",
+              );
+            })
+            .catch(err => {
+              console.log("Err updating deadline:", err);
+              toggleNotification(
+                `Error`,
+                `Updating deadline failed.`,
+                "danger",
+              );
+            })
+            let id = deadline.id;
             return {
+              id,
               name,
               semester,
               startsAt,
@@ -114,11 +141,6 @@ const DeadlineModal = ({ Icon, action, deadline }: DeadlineModalProps) => {
           }
           return updateDeadline;
         }),
-      );
-      toggleNotification(
-        `Update ${name} in semester ${semester} successfully`,
-        `The deadline for event ${name} in semester ${semester} has been updated successfully.`,
-        "success",
       );
       // }
       close();
@@ -205,8 +227,8 @@ const DeadlineModal = ({ Icon, action, deadline }: DeadlineModalProps) => {
             variant="filled"
             onClick={
               action.toLowerCase() === "edit"
-                ? handleUpdateDeadline
-                : handleCreateDeadline
+                ? handleUpdateDeadline : ()=>{}
+                // : handleCreateDeadline
             }
           >
             {action.toLowerCase() === "edit" ? "Update" : "Create"}
