@@ -3,6 +3,8 @@ import { DataSource, Repository } from 'typeorm';
 import { AssessmentSchemeToPerformanceIndicator } from './entities/assessment-scheme-to-performance-indicator.entity';
 import { CreateAssessmentSchemeToPerformanceIndicatorDto } from './dto/create-assessment-scheme-to-performance-indicator.dto';
 import { PerformanceIndicatorsRepository } from './performance-indicators.repository';
+import { UpdateAssessmentSchemeToPerformanceIndicatorDto } from './dto/update-assessment-scheme-to-performance-indicator.dto';
+import { AssessmentScheme } from './entities/assessment-scheme.entity';
 
 @Injectable()
 export class AssessmentSchemesToPerformanceIndicatorsRepository extends Repository<AssessmentSchemeToPerformanceIndicator> {
@@ -32,5 +34,27 @@ export class AssessmentSchemesToPerformanceIndicatorsRepository extends Reposito
 
     await this.save(assessmentSchemeToPerformanceIndicator);
     return assessmentSchemeToPerformanceIndicator;
+  }
+
+  async updateAssessmentSchemeToPerformanceIndicator(
+    assessmentScheme: AssessmentScheme,
+    updateAssessmentSchemeToPerformanceIndicatorDto: UpdateAssessmentSchemeToPerformanceIndicatorDto
+  ) {
+    const { performanceIndicator, passingGoal } = updateAssessmentSchemeToPerformanceIndicatorDto;
+
+    const existingAssessmentSchemeToPerformanceIndicator = await this.findOneBy({
+      assessmentScheme,
+      performanceIndicator
+    });
+    if(!existingAssessmentSchemeToPerformanceIndicator) {
+      await this.createAssessmentSchemeToPerformanceIndicator({
+        performanceIndicator,
+        assessmentScheme,
+        passingGoal
+      });
+    } else {
+      existingAssessmentSchemeToPerformanceIndicator.passingGoal = passingGoal;
+      await this.save(existingAssessmentSchemeToPerformanceIndicator);
+    }
   }
 }

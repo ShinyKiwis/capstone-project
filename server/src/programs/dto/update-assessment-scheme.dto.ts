@@ -1,23 +1,15 @@
+import { UpdateAssessmentSchemeToPerformanceIndicatorDto } from "./update-assessment-scheme-to-performance-indicator.dto";
+import { UpdateCriterionDto } from "./update-criterion.dto";
+
 export class UpdateAssessmentSchemeDto {
   generation: string;
   name: string;
   description: string;
-  semesterId: number;
-  criteria: {
-    id: number;
-    type: string;
-    content: string;
-    performanceIndicator: {
-      id: number;
-      studentOutcomeId: number;
-      studentOutcomeVersionId: number;
-      studentOutcomeVersionProgramId: number;
-    };
-    levels: {
-      id: number;
-      content: string;
-      maxScore: number;
-      minScore: number;
-    }[];
-  }[];
+  semester: {
+    year: number;
+    no: number;
+  }
+  criteria: UpdateCriterionDto[];
+
+  performanceIndicators: UpdateAssessmentSchemeToPerformanceIndicatorDto[]
 }
