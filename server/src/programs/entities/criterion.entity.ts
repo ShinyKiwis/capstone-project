@@ -30,7 +30,7 @@ export class Criterion {
   @ManyToOne(() => AssessmentScheme, {onDelete: 'CASCADE'})
   assessmentScheme: AssessmentScheme;
 
-  @Column()
+  @Column({nullable: true})
   type: string;
 
   @Column()
@@ -47,9 +47,9 @@ export class Criterion {
   @OneToMany(() => AssessmentRecord, (assessmentRecord) => assessmentRecord.criterion, { eager: true })
   records: AssessmentRecord[];
 
-  // @Column('decimal', { precision: 6, scale: 2 })
-  // passingGoal: number;
+  @Column('decimal', { precision: 6, scale: 2 })
+  passingGoal: number;
 
-  // @Column('decimal', { precision: 6, scale: 2 })
-  // passingThreshold: number;
+  @Column('decimal', { precision: 6, scale: 2 })
+  passingThreshold: number;
 }

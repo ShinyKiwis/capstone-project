@@ -10,20 +10,23 @@ import { ProgramsModule } from './programs/programs.module';
 import { FacultiesModule } from './faculties/faculties.module';
 import { StudentsModule } from './students/students.module';
 import { RegistrationsModule } from './registrations/registrations.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     UsersModule,
     ProjectsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      url: process.env.DB_URL || 'postgres://postgres:postgres@localhost:5434/eduvaDb',
-      port: +process.env.DB_PORT || 5434,
-      username: process.env.DB_USERNAME || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
-      database: 'eduvaDb',
+      // url: process.env.DB_URL || 'postgres://postgres:postgres@localhost:5434/eduvaDb',
+      host: process.env.POSTGRES_HOST || 'localhost',
+      port: +process.env.POSTGRES_PORT || 5434,
+      username: process.env.POSTGRES_USER || 'postgres',
+      password: process.env.POSTGRES_PASSWORD || 'postgres',
+      database: process.env.POSTGRES_DB_NAME || 'eduvaDb',
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: process.env.NODE_ENV !== 'production',
     }),
     SemestersModule,
     RolesModule,
