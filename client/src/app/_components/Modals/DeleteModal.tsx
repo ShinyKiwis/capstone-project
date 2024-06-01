@@ -24,7 +24,7 @@ const DeleteModal = <T extends DeleteObject>(
       title: <Text fw={600}>Confirm deletion</Text>,
       children: (
         <Text size="sm">
-          Are you sure you want to delete {type} "{object.name}"?. This action can not be undone!
+          Are you sure you want to delete {type} &quot;{object.name}&quot;?. This action can not be undone!
         </Text>
       ),
       labels: { confirm: "Confirm", cancel: "Cancel" },

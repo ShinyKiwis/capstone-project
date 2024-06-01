@@ -75,8 +75,12 @@ const ProjectCardDetail = () => {
               <div>
                 <Text size="sm" c="dimmed">
                   Instructor
-                </Text>   
-                {viewing.supervisors.map((supervisor) => <Text size="sm" fw={500}>{supervisor.name} ({supervisor.email})</Text>)} 
+                </Text>
+                {viewing.supervisors.map((supervisor) => (
+                  <Text size="sm" fw={500} key={supervisor.email}>
+                    {supervisor.name} ({supervisor.email})
+                  </Text>
+                ))}
               </div>
             </div>
             <div className="flex flex-col gap-3">
@@ -139,7 +143,9 @@ const ProjectCardDetail = () => {
         <Group justify="flex-end">
           {userHasResource("approve_projects") &&
           pathname.includes("approve") &&
-          viewing.status != "APPROVED" && viewing.status != "DRAFT" && viewing.status != "REJECTED" &&
+          viewing.status != "APPROVED" &&
+          viewing.status != "DRAFT" &&
+          viewing.status != "REJECTED" &&
           ((userHasRole("DepartmentHead") &&
             viewing.status.toLowerCase() === "waiting_for_department_head") ||
             (userHasRole("ProgramChair") &&
