@@ -63,6 +63,8 @@ const RecordsSection = ({
   schemeObject: AssessSchemeDetail;
 }) => {
   var allRecords = groupRecords(schemeObject.records);
+  console.log(allRecords);
+  console.log("DEBUG: ", schemeObject.records);
   var avgScore =
     Math.round(
       (allRecords.reduce((total, next) => total + next.totalScore, 0) /
@@ -150,19 +152,24 @@ const RecordsSection = ({
 
   const criteraColumns: DataTableColumn<AssessmentRecordRow>[] = [];
   for (let i = 0; i < schemeObject.criteria.length; i++) {
+    console.log("LENGTH:", schemeObject.criteria.length);
     criteraColumns.push({
       accessor: `answers.${i}.score`,
       title: `Criterion ${i + 1}`,
       sortable: true,
-      render: (record: AssessmentRecordRow) => (
-        <div className="w-fit max-w-56 overflow-hidden">
-          {record.answers[i].score} (
-          {record.answers[i].answer.length > 20
-            ? record.answers[i].answer.slice(0, 19) + "..."
-            : record.answers[i].answer}
-          )
-        </div>
-      ),
+      render: (record: AssessmentRecordRow) => {
+        if (record.answers[i]) {
+          return (
+            <div className="w-fit max-w-56 overflow-hidden">
+              {record.answers[i].score} (
+              {record.answers[i].answer.length > 20
+                ? record.answers[i].answer.slice(0, 19) + "..."
+                : record.answers[i].answer}
+              )
+            </div>
+          );
+        }
+      },
     });
   }
 
@@ -328,11 +335,17 @@ const RecordsSection = ({
                           color="red"
                           onClick={() => {
                             // send API to delete
-                            record.answers.forEach(answer => {
-                              axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${schemeObject.versionProgramId}/versions/${schemeObject.versionId}/assessment-schemes/${schemeObject.id}/criteria/${answer.criterionId}/assessment-records/${answer.id}`)
-                              .then(res => {
-                                console.log("Deleted answer with record id:", answer.id)
-                              })
+                            record.answers.forEach((answer) => {
+                              axios
+                                .delete(
+                                  `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${schemeObject.versionProgramId}/versions/${schemeObject.versionId}/assessment-schemes/${schemeObject.id}/criteria/${answer.criterionId}/assessment-records/${answer.id}`,
+                                )
+                                .then((res) => {
+                                  console.log(
+                                    "Deleted answer with record id:",
+                                    answer.id,
+                                  );
+                                });
                             });
                             queryClient.invalidateQueries({
                               queryKey: ["schemeDetail"],
@@ -340,7 +353,11 @@ const RecordsSection = ({
                             // Remove answers from frontend table
                             const from = (page - 1) * pageSize;
                             const to = from + pageSize;
-                            setDisplayingRecords(displayingRecords.toSpliced(index, 1).slice(from, to));
+                            setDisplayingRecords(
+                              displayingRecords
+                                .toSpliced(index, 1)
+                                .slice(from, to),
+                            );
                             setPage(1);
                             toggleNotification(
                               "Success",
