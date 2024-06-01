@@ -227,7 +227,6 @@ const UploadFileModal = ({
         variant="filled"
         leftSection={<MdUploadFile size={20} />}
         onClick={open}
-        ms="md"
       >
         Upload {object}
       </Button>

@@ -16,6 +16,8 @@ import { DataTable } from "mantine-datatable";
 import { IconTrash } from "@tabler/icons-react";
 import EditPIModal from "@/app/_components/Modals/PI/EditPIModal";
 import DeleteModal from "@/app/_components/Modals/DeleteModal";
+import EditPIsModal from "@/app/_components/Modals/PI/EditPIsModal";
+import DeletePIsModal from "@/app/_components/Modals/PI/DeletePIsModal";
 
 const Page = ({
   params,
@@ -26,9 +28,11 @@ const Page = ({
   const [version, setVersion] = useState<Version | null>(null);
   const [SO, setSO] = useState<SO | null>(null);
   const [PIs, setPIs] = useState<PI[]>([]);
+  const [selectedRecords, setSelectedRecords] = useState<PI[]>([]);
+  const [fileUploaded, setFileUploaded] = useState(false);
+
   const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
-  const [fileUploaded, setFileUploaded] = useState(false);
 
   const handleDeletePI = (PI: PI) => {
     setPIs(PIs.filter((existedPI) => existedPI.id !== PI.id));
@@ -76,7 +80,7 @@ const Page = ({
     <div className="flex h-full flex-col gap-3">
       <PageHeader pageTitle="Student Outcome Detail" />
       <NavigationContext program={program} version={version} SO={SO} />
-      <div className="mt-2 flex">
+      <div className="mt-2 flex gap-3">
         <CreatePIModal
           programId={program.id}
           versionId={version.id}
@@ -88,6 +92,8 @@ const Page = ({
           uploadPath={`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.id}/versions/${params.version_id}/student-outcomes/${params.so_id}/performance-indicators/file`}
           setFileUploaded={setFileUploaded}
         />
+        <EditPIsModal programId={program.id} versionId ={version.id} soId = {params.so_id} PIs={selectedRecords} setPIs={setPIs} />
+        <DeletePIsModal selectedRecords={selectedRecords} PIs={PIs} soId = {params.so_id} setPIs={setPIs} programId={params.id} versionId={params.version_id} />
       </div>
 
       <div className="mt-4 h-full overflow-auto pb-4">
@@ -136,6 +142,8 @@ const Page = ({
             },
           ]}
           records={PIs}
+          selectedRecords={selectedRecords}
+          onSelectedRecordsChange={setSelectedRecords}
         />
       </div>
     </div>
