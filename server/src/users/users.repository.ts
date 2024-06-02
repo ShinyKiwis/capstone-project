@@ -118,7 +118,7 @@ export class UsersRepository extends Repository<User> {
   async getAllInstructors() {
     const query = this.createQueryBuilder('user')
       .leftJoin('user.roles', 'roles')
-      .where('roles.id=:id', { id: 2 })
+      .where('roles.id=:id', { id: 3 })
       .select(['user.id', 'user.name', 'user.email', 'user.username']);
     const lecturer = await query.getMany();
     return lecturer;
