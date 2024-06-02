@@ -73,7 +73,7 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
     const assessmentSchemes = await this.find({
       where: {
         version
-      },
+      }
     });
     return assessmentSchemes;
   }
@@ -102,6 +102,13 @@ export class AssessmentSchemesRepository extends Repository<AssessmentScheme> {
       where: {
         version,
         id: assessmentSchemeId,
+      },
+      relations: {
+        criteria: {
+          levels: true,
+          records: true
+        },
+        performanceIndicators: true
       },
       order: {
         criteria: {

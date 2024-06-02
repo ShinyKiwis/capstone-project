@@ -37,9 +37,9 @@ export class AssessmentScheme {
   @Column({ nullable: true })
   description: string;
 
-  @OneToMany(() => Criterion, (criterion) => criterion.assessmentScheme, { eager: true })
+  @OneToMany(() => Criterion, (criterion) => criterion.assessmentScheme)
   criteria: Criterion[];
 
-  @OneToMany(() => AssessmentSchemeToPerformanceIndicator, (assessmentSchemeToPerformanceIndicator) => assessmentSchemeToPerformanceIndicator.assessmentScheme, { eager: true })
+  @OneToMany(() => AssessmentSchemeToPerformanceIndicator, (assessmentSchemeToPerformanceIndicator) => assessmentSchemeToPerformanceIndicator.assessmentScheme)
   performanceIndicators: AssessmentSchemeToPerformanceIndicator[];
 }
