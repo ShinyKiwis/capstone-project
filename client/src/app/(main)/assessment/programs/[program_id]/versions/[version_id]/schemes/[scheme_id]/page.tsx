@@ -55,7 +55,7 @@ const SchemeDetail = ({
     }
   });
 
-  // Fetch schemes
+  // Fetch scheme
   const { data: cachedScheme, isLoading: schemeIsLoading } = useQuery({
     queryFn: async () => {
       let queryURL = `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}`;

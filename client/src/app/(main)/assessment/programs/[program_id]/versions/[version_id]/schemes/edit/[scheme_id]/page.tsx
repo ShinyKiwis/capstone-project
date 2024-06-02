@@ -243,7 +243,7 @@ const Page = ({
 
       // Get criteria list from form1
       criteria: form1.values.criteria.map((criterion) => {
-        const { name, description, ...mappedPI } = criterion.associatedPI as PI;
+        const { name, description, passingGoal, ...mappedPI } = criterion.associatedPI as PI;
 
         let mappedLevels: any[] = [];
         if (criterion.type === "multilevel") {
@@ -309,26 +309,34 @@ const Page = ({
     };
 
     console.log("Scheme data:", schemeData);
-    // axios
-    //   .post(
-    //     `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes`,
-    //     schemeData,
-    //   )
-    //   .then((res) => {
-    //     toggleNotification(
-    //       "Success",
-    //       "The new assessment scheme is created successfully !",
-    //       "success",
-    //     );
-    //     console.log("Created scheme:", res.data);
-    //     navigate(
-    //       `http://localhost:3000/assessment/programs/${params.program_id}/versions/${params.version_id}/schemes`,
-    //     );
-    //   })
-    //   .catch((err) => {
-    //     console.log("Error creating scheme:", err.response);
-    //     toggleNotification("Error", "Scheme creation failed !", "danger");
-    //   });
+    axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}`)
+    .then((res)=>{
+      axios
+        .post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes`,
+          schemeData,
+        )
+        .then((res) => {
+          toggleNotification(
+            "Success",
+            "The assessment scheme is successfully modified !",
+            "success",
+          );
+          console.log("Created scheme:", res.data);
+          queryClient.invalidateQueries({ queryKey: ["scheme"] });
+          navigate(
+            `http://localhost:3200/assessment/programs/${params.program_id}/versions/${params.version_id}/schemes`,
+          );
+        })
+        .catch((err) => {
+          console.log("Error creating new:", err.response);
+          toggleNotification("Error", "Scheme edit failed !", "danger");
+        });
+    })
+    .catch(err => {
+      console.log("Err deleting old scheme:", err);
+      toggleNotification("Error", "Scheme edit failed !", "danger");
+    })
   };
 
   // Forms

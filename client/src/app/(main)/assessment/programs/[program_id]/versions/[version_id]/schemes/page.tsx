@@ -23,6 +23,7 @@ import useNavigate from "@/app/hooks/useNavigate";
 import { toggleNotification } from "@/app/lib/notification";
 import { useDisclosure } from "@mantine/hooks";
 import { useBreadCrumbs } from "@/app/providers/BreadCrumbProvider";
+import assert from "assert";
 
 // const mockSchemes:AssessSchemeListItem[] = [
 //   {
@@ -67,7 +68,7 @@ const Page = ({
   });
   const [fileUploaded, setFileUploaded] = useState(false);
 
-  const {buildBreadCrumbs} = useBreadCrumbs();
+  const { buildBreadCrumbs } = useBreadCrumbs();
   const { getProgram } = useProgram();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -105,6 +106,28 @@ const Page = ({
     enabled: true,
     staleTime: Infinity,
   });
+
+  useEffect(() => {
+    if (!queryClient.getQueryData(["scheme"])) {
+      queryClient.invalidateQueries({ queryKey: ["scheme"] });
+      return;
+    }
+    if (
+      params.program_id !=
+        (
+          queryClient.getQueryData(["scheme"]) as AssessSchemeListItem[]
+        )[0].versionProgramId.toString() ||
+      params.version_id !=
+        (
+          queryClient.getQueryData(["scheme"]) as AssessSchemeListItem[]
+        )[0].versionId.toString()
+    )
+      queryClient.invalidateQueries({ queryKey: ["scheme"] });
+    else
+      setDisplayingSchemes(
+        queryClient.getQueryData(["scheme"]) as AssessSchemeListItem[],
+      );
+  }, []);
 
   const [displayingSchemes, setDisplayingSchemes] =
     useState<AssessSchemeListItem[]>(fetchedSchemes);

@@ -132,6 +132,7 @@ const RecordEdit = ({
           project: projectId,
           criteria: schemeAnswers.map((ans) => {
             return {
+              ansId: ans.id,
               criterionId: ans.criterionId,
               answer: ans.answer,
               score: ans.score,
@@ -145,7 +146,18 @@ const RecordEdit = ({
       });
   }, []);
 
-  const form = useForm<InputtedRecord>({
+  interface InputtedEditRecord {
+    userObj: string[];
+    project: string;
+    criteria: {
+      ansId: number;
+      criterionId: number;
+      answer: string;
+      score: number | null;
+    }[];
+  }
+
+  const form = useForm<InputtedEditRecord>({
     initialValues: {
       userObj: [],
       project: "",
@@ -204,16 +216,33 @@ const RecordEdit = ({
     axios.post(
       `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}/assessment-records`,
       submittedRecords,
-    );
-    //   .then((res) => {
-    //     console.log("Patch response", res.data);
-    //     toggleNotification("Success", "Record saved !", "success");
-    //     navigate("./");
-    //   })
-    //   .catch((err) => {
-    //     console.log("Err saving record:", err.response);
-    //     toggleNotification("Error", "Records modifying failed !", "danger");
-    //   });
+    )
+    .then((res) => {
+      console.log("Patch response", res.data);
+      // Delete old
+    form.values.criteria.forEach((answer) => {
+      axios
+        .delete(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/programs/${params.program_id}/versions/${params.version_id}/assessment-schemes/${params.scheme_id}/criteria/${answer.criterionId}/assessment-records/${answer.ansId}`,
+        )
+        .then((res) => {
+          console.log(
+            "Deleted answer with record id:",
+            answer.ansId,
+          );
+        });
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["schemeDetail"],
+    });
+      toggleNotification("Success", "Record saved !", "success");
+      navigate(`/assessment/programs/${params.program_id}/versions/${params.version_id}/schemes/${params.scheme_id}`);
+    })
+    .catch((err) => {
+      console.log("Err saving record:", err.response);
+      toggleNotification("Error", "Records modifying failed !", "danger");
+    });
+    
   }
 
   if (!fetchedScheme) return <div>Fetching scheme's critera...</div>;
