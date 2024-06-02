@@ -47,9 +47,9 @@ export class Criterion {
   @OneToMany(() => AssessmentRecord, (assessmentRecord) => assessmentRecord.criterion, { eager: true })
   records: AssessmentRecord[];
 
-  @Column('decimal', { precision: 6, scale: 2 })
+  @Column('decimal', { precision: 6, scale: 2, nullable: true })
   passingGoal: number;
 
-  @Column('decimal', { precision: 6, scale: 2 })
+  @Column('decimal', { precision: 6, scale: 2, nullable: true})
   passingThreshold: number;
 }
