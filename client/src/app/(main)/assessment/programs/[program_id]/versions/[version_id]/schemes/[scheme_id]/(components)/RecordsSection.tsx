@@ -77,6 +77,9 @@ const RecordsSection = ({
 
   useEffect(() => {
     allRecords = groupRecords(schemeObject.records);
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize;
+    setDisplayingRecords(allRecords.slice(from, to));
     avgScore =
       Math.round(
         (allRecords.reduce((total, next) => total + next.totalScore, 0) /

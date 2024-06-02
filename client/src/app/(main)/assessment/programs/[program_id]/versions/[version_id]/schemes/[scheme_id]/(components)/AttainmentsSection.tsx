@@ -100,7 +100,7 @@ function countCriterionLevels(schemeObject: AssessSchemeDetail) {
 }
 
 const AttainmentsSection = ({ schemeObject }: { schemeObject: AssessSchemeDetail }) => {
-  const fetchedData = countCriterionLevels(schemeObject)
+  var fetchedData = countCriterionLevels(schemeObject)
 
   const [displayingData, setdisplayingData] = useState(fetchedData);
   const [sortStatus, setSortStatus] = useState<
@@ -109,6 +109,11 @@ const AttainmentsSection = ({ schemeObject }: { schemeObject: AssessSchemeDetail
     columnAccessor: "label",
     direction: "asc",
   });
+
+  useEffect(() => {
+    let refetchedData = countCriterionLevels(schemeObject);
+    setdisplayingData(refetchedData);
+  }, [schemeObject]);
 
   // useEffect for sorting
   useEffect(() => {

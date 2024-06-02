@@ -161,6 +161,7 @@ const CreateProgramVersionModal = ({
         "success",
       );
     } catch (e) {
+      console.log("Error creating version:",e)
       toggleNotification(
         `Failed to create program version "${versionId}" of program "${program.name}"`,
         `"${versionId}" of program "${program.name}" is already existed.`,

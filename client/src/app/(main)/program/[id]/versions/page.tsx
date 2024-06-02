@@ -46,7 +46,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       <PageHeader pageTitle="Versions Management" />
       <NavigationContext program={program}/>
 
-      <div className="mt-2 flex">
+      <div className="mt-2 flex gap-3">
         <CreateProgramVersionModal programId={program.id} program={program} setProgram={setProgram} />
         <UploadFileModal
           object="program version"
