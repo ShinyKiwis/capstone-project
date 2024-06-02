@@ -22,12 +22,13 @@ const DeadlinesProvider = ({ children }: { children: React.ReactNode }) => {
     axios
       .get(`${process.env.NEXT_PUBLIC_BASE_URL}/registrations`)
       .then((response) => {
+        const idx = response.data.length
         setDeadlines([{
-          id: response.data[0].id,
-          name: response.data[0].name,
+          id: response.data[idx-1].id,
+          name: response.data[idx-1].name,
           semester: '241',
-          startsAt: new Date(response.data[0].startDate),
-          endsAt: new Date(response.data[0].endDate)
+          startsAt: new Date(response.data[idx-1].startDate),
+          endsAt: new Date(response.data[idx-1].endDate)
         }]);
       })
       .catch((error) => {

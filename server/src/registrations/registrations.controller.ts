@@ -24,6 +24,7 @@ export class RegistrationsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRegistrationDto: UpdateRegistrationDto) {
+    console.log(id)
     return this.registrationsService.update(+id, updateRegistrationDto);
   }
 
