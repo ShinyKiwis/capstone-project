@@ -22,7 +22,7 @@ export class AssessmentScheme {
   @PrimaryColumn()
   versionProgramId: number;
 
-  @Column()
+  @Column({nullable: true})
   generation: string;
 
   @ManyToOne(() => Version, { onDelete: 'CASCADE' })

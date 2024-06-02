@@ -55,11 +55,7 @@ const ProjectCardStudentList = ({
               <Avatar color="blue" radius="xl">
                 {student.user.name
                   .split(" ")
-<<<<<<< HEAD
                   .map((word:string) => word[0].toUpperCase())}
-=======
-                  .map((word: string) => word[0].toUpperCase())}
->>>>>>> 207703b (commit for slide preparation)
               </Avatar>
             </Tooltip>
           ))}

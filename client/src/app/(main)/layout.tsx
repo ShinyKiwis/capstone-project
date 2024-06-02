@@ -59,7 +59,7 @@ export default function RootLayout({
           </ProgramProvider>
         </CookiesProvider>
       }
-      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   ) : (
     navigate("/login")

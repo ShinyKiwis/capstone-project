@@ -22,13 +22,9 @@ import { useRouter } from "next/navigation";
 import { InputFieldTitle } from "../../ProjCEComponents";
 import { getBranchOptions } from "@/app/lib/getBranchOptions";
 import { toggleNotification } from "@/app/lib/notification";
-<<<<<<< HEAD
 import { useAuth } from "@/app/providers/AuthProvider";
 import { useDeadlines } from "@/app/providers/DeadlinesProvider";
 import { Student, Supervisor } from "@/app/interfaces/User.interface";
-=======
-import { Supervisor, Student } from "@/app/interfaces/User.interface";
->>>>>>> 207703b (commit for slide preparation)
 
 const EditProject = ({ params }: { params: { id: string } }) => {
   // Background data initialization

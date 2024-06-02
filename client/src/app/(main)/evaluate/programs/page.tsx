@@ -17,7 +17,8 @@ function EvaluatePrograms() {
   useEffect(() => {
     buildBreadCrumbs();
     if (!userHasResource("evaluate_programs", currentUser)) return navigate("/forbidden");
-	setCookieHandler();
+    setCookieHandler();
+    navigate("http://localhost:3300")
   }, []);
 
   const setCookieHandler = () => {
@@ -26,12 +27,9 @@ function EvaluatePrograms() {
     });
   };
 
-  
-
   return (
     <div>
       <div>Redirect to metabase pages...</div>
-      {/* <button onClick={setCookieHandler}>Set cookie</button> */}
     </div>
   );
 }
