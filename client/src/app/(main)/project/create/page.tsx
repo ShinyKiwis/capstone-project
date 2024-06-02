@@ -58,8 +58,8 @@ const CreateProject = () => {
       registration: {
         id: 2,
         semester: {
-          year: 2023,
-          no: 2,
+          year: 2009,
+          no: 1,
         },
       },
       owner: { id: 3 },

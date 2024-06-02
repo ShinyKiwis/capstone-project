@@ -202,7 +202,7 @@ const Project = () => {
                   setPaginationSize(event.currentTarget.value);
                   setCurrentPage(1);
                 }}
-                data={["1", "5", "10", "20", "50"]}
+                data={["5", "10", "20", "50"]}
               />
               <Text size="md" c="gray">
                 Projects per page

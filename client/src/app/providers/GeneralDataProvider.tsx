@@ -73,17 +73,16 @@ export const GeneralDataProvider = ({
         id: 1,
         name: "Computer Science",
         branches: [
-          { id: 1, name: "Standard" },
-          { id: 2, name: "High Quality" },
-          { id: 3, name: "VJEP" },
+          { id: 1, name: "Standard Program" },
+          { id: 2, name: "English-taught Program" },
         ],
       },
       {
-        id: 2,
+        id: 4,
         name: "Computer Engineering",
         branches: [
-          { id: 1, name: "Standard" },
-          { id: 2, name: "High Quality" },
+          { id: 1, name: "Standard Program" },
+          { id: 2, name: "English-taught Program" },
         ],
       },
     ]);
