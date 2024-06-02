@@ -145,6 +145,7 @@ const Project = () => {
                   leftSection={<IoCreate size={20} />}
                   onClick={() => navigate("/project/create")}
                   disabled={deadlineStatus !== 0}
+                  className="me-4"
                 >
                   Create project
                 </Button>
