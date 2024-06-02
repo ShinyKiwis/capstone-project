@@ -186,7 +186,7 @@ const CreateProject = () => {
                 <TextInput
                   label="Project owner"
                   disabled
-                  value={"current user's name"}
+                  value={user?.name || 'Current user'}
                 />
                 <NativeSelect
                   label="Project Stage"
